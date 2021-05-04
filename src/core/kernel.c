@@ -3,7 +3,7 @@ void kernel_main(void)
     
 }
 //this?
-// yeah this will work - okkk
+// yeah -wait. this will work - okkk
 
 //WHERE IS IT?
 
