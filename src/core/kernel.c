@@ -13,4 +13,4 @@ void kernel_main(void)
 
 //now to push
 
-// poop
+// poop - i think it worked anyway watch ok maybe not xD
