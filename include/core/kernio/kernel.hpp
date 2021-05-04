@@ -1,32 +1,34 @@
 // required files
 #include "lib/types.h"
+#include "hardware/ports.hpp"
+#include "hardware/interrupt/idt.hpp"
+#include "hardware/interrupt/isr.hpp"
 
 // Kernel IO API by napalmtorch and Nik300
-// [QUOTE: napalmtorch] "honestly man I low key care about my code being pretty more than being practical LMFAO"
 
-//main namespace of the System library - here i am
+// main namespace of the System library - here i am
 #ifdef __cplusplus
 namespace System
 {
     namespace KernelIO
     {
-        //kernel core
+        // kernel core
         class KernelBase
         {
             public:
-                //called as first function before kernel run
+                // called as first function before kernel run
                 void Initialize();
                 
-                //kernel core code, runs in a loop
+                // kernel core code, runs in a loop
                 void Run();
                 
-                //triggered when a kernel panic is injected
+                // triggered when a kernel panic is injected
                 void OnPanic();
                 
-                //called when a handled interrupt call is finished
+                // called when a handled interrupt call is finished
                 void OnInterrupt();
                 
-                //called when interrupt 0x80 is triggered
+                // called when interrupt 0x80 is triggered
                 void OnSystemCall();
         };
 
