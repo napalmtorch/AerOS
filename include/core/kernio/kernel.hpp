@@ -4,7 +4,7 @@
 // Kernel IO API by napalmtorch and Nik300
 // [QUOTE: napalmtorch] "honestly man I low key care about my code being pretty more than being practical LMFAO"
 
-//main namespace of the System library
+//main namespace of the System library - here i am
 #ifdef __cplusplus
 namespace System
 {
@@ -30,6 +30,9 @@ namespace System
                 void OnSystemCall();
         };
 
+        // kerel base class
+        extern KernelIO::KernelBase Kernel;
+
         // system message types
         typedef enum
         {
@@ -52,9 +55,6 @@ namespace System
         void WriteLine(char* text);
         void WriteLine(char* text, uint8_t color);
     }
-
-    // kerel base class
-    extern KernelIO::KernelBase Kernel;
 }
 #else
 void debug_throw_message(MSG_TYPE type, char* msg);

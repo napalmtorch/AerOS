@@ -1,7 +1,8 @@
-#include "core/kernel.hpp"
+#include "core/kernio/kernel.hpp"
 
 extern "C" void kernel_main(void)
 {
-    System::Kernel::Initialize();
-    while (1) { System::Kernel::Run(); }
+    System::KernelIO::Kernel.Initialize();
+    while (1) { System::KernelIO::Kernel.Run(); }
 }
+
