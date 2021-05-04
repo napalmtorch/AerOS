@@ -14,3 +14,4 @@ void kernel_main(void)
 //now to push
 
 // poop - i think it worked anyway watch ok maybe not xD... it looks like its 1 push behind
+//man, commit and push xD oh shit _ I HATE GIT
