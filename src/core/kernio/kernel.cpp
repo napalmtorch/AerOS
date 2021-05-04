@@ -8,6 +8,7 @@ static void pit_callback(registers_t regs)
     vidmem[pos + 1] = 0x1E;
     pos += 2;
     System::KernelIO::Kernel.OnInterrupt();
+    UNUSED(regs);
 }
 
 namespace System
