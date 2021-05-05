@@ -53,6 +53,9 @@
             // vga graphics driver
             extern HAL::VGADriver VGA;
 
+            // ata controller driver
+            extern HAL::ATAController ATA;
+
             // real time clock
             extern HAL::RTCManager RTC;
         }

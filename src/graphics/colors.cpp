@@ -5,6 +5,7 @@ namespace Graphics
     // brute force method for converting vga palette color to rgb
     uint32_t VGAPaletteToRGB(uint8_t color)
     {
+        UNUSED(color);
         return 0;
     }
 
@@ -24,11 +25,14 @@ namespace Graphics
 
         return 0;
     }
-    uint8_t RGBToVGAPallete(Color color) { RGBToVGAPallete(color.GetRed(), color.GetGreen(), color.GetBlue()); }
+    uint8_t RGBToVGAPallete(Color color) { return RGBToVGAPallete(color.GetRed(), color.GetGreen(), color.GetBlue()); }
 
     // convert rgb value to packed color
     uint32_t RGBToPackedValue(uint8_t r, uint8_t g, uint8_t b)
     {
+        UNUSED(r);
+        UNUSED(g);
+        UNUSED(b);
         return 0;
     }
 }

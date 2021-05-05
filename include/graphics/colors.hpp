@@ -62,8 +62,10 @@ struct Color
         uint8_t GetGreen() { return G; }
         uint8_t GetBlue() { return B; }
         uint32_t ToPackedValue(COLOR_ORDER order)
-        {
+       {
+           return 0;
             /* TODO: not yet implemented */
+            UNUSED(order);
         }
 };
 

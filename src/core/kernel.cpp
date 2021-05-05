@@ -23,6 +23,9 @@ namespace System
         // vga graphics driver
         HAL::VGADriver VGA;
 
+        // ata controller driver
+        HAL::ATAController ATA;
+
         // real time clock
         HAL::RTCManager RTC;
 
@@ -50,6 +53,9 @@ namespace System
 
             // initialize real time clock
             RTC.Initialize();
+
+            // initialize ata controller driver
+            ATA.Initialize();
 
             // test exception
             ThrowError("You made a mistake you idiot");
