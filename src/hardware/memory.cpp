@@ -88,44 +88,53 @@ extern "C"
     // copy range of memory
     void mem_copy(uint8_t* src, uint8_t* dest, uint32_t len)
     {
-
+        for (size_t i = 0; i < len; i++) { *(dest + i) = *(src + i); }
     }
 
     // swap range of memory
     void mem_swap(uint8_t* src, uint8_t* dest, uint32_t len)
     {
-
-    }
+        for (size_t i = 0; i < len; i++)
+        {
+            if (*(dest + i) != *(src + i)) { *(dest + i) = *(src + i); }
+        }
+    }   
 
     // fill range of memory
-    void mem_fill(uint8_t* dest, uint8_t vall, uint32_t len)
+    void mem_fill(uint8_t* dest, uint8_t val, uint32_t len)
     {
-
+        for (size_t i = 0; i < len; i++) { *(dest + i) = val; }
     }
     
     // shift range of memory left by one
     void mem_lshift(uint8_t* bottom, uint8_t* top)
     {
-
+        uint8_t saved = *(bottom - 1);
+        for (size_t i = 0; i < (uint32_t)(top - bottom); i++)
+        {
+            if ((int32_t)i - 1 >= 0) { bottom[i - 1] = bottom[i]; }
+        }
+        *(top - 1) = 0;
+        *(bottom - 1) = saved;
     }
 
     // write 8-bit value to memory
-    void mem_write8(uint8_t* dest, uint8_t data) { }
+    void mem_write8(uint8_t* dest, uint8_t data) { *(dest) = data; }
 
     // write 16-bit value to memory
-    void mem_write16(uint8_t* dest, uint16_t data) { }
+    void mem_write16(uint8_t* dest, uint16_t data) { *(dest) = data; }
 
     // write 32-bit value to memory
-    void mem_write32(uint8_t* dest, uint32_t data) { }
+    void mem_write32(uint8_t* dest, uint32_t data) { *(dest) = data; }
 
     // read 8-bit value from memory
-    uint8_t mem_read8(uint8_t* dest) { }
+    uint8_t mem_read8(uint8_t* dest) { return dest[0]; }
 
     // read 16-bit value from memory
-    uint16_t mem_read16(uint8_t* dest) { }
+    uint16_t mem_read16(uint8_t* dest) { uint16_t* ptr = (uint16_t*)dest; return ptr[0]; }
 
     // read 32-bit value from memory
-    uint32_t mem_read32(uint8_t* dest) { }
+    uint32_t mem_read32(uint8_t* dest) { uint32_t* ptr = (uint32_t*)dest; return ptr[0];}
 }
 
 namespace HAL
