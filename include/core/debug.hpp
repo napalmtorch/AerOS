@@ -56,5 +56,7 @@ namespace System
         void WriteLine(char* text, COL4 color);
         void WriteLineDecimal(char* text, int32_t num);
         void WriteLineHex(char* text, uint32_t num);
+        void SetDebugConsoleOutput(bool value);
+        void SetDebugSerialOutput(bool value);
     }
 }

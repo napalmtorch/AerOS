@@ -170,5 +170,11 @@ namespace System
 
         // write line of text with hexadecimal number
         void WriteLineHex(char* text, uint32_t num) { debug_writeln_hex(text, num); }
+
+        // toggle console output
+        void SetDebugConsoleOutput(bool value) { debug_console_enabled = value; }
+
+        // toggle serial output
+        void SetDebugSerialOutput(bool value) { debug_serial_enabled = value; }
     }
 }

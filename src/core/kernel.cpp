@@ -54,6 +54,9 @@ namespace System
             // enable interrupts
             HAL::CPU::EnableInterrupts();
 
+            // disable console output for debugger
+            SetDebugConsoleOutput(false);
+
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
             ThrowOK("Initialized serial port on COM1");
