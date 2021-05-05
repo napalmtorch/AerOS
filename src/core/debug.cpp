@@ -53,10 +53,10 @@ extern "C"
     }
 
     // write string of text
-    void debug_write(char* text) { debug_write_ext(text, 0xF); }
+    void debug_write(char* text) { debug_write_ext(text, COL4_WHITE); }
 
     // write string of text with foreground color
-    void debug_write_ext(char* text, uint8_t color)
+    void debug_write_ext(char* text, COL4 color)
     {
         // write text to console if enabled
         if (debug_console_enabled)
@@ -87,10 +87,10 @@ extern "C"
     }
 
     // write line of text
-    void debug_writeln(char* text) { debug_writeln_ext(text, 0xF); }
+    void debug_writeln(char* text) { debug_writeln_ext(text, COL4_WHITE); }
 
     // write line of text with foreground color
-    void debug_writeln_ext(char* text, uint8_t color)
+    void debug_writeln_ext(char* text, COL4 color)
     {
         // write text to console if enabled
         if (debug_console_enabled)
@@ -147,12 +147,12 @@ namespace System
         void Write(char* text) { debug_write(text); }
 
         // write string of text with foreground color
-        void Write(char* text, uint8_t color) { debug_write_ext(text, color); }
+        void Write(char* text, COL4 color) { debug_write_ext(text, color); }
 
         // write line of text
         void WriteLine(char* text) { debug_writeln(text); }
 
         // write line of text with foreground color
-        void WriteLine(char* text, uint8_t color) { debug_writeln_ext(text, color); }
+        void WriteLine(char* text, COL4 color) { debug_writeln_ext(text, color); }
     }
 }

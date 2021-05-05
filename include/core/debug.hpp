@@ -1,5 +1,6 @@
 #pragma once
 #include "lib/types.h"
+#include "graphics/colors.hpp"
 
 extern "C"
 {
@@ -26,11 +27,11 @@ extern "C"
 
     // write text
     void debug_write(char* text);
-    void debug_write_ext(char* text, uint8_t color);
+    void debug_write_ext(char* text, COL4 color);
     void debug_write_dec(char* text, int32_t num);
     void debug_write_hex(char* text, uint32_t num);
     void debug_writeln(char* text);
-    void debug_writeln_ext(char* text, uint8_t color);
+    void debug_writeln_ext(char* text, COL4 color);
     void debug_writeln_dec(char* text, int32_t num);
     void debug_writeln_hex(char* text, uint32_t num);
 }
@@ -47,11 +48,11 @@ namespace System
         void ThrowWarning(char* msg);
         void ThrowPanic(char* msg);
         void Write(char* text);
-        void Write(char* text, uint8_t color);
+        void Write(char* text, COL4 color);
         void WriteDecimal(char* text, int32_t num);
         void WriteHex(char* text, uint32_t num);
         void WriteLine(char* text);
-        void WriteLine(char* text, uint8_t color);
+        void WriteLine(char* text, COL4 color);
         void WriteLineDecimal(char* text, int32_t num);
         void WriteLineHex(char* tex, uint32_t num);
     }

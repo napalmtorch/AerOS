@@ -64,7 +64,7 @@ namespace System
             ThrowSystem("Commiting suicide...");
             
             // print multiboot name
-            SerialPort.WriteLine(Multiboot.GetName(), 0xE);
+            SerialPort.WriteLine(Multiboot.GetName(), COL4_YELLOW);
 
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
