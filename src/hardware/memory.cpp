@@ -137,6 +137,14 @@ extern "C"
     uint32_t mem_read32(uint8_t* dest) { uint32_t* ptr = (uint32_t*)dest; return ptr[0];}
 }
 
+// memory management overloads
+void *operator new(size_t size) { return mem_alloc(size); }
+void *operator new[](size_t size) { return mem_alloc(size); }
+void operator delete(void *p) { mem_free(p); }
+void operator delete(void *p, size_t size) { mem_free(p); UNUSED(size); }
+void operator delete[](void *p) { mem_free(p); }
+void operator delete[](void *p, size_t size) { mem_free(p); UNUSED(size); }
+
 namespace HAL
 {
     // initialize memory manager

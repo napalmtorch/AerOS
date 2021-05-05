@@ -26,6 +26,16 @@ extern "C"
     uint32_t mem_read32(uint8_t* dest);
 }
 
+// allocate overloads
+extern void *operator new(size_t size);
+extern void *operator new[](size_t size);
+
+// delete overloads
+extern void operator delete(void *p);
+extern void operator delete(void *p, size_t size);
+extern void operator delete[](void *p);
+extern void operator delete[](void *p, size_t size);
+
 namespace HAL
 {
     class MemoryManager
