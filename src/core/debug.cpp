@@ -33,7 +33,7 @@ extern "C"
         if (debug_serial_enabled)
         {
             serial_write("[");
-            serial_write_ext(header, fg);
+            serial_write_ext(header, (COL4)fg);
             serial_write("] ");
             serial_writeln(msg);
         }
