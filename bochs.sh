@@ -1,5 +1,5 @@
 #!/bin/bash
-if ! command -v bochss &> /dev/null
+if ! command -v bochs &> /dev/null
 then
     echo "bochs could not be found, installing...."
     if [ "$EUID" -ne 0 ] 
