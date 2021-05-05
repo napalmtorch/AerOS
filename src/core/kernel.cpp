@@ -20,6 +20,9 @@ namespace System
         // multiboot header
         HAL::MultibootHeader Multiboot;
 
+        // vga graphics driver
+        HAL::VGADriver VGA;
+
         // real time clock
         HAL::RTCManager RTC;
 
@@ -40,6 +43,10 @@ namespace System
 
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
+
+            // setup vga graphics driver
+            VGA.Initialize();
+            VGA.SetMode(VGA.GetAvailableMode(2));
 
             // initialize real time clock
             RTC.Initialize();

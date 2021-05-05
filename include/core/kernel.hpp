@@ -9,6 +9,7 @@
 #include "hardware/drivers/serial.hpp"
 #include "hardware/drivers/ata.hpp"
 #include "hardware/drivers/rtc.hpp"
+#include "hardware/drivers/vga.hpp"
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
 
@@ -48,6 +49,9 @@
 
             // multiboot header
             extern HAL::MultibootHeader Multiboot;
+
+            // vga graphics driver
+            extern HAL::VGADriver VGA;
 
             // real time clock
             extern HAL::RTCManager RTC;
