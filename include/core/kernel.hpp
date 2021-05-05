@@ -54,6 +54,9 @@
             // pci controller driver
             extern HAL::PCIBusController PCIBus;
 
+            // memory manager
+            extern HAL::MemoryManager MemoryManager;
+
             // vga graphics driver
             extern HAL::VGADriver VGA;
 

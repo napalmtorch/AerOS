@@ -17,7 +17,7 @@ extern "C"
     void* mem_alloc(size_t size)
     {
         // check if enough memory is available
-        if (free_pos + size >= max_pos) { debug_throw_message(MSG_TYPE_ERROR, "System out of memory"); return; }
+        if (free_pos + size >= max_pos) { debug_throw_message(MSG_TYPE_ERROR, "System out of memory"); return nullptr; }
         uint32_t addr = free_pos;
         free_pos += size;
         return (void*)addr;
@@ -126,4 +126,16 @@ extern "C"
 
     // read 32-bit value from memory
     uint32_t mem_read32(uint8_t* dest) { }
+}
+
+namespace HAL
+{
+    // initialize memory manager
+    void MemoryManager::Initialize() { mem_init(); }
+
+    // allocate region of memory
+    void* MemoryManager::Allocate(size_t size) { return mem_alloc(size); }
+
+    // free region of memory
+    void MemoryManager::Free(void* ptr) { mem_free(ptr); }
 }

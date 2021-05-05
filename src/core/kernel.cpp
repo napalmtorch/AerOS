@@ -23,6 +23,9 @@ namespace System
         // pci controller driver
         HAL::PCIBusController PCIBus;
 
+        // memory manager
+        HAL::MemoryManager MemoryManager;
+
         // vga graphics driver
         HAL::VGADriver VGA;
 
@@ -49,6 +52,11 @@ namespace System
 
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
+            ThrowOK("Initialized serial port on COM1");
+
+            // initialize memory manager
+            MemoryManager.Initialize();
+            ThrowOK("Initialize memory management system");
 
             // initialize pci bus
             PCIBus.Initialize();
@@ -56,21 +64,19 @@ namespace System
             // setup vga graphics driver
             VGA.Initialize();
             VGA.SetMode(VGA.GetAvailableMode(2));
+            ThrowOK("Initialized VGA driver");
 
             // initialize real time clock
             RTC.Initialize();
+            ThrowOK("Initialized real time clock");
 
             // initialize ata controller driver
             ATA.Initialize();
-
-            // test exception
-            ThrowError("You made a mistake you idiot");
-            ThrowWarning("You are not very smart");
-            ThrowOK("Its not uncommon these days xD");
-            ThrowSystem("Commiting suicide...");
+            ThrowOK("Initialized ATA controller driver");
             
             // print multiboot name
-            SerialPort.WriteLine(Multiboot.GetName(), COL4_YELLOW);
+            SerialPort.Write("BOOT LOADER: ", COL4_YELLOW);
+            SerialPort.WriteLine(Multiboot.GetName(), COL4_WHITE);
 
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
