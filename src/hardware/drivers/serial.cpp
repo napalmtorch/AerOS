@@ -105,3 +105,39 @@ extern "C"
         }
     }
 }
+
+namespace HAL
+{
+    // set active serial port
+    void SerialPort::SetPort(SERIAL_PORT port) { serial_set_port(port); }
+
+    // get active serial port
+    SERIAL_PORT SerialPort::GetPort() { return serial_get_port(); }
+
+    // read character from serial port
+    char SerialPort::Read() { return serial_read(); }
+
+    // write character to serial port
+    void SerialPort::WriteChar(char c) { serial_write_char(c); }
+
+    // write string of text to serial port
+    void SerialPort::Write(char* text) { serial_write(text); }
+
+    // write string of text with foreground color to serial port
+    void SerialPort::Write(char* text, uint8_t color) { serial_write_ext(text, color); }
+
+    // write line of text to serial port
+    void SerialPort::WriteLine(char* text) { serial_writeln(text); }
+
+    // write line of text with foreground color to serial port
+    void SerialPort::WriteLine(char* text, uint8_t color) { serial_writeln_ext(text, color); }
+
+    // set active foreground color of serial port
+    void SerialPort::SetColor(uint8_t color) { serial_set_color(color); }
+
+    // check if serial port has recieved data
+    uint8_t SerialPort::HasRecieved() { return serial_has_recieved(); }
+
+    // check if serial port is able to send data
+    uint8_t SerialPort::CanSend() { return serial_can_send(); }
+}

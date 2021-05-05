@@ -88,7 +88,6 @@ namespace HAL
             uint8_t HasRecieved();
             
             // check if serial port is able to send data
-            uint8_t CanSend();
-
+         uint8_t CanSend();
     };
 }

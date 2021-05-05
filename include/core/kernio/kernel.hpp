@@ -3,6 +3,8 @@
 #include "hardware/ports.hpp"
 #include "hardware/interrupt/idt.hpp"
 #include "hardware/interrupt/isr.hpp"
+#include "hardware/interrupt/interrupt.hpp"
+#include "hardware/drivers/serial.hpp"
 
 // Kernel IO API by napalmtorch and Nik300
 
@@ -32,9 +34,11 @@ namespace System
                 void OnSystemCall();
         };
 
-        // kerel base class
+        // kernel base class
         extern KernelIO::KernelBase Kernel;
 
+        // serial port 
+        extern HAL::SerialPort SerialPort;
     }
 }
 #else
