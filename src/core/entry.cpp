@@ -1,4 +1,4 @@
-#include "core/kernio/kernel.hpp"
+#include "core/kernel.hpp"
 
 extern "C" void kernel_main(void)
 {

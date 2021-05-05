@@ -1,4 +1,4 @@
-#include "core/kernio/debug.hpp"
+#include "core/debug.hpp"
 
 extern "C"
 {

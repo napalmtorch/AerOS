@@ -1,4 +1,4 @@
-#include "core/kernio/kernel.hpp"
+#include "core/kernel.hpp"
 
 uint32_t pos = 0;
 static void pit_callback(registers_t regs)
