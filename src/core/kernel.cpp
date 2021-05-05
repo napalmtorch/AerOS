@@ -3,10 +3,6 @@
 uint32_t pos = 0;
 static void pit_callback(registers_t regs)
 {
-    uint8_t* vidmem = (uint8_t*)0xB8000;
-    vidmem[pos] = 'X';
-    vidmem[pos + 1] = 0x1E;
-    pos += 2;
     System::KernelIO::Kernel.OnInterrupt();
     UNUSED(regs);
 }
@@ -24,6 +20,9 @@ namespace System
         // multiboot header
         HAL::MultibootHeader Multiboot;
 
+        // real time clock
+        HAL::RTCManager RTC;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -39,11 +38,11 @@ namespace System
             // enable interrupts
             HAL::CPU::EnableInterrupts();
 
-            // initialize pit
-            HAL::CPU::InitializePIT(60, pit_callback);
-
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
+
+            // initialize real time clock
+            RTC.Initialize();
 
             // test exception
             ThrowError("You made a mistake you idiot");
@@ -51,8 +50,11 @@ namespace System
             ThrowOK("Its not uncommon these days xD");
             ThrowSystem("Commiting suicide...");
             
-            // print multiboot name - testing
+            // print multiboot name
             SerialPort.WriteLine(Multiboot.GetName(), 0xE);
+
+            // initialize pit
+            HAL::CPU::InitializePIT(60, pit_callback);
         }
 
         // kernel core code, runs in a loop
@@ -70,7 +72,7 @@ namespace System
         // called when a handled interrupt call is finished
         void KernelBase::OnInterrupt()
         {
-
+            
         }
 
         // called when interrupt 0x80 is triggered

@@ -17,8 +17,8 @@ extern "C"
     } MSG_TYPE;
 
     // debug flags
-    extern uint8_t debug_serial_enabled;
-    extern uint8_t debug_console_enabled;
+    extern bool debug_serial_enabled;
+    extern bool debug_console_enabled;
 
     // messages
     void debug_throw_message(MSG_TYPE type, char* msg);

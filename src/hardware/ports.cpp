@@ -38,7 +38,7 @@ void outl(uint16_t port, uint32_t data) { __asm__ __volatile__("outl %%eax, %%dx
     IOPort::IOPort() { this->Port = 0; }
 
     // constructor - selected port
-    IOPort::IOPort(uint16_t port) : Port(port) { }
+    IOPort::IOPort(uint16_t port) { this->Port = port; }
 
     // write 8-bit value to port
     void IOPort::WriteInt8(uint8_t data)

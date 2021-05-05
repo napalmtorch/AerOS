@@ -62,5 +62,5 @@ namespace HAL
     void ATAController::WaitDRQ() { while (!(inb(PORT_BASE_PRIMARY + 7) & STATUS_READY)); }
 
     // check if an error has occurred
-    uint8_t ATAController::HasErrorOccurred() { return (uint8_t)(inb(PORT_BASE_PRIMARY + 7) & STATUS_ERROR); }
+    bool ATAController::HasErrorOccurred() { return (bool)(inb(PORT_BASE_PRIMARY + 7) & STATUS_ERROR); }
 }

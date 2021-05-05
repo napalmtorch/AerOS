@@ -3,10 +3,10 @@
 extern "C"
 {
     // flag indicating whether to print debug messages to serial port
-    uint8_t debug_serial_enabled = 1;
+    bool debug_serial_enabled = true;
 
     // flag indicating whether to print debug messages to console
-    uint8_t debug_console_enabled = 1;
+    bool debug_console_enabled = true;
 
     // throw message of specified type
     void debug_throw_message(MSG_TYPE type, char* msg)

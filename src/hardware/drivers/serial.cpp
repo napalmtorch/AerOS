@@ -39,6 +39,8 @@ extern "C"
     // read character from serial port
     char serial_read()
     {
+        if (serial_port != SERIAL_PORT_COM1 && serial_port != SERIAL_PORT_COM2 && 
+            serial_port != SERIAL_PORT_COM3 && serial_port != SERIAL_PORT_COM4) { return 0; }
         while (serial_has_recieved() == 0);
         return inb(serial_port);
     }
@@ -46,6 +48,8 @@ extern "C"
     // write character to serial port
     void serial_write_char(char c)
     {
+        if (serial_port != SERIAL_PORT_COM1 && serial_port != SERIAL_PORT_COM2 && 
+            serial_port != SERIAL_PORT_COM3 && serial_port != SERIAL_PORT_COM4) { return; }
         while (serial_can_send() == 0);
         outb(serial_port, c);
     }

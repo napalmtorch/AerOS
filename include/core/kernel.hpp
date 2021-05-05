@@ -7,6 +7,8 @@
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/interrupt/interrupt.hpp"
 #include "hardware/drivers/serial.hpp"
+#include "hardware/drivers/ata.hpp"
+#include "hardware/drivers/rtc.hpp"
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
 
@@ -46,6 +48,9 @@
 
             // multiboot header
             extern HAL::MultibootHeader Multiboot;
+
+            // real time clock
+            extern HAL::RTCManager RTC;
         }
 }
 #else

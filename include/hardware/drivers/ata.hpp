@@ -24,6 +24,6 @@ namespace HAL
             void WaitDRQ();
 
             // check if an error has occurred
-            uint8_t HasErrorOccurred();
+            bool HasErrorOccurred();
     };
 }
