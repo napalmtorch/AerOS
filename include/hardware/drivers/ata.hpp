@@ -14,7 +14,7 @@ namespace HAL
             void ReadSectors(uint8_t* dest, uint32_t lba, uint8_t sectors);
 
             // write data from pointer to sectors
-            void WriteSectors(uint32_t* src, uint32_t lba, uint8_t sectors);
+            void WriteSectors(uint8_t* src, uint32_t lba, uint8_t sectors);
 
         private:
             // wait if ata controller is busy

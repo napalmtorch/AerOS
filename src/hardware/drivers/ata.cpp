@@ -37,7 +37,7 @@ namespace HAL
     }
 
     // write data from pointer to sectors
-    void ATAController::WriteSectors(uint32_t* src, uint32_t lba, uint8_t sectors)
+    void ATAController::WriteSectors(uint8_t* src, uint32_t lba, uint8_t sectors)
     {
         WaitBusy();
         outb(PORT_BASE_PRIMARY + 6, 0xE0 | ((lba >> 24) & 0xF));
@@ -47,11 +47,12 @@ namespace HAL
         outb(PORT_BASE_PRIMARY + 5, (uint8_t)(lba >> 16));
         outb(PORT_BASE_PRIMARY + 7, 0x30);
 
+        uint32_t* ptr = (uint32_t*)src;
         for (size_t i = 0; i < sectors; i++)
         {
             WaitBusy();
             WaitDRQ();
-            for (size_t j = 0; j < 256; j++) { outl(PORT_BASE_PRIMARY, src[j]); }
+            for (size_t j = 0; j < 256; j++) { outl(PORT_BASE_PRIMARY, ptr[j]); }
         }
     }
 

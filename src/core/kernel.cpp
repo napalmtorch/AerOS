@@ -20,6 +20,15 @@ namespace System
         // multiboot header
         HAL::MultibootHeader Multiboot;
 
+        // vga graphics driver
+        HAL::VGADriver VGA;
+
+        // ata controller driver
+        HAL::ATAController ATA;
+
+        // ptfs file system
+        HAL::PTFSFileSystem PTFS;
+
         // real time clock
         HAL::RTCManager RTC;
 
@@ -41,20 +50,25 @@ namespace System
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
 
+            // setup vga graphics driver
+            VGA.Initialize();
+            VGA.SetMode(VGA.GetAvailableMode(2));
+
             // initialize real time clock
             RTC.Initialize();
-
-            // test exception
-            ThrowError("You made a mistake you idiot");
-            ThrowWarning("You are not very smart");
-            ThrowOK("Its not uncommon these days xD");
-            ThrowSystem("Commiting suicide...");
-            
+                        
             // print multiboot name
+            SerialPort.Write("BOOT_LOADER: ");
             SerialPort.WriteLine(Multiboot.GetName(), 0xE);
+
+            // test message
+            ThrowOK("Hello penis");
 
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
+
+            // initialize file system
+            PTFS.Initialize();
         }
 
         // kernel core code, runs in a loop

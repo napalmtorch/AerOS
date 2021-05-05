@@ -3,12 +3,14 @@
 #include "core/debug.hpp"
 #include "hardware/ports.hpp"
 #include "hardware/multiboot.hpp"
+#include "hardware/ptfs.hpp"
 #include "hardware/interrupt/idt.hpp"
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/interrupt/interrupt.hpp"
 #include "hardware/drivers/serial.hpp"
 #include "hardware/drivers/ata.hpp"
 #include "hardware/drivers/rtc.hpp"
+#include "hardware/drivers/vga.hpp"
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
 
@@ -48,6 +50,15 @@
 
             // multiboot header
             extern HAL::MultibootHeader Multiboot;
+
+            // vga graphics driver
+            extern HAL::VGADriver VGA;
+
+            // ata controller driver
+            extern HAL::ATAController ATA;
+
+            // ptfs file system
+            extern HAL::PTFSFileSystem PTFS;
 
             // real time clock
             extern HAL::RTCManager RTC;
