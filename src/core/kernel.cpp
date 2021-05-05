@@ -21,9 +21,15 @@ namespace System
         // serial port
         HAL::SerialPort SerialPort;
 
+        // multiboot header
+        HAL::MultibootHeader Multiboot;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
+            // fetch multiboot header information from memory
+            Multiboot.Read();
+
             // initialize fonts
             Graphics::InitializeFonts();
 
@@ -44,6 +50,9 @@ namespace System
             ThrowWarning("You are not very smart");
             ThrowOK("Its not uncommon these days xD");
             ThrowSystem("Commiting suicide...");
+            
+            // print multiboot name - testing
+            SerialPort.WriteLine(Multiboot.GetName(), 0xE);
         }
 
         // kernel core code, runs in a loop

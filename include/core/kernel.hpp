@@ -2,6 +2,7 @@
 #include "lib/types.h"
 #include "core/debug.hpp"
 #include "hardware/ports.hpp"
+#include "hardware/multiboot.hpp"
 #include "hardware/interrupt/idt.hpp"
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/interrupt/interrupt.hpp"
@@ -42,6 +43,9 @@
 
             // serial port 
             extern HAL::SerialPort SerialPort;
+
+            // multiboot header
+            extern HAL::MultibootHeader Multiboot;
         }
 }
 #else
