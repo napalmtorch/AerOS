@@ -24,6 +24,9 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
+            // initialize fonts
+            Graphics::InitializeFonts();
+
             // initialize interrupt service routines
             isr_init();
 

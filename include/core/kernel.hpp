@@ -6,6 +6,8 @@
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/interrupt/interrupt.hpp"
 #include "hardware/drivers/serial.hpp"
+#include "graphics/font.hpp"
+#include "graphics/colors.hpp"
 
 // Kernel IO API by napalmtorch and Nik300
 
