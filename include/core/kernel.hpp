@@ -10,6 +10,7 @@
 #include "hardware/drivers/ata.hpp"
 #include "hardware/drivers/rtc.hpp"
 #include "hardware/drivers/vga.hpp"
+#include "hardware/drivers/pci.hpp"
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
 
@@ -49,6 +50,9 @@
 
             // multiboot header
             extern HAL::MultibootHeader Multiboot;
+
+            // pci controller driver
+            extern HAL::PCIBusController PCIBus;
 
             // vga graphics driver
             extern HAL::VGADriver VGA;

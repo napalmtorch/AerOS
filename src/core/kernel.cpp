@@ -20,6 +20,9 @@ namespace System
         // multiboot header
         HAL::MultibootHeader Multiboot;
 
+        // pci controller driver
+        HAL::PCIBusController PCIBus;
+
         // vga graphics driver
         HAL::VGADriver VGA;
 
@@ -46,6 +49,9 @@ namespace System
 
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
+
+            // initialize pci bus
+            PCIBus.Initialize();
 
             // setup vga graphics driver
             VGA.Initialize();

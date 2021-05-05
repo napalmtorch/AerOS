@@ -58,10 +58,18 @@ namespace HAL
     {
         public:
             void Initialize();
-            char* GetVendorName(uint16_t vendor, uint16_t id);
-        private:
             void Probe();
             void AddDevice(PCIDevice device);
+            char* GetVendorName(uint16_t vendor, uint16_t id);
             uint16_t ReadWord(uint16_t bus, uint16_t slot, uint16_t func, uint16_t offset);
+            void WriteWord(uint16_t bus, uint16_t slot, uint16_t func, uint16_t offset, uint16_t data);
+            uint16_t GetVendorID(uint16_t bus, uint16_t device, uint16_t func);
+            uint16_t GetDeviceID(uint16_t bus, uint16_t device, uint16_t function);
+            uint16_t GetClassID(uint16_t bus, uint16_t device, uint16_t function);
+            uint16_t GetSubClassID(uint16_t bus, uint16_t device, uint16_t function);
+        private:
+            // devices
+            PCIDevice **Devices = nullptr;
+            uint32_t DeviceCount = 0;
     };
 }
