@@ -35,8 +35,6 @@ typedef struct
     int32_t Height;
 } __attribute__((packed)) bounds_t;
 
-
-
 // null
 #define NULL 0
 

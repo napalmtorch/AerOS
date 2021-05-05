@@ -68,6 +68,24 @@ extern "C"
         if (debug_serial_enabled) { serial_write_ext(text, color); }
     }
 
+    // write string and decimal value
+    void debug_write_dec(char* text, int32_t num)
+    {
+        debug_write(text);
+        char temp[16];
+        strdec(num, temp);
+        debug_write(temp);
+    }
+
+    // write string and hexadecimal value
+    void debug_write_hex(char* text, uint32_t num)
+    {
+        debug_write(text);
+        char temp[8];
+        strhex32(num, temp);
+        debug_write(temp);
+    }
+
     // write line of text
     void debug_writeln(char* text) { debug_writeln_ext(text, 0xF); }
 
@@ -82,6 +100,24 @@ extern "C"
 
         // write text to serial if enabled
         if (debug_serial_enabled) { serial_writeln_ext(text, color); }
+    }
+
+    // write line of text and decimal number
+    void debug_writeln_dec(char* text, int32_t num)
+    {
+        debug_write(text);
+        char temp[16];
+        strdec(num, temp);
+        debug_writeln(temp);
+    }
+
+    // write line of text and hexadecimal number
+    void debug_writeln_hex(char* text, uint32_t num)
+    {
+        debug_write(text);
+        char temp[8];
+        strhex32(num, temp);
+        debug_writeln(temp);
     }
 }
 
