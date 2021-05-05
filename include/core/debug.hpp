@@ -4,6 +4,8 @@
 extern "C"
 {
     #include "lib/types.h"
+    #include "lib/string.hpp"
+    #include "hardware/drivers/serial.hpp"
     
     // system message types
     typedef enum

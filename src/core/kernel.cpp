@@ -33,9 +33,14 @@ namespace System
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
 
-            // test serial port
+            // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
-            SerialPort.WriteLine("Hello penis, this is the world", 0xE);
+
+            // test exception
+            ThrowError("You made a mistake you idiot");
+            ThrowWarning("You are not very smart");
+            ThrowOK("Its not uncommon these days xD");
+            ThrowSystem("Commiting suicide...");
         }
 
         // kernel core code, runs in a loop

@@ -1,5 +1,6 @@
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/interrupt/idt.hpp"
+#include "core/debug.hpp"
 
 extern "C"
 {
@@ -122,7 +123,7 @@ extern "C"
 
     void isr_handler(registers_t regs)
     {
-        
+        debug_throw_panic(exception_messages[regs.int_no]);
     }
 
     uint32_t irq_handler(uint32_t regs)
