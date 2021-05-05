@@ -1,5 +1,46 @@
 #include "core/kernio/debug.hpp"
 
+extern "C"
+{
+    // flag indicating whether to print debug messages to serial port
+    uint8_t debug_serial_enabled = true;
+
+    // flag indicating whether to print debug messages to console
+    uint8_t debug_console_enabled = true;
+
+    // throw message of specified type
+    void debug_throw_message(MSG_TYPE type, char* msg)
+    {
+
+    }
+
+    // throw kernel panic message
+    void debug_throw_panic(char* msg)
+    {
+        // stop execution
+        __asm__ __volatile__("cli");
+        __asm__ __volatile__("hlt");
+    }
+
+    // write string of text
+    void debug_write(char* text) { debug_write_ext(text, 0xF); }
+
+    // write string of text with foreground color
+    void debug_write_ext(char* text, uint8_t color)
+    {
+
+    }
+
+    // write line of text
+    void debug_writeln(char* text) { debug_writeln_ext(text, 0xF); }
+
+    // writ eline of text with foreground color
+    void debug_writeln_ext(char* text, uint8_t color)
+    {
+
+    }
+}
+
 namespace System
 {
     namespace KernelIO
@@ -33,46 +74,5 @@ namespace System
 
         // write line of text with foreground color
         void WriteLine(char* text, uint8_t color) { }
-    }
-}
-
-extern "C"
-{
-    // flag indicating whether to print debug messages to serial port
-    uint8_t debug_serial_enabled = true;
-
-    // flag indicating whether to print debug messages to console
-    uint8_t debug_console_enabled = true;
-
-    // throw message of specified type
-    void debug_throw_message(System::KernelIO::MSG_TYPE type, char* msg)
-    {
-
-    }
-
-    // throw kernel panic message
-    void debug_throw_panic(char* msg)
-    {
-        // stop execution
-        __asm__ __volatile__("cli");
-        __asm__ __volatile__("hlt");
-    }
-
-    // write string of text
-    void debug_write(char* text) { debug_write_ext(text, 0xF); }
-
-    // write string of text with foreground color
-    void debug_write_ext(char* text, uint8_t color)
-    {
-
-    }
-
-    // write line of text
-    void debug_writeln(char* text) { debug_writeln_ext(text, 0xF); }
-
-    // writ eline of text with foreground color
-    void debug_writeln_ext(char* text, uint8_t color)
-    {
-
     }
 }
