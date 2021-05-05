@@ -1,6 +1,7 @@
 #pragma once
 #include "lib/types.h"
 #include "graphics/colors.hpp"
+#include "hardware/terminal.hpp"
 
 extern "C"
 {

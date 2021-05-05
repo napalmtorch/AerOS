@@ -148,9 +148,15 @@ namespace HAL
             case 60:  { WriteRegisters(MODE_90x60_DATA); SetFont(Graphics::FONT_8x8.GetData(), 8);   break; }
             // 320x200
             case 200: { WriteRegisters(MODE_320x200_DATA); break; }
+        }
 
-            // get buffer address
-            Buffer = GetFrameBufferSegment();
+        // get buffer address
+        Buffer = GetFrameBufferSegment();
+
+        // set terminal size
+        if (mode.IsTextMode())
+        {
+            term_set_size(mode.GetWidth(), mode.GetHeight());
         }
     }
 

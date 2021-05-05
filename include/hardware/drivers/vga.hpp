@@ -1,8 +1,10 @@
 #pragma once
 #include "lib/types.h"
 #include "hardware/ports.hpp"
+#include "hardware/terminal.hpp"
 #include "graphics/colors.hpp"
 #include "graphics/font.hpp"
+
 namespace HAL
 {
     // used to manage video mode properties

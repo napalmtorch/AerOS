@@ -27,13 +27,17 @@ extern "C"
         if (debug_console_enabled)
         {
             /* TODO: not yet implemented */
+            term_write("[");
+            term_write_ext(header, (COL4)fg);
+            term_write("] ");
+            term_writeln(msg);
         }
 
         // print to serial if enablex
         if (debug_serial_enabled)
         {
             serial_write("[");
-            serial_write_ext(header, (COL4)fg);
+            serial_write_ext(header, fg);
             serial_write("] ");
             serial_writeln(msg);
         }

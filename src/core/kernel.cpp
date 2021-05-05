@@ -38,6 +38,10 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
+            // initialize terminal interface
+            term_init();
+            term_writeln_ext("Starting AerOS...", COL4_GRAY);
+
             // fetch multiboot header information from memory
             Multiboot.Read();
 
@@ -63,7 +67,6 @@ namespace System
 
             // setup vga graphics driver
             VGA.Initialize();
-            VGA.SetMode(VGA.GetAvailableMode(2));
             ThrowOK("Initialized VGA driver");
 
             // initialize real time clock
@@ -80,6 +83,9 @@ namespace System
 
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
+
+            // ready
+            term_writeln_ext("Ready.", COL4_GREEN);
         }
 
         // kernel core code, runs in a loop
