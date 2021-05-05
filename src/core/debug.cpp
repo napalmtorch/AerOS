@@ -149,10 +149,22 @@ namespace System
         // write string of text with foreground color
         void Write(char* text, COL4 color) { debug_write_ext(text, color); }
 
+        // write string of text with decimal number
+        void WriteDecimal(char* text, int32_t num) { debug_write_dec(text, num); }
+
+        // write string of text with hexadecimal number
+        void WriteHex(char* text, uint32_t num) { debug_write_hex(text, num); }
+
         // write line of text
         void WriteLine(char* text) { debug_writeln(text); }
 
         // write line of text with foreground color
         void WriteLine(char* text, COL4 color) { debug_writeln_ext(text, color); }
+
+        // write line of text with decimal number
+        void WriteLineDecimal(char* text, int32_t num) { debug_writeln_dec(text, num); }
+
+        // write line of text with hexadecimal number
+        void WriteLineHex(char* text, uint32_t num) { debug_writeln_hex(text, num); }
     }
 }

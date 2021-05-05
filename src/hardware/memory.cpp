@@ -122,10 +122,10 @@ extern "C"
     void mem_write8(uint8_t* dest, uint8_t data) { *(dest) = data; }
 
     // write 16-bit value to memory
-    void mem_write16(uint8_t* dest, uint16_t data) { *(dest) = data; }
+    void mem_write16(uint8_t* dest, uint16_t data) { uint16_t* ptr = (uint16_t*)dest; ptr[0] = data; }
 
     // write 32-bit value to memory
-    void mem_write32(uint8_t* dest, uint32_t data) { *(dest) = data; }
+    void mem_write32(uint8_t* dest, uint32_t data) { uint32_t* ptr = (uint32_t*)dest; ptr[0] = data; }
 
     // read 8-bit value from memory
     uint8_t mem_read8(uint8_t* dest) { return dest[0]; }
