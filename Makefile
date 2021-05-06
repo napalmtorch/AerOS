@@ -4,6 +4,7 @@ all:
 clean:
 	rm -Rf bin/isodir/boot/kernel.bin
 	rm -Rf bin/objs/*.o
+	rm -Rf bin/*.o
 	rm AerOS.iso
 	rm *.log
 	rm *.out
