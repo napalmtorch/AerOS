@@ -27,7 +27,10 @@ namespace HAL
         System::KernelIO::WriteLine("FILE SYSTEM INFORMATION", COL4_YELLOW);
         System::KernelIO::WriteLineDecimal("SECTORS COUNT                   ", (int32_t)RecordBlock->SectorCount);
         System::KernelIO::WriteLineDecimal("SECTORS USED                    ", (int32_t)RecordBlock->SectorsUsed);
+        System::KernelIO::WriteLineDecimal("SIZE                            ", (int32_t)RecordBlock->SizeInBytes);
         System::KernelIO::WriteLineDecimal("BYTES/SECTOR                    ", (int32_t)RecordBlock->BytesPerSector);
+        System::KernelIO::WriteLineDecimal("MAX ENTRIES                     ", (int32_t)RecordBlock->MaxEntries);
+        System::KernelIO::WriteLineDecimal("POSITION                        ", (int32_t)RecordBlock->Position);
     }
 
     void PTFSFileSystem::Format(uint32_t size_mb)

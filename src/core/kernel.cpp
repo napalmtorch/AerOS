@@ -88,8 +88,8 @@ namespace System
             ThrowOK("Initialized PTFS file system");
 
             // format disk
-            //PTFS.Format(32);
-            //ThrowOK("Formatted disk as PTFS");
+            PTFS.Format(32);
+            ThrowOK("Formatted disk as PTFS");
 
             // print multiboot name
             SerialPort.Write("\nBOOT LOADER: ", COL4_YELLOW);
