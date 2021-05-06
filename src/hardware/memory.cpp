@@ -38,13 +38,13 @@ extern "C"
     void* last = (void*)-1;
 
     // calculate the size of the memory region, knowing the entry
-    size_t sizeOfRegion(entry_t* entry)
+    size_t size_of_region(entry_t* entry)
     {
         return (uint32_t)entry->next - (uint32_t)entry - sizeof(struct entry);
     }
 
     // setup a new entry in a not known position
-    entry_t* setupEntry(void* at, size_t size)
+    entry_t* setup_entry(void* at, size_t size)
     {
         entry_t* entry = (entry_t*)at;
         entry->offset = 0xFF;
@@ -57,7 +57,7 @@ extern "C"
 
     entry_t* alloc_entry(entry_t* current, size_t size)
     {
-        size_t esize = sizeOfRegion(current);
+        size_t esize = size_of_region(current);
 
         // easiest possibility: the entry is the same size as the requested allocation
         if (size == esize)
@@ -76,10 +76,10 @@ extern "C"
                 if (next->offset != 0xFF)
                 {
                     // if it is not, setup the entry
-                    next = setupEntry((void*)next, size-esize);
+                    next = setup_entry((void*)next, size-esize);
                     // merge it
                     current->next = next->next;
-                    esize = sizeOfRegion(current);
+                    esize = size_of_region(current);
                     // and break the loop
                     break;
                 }
@@ -89,7 +89,7 @@ extern "C"
                 // otherwise we merge it
                 current->next = next->next;
                 // check the new size
-                esize = sizeOfRegion(current);
+                esize = size_of_region(current);
                 // and continue the loop
             }
             if (esize >= size)
@@ -111,7 +111,7 @@ extern "C"
     }
 
     // search next free entry
-    entry_t* getFreeEntry(void* from, size_t size)
+    entry_t* get_free_entry(void* from, size_t size)
     {
         // check if we reached free_pos
         if ((uint32_t)from >= free_pos)
@@ -120,7 +120,7 @@ extern "C"
 
             // increase the free position by the size of the allocated memory region
             free_pos = (uint32_t)(from + sizeof(struct entry) + size);
-            return setupEntry(from, size);
+            return setup_entry(from, size);
         }
         // current entry we're working with
         entry_t* current = (entry_t*)from;
@@ -134,7 +134,7 @@ extern "C"
             if (current->offset != 0xFF)
             {
                 // so we just allocate a new one here
-                return setupEntry((void*)current, size);
+                return setup_entry((void*)current, size);
             }
         }
         // if we still alive, we just call the alloc_entry, where all the magic happens
@@ -142,9 +142,15 @@ extern "C"
         if (e == nullptr)
         {
             debug_throw_message(MSG_TYPE::MSG_TYPE_WARNING, "fell into next region manager");
-            return getFreeEntry(current->next, size);
+            return get_free_entry(current->next, size);
         }
         return e;
+    }
+
+    size_t size(void* data)
+    {
+        // retrun the size from the entry
+        return size_of_region(((entry_t*)((uint32_t)data - sizeof(struct entry))));
     }
 
     void* mem_alloc(size_t size)
@@ -153,7 +159,7 @@ extern "C"
         if (free_pos + size >= max_pos) { debug_throw_message(MSG_TYPE_ERROR, "System out of memory"); return nullptr; }
         
         // request first free entry
-        entry_t* entry = getFreeEntry((void*)start, size);
+        entry_t* entry = get_free_entry((void*)start, size);
         
         entry->used = true;
 

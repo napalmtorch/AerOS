@@ -6,6 +6,8 @@ extern "C"
 {
     void mem_init();
 
+    size_t size(void* data);
+
     void* mem_alloc(size_t size);
     void mem_free(void* ptr);
 
