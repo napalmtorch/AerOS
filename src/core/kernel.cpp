@@ -105,7 +105,7 @@ namespace System
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
-            //FAT.Initialize();
+            FAT.Initialize();
             ThrowOK("Initialized FAT file system");
 
             // initialize keyboard

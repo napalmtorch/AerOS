@@ -8,10 +8,19 @@ namespace HAL
         // read bios parameter block data from disk
         System::KernelIO::ATA.ReadSectors((uint8_t*)BootSectorData, 0, 1);
 
+        // confirm that boot sector is not blank
+        DiskValid = false;
+        for (size_t i = 0; i < 512; i++)
+        { if (BootSectorData[i] != 0) { DiskValid = true; break; } }
+        if (!DiskValid) { System::KernelIO::ThrowWarning("Non-bootable hard disk detected"); return; }
+
         // set pointers
         BIOSBlock = (FATBootRecord*)BootSectorData;
         BootRecord32 = (FAT32ExtendedBootRecord*)(BootSectorData + 36);
         BootRecord16 = (FAT16ExtendedBootRecord*)(BootSectorData + 36);
+
+        // get type
+        DetermineFATType();
 
         // calculate properties based on provided data
         TotalSectors = (BIOSBlock->LogicalSectors == 0) ? BIOSBlock->LargeSectors : BIOSBlock->LogicalSectors;
@@ -22,9 +31,6 @@ namespace HAL
         DataSectorCount = TotalSectors - (BIOSBlock->ReservedSectors + (BIOSBlock->FATCount * FATSize) + RootSectorCount);
         ClusterCount = DataSectorCount / BIOSBlock->SectorsPerCluster;
         FirstRootSector = FirstDataSector - RootSectorCount;
-
-        // get type
-        DetermineFATType();
 
         // print boot sector as hex
         /*
@@ -39,12 +45,14 @@ namespace HAL
             xx += 4;
             if (xx >= 80) { debug_write("\n"); xx = 0; }
         }
-        debug_write("\n");
-        */
+        debug_write("\n"); */
+        
 
         // print information
         PrintBIOSParameterBlock();
         PrintExtendedBootRecord();
+
+        
     }
 
     void FATFileSystem::DetermineFATType()
@@ -347,7 +355,7 @@ namespace HAL
         // FAT32
         else if (FATType == FAT_TYPE_FAT32)
         {
-
+            debug_writeln_ext("FAT32", COL4_YELLOW);
         }
         // EXFAT
         else if (FATType == FAT_TYPE_EXFAT)

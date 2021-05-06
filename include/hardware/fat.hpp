@@ -134,6 +134,7 @@ namespace HAL
             void PrintExtendedBootRecord();
             FATFile OpenFile(char* name);
         private:
+            bool DiskValid;
             uint8_t BootSectorData[512];
             uint8_t DataBuffer[512];
             uint8_t FATTable[32 * 1024];
