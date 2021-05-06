@@ -57,6 +57,26 @@ namespace HAL
         uint8_t  BootCode[420];
         uint16_t BootSignature;
     } __attribute__((packed)) BootRecordFAT32;
+
+    // file system info structure
+    typedef struct
+    {
+        uint32_t LeadSignature;
+        uint8_t  Unused[480];
+        uint32_t Signature;
+        uint32_t FreeClusterCount;
+        uint32_t AvailableClusterStart;
+        uint8_t  Reserved[12];
+        uint32_t TrailSignature;
+    } __attribute__((packed)) FSInfoFAT;
+    
+    typedef enum
+    {
+        FAT_TYPE_FAT12 = 12,
+        FAT_TYPE_FAT16 = 16,
+        FAT_TYPE_FAT32 = 32,
+        FAT_TYPE_EXFAT = 36,
+    } FAT_TYPE;
     
     class FATFileSystem
     {
@@ -70,5 +90,18 @@ namespace HAL
             BIOSParameterBlock* BIOSBlock;
             BootRecordFAT32* BootRecord32;
             BootRecordFAT16* BootRecord16;
+
+            FAT_TYPE FATType;
+            uint32_t TotalSectors;
+            uint32_t FATSize;
+            uint32_t RootSectorCount;
+            uint32_t FirstDataSector;
+            uint32_t FirstFATSector;
+            uint32_t FirstRootSector;
+            uint32_t DataSectorCount;
+            uint32_t ClusterCount;
+
+            void DetermineFATType();
+            bool IsFSInfoValid(FSInfoFAT* fs_info);
     };
 }

@@ -13,7 +13,21 @@ namespace HAL
         BootRecord32 = (BootRecordFAT32*)(BootSectorData + 36);
         BootRecord16 = (BootRecordFAT16*)(BootSectorData + 36);
 
-        // print data
+        // calculate properties based on provided data
+        TotalSectors = (BIOSBlock->LogicalSectors == 0) ? BIOSBlock->LargeSectors : BIOSBlock->LogicalSectors;
+        FATSize = (BIOSBlock->SectorsPerFAT == 0) ? BootRecord32->SectorsPerFAT : BIOSBlock->SectorsPerFAT;
+        RootSectorCount = ((BIOSBlock->DirectoryCount * 32) + (BIOSBlock->BytesPerSector - 1)) / BIOSBlock->BytesPerSector;
+        FirstDataSector = BIOSBlock->ReservedSectors + (BIOSBlock->FATCount * FATSize) + RootSectorCount;
+        FirstFATSector = BIOSBlock->ReservedSectors;
+        DataSectorCount = TotalSectors - (BIOSBlock->ReservedSectors + (BIOSBlock->FATCount * FATSize) + RootSectorCount);
+        ClusterCount = DataSectorCount / BIOSBlock->SectorsPerCluster;
+        FirstRootSector = FirstDataSector - RootSectorCount;
+
+        // get type
+        DetermineFATType();
+
+        // print boot sector as hex
+        /*
         uint8_t xx = 0; 
         char temp[8];
         for (size_t i = 0; i < 512; i++)
@@ -26,11 +40,36 @@ namespace HAL
             if (xx >= 80) { debug_write("\n"); xx = 0; }
         }
         debug_write("\n");
+        */
 
+        // print information
         PrintBIOSParameterBlock();
         PrintExtendedBootRecord();
     }
 
+    void FATFileSystem::DetermineFATType()
+    {
+        if (ClusterCount < 4085) { FATType = FAT_TYPE_FAT12; }
+        else if (ClusterCount < 65525) { FATType = FAT_TYPE_FAT16; }
+        else if (ClusterCount < 268435445) { FATType = FAT_TYPE_FAT32; }
+        else { FATType = FAT_TYPE_EXFAT; }
+    }
+
+    // check if FS info structure is valid
+    bool FATFileSystem::IsFSInfoValid(FSInfoFAT* fs_info)
+    {
+        // check if signatures are correct
+        if (fs_info->LeadSignature != 0x41615252 || fs_info->Signature != 0x61417272 || fs_info->TrailSignature != 0xAA550000)
+        {
+            System::KernelIO::ThrowError("Invalid FSInfo structure");
+            return false;
+        }
+
+        // signatures are valid
+        return true;
+    }
+
+     // print bios parameter block information
     void FATFileSystem::PrintBIOSParameterBlock()
     {
         char temp[8];
@@ -97,12 +136,13 @@ namespace HAL
 
     }
 
+    // print extended boot record information
     void FATFileSystem::PrintExtendedBootRecord()
     {
         debug_writeln("EXTENDED BOOT RECORD");
 
         // FAT12/FAT16
-        if (BootRecord16->Signature == 0x28 || BootRecord16->Signature == 0x29)
+        if (FATType == FAT_TYPE_FAT12 || FATType == FAT_TYPE_FAT16)
         {
             // drive number
             debug_write_ext("- DRIVE NUMBER                   ", COL4_YELLOW);
@@ -137,7 +177,12 @@ namespace HAL
             
         }
         // FAT32
-        else
+        else if (FATType == FAT_TYPE_FAT32)
+        {
+
+        }
+        // EXFAT
+        else if (FATType == FAT_TYPE_EXFAT)
         {
 
         }
