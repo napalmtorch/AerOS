@@ -55,6 +55,7 @@ extern "C"
         return entry;
     }
 
+    // allocate entry
     entry_t* alloc_entry(entry_t* current, size_t size)
     {
         size_t esize = size_of_region(current);
@@ -147,6 +148,7 @@ extern "C"
         return e;
     }
 
+    // allocate region of memory
     void* mem_alloc(size_t size)
     {
         // check if enough memory is available
@@ -166,6 +168,7 @@ extern "C"
         return (void*)((uint32_t)entry + sizeof(struct entry));
     }
 
+    // free region of memory
     void mem_free(void* ptr)
     {
         System::KernelIO::Write("FREE at ");
