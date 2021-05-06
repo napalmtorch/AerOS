@@ -1,4 +1,3 @@
-sudo make
-sudo make clean
-sudo make iso
-sudo make bochsn
+#!/bin/bash
+echo "You Lazy Bugger xD"
+sudo make lazy-will

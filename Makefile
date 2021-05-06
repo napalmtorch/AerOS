@@ -29,6 +29,8 @@ bochsn:
 bochsn-gnome:
 	./bochs_nodebug.sh --gnome-terminal
 
+lazy-will: clean all iso bochsn
+
 win:
 	.\win_build.bat
 
