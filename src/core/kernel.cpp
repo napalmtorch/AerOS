@@ -214,6 +214,13 @@ namespace System
                 Terminal.WriteLine("Color Set!");
                 return;
             }
+            else if (streql("debug", input)){
+                char* s = new char[5];
+                char* j = new char[5];
+                delete s;
+                delete j;
+                char* q = new char[10];
+            }
             else { Terminal.Write("You typed: ",COL4_WHITE); 
             Terminal.WriteLine(input); }
             Terminal.Write("shell> ",COL4_YELLOW);

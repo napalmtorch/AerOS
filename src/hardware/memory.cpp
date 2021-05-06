@@ -2,30 +2,179 @@
 
 extern "C"
 {
+    // entry of a memory region
+    typedef struct entry
+    {
+        // this allows us to know that the address is an entry
+        uint8_t offset;
+
+        // last known entry (if none it is -1)
+        void* prev;
+
+        // if the entry was used or not
+        bool used;
+        
+        // next known entry (if none it is set -1)
+        void* next;
+    } entry_t;
+    
+
     uint32_t free_pos;
     uint32_t max_pos;
+    uint32_t start;
 
     void mem_init()
     {
         // safely start 10 megabytes into memory
         free_pos = 10 * 1024 * 1024;
 
+        // set the start pointer to 10 megabytes
+        start = 10 * 1204 * 1024;
+
         // maximum size is installed memory minus 12 megabytes
         max_pos = (mem_get_total_mb() - 12) * 1024 * 1024;
+    }
+
+    void* last = (void*)-1;
+
+    // calculate the size of the memory region, knowing the entry
+    size_t sizeOfRegion(entry_t* entry)
+    {
+        return (uint32_t)entry->next - (uint32_t)entry - sizeof(struct entry);
+    }
+
+    // setup a new entry in a not known position
+    entry_t* setupEntry(void* at, size_t size)
+    {
+        entry_t* entry = (entry_t*)at;
+        entry->offset = 0xFF;
+        entry->next = (entry_t*)(at + sizeof(struct entry) + size);
+        entry->prev = last;
+        entry->used = false;
+        last = (entry_t*)entry;
+        return entry;
+    }
+
+    entry_t* alloc_entry(entry_t* current, size_t size)
+    {
+        size_t esize = sizeOfRegion(current);
+
+        // easiest possibility: the entry is the same size as the requested allocation
+        if (size == esize)
+        {
+            return current;
+        }
+        // the requested size is bigger than the entry
+        else if (size > esize)
+        {
+            // if so, we try to merge entries until we match the requested size, or we find a used entry
+            while (size > esize)
+            {
+                // gather the next region entry
+                entry_t* next = (entry_t*)current->next;
+                // check if it is an actual entry
+                if (next->offset != 0xFF)
+                {
+                    // if it is not, setup the entry
+                    next = setupEntry((void*)next, size-esize);
+                    // merge it
+                    current->next = next->next;
+                    esize = sizeOfRegion(current);
+                    // and break the loop
+                    break;
+                }
+                // if the region is used, we just break the loop and return null
+                else if (next->used)
+                    break;
+                // otherwise we merge it
+                current->next = next->next;
+                // check the new size
+                esize = sizeOfRegion(current);
+                // and continue the loop
+            }
+            if (esize >= size)
+                return alloc_entry(current, size);
+            else
+                return nullptr;
+        }
+        // third scenario: the entry size is bigger than requested
+        else if (esize > size)
+        {
+            // in this case we just shrink the entry
+            void* next = ((entry_t*)current->next)->next;
+            current->next = (void*)((uint32_t)current->next - (esize - size));
+            ((entry_t*)current->next)->offset = 0xFF;
+            ((entry_t*)current->next)->next = next;
+            ((entry_t*)current->next)->prev = (void*)current;
+            ((entry_t*)current->next)->used = false;
+        }
+    }
+
+    // search next free entry
+    entry_t* getFreeEntry(void* from, size_t size)
+    {
+        // check if we reached free_pos
+        if ((uint32_t)from >= free_pos)
+        {
+            // if so allocate the memory section here
+
+            // increase the free position by the size of the allocated memory region
+            free_pos = (uint32_t)(from + sizeof(struct entry) + size);
+            return setupEntry(from, size);
+        }
+        // current entry we're working with
+        entry_t* current = (entry_t*)from;
+
+        // loop repeated every time the entry is used
+        while (current->used)
+        {
+            // switch to new entry
+            current = (entry_t*)current->next;
+            // if this isn't an address, it probably means we reached the end of the entry chain
+            if (current->offset != 0xFF)
+            {
+                // so we just allocate a new one here
+                return setupEntry((void*)current, size);
+            }
+        }
+        // if we still alive, we just call the alloc_entry, where all the magic happens
+        entry_t* e = alloc_entry(current, size);
+        if (e == nullptr)
+        {
+            debug_throw_message(MSG_TYPE::MSG_TYPE_WARNING, "fell into next region manager");
+            return getFreeEntry(current->next, size);
+        }
+        return e;
     }
 
     void* mem_alloc(size_t size)
     {
         // check if enough memory is available
         if (free_pos + size >= max_pos) { debug_throw_message(MSG_TYPE_ERROR, "System out of memory"); return nullptr; }
-        uint32_t addr = free_pos;
-        free_pos += size;
-        return (void*)addr;
+        
+        // request first free entry
+        entry_t* entry = getFreeEntry((void*)start, size);
+        
+        entry->used = true;
+
+        System::KernelIO::Write("ALLOCATION at ");
+        char s[6];
+        strdec((uint32_t)(uint32_t)entry + sizeof(struct entry), s);
+        System::KernelIO::WriteLine(s);
+
+        //return alloc result
+        return (void*)((uint32_t)entry + sizeof(struct entry));
     }
 
     void mem_free(void* ptr)
     {
-        
+        System::KernelIO::Write("FREE at ");
+        char s[6];
+        strdec((uint32_t)ptr, s);
+        System::KernelIO::WriteLine(s);
+
+        entry_t* entry = (entry_t*)((uint32_t)ptr - sizeof(struct entry));
+        entry->used = false;
     }
 
     // get amount of installed memory in megabytes
