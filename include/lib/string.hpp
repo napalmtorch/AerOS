@@ -36,3 +36,4 @@ extern "C"
     // check if string equal to string
     bool streql(char text[], char comp[]);
 }
+

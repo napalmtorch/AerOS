@@ -68,8 +68,40 @@ namespace HAL
         uint32_t AvailableClusterStart;
         uint8_t  Reserved[12];
         uint32_t TrailSignature;
-    } __attribute__((packed)) FSInfoFAT;
+    } __attribute__((packed)) FSInfoFAT32;
     
+    // directory entry
+    typedef struct
+    {
+        uint8_t  Name[8];
+        uint8_t  Extension[3];
+        uint8_t  Attributes;
+        uint8_t  FlagsWindowsNT;
+        uint8_t  CreationTimeTenthSecond;
+        uint16_t CreationTime;
+        uint16_t CreationDate;
+        uint16_t LastAccessDate;
+        uint16_t ClusterStartHigh;
+        uint16_t LastModifiedTime;
+        uint16_t LastModifiedDate;
+        uint16_t ClusterStartLow;
+        uint32_t SizeInBytes;
+    } __attribute__((packed)) DirectoryEntryFAT;
+    
+    // long file name entry
+    typedef struct
+    {
+        uint8_t Order;
+        uint8_t NameStart[10];
+        uint8_t Attribute;
+        uint8_t Type;
+        uint8_t Checksum;
+        uint8_t NameMiddle[12];
+        uint16_t Zero;
+        uint8_t NamEnd[4];
+    } __attribute__((packed)) LongNameEntryFAT;
+    
+
     typedef enum
     {
         FAT_TYPE_FAT12 = 12,
