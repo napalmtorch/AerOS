@@ -7,6 +7,11 @@ static void pit_callback(registers_t regs)
     UNUSED(regs);
 }
 
+static void enter_pressed(char* input)
+{
+    System::KernelIO::Kernel.OnEnterPressed(input);
+}
+
 namespace System
 {
     namespace KernelIO
@@ -41,11 +46,14 @@ namespace System
         // ps2 keyboard controller driver
         HAL::PS2Keyboard Keyboard;
 
+        // terminal interface
+        HAL::TerminalManager Terminal;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
             // initialize terminal interface
-            term_init();
+            Terminal.Initialize();
 
             // initialize fonts
             Graphics::InitializeFonts();
@@ -57,18 +65,18 @@ namespace System
             VGA.SetMode(VGA.GetAvailableMode(2));
 
             // prepare terminal
-            term_clear(COL4_BLACK);
-            term_cursor_disable();
-            term_cursor_enable(0, 15);
+            Terminal.Clear(COL4_BLACK);
+            Terminal.DisableCursor();
+            Terminal.EnableCursor();
 
             // boot message
-            term_writeln_ext("Starting AerOS...", COL4_GRAY);
+            Terminal.WriteLine("Starting AerOS...", COL4_GRAY);
 
             // fetch multiboot header information from memory
             Multiboot.Read();
             
             // initialize interrupt service routines
-            isr_init();
+            HAL::CPU::InitializeISRs();
 
             // enable interrupts
             HAL::CPU::EnableInterrupts();
@@ -102,13 +110,14 @@ namespace System
             // initialize keyboard
             Keyboard.Initialize();
             Keyboard.BufferEnabled = true;
+            Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
 
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
 
             // ready
-            term_writeln_ext("Ready.", COL4_GREEN);
+            Terminal.Write("shell> ", COL4_YELLOW);
         }
 
         // kernel core code, runs in a loop
@@ -123,7 +132,7 @@ namespace System
             
         }
 
-        // called when a handled interrupt call is finished
+        // triggered when a handled interrupt call is finished
         void KernelBase::OnInterrupt()
         {
             // increment ticks
@@ -153,10 +162,18 @@ namespace System
             }
         }
 
-        // called when interrupt 0x80 is triggered
+        // triggered when interrupt 0x80 is triggered
         void KernelBase::OnSystemCall()
         {
 
+        }
+
+        // triggered when enter key is pressed
+        void KernelBase::OnEnterPressed(char* input)
+        {
+            Terminal.Write("You typed: ");
+            Terminal.WriteLine(input);
+            Terminal.Write("shell> ", COL4_YELLOW);
         }
     }
 }

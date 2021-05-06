@@ -86,3 +86,71 @@ extern "C"
     // get terminal cursor y position
     uint8_t term_get_cursor_y();
 }
+
+namespace HAL
+{
+    class TerminalManager
+    {
+        public:
+            // initialize terminal interface
+            void Initialize();
+
+            // clear the terminal
+            void Clear();
+            void Clear(COL4 color);
+
+            // new line
+            void NewLine();
+
+            // scroll
+            void Scroll();
+            void Scroll(uint32_t amount);
+
+            // delete
+            void Delete();
+            void Delete(uint32_t amount);
+
+            // put character at position on screen
+            void PutChar(uint16_t x, uint16_t y, char c, COL4 fg, COL4 bg);
+
+            // write character to next position
+            void WriteChar(char c);
+            void WriteChar(char c, COL4 fg);
+            void WriteChar(char c, COL4 fg, COL4 bg);
+
+            // write string to next position
+            void Write(char* text);
+            void Write(char* text, COL4 fg);
+            void Write(char* text, COL4 fg, COL4 bg);
+
+            // write line to next position
+            void WriteLine(char* text);
+            void WriteLine(char* text, COL4 fg);
+            void WriteLine(char* text, COL4 fg, COL4 bg);
+
+            // set cursor position
+            void SetCursorPos(uint16_t x, uint16_t y);
+            void SetCursorX(uint16_t x);
+            void SetCursorY(uint16_t y);
+
+            // toggle cursor
+            void EnableCursor();
+            void EnableCursor(uint8_t start, uint8_t end);
+            void DisableCursor();
+
+            // get cursor position
+            uint16_t GetCursorX();
+            uint16_t GetCursorY();
+            point_t GetCursorPos();
+
+            // set colors
+            void SetColors(COL4 fg, COL4 bg);
+            void SetColors(uint8_t packed_value);
+            void SetForeColor(COL4 color);
+            void SetBackColor(COL4 color);
+
+            // get colors
+            COL4 GetForeColor();
+            COL4 GetBackColor(); 
+    };
+}

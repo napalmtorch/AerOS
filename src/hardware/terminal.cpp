@@ -35,6 +35,9 @@ extern "C"
     // clear the terminal
     void term_clear(COL4 color)
     {
+        // set back color
+        back_color = color;
+
         // clear buffer
         for (size_t i = 0; i < (buffer_width * buffer_height) * 2; i += 2)
         {
@@ -244,4 +247,106 @@ extern "C"
 
     // get terminal cursor y position
     uint8_t term_get_cursor_y() { return cursor_y; }
+}
+
+namespace HAL
+{
+    // initialize terminal interface
+    void TerminalManager::Initialize() { term_init(); }
+
+    // clear the terminal
+    void TerminalManager::Clear() { term_clear(COL4_BLACK); }
+    void TerminalManager::Clear(COL4 color) { term_clear(color); }
+
+    // new line
+    void TerminalManager::NewLine() { term_newline(); }
+
+    // scroll
+    void TerminalManager::Scroll() { term_scroll(1); }
+    void TerminalManager::Scroll(uint32_t amount) { term_scroll(amount); }
+
+    // delete
+    void TerminalManager::Delete() { term_delete(); }
+
+    // delete amount
+    void TerminalManager::Delete(uint32_t amount)
+    {
+        for (size_t i = 0; i < amount; i++) { term_delete(); }
+    }
+
+    // put character at position on screen
+    void TerminalManager::PutChar(uint16_t x, uint16_t y, char c, COL4 fg, COL4 bg) { term_put_char(x, y, c, fg, bg); }
+
+    // write character to next position
+    void TerminalManager::WriteChar(char c) { term_write_char(c); }
+
+    // write character to next position with foreground color
+    void TerminalManager::WriteChar(char c, COL4 fg) { WriteChar(c, fg, back_color); }
+
+    // write character to next position with foreground and background color
+    void TerminalManager::WriteChar(char c, COL4 fg, COL4 bg)
+    {
+        COL4 fg_old = fore_color;
+        COL4 bg_old = back_color;
+        term_set_colors(fg, bg);
+        term_write_char(c);
+        term_set_colors(fg_old, bg_old);
+    }
+
+    // write string to next position
+    void TerminalManager::Write(char* text) { term_write(text); }
+
+    // write string to next position with foreground color
+    void TerminalManager::Write(char* text, COL4 fg) { term_write_ext(text, fg); }
+
+    // write string to next position with foreground and background color
+    void TerminalManager::Write(char* text, COL4 fg, COL4 bg)
+    {
+        COL4 fg_old = fore_color;
+        COL4 bg_old = back_color;
+        term_set_colors(fg, bg);
+        term_write(text);
+        term_set_colors(fg_old, bg_old);
+    }
+
+    // write line to next position
+    void TerminalManager::WriteLine(char* text) { term_writeln(text); }
+
+    // write line to next position with foreground color
+    void TerminalManager::WriteLine(char* text, COL4 fg) { term_writeln_ext(text, fg); }
+
+    // write line to next position with foreground and background color
+    void TerminalManager::WriteLine(char* text, COL4 fg, COL4 bg)
+    {
+        COL4 fg_old = fore_color;
+        COL4 bg_old = back_color;
+        term_set_colors(fg, bg);
+        term_writeln(text);
+        term_set_colors(fg_old, bg_old);
+    }
+
+    // set cursor position
+    void TerminalManager::SetCursorPos(uint16_t x, uint16_t y) { term_set_cursor(x, y); }
+    void TerminalManager::SetCursorX(uint16_t x) { term_set_cursor_x(x); }
+    void TerminalManager::SetCursorY(uint16_t y) { term_set_cursor_y(y); }
+
+    // get cursor position
+    uint16_t TerminalManager::GetCursorX() { return cursor_x; }
+    uint16_t TerminalManager::GetCursorY() { return cursor_y; }
+    point_t TerminalManager::GetCursorPos() { return { cursor_x, cursor_y}; }
+
+    // toggle cursor
+    void TerminalManager::EnableCursor() { term_cursor_enable(0, 15); }
+    void TerminalManager::EnableCursor(uint8_t start, uint8_t end) { term_cursor_enable(start, end); }
+    void TerminalManager::DisableCursor() { term_cursor_disable(); }
+
+    // set colors
+    void TerminalManager::SetColors(COL4 fg, COL4 bg) { term_set_colors(fg, bg); }
+    void TerminalManager::SetColors(uint8_t packed_value) { /* not yet implemented */ }
+    void TerminalManager::SetForeColor(COL4 color) { term_set_fg(color); }
+    void TerminalManager::SetBackColor(COL4 color) { term_set_bg(color); }
+
+    // get colors
+    COL4 TerminalManager::GetForeColor() { return fore_color; }
+    COL4 TerminalManager::GetBackColor() { return back_color; }
 }

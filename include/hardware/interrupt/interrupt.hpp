@@ -32,6 +32,9 @@ namespace HAL
         // disable interrupts
         void DisableInterrupts();
 
+        // initialize interrupt service routines
+        void InitializeISRs();
+
         // register interrupt handler
         void RegisterIRQ(uint8_t irq, isr_t handler);
 

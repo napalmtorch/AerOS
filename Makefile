@@ -1,6 +1,6 @@
 
 all:
-	./build_makefile.sh
+	./build.sh --no-qemu
 clean:
 	rm -Rf bin/isodir/boot/kernel.bin
 	rm -Rf bin/objs/*.o

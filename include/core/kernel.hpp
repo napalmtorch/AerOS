@@ -38,11 +38,14 @@
                     // triggered when a kernel panic is injected
                     void OnPanic();
                     
-                    // called when a handled interrupt call is finished
+                    // triggered when a handled interrupt call is finished
                     void OnInterrupt();
                     
-                    // called when interrupt 0x80 is triggered
+                    // triggered when interrupt 0x80 is triggered
                     void OnSystemCall();
+
+                    // triggered when enter key is pressed
+                    void OnEnterPressed(char* input);
             };
 
             // kernel base class
@@ -74,6 +77,9 @@
 
             // ps2 keyboard controller driver
             extern HAL::PS2Keyboard Keyboard;
+
+            // terminal interface
+            extern HAL::TerminalManager Terminal;
         }
     }
 #else
