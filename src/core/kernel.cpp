@@ -101,7 +101,7 @@ namespace System
             ThrowOK("Initialized real time clock");
 
             // initialize ata controller driver
-            // ATA.Initialize();
+            ATA.Initialize();
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
