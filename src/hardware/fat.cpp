@@ -99,6 +99,47 @@ namespace HAL
 
     void FATFileSystem::PrintExtendedBootRecord()
     {
+        debug_writeln("EXTENDED BOOT RECORD");
 
+        // FAT12/FAT16
+        if (BootRecord16->Signature == 0x28 || BootRecord16->Signature == 0x29)
+        {
+            // drive number
+            debug_write_ext("- DRIVE NUMBER                   ", COL4_YELLOW);
+            debug_writeln_dec("", BootRecord16->DriveNumber);
+
+            // windows nt flags
+            debug_write_ext("- WINNT FLAGS                    ", COL4_YELLOW);
+            debug_writeln_dec("", BootRecord16->FlagsWindowsNT);
+
+            // signature
+            debug_write_ext("- SIGNATURE                      ", COL4_YELLOW);
+            debug_writeln_hex("0x", BootRecord16->Signature);
+
+            // volume id serial
+            debug_write_ext("- VOLUME ID SERIAL               ", COL4_YELLOW);
+            debug_writeln_dec("", BootRecord16->VolumeIDSerial);
+
+            // volume label
+            debug_write_ext("- VOLUME LABEL                   ", COL4_YELLOW);
+            char temp[2] = { ' ', '\0' };
+            for (size_t i = 0; i < 11; i++) { temp[0] = BootRecord16->VolumeLabel[i]; debug_write(temp); }
+            debug_write("\n");
+
+            // system identifier
+            debug_write_ext("- SYSTEM ID                      ", COL4_YELLOW);
+            for (size_t i = 0; i < 8; i++) { temp[0] = BootRecord16->SystemIdentifier[i]; debug_write(temp); }
+            debug_write("\n");
+
+            // boot signature
+            debug_write_ext("- BOOT SIGNATURE                 ", COL4_YELLOW);
+            debug_writeln_hex("0x", BootRecord16->BootSignature);
+            
+        }
+        // FAT32
+        else
+        {
+
+        }
     }
 }
