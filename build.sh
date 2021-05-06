@@ -13,7 +13,7 @@ for file in src/core/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -Iinclude -c src/core/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/core/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 #i686-elf-g++ -Iinclude -c 'src/core/entry.cpp' -o 'bin/objs/entry.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 #i686-elf-g++ -Iinclude -c 'src/core/kernel.cpp' -o 'bin/objs/kernel.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
@@ -24,7 +24,7 @@ for file in src/graphics/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -Iinclude -c src/graphics/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/graphics/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 #i686-elf-g++ -Iinclude -c 'src/graphics/font.cpp' -o 'bin/objs/font.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -Wno-unused-parameter
 #i686-elf-g++ -Iinclude -c 'src/graphics/colors.cpp' -o 'bin/objs/colors.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -Wno-unused-parameter
@@ -35,7 +35,7 @@ for file in src/hardware/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -Iinclude -c src/hardware/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/hardware/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 #i686-elf-g++ -Iinclude -c 'src/hardware/ports.cpp' -o 'bin/objs/ports.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 #i686-elf-g++ -Iinclude -c 'src/hardware/multiboot.cpp' -o 'bin/objs/mb.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
@@ -48,7 +48,7 @@ for file in src/hardware/drivers/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -Iinclude -c src/hardware/drivers/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/hardware/drivers/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 #i686-elf-g++ -Iinclude -c 'src/hardware/drivers/serial.cpp' -o 'bin/objs/serial.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 #i686-elf-g++ -Iinclude -c 'src/hardware/drivers/ata.cpp' -o 'bin/objs/ata.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
@@ -62,7 +62,7 @@ for file in src/hardware/interrupt/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -Iinclude -c src/hardware/interrupt/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/hardware/interrupt/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 #i686-elf-g++ -Iinclude -c 'src/hardware/interrupt/idt.cpp' -o 'bin/objs/idt.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 #i686-elf-g++ -Iinclude -c 'src/hardware/interrupt/isr.cpp' -o 'bin/objs/isr.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
@@ -73,13 +73,13 @@ for file in src/lib/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -Iinclude -c src/lib/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/lib/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 #i686-elf-g++ -Iinclude -c 'src/lib/string.cpp' -o 'bin/objs/string.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 
 # linker
 cd 'bin/objs'
-i686-elf-gcc -T '../../include/boot/linker.ld' -o '../kernel.bin' -ffreestanding -O2 -nostdlib *.o '../boot.o' -lgcc
+i686-elf-gcc -w -T '../../include/boot/linker.ld' -o '../kernel.bin' -ffreestanding -O2 -nostdlib *.o '../boot.o' -lgcc
 cd '../../'
 
 options=$(getopt -l "no-qemu" -o "hv:Vrd" -a -- "$@")
