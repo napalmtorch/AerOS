@@ -35,6 +35,7 @@ namespace HAL
             void ReadRecordBlock();
             void PrintRecordBlock();
             void Format(uint32_t size_mb);
+            void CreateFile(char* path, char* name);
         private:
             uint8_t RecordBlockData[512];
             uint8_t DataBuffer[512];
