@@ -175,6 +175,47 @@ namespace System
         // write line of text with hexadecimal number
         void WriteLineHex(char* text, uint32_t num) { debug_writeln_hex(text, num); }
 
+        // dump region of memory
+        void DumpMemory(uint8_t* src, uint32_t len, uint8_t bytes_per_line, bool ascii)
+        {
+            char temp[16];
+            char chars[bytes_per_line];
+            Write("Dumping memory at: ");
+            strhex32((uint32_t)src, temp);
+            WriteLine(temp, COL4_CYAN);
+
+            int xx = 0;
+            uint32_t pos = 0;
+            for (size_t i = 0; i < (len / bytes_per_line); i++)
+            {              
+                // address range
+                pos = i * bytes_per_line;
+                chars[0] = '\0';
+                strhex32((uint32_t)(src + pos), temp);
+                Write(temp, COL4_CYAN); Write(":");
+                strhex32((uint32_t)(src + pos + bytes_per_line), temp);
+                Write(temp, COL4_CYAN);
+                Write("    ");
+
+                // bytes
+                for (size_t j = 0; j < bytes_per_line; j++)
+                {
+                    strhex(src[pos + j], temp);
+                    if (src[pos + j] > 0) { Write(temp); }
+                    else { Write(temp, COL4_RED); }
+                    Write(" ");
+
+                    // ascii
+                    if (src[pos + j] >= 32 && src[pos + j] <= 126) { stradd(chars, src[pos + j]); }
+                    else { stradd(chars, '.'); }
+                }
+
+                Write("    ");
+                Write(chars, COL4_YELLOW);
+                Write("\n");
+            }
+        }
+
         // toggle console output
         void SetDebugConsoleOutput(bool value) { debug_console_enabled = value; }
 

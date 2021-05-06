@@ -46,7 +46,7 @@ namespace HAL
             if (xx >= 80) { debug_write("\n"); xx = 0; }
         }
         debug_write("\n"); */
-        
+        System::KernelIO::DumpMemory(BootSectorData, 512, 12, true);        
 
         // print information
         PrintBIOSParameterBlock();
