@@ -157,7 +157,8 @@ extern "C"
         
         entry->used = true;
 
-        System::KernelIO::Write("ALLOCATION at ");
+        System::KernelIO::Write("ALLOCATION ", COL4::COL4_YELLOW);
+        System::KernelIO::Write("at ");
         char s[6];
         strdec((uint32_t)(uint32_t)entry + sizeof(struct entry), s);
         System::KernelIO::WriteLine(s);
