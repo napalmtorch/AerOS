@@ -51,10 +51,12 @@ namespace HAL
         //System::KernelIO::DumpMemory(DataBuffer, 512, 12, true);  
 
         // print information
-        //PrintBIOSParameterBlock();
-        //PrintExtendedBootRecord();
-
+        PrintBIOSParameterBlock();
+        PrintExtendedBootRecord();
+        PrintFATInformation();
         
+        // load root directory data
+        LoadRootDirectory();
     }
 
     void FATFileSystem::DetermineFATType()
@@ -77,6 +79,12 @@ namespace HAL
 
         // signatures are valid
         return true;
+    }
+
+    void FATFileSystem::LoadRootDirectory()
+    {
+        // load data into buffer
+        System::KernelIO::ATA.ReadSectors(FATTable, FirstRootSector, RootSectorCount);
     }
 
     FATFile FATFileSystem::LocateEntry(char* path)
@@ -364,5 +372,35 @@ namespace HAL
         {
 
         }
+    }
+
+    // print fat calculations information
+    void FATFileSystem::PrintFATInformation()
+    {
+        debug_writeln("FAT INFORMATION");
+
+        debug_write_ext("- TOTAL SECTORS                  ", COL4_YELLOW);
+        debug_writeln_dec("", TotalSectors);
+
+        debug_write_ext("- ROOT SECTOR                    ", COL4_YELLOW);
+        debug_writeln_dec("", FirstRootSector);
+
+        debug_write_ext("- ROOT SECTOR COUNT              ", COL4_YELLOW);
+        debug_writeln_dec("", RootSectorCount);
+
+        debug_write_ext("- DATA SECTOR COUNT              ", COL4_YELLOW);
+        debug_writeln_dec("", DataSectorCount);
+
+        debug_write_ext("- CLUSTER COUNT                  ", COL4_YELLOW);
+        debug_writeln_dec("", ClusterCount);
+
+        debug_write_ext("- FAT SIZE                       ", COL4_YELLOW);
+        debug_writeln_dec("", FATSize);
+
+        debug_write_ext("- FIRST FAT SECTOR               ", COL4_YELLOW);
+        debug_writeln_dec("", FirstFATSector);
+
+        debug_write_ext("- FIRST DATA SECTOR              ", COL4_YELLOW);
+        debug_writeln_dec("", FirstDataSector);
     }
 }
