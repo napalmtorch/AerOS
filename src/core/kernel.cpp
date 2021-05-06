@@ -44,7 +44,7 @@ namespace System
             // initialize terminal interface
             term_init();
             term_writeln_ext("Starting AerOS...", COL4_GRAY);
-
+            DoBochsBreak();
             // fetch multiboot header information from memory
             Multiboot.Read();
 
