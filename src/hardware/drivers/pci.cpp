@@ -107,7 +107,7 @@ namespace HAL
     char* PCIBusController::GetVendorName(uint16_t vendor, uint16_t id)
     {
         // intel devices
-        if (vendor == PCIVendors::Intel)
+        if (vendor == PCI_VENDOR_INTEL)
         {
             switch (id)
             {
@@ -128,7 +128,7 @@ namespace HAL
         }
 
         // newer intel devices
-        if (vendor == PCIVendors::IntelCorp)
+        if (vendor == PCI_VENDOR_INTEL_ALT)
         {
             switch (id)
             {
@@ -137,7 +137,7 @@ namespace HAL
         }
 
         // vmware
-        if (vendor == PCIVendors::VMWare)
+        if (vendor == PCI_VENDOR_VMWARE)
         {
             switch (id)
             {
@@ -163,7 +163,7 @@ namespace HAL
         }
 
         // vmware
-        if (vendor == PCIVendors::VMWareInc)
+        if (vendor == PCI_VENDOR_VMWARE_ALT)
         {
             switch (id)
             {
@@ -172,7 +172,7 @@ namespace HAL
         }
 
         // innotek
-        if (vendor == PCIVendors::InnoTek)
+        if (vendor == PCI_VENDOR_INNOTEK)
         {
             switch (id)
             {
@@ -183,7 +183,7 @@ namespace HAL
         }
 
         // amd
-        if (vendor == PCIVendors::AMD)
+        if (vendor == PCI_VENDOR_AMD)
         {
             switch (id)
             {

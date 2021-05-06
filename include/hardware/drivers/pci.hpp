@@ -32,28 +32,28 @@ namespace HAL
         uint8_t (*exit_driver)(void);
     } PCIDriver;
 
-    enum PCIVendors
+    typedef enum
     {
-        Intel               = 0x8086,
-        IntelCorp           = 0x8087,
-        VMWare              = 0x15AD,
-        VMWareInc           = 0x0E0F,
-        Dell                = 0x1028,
-        DellCorporation     = 0x413C,
-        ATI                 = 0x1002,
-        AMD                 = 0x1022,
-        VIALabs             = 0x2109,
-        BenQ                = 0x04A5,
-        AcerInc             = 0x5986,
-        HPInc               = 0x03F0,
-        HPCompany           = 0x103C,
-        HPEnterprise        = 0x1590,
-        ASUS                = 0x1043,
-        ASUSInc             = 0x0B05,
-        InnoTek             = 0x80EE,
-        Realtek             = 0x10EC,
-        RealtekCorp         = 0x0BDA,
-    };
+        PCI_VENDOR_INTEL                = 0x8086,
+        PCI_VENDOR_INTEL_ALT            = 0x8087,
+        PCI_VENDOR_VMWARE               = 0x15AD,
+        PCI_VENDOR_VMWARE_ALT           = 0x0E0F,
+        PCI_VENDOR_DELL                 = 0x1028,
+        PCI_VENDOR_DELL_ALT             = 0x413C,
+        PCI_VENDOR_ATI                  = 0x1002,
+        PCI_VENDOR_AMD                  = 0x1022,
+        PCI_VENDOR_VIA                  = 0x2109,
+        PCI_VENDOR_BENQ                 = 0x04A5,
+        PCI_VENDOR_ACER                 = 0x5986,
+        PCI_VENDOR_HP                   = 0x03F0,
+        PCI_VENDOR_HP_ALT               = 0x103C,
+        PCI_VENDOR_HP_ENT               = 0x1590,
+        PCI_VENDOR_ASUS                 = 0x1043,
+        PCI_VENDOR_ASUS_ALT             = 0x0B05,
+        PCI_VENDOR_INNOTEK              = 0x80EE,
+        PCI_VENDOR_REALTEK              = 0x10EC,
+        PCI_VENDOR_REAKLTEK_ALT         = 0x0BDA,
+    } PCI_VENDOR;
 
     class PCIBusController
     {

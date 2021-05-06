@@ -101,7 +101,7 @@ namespace System
             ThrowOK("Initialized real time clock");
 
             // initialize ata controller driver
-           // ATA.Initialize();
+            // ATA.Initialize();
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
@@ -119,6 +119,19 @@ namespace System
 
             // ready
             Terminal.Write("shell> ", COL4_YELLOW);
+
+            // test fat driver
+            /*
+            HAL::FATFile file = FAT.OpenFile("testdir");
+            Write("FILE_NAME: "); WriteLine(file.Name);
+            WriteLineDecimal("LENGTH: ", file.FileLength);
+            WriteLineDecimal("FLAGS: ", file.Flags);
+            WriteLineDecimal("DRIVE: ", file.Drive);
+            WriteLineDecimal("CLUSTER: ", file.CurrentCluster);
+            WriteLineDecimal("ID: ", file.ID);
+            WriteLineDecimal("POSITION: ", file.Position);
+            WriteLineDecimal("EOF: ", file.EOF);
+            */
         }
 
         // kernel core code, runs in a loop
