@@ -19,7 +19,7 @@ qemu-kernel:
 	qemu-system-i386 -m 256M -vga std -hda disk.img -kernel bin/kernel.bin -serial stdio -boot d
 
 bochs:
-	./bochs.sh
+	$(shell ./bochs.sh)
 win:
 	.\win_build.bat
 
