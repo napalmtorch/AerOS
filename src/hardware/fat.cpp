@@ -129,12 +129,79 @@ namespace HAL
 
     void FATFileSystem::ReadFile(FATFile file, uint8_t* dest, uint32_t len)
     {
+        // starting physical sector
+        uint32_t physical_sector = 32 + (file.CurrentCluster - 1);
+        
+        // read data from sector
+        System::KernelIO::ATA.ReadSectors((uint8_t*)DataBuffer, physical_sector, 1);
 
+        // copy data to destination
+        mem_copy(DataBuffer, dest, len);
+
+        // locate fat sector
+        uint32_t fat_offset = file.CurrentCluster + (file.CurrentCluster / 2);
+        uint32_t fat_sector = 1 + (fat_offset / BIOSBlock->BytesPerSector);
+        uint32_t entry_offset = fat_offset % BIOSBlock->BytesPerSector;
+
+        // read first fat sector
+        System::KernelIO::ATA.ReadSectors((uint8_t*)DataBuffer, fat_sector, 1);
+        mem_copy(DataBuffer, FATTable, 512);
+
+        // read second fat sector
+        System::KernelIO::ATA.ReadSectors((uint8_t*)DataBuffer, fat_sector + 1, 1);
+        mem_copy(DataBuffer, FATTable + 512, 512);
+
+        // read entry for next cluster
+        uint16_t next_cluster = *(uint16_t*)&FATTable[entry_offset];
+
+        // test if entry is odd or even
+        if (file.CurrentCluster & 0x0001) 
+            { next_cluster >>= 4; } // grab high 12 bits
+        else { next_cluster &= 0x0FFF; } // grab low 12 bits
+
+        // test for end of file
+        if (next_cluster >= 0xFF8)
+        {
+            file.EOF = 1;
+            return;
+        }
+
+        // test for file corruption
+        if (next_cluster == 0)
+        {
+            file.EOF = 1;
+            return;
+        }
+
+        file.CurrentCluster = next_cluster;
     }
 
     FATFile FATFileSystem::OpenFile(char* name)
     {
+        FATFile current_dir;
+        char* p;
+        bool root_dir = true;
+        char path[11];
+        strcpy(name, path);
 
+        for (size_t i = 0; i < strlen(path); i++)
+        {
+            if (path[i] == '\\') { p = (char*)(path + i); }
+        }
+
+        if (!p)
+        {
+            // search root directory
+            current_dir = LocateEntry(path);
+
+            // check if file found
+            if (current_dir.Flags == FS_FILE) { return current_dir; }
+
+            // unable to fine
+            FATFile ret;
+            ret.Flags = FS_INVALID;
+            return ret;
+        }
     }
 
     // convert name to dos compatible
