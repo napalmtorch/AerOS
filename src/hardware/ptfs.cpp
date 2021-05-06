@@ -47,4 +47,9 @@ namespace HAL
         RecordBlock->Position = RecordBlock->MaxEntries + 1;
         System::KernelIO::ATA.WriteSectors((uint32_t*)RecordBlockData, 0, 1);
     }
+
+    void PTFSFileSystem::CreateFile(char* path, char* name)
+    {
+        PTFSFileEntry* entry = (PTFSFileEntry*)DataBuffer;
+    }
 }
