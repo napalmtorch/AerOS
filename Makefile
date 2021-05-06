@@ -20,6 +20,8 @@ qemu-kernel:
 
 bochs:
 	$(shell ./bochs.sh)
+bochs-gnome:
+	$(shell ./bochs.sh --gnome-terminal)
 win:
 	.\win_build.bat
 

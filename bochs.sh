@@ -39,5 +39,9 @@ if [[ -f "$DISK_LOCK_FILE" ]];
 then
 rm disk.img.lock
 fi
+if [ "$1" == "--gnome-terminal" ]; then
+gnome-terminal -x bochs -q -f bochsrc.txt &
+else
 xterm -e bochs -q -f bochsrc.txt &
+fi
 fi
