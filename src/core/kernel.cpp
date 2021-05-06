@@ -33,7 +33,7 @@ namespace System
         HAL::ATAController ATA;
 
         // file system
-        HAL::PTFSFileSystem PTFS;
+        HAL::FATFileSystem FAT;
 
         // real time clock
         HAL::RTCManager RTC;
@@ -83,13 +83,9 @@ namespace System
             ATA.Initialize();
             ThrowOK("Initialized ATA controller driver");
 
-            // initialize ptfs file system
-            PTFS.Initialize();
-            ThrowOK("Initialized PTFS file system");
-
-            // format disk
-            PTFS.Format(32);
-            ThrowOK("Formatted disk as PTFS");
+            // initialize fat file system
+            FAT.Initialize();
+            ThrowOK("Initialized FAT file system");
 
             // print multiboot name
             SerialPort.Write("\nBOOT LOADER: ", COL4_YELLOW);
