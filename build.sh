@@ -46,6 +46,26 @@ cd 'bin/objs'
 i686-elf-gcc -T '../../include/boot/linker.ld' -o '../kernel.bin' -ffreestanding -O2 -nostdlib *.o '../boot.o' -lgcc
 cd '../../'
 
+options=$(getopt -l "no-qemu" -o "hv:Vrd" -a -- "$@")
+eval set -- "$options"
+
+while true
+do
+    case $1 in
+            --no-qemu) 
+            qemu="no"
+            exit 0
+            ;;
+            --)
+            shift
+            break;;
+    esac
+    shift
+done
+
+if [ -n "${qemu+set}" ]; then
+exit 0
+else
 # create iso
 mkdir -p 'bin/isodir/boot/grub'
 cp 'bin/kernel.bin' 'bin/isodir/boot/kernel.bin'
@@ -54,3 +74,4 @@ grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
 
 # run 
 qemu-system-i386 -m 256M -vga std -hda disk.img -cdrom 'AerOS.iso' -serial stdio -boot d
+fi

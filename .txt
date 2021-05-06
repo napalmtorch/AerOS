@@ -1,0 +1,9 @@
+src/graphics/canvas.cpp
+src/graphics/colors.cpp
+src/graphics/font.cpp
+src/hardware/memory.cpp
+src/hardware/multiboot.cpp
+src/hardware/ports.cpp
+src/hardware/ptfs.cpp
+src/hardware/terminal.cpp
+src/lib/string.cpp

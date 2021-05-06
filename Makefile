@@ -1,6 +1,6 @@
 
 all:
-	./build_makefile.sh
+	./build.sh --no-qemu
 clean:
 	rm -Rf bin/isodir/boot/kernel.bin
 	rm -Rf bin/objs/*.o
@@ -15,8 +15,13 @@ iso:
 qemu:
 	qemu-system-i386 -m 256M -vga std -cdrom 'AerOS.iso' -serial stdio -boot d
 
+qemu-kernel:
+	qemu-system-i386 -m 256M -vga std -hda disk.img -kernel bin/kernel.bin -serial stdio -boot d
+
 bochs:
 	./bochs.sh
+win:
+	.\win_build.bat
 
 fullbochs: clean all iso bochs
 
