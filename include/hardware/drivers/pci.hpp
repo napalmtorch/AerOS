@@ -60,6 +60,7 @@ namespace HAL
         public:
             void Initialize();
             void Probe();
+            void List();
             void AddDevice(PCIDevice* device);
             char* GetVendorName(uint16_t vendor, uint16_t id);
             uint16_t ReadWord(uint16_t bus, uint16_t slot, uint16_t func, uint16_t offset);

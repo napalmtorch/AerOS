@@ -1,4 +1,5 @@
 #include "lib/string.hpp"
+#include "core/debug.hpp"
 
 extern "C"
 {   
@@ -17,7 +18,7 @@ extern "C"
     }
 
     // convert string to decimal
-    uint32_t stod(char text[])
+    uint32_t stod(char text[]) //ok try to build
     {
         uint32_t res = 0;
         for (size_t i = 0; text[i] != '\0'; i++) { res = res * 10 + text[i] - '0'; }
@@ -135,6 +136,54 @@ extern "C"
         {
             if (text[i] >= 65 && text[i] <= 90) { text[i] += 32; }
         }
+    }
+    //check if string is empty or not
+    bool IsEmpty(char* text)
+    {
+        size_t len = strlen(text);
+        if(len == 0 || len < 0 || text == nullptr)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    } 
+
+    int strindexof(char text[], char character)
+    {
+        for (int i = 0; text[i] != 0; i++)
+        {
+            if (text[i] == character)
+                return i;
+        }
+        return -1;
+    }
+
+    // "hello world" strsplit_index(' ', 1) = "world"
+    char* strsplit_index(char text[], int index, char separator)
+    {
+        size_t len = strlen(text);
+        //man no this has to start from 0
+        for (int i = 0, ind = 0; i < len; i += strindexof(text+i, ' ') + 1, ind++)
+        {
+            char c[10];
+            strdec(ind, c);
+            if (index == ind)
+            {
+                int len = strindexof(text+i, ' ');
+                if (len < 0)
+                    len = strlen(text+i);
+                char* str = new char[len + 1];
+                for (int xi = 0; xi < len; xi++)
+                    str[xi] = (text+i)[xi];
+                str[len] = 0;
+                return str; // try now
+            }
+        }
+        
+        return nullptr;
     }
 
     // copy string
