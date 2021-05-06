@@ -3,6 +3,10 @@
 #include "lib/string.hpp"
 #include "hardware/memory.hpp"
 
+#define FS_FILE         0
+#define FS_DIRECTORY    1
+#define FS_INVALID      2
+
 namespace HAL
 {
     // bios parameter block
@@ -22,7 +26,7 @@ namespace HAL
         uint16_t HeadCount;
         uint32_t HiddenSectors;
         uint32_t LargeSectors;
-    } __attribute__((packed)) BIOSParameterBlock;
+    } __attribute__((packed)) FATBootRecord;
 
     // FAT 12/16 extended boot record
     typedef struct
@@ -35,7 +39,7 @@ namespace HAL
         char     SystemIdentifier[8];
         uint8_t  BootCode[448];
         uint16_t BootSignature;
-    } __attribute__((packed)) BootRecordFAT16;
+    } __attribute__((packed)) FAT16ExtendedBootRecord;
     
 
     // FAT 32 extended boot record
@@ -56,7 +60,7 @@ namespace HAL
         char     SystemIdentifier[8];
         uint8_t  BootCode[420];
         uint16_t BootSignature;
-    } __attribute__((packed)) BootRecordFAT32;
+    } __attribute__((packed)) FAT32ExtendedBootRecord;
 
     // file system info structure
     typedef struct
@@ -68,13 +72,13 @@ namespace HAL
         uint32_t AvailableClusterStart;
         uint8_t  Reserved[12];
         uint32_t TrailSignature;
-    } __attribute__((packed)) FSInfoFAT32;
+    } __attribute__((packed)) FATFSInfo32;
     
     // directory entry
     typedef struct
     {
-        uint8_t  Name[8];
-        uint8_t  Extension[3];
+        char     Name[8];
+        char     Extension[3];
         uint8_t  Attributes;
         uint8_t  FlagsWindowsNT;
         uint8_t  CreationTimeTenthSecond;
@@ -86,7 +90,7 @@ namespace HAL
         uint16_t LastModifiedDate;
         uint16_t ClusterStartLow;
         uint32_t SizeInBytes;
-    } __attribute__((packed)) DirectoryEntryFAT;
+    } __attribute__((packed)) FATDirectoryEntry;
     
     // long file name entry
     typedef struct
@@ -99,8 +103,20 @@ namespace HAL
         uint8_t NameMiddle[12];
         uint16_t Zero;
         uint8_t NamEnd[4];
-    } __attribute__((packed)) LongNameEntryFAT;
-    
+    } __attribute__((packed)) FATLongNameEntry;
+
+    // file entry
+    typedef struct
+    {
+        char    Name[32];
+        uint32_t Flags;
+        uint32_t FileLength;
+        uint32_t ID;
+        uint32_t EOF;
+        uint32_t Position;
+        uint32_t CurrentCluster;
+        uint32_t Drive;
+    } __attribute__((packed)) FATFile; 
 
     typedef enum
     {
@@ -120,9 +136,9 @@ namespace HAL
             uint8_t BootSectorData[512];
             uint8_t DataBuffer[512];
             uint8_t FATTable[32 * 1024];
-            BIOSParameterBlock* BIOSBlock;
-            BootRecordFAT32* BootRecord32;
-            BootRecordFAT16* BootRecord16;
+            FATBootRecord* BIOSBlock;
+            FAT32ExtendedBootRecord* BootRecord32;
+            FAT16ExtendedBootRecord* BootRecord16;
 
             FAT_TYPE FATType;
             uint32_t TotalSectors;
@@ -135,8 +151,10 @@ namespace HAL
             uint32_t ClusterCount;
 
             void DetermineFATType();
-            int32_t ReadTable(uint32_t cluster);
-            int32_t WriteTable(uint32_t cluster, uint32_t cluster_val);
-            bool IsFSInfoValid(FSInfoFAT* fs_info);
+            bool IsFSInfoValid(FATFSInfo32* fs_info);
+            FATFile LocateEntry(char* path);
+            void ReadFile(FATFile file, uint8_t* dest, uint32_t len);
+            FATFile OpenFile(char* name);
+            void ConvertToDOSName(char* src, char* dest, uint32_t len);
     };
 }

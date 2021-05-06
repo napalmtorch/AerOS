@@ -9,9 +9,9 @@ namespace HAL
         System::KernelIO::ATA.ReadSectors((uint8_t*)BootSectorData, 0, 1);
 
         // set pointers
-        BIOSBlock = (BIOSParameterBlock*)BootSectorData;
-        BootRecord32 = (BootRecordFAT32*)(BootSectorData + 36);
-        BootRecord16 = (BootRecordFAT16*)(BootSectorData + 36);
+        BIOSBlock = (FATBootRecord*)BootSectorData;
+        BootRecord32 = (FAT32ExtendedBootRecord*)(BootSectorData + 36);
+        BootRecord16 = (FAT16ExtendedBootRecord*)(BootSectorData + 36);
 
         // calculate properties based on provided data
         TotalSectors = (BIOSBlock->LogicalSectors == 0) ? BIOSBlock->LargeSectors : BIOSBlock->LogicalSectors;
@@ -55,131 +55,8 @@ namespace HAL
         else { FATType = FAT_TYPE_EXFAT; }
     }
 
-    int32_t FATFileSystem::ReadTable(uint32_t cluster)
-    {
-        // check if cluster number is valid
-        if (cluster < 2 || cluster >= ClusterCount) { System::KernelIO::ThrowError("Invalid cluster number"); return -1; }
-
-        // clear fat table array
-        mem_fill(FATTable, 0, 32 * 1024);
-
-        // fat 12
-        if (FATType == FAT_TYPE_FAT12)
-        {
-            System::KernelIO::ThrowError("FAT12 not yet implemented");
-            return -1;
-        }
-        // fat 16
-        else if (FATType == FAT_TYPE_FAT16)
-        {
-            // calculate offsets
-            uint32_t cluster_size = BIOSBlock->BytesPerSector * BIOSBlock->SectorsPerCluster;
-            uint32_t fat_offset = cluster * 2;
-            uint32_t fat_sector = FirstFATSector + (fat_offset / cluster_size);
-            uint32_t entry_offset = fat_offset % cluster_size;
-
-            // read sector into table
-            System::KernelIO::ATA.ReadSectors((uint8_t*)FATTable, fat_sector, 1);
-
-            // calculate table value
-            uint16_t table_value = *(uint16_t*)FATTable[entry_offset];
-            
-            // return table value
-            return table_value;
-        }
-        // fat 32
-        else if (FATType == FAT_TYPE_FAT32)
-        {
-            // calculate offsets
-            uint32_t cluster_size = BIOSBlock->BytesPerSector * BIOSBlock->SectorsPerCluster;
-            uint32_t fat_offset = cluster * 4;
-            uint32_t fat_sector = FirstFATSector + (fat_offset / cluster_size);
-            uint32_t entry_offset = fat_offset % cluster_size;
-
-            // read sector into table
-            System::KernelIO::ATA.ReadSectors((uint8_t*)FATTable, fat_sector, 1);
-
-            // calculate fat table value - ignore high 4-bits
-            uint32_t table_value = *(uint32_t*)&FATTable[entry_offset] & 0x0FFFFFFF;
-
-            // return table value
-            return table_value;
-        }
-        // exfat
-        else if (FATType == FAT_TYPE_EXFAT)
-        {
-            System::KernelIO::ThrowError("EXFAT not yet implemented");
-            return -1;
-        }     
-
-        return -1; 
-    }
-
-    int32_t FATFileSystem::WriteTable(uint32_t cluster, uint32_t cluster_val)
-    {
-        // check if cluster number is valid
-        if (cluster < 2 || cluster >= ClusterCount) { System::KernelIO::ThrowError("Invalid cluster number"); return -1; }
-
-        // clear fat table array
-        mem_fill(FATTable, 0, 32 * 1024);
-
-         // fat 12
-        if (FATType == FAT_TYPE_FAT12)
-        {
-            System::KernelIO::ThrowError("FAT12 not yet implemented");
-            return -1;
-        }
-        // fat 16
-        else if (FATType == FAT_TYPE_FAT16)
-        {
-            // calculate offsets
-            uint32_t cluster_size = BIOSBlock->BytesPerSector * BIOSBlock->SectorsPerCluster;
-            uint32_t fat_offset = cluster * 2;
-            uint32_t fat_sector = FirstFATSector + (fat_offset / cluster_size);
-            uint32_t entry_offset = fat_offset % cluster_size;
-
-            // read sector into table
-            System::KernelIO::ATA.ReadSectors((uint8_t*)FATTable, fat_sector, 1);
-
-            // copy cluster value into fat table
-            *(uint16_t*)&FATTable[entry_offset] = (uint16_t)cluster_val;
-
-            // write modified fat table to disk
-            System::KernelIO::ATA.WriteSectors((uint32_t*)FATTable, fat_sector, 1);
-            
-            // return table value
-            return 0;
-        }
-        // fat 32
-        else if (FATType == FAT_TYPE_FAT32)
-        {
-            // calculate offsets
-            uint32_t cluster_size = BIOSBlock->BytesPerSector * BIOSBlock->SectorsPerCluster;
-            uint32_t fat_offset = cluster * 4;
-            uint32_t fat_sector = FirstFATSector + (fat_offset / cluster_size);
-            uint32_t entry_offset = fat_offset % cluster_size;
-
-            // read sector into table
-            System::KernelIO::ATA.ReadSectors((uint8_t*)FATTable, fat_sector, 1);
-
-            // calculate fat table value - ignore high 4-bits
-            uint32_t table_value = *(uint32_t*)&FATTable[entry_offset] & 0x0FFFFFFF;
-
-            // return table value
-            return table_value;
-        }
-        // exfat
-        else if (FATType == FAT_TYPE_EXFAT)
-        {
-            System::KernelIO::ThrowError("EXFAT not yet implemented");
-            return -1;
-        }
-
-        return -1;
-    }
-
     // check if FS info structure is valid
-    bool FATFileSystem::IsFSInfoValid(FSInfoFAT* fs_info)
+    bool FATFileSystem::IsFSInfoValid(FATFSInfo32* fs_info)
     {
         // check if signatures are correct
         if (fs_info->LeadSignature != 0x41615252 || fs_info->Signature != 0x61417272 || fs_info->TrailSignature != 0xAA550000)
@@ -190,6 +67,108 @@ namespace HAL
 
         // signatures are valid
         return true;
+    }
+
+    FATFile FATFileSystem::LocateEntry(char* path)
+    {
+        // output file
+        FATFile file;
+        FATDirectoryEntry* directory;
+
+        // clear buffer
+        mem_fill((uint8_t*)DataBuffer, 0, 512);
+
+        // convert name to dos-compatible FAT-12
+        char name_dos[11];
+        strcpy(path, name_dos);
+        ConvertToDOSName(path, name_dos, 11);
+
+        for (size_t sec = 0; sec < 14; sec++)
+        {
+            // read sector data
+            System::KernelIO::ATA.ReadSectors((uint8_t*)DataBuffer, FirstRootSector + sec, 1);
+
+            // load structure
+            directory = (FATDirectoryEntry*)DataBuffer;
+
+            // 16 entries per sector
+            for (size_t i = 0; i < 16; i++)
+            {
+                // get current filename
+                char name[11];
+                strcpy(directory->Name, name);
+                name[11] = 0;
+
+                // check for match
+                if (strcmp(name_dos, name) == 0)
+                {
+                    // located file
+                    strcpy(path, file.Name);
+                    file.ID = 0;
+                    file.CurrentCluster = directory->ClusterStartLow;
+                    file.EOF = 0;
+                    file.FileLength = directory->SizeInBytes;
+
+                    // set file type
+                    if (directory->Attributes == 0x10) { file.Flags = FS_DIRECTORY; }
+                    else { file.Flags = FS_FILE; }
+                    
+                    // return file
+                    return file;
+                }
+
+                // go to next directory
+                directory++;
+            }
+        }
+
+        // unable to find file
+        file.Flags = FS_INVALID;
+        return file;
+    }
+
+    void FATFileSystem::ReadFile(FATFile file, uint8_t* dest, uint32_t len)
+    {
+
+    }
+
+    FATFile FATFileSystem::OpenFile(char* name)
+    {
+
+    }
+
+    // convert name to dos compatible
+    void FATFileSystem::ConvertToDOSName(char* src, char* dest, uint32_t len)
+    {
+        uint32_t i = 0;
+
+        // check if name is valid
+        if (len > 11) { return; }
+        if (!src || !dest) { return; }
+
+        // set all characters in output name to spaces
+        mem_fill((uint8_t*)dest, ' ', len);
+
+        // name
+        for (i=0; i < strlen(src)-1 && i < len; i++) 
+        {
+            if (src[i] == '.' || i==8 ) break;
+        }
+
+        // add extension if needed
+        if (src[i]=='.') 
+        {
+
+            // cant just copy over-extension might not be 3 chars
+            for (int k=0; k<3; k++) {
+
+                ++i;
+                if ( src[i] )
+                    dest[8+k] = src[i];
+            }
+        }
+
+        strupper(dest);
     }
 
      // print bios parameter block information
