@@ -44,11 +44,3 @@ i686-elf-g++ -Iinclude -c 'src/lib/string.cpp' -o 'bin/objs/string.o' -ffreestan
 cd 'bin/objs'
 i686-elf-gcc -T '../../include/boot/linker.ld' -o '../kernel.bin' -ffreestanding -O2 -nostdlib *.o '../boot.o' -lgcc
 cd '../../'
-
-# create iso
-mkdir -p 'bin/isodir/boot/grub'
-cp 'bin/kernel.bin' 'bin/isodir/boot/kernel.bin'
-cp 'include/boot/grub.cfg' 'bin/isodir/boot/grub/grub.cfg'
-grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
-
-# run 
