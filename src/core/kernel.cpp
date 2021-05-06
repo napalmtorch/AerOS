@@ -52,6 +52,7 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
+            debug_bochs_break();
             // initialize terminal interface
             Terminal.Initialize();
 

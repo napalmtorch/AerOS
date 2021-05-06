@@ -137,6 +137,6 @@ namespace HAL
             void DetermineFATType();
             int32_t ReadTable(uint32_t cluster);
             int32_t WriteTable(uint32_t cluster, uint32_t cluster_val);
-            bool IsFSInfoValid(FSInfoFAT* fs_info);
+            bool IsFSInfoValid(FSInfoFAT32* fs_info);
     };
 }

@@ -179,7 +179,7 @@ namespace HAL
     }
 
     // check if FS info structure is valid
-    bool FATFileSystem::IsFSInfoValid(FSInfoFAT* fs_info)
+    bool FATFileSystem::IsFSInfoValid(FSInfoFAT32* fs_info)
     {
         // check if signatures are correct
         if (fs_info->LeadSignature != 0x41615252 || fs_info->Signature != 0x61417272 || fs_info->TrailSignature != 0xAA550000)
