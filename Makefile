@@ -1,6 +1,6 @@
 
 all:
-	./build_makefile.sh
+	$(shell ./build_makefile.sh)
 clean:
 	rm -Rf bin/isodir/boot/kernel.bin
 	rm -Rf bin/objs/*.o
