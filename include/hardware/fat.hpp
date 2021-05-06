@@ -133,6 +133,7 @@ namespace HAL
             void PrintBIOSParameterBlock();
             void PrintExtendedBootRecord();
             FATFile OpenFile(char* name);
+            void ReadFile(FATFile file, uint8_t* dest, uint32_t len);
         private:
             bool DiskValid;
             uint8_t BootSectorData[512];
@@ -155,7 +156,6 @@ namespace HAL
             void DetermineFATType();
             bool IsFSInfoValid(FATFSInfo32* fs_info);
             FATFile LocateEntry(char* path);
-            void ReadFile(FATFile file, uint8_t* dest, uint32_t len);
             void ConvertToDOSName(char* src, char* dest, uint32_t len);
     };
 }

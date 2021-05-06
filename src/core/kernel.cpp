@@ -124,8 +124,11 @@ namespace System
             Terminal.Write("shell> ", COL4_YELLOW);
 
             // test fat driver
-            /*
-            HAL::FATFile file = FAT.OpenFile("testdir");
+            
+            HAL::FATFile file = FAT.OpenFile("test.txt");
+            uint8_t data[1024];
+            FAT.ReadFile(file, (uint8_t*)data, 512);
+            WriteLine((char*)data);
             Write("FILE_NAME: "); WriteLine(file.Name);
             WriteLineDecimal("LENGTH: ", file.FileLength);
             WriteLineDecimal("FLAGS: ", file.Flags);
@@ -134,7 +137,7 @@ namespace System
             WriteLineDecimal("ID: ", file.ID);
             WriteLineDecimal("POSITION: ", file.Position);
             WriteLineDecimal("EOF: ", file.EOF);
-            */
+            
         }
 
         // kernel core code, runs in a loop
