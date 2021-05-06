@@ -23,7 +23,7 @@ extern "C"
     extern bool debug_console_enabled;
 
     //bochs breakpoint
-    void DoBochsBreak();
+    void debug_bochs_break();
 
     // messages
     void debug_throw_message(MSG_TYPE type, char* msg);

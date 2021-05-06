@@ -39,6 +39,9 @@ namespace HAL
                         System::KernelIO::Write(" - ");
                         System::KernelIO::Write("DEVICE: ", COL4_MAGENTA);
                         System::KernelIO::WriteLine(GetVendorName(vendor, id));
+                        
+                        // print id - used to google the actual name xD 
+                        // System::KernelIO::WriteLineHex("", id);
 
                         PCIDevice* device = (PCIDevice*)System::KernelIO::MemoryManager.Allocate(sizeof(PCIDevice));
                         device->Vendor = vendor;
@@ -111,6 +114,7 @@ namespace HAL
                 case 0x1237: { return "Intel 440FX Chipset"; }
                 case 0x7000: { return "Intel 82371SB PIIX3 ISA"; }
                 case 0x7010: { return "Intel 82371SB PIIX3 IDE"; }
+                case 0x7020: { return "Intel 82371SB PIIX3 USB"; }
                 case 0x7111: { return "Intel 82371AB/EB/MB PIIX4 IDE"; }
                 case 0x7113: { return "Intel 82371AB/EB/MB PIIX4 ACPI"; }
                 case 0x100E: { return "Intel 82540EM Gigabit Ethernet Controller"; }

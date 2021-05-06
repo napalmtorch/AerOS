@@ -43,9 +43,9 @@ extern "C"
         }
     }
     //Bochs magic breakpoint (useful for debugging memory) - ignored by qemu and real hardware
-    void DoBochsBreak()
+    void debug_bochs_break()
     {
-    asm volatile("xchg %bx, %bx");
+        asm volatile("xchg %bx, %bx");
     }
     // throw kernel panic message
     void debug_throw_panic(char* msg)
