@@ -47,7 +47,7 @@ namespace System
             // initialize terminal interface
             term_init();
             term_writeln_ext("Starting AerOS...", COL4_GRAY);
-            debug_bochs_break();
+
             // fetch multiboot header information from memory
             Multiboot.Read();
 
@@ -117,7 +117,31 @@ namespace System
         // called when a handled interrupt call is finished
         void KernelBase::OnInterrupt()
         {
-            
+            // increment ticks
+            HAL::CPU::Ticks++;
+
+            // increment delta ticks
+            HAL::CPU::DeltaTicks++;
+
+            // second has passed
+            if (HAL::CPU::DeltaTicks >= HAL::CPU::GetPITFrequency())
+            {
+                // increment seconds
+                HAL::CPU::Seconds++;
+
+                HAL::CPU::TimerTick++;
+
+                // check if timer is expired
+                if (HAL::CPU::TimerTick >= HAL::CPU::TimerMax) 
+                {
+                    HAL::CPU::TimerTick = 0; 
+                    HAL::CPU::TimerMax = 0; 
+                    HAL::CPU::TimerRunning = false; 
+                }
+
+                // reset delta ticks
+                HAL::CPU::DeltaTicks = 0;
+            }
         }
 
         // called when interrupt 0x80 is triggered

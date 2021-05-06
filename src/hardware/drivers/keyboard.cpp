@@ -26,24 +26,27 @@ void kb_callback(registers_t regs)
     // get scancode
     System::KernelIO::Keyboard.ReadScanCode();
 
-    // map pressed keys
-    for (size_t i = 0; i < KB_SCANCODE_MAX; i++)
+    if (HAL::CPU::TimerRunning)
     {
-        // found pressed key
-        if (i == System::KernelIO::Keyboard.GetScanCode())
-        // key down
-        { 
-            System::KernelIO::Keyboard.GetPressedKeys()[i] = true; 
-        }
-        // key up
-        else 
+        // map pressed keys
+        for (size_t i = 0; i < KB_SCANCODE_MAX; i++)
         {
-            System::KernelIO::Keyboard.GetPressedKeys()[i] = false;
+            // found pressed key
+            if (i == System::KernelIO::Keyboard.GetScanCode())
+            // key down
+            { 
+                System::KernelIO::Keyboard.GetPressedKeys()[i] = true; 
+            }
+            // key up
+            else 
+            {
+                System::KernelIO::Keyboard.GetPressedKeys()[i] = false;
+            }
         }
-    }
 
-    // handle keybaord input
-    if (System::KernelIO::Keyboard.BufferEnabled) { System::KernelIO::Keyboard.HandleInput(); }
+        // handle keybaord input
+        if (System::KernelIO::Keyboard.BufferEnabled) { System::KernelIO::Keyboard.HandleInput(); }
+    }
 }
 
 namespace HAL

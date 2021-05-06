@@ -75,7 +75,7 @@
             // ps2 keyboard controller driver
             extern HAL::PS2Keyboard Keyboard;
         }
-}
+    }
 #else
     
 #endif
