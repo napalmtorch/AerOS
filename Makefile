@@ -17,6 +17,8 @@ qemu:
 
 bochs:
 	./bochs.sh
+win:
+	.\win_build.bat
 
 fullbochs: clean all iso bochs
 
