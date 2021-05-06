@@ -1,3 +1,0 @@
-debug.cpp
-entry.cpp
-kernel.cpp
