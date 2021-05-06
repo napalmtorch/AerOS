@@ -15,6 +15,9 @@ iso:
 qemu:
 	qemu-system-i386 -m 256M -vga std -cdrom 'AerOS.iso' -serial stdio -boot d
 
+qemu-kernel:
+	qemu-system-i386 -m 256M -vga std -hda disk.img -kernel bin/kernel.bin -serial stdio -boot d
+
 bochs:
 	./bochs.sh
 win:
