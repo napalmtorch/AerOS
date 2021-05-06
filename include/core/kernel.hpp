@@ -46,6 +46,10 @@
 
                     // triggered when enter key is pressed
                     void OnEnterPressed(char* input);
+
+                    // register command
+                    void HandleCommand(char* input);
+
             };
 
             // kernel base class

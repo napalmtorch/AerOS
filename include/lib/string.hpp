@@ -23,6 +23,8 @@ extern "C"
     void strcat(char text[], char to_add[]);
     // delete last character of string
     void strdel(char text[]);
+    // split string
+    void strsplit(char text[], char* dest[], size_t* lenght);
     // convert string to all upper case
     void strupper(char text[]);
     // convert string to all lower case
@@ -35,5 +37,7 @@ extern "C"
     int32_t strcmp(char text[], char comp[]);
     // check if string equal to string
     bool streql(char text[], char comp[]);
+    char* strsplit_index(char text[], int index, char separator);
+    bool IsEmpty(char* text);
 }
 

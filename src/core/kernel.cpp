@@ -45,6 +45,9 @@ namespace System
 
         // ps2 keyboard controller driver
         HAL::PS2Keyboard Keyboard;
+        
+        // pci devices
+        HAL::PCIBusController PCIdevices;
 
         // terminal interface
         HAL::TerminalManager Terminal;
@@ -181,13 +184,37 @@ namespace System
         {
 
         }
-
         // triggered when enter key is pressed
         void KernelBase::OnEnterPressed(char* input)
         {
-            Terminal.Write("You typed: ");
-            Terminal.WriteLine(input);
-            Terminal.Write("shell> ", COL4_YELLOW);
+            Terminal.Write("shell> ",COL4_YELLOW);
+            HandleCommand(input);
+        }
+
+        void KernelBase::HandleCommand(char* input)
+        {
+         
+            
+            if(strcmp ("lspci", input) == 0) { PCIdevices.List(); }
+            else if(strcmp ("clear", input) == 0) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
+            else if(strcmp ("", input) == 0) { Terminal.WriteLine(""); }
+            else if(streql ("color",strsplit_index(input,0,' '))) { 
+                
+                char* background = strsplit_index(input,2,' ');
+                char* foreground = strsplit_index(input,1,' ');
+                if(streql(strsplit_index(input,0,' '),foreground) || streql(strsplit_index(input,0,' '),background)) { Terminal.WriteLine("All Parameters are required"); Terminal.WriteLine("Usage: color foreground background"); Terminal.WriteLine("Example: color white black"); return; }//man let me test
+                System::KernelIO::WriteLine(foreground);
+                System::KernelIO::WriteLine(background);
+                Terminal.Clear(Graphics::StrToCol(background));
+                Terminal.SetForeColor(Graphics::StrToCol(foreground));
+                Terminal.Write("shell> ",COL4_YELLOW);
+                Terminal.WriteLine("Color Set!");
+                return;
+            }
+            else { Terminal.Write("You typed: ",COL4_WHITE); 
+            Terminal.WriteLine(input); }
+            Terminal.Write("shell> ",COL4_YELLOW);
+            return;
         }
     }
 }
