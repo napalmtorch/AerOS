@@ -31,6 +31,9 @@ namespace HAL
         // disable interrupts
         void DisableInterrupts() { __asm__ __volatile__("cli"); }
 
+        // initialize interrupt service routines
+        void InitializeISRs() { isr_init(); }
+
         // register interrupt handler
         void RegisterIRQ(uint8_t irq, isr_t handler) { isr_register(irq, handler); }
 

@@ -335,6 +335,11 @@ namespace HAL
     uint16_t TerminalManager::GetCursorY() { return cursor_y; }
     point_t TerminalManager::GetCursorPos() { return { cursor_x, cursor_y}; }
 
+    // toggle cursor
+    void TerminalManager::EnableCursor() { term_cursor_enable(0, 15); }
+    void TerminalManager::EnableCursor(uint8_t start, uint8_t end) { term_cursor_enable(start, end); }
+    void TerminalManager::DisableCursor() { term_cursor_disable(); }
+
     // set colors
     void TerminalManager::SetColors(COL4 fg, COL4 bg) { term_set_colors(fg, bg); }
     void TerminalManager::SetColors(uint8_t packed_value) { /* not yet implemented */ }

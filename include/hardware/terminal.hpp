@@ -133,6 +133,11 @@ namespace HAL
             void SetCursorX(uint16_t x);
             void SetCursorY(uint16_t y);
 
+            // toggle cursor
+            void EnableCursor();
+            void EnableCursor(uint8_t start, uint8_t end);
+            void DisableCursor();
+
             // get cursor position
             uint16_t GetCursorX();
             uint16_t GetCursorY();
