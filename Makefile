@@ -5,6 +5,8 @@ clean:
 	rm -Rf bin/isodir/boot/kernel.bin
 	rm -Rf bin/objs/*.o
 	rm AerOS.iso
+	rm *.log
+	rm *.out
 iso:
 	mkdir -p 'bin/isodir/boot/grub'
 	cp 'bin/kernel.bin' 'bin/isodir/boot/kernel.bin'
