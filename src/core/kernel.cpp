@@ -33,7 +33,7 @@ namespace System
         HAL::ATAController ATA;
 
         // file system
-       // HAL::PTFSFileSystem PTFS;
+        HAL::PTFSFileSystem PTFS;
 
         // real time clock
         HAL::RTCManager RTC;
@@ -84,7 +84,7 @@ namespace System
             ThrowOK("Initialized ATA controller driver");
 
             // initialize ptfs file system
-         //   PTFS.Initialize();
+            PTFS.Initialize();
             ThrowOK("Initialized PTFS file system");
 
             // format disk
