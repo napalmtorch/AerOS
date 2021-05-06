@@ -26,65 +26,65 @@ namespace HAL
     void PCIBusController::Probe()
     {
         char temp[16];
-            for (uint32_t bus = 0; bus < 256; bus++)
+        for (uint32_t bus = 0; bus < 256; bus++)
+        {
+            for (uint32_t slot = 0; slot < 32; slot++)
             {
-                for (uint32_t slot = 0; slot < 32; slot++)
+                for (uint32_t function = 0; function < 8; function++)
                 {
-                    for (uint32_t function = 0; function < 8; function++)
-                    {
-                        uint16_t vendor = GetVendorID(bus, slot, function);
-                        if (vendor == 0xFFFF) { continue; }
-                        uint16_t id = GetDeviceID(bus, slot, function);
-                        uint16_t classID = GetClassID(bus, slot, function);
+                    uint16_t vendor = GetVendorID(bus, slot, function);
+                    if (vendor == 0xFFFF) { continue; }
+                    uint16_t id = GetDeviceID(bus, slot, function);
+                    uint16_t classID = GetClassID(bus, slot, function);
 
-                        System::KernelIO::Write(" - ");
-                        System::KernelIO::Write("DEVICE: ", COL4_MAGENTA);
-                        System::KernelIO::WriteLine(GetVendorName(vendor, id));
-                        
-                        // print id - used to google the actual name xD 
-                        // System::KernelIO::WriteLineHex("", id);
+                    System::KernelIO::Write(" - ");
+                    System::KernelIO::Write("DEVICE: ", COL4_MAGENTA);
+                    System::KernelIO::WriteLine(GetVendorName(vendor, id));
+                    
+                    // print id - used to google the actual name xD 
+                    // System::KernelIO::WriteLineHex("", id);
 
-                        PCIDevice* device = (PCIDevice*)System::KernelIO::MemoryManager.Allocate(sizeof(PCIDevice));
-                        device->Vendor = vendor;
-                        device->Device = id;
-                        device->Function = function;
-                        device->Driver = 0;
-                        AddDevice(device);
-                    }
+                    PCIDevice* device = (PCIDevice*)System::KernelIO::MemoryManager.Allocate(sizeof(PCIDevice));
+                    device->Vendor = vendor;
+                    device->Device = id;
+                    device->Function = function;
+                    device->Driver = 0;
+                    AddDevice(device);
                 }
             }
+        }
     }
 
     void PCIBusController::List()
     {
         char temp[16];
-            for (uint32_t bus = 0; bus < 256; bus++)
+        for (uint32_t bus = 0; bus < 256; bus++)
+        {
+            for (uint32_t slot = 0; slot < 32; slot++)
             {
-                for (uint32_t slot = 0; slot < 32; slot++)
+                for (uint32_t function = 0; function < 8; function++)
                 {
-                    for (uint32_t function = 0; function < 8; function++)
-                    {
-                        uint16_t vendor = GetVendorID(bus, slot, function);
-                        if (vendor == 0xFFFF) { continue; }
-                        uint16_t id = GetDeviceID(bus, slot, function);
-                        uint16_t classID = GetClassID(bus, slot, function);
-                        
-                        terminal.Write(" - ");
-                        terminal.Write("DEVICE: ", COL4_MAGENTA);
-                        terminal.WriteLine(GetVendorName(vendor, id));
-                        
-                        // print id - used to google the actual name xD 
-                        // System::KernelIO::WriteLineHex("", id);
+                    uint16_t vendor = GetVendorID(bus, slot, function);
+                    if (vendor == 0xFFFF) { continue; }
+                    uint16_t id = GetDeviceID(bus, slot, function);
+                    uint16_t classID = GetClassID(bus, slot, function);
+                    
+                    terminal.Write(" - ");
+                    terminal.Write("DEVICE: ", COL4_MAGENTA);
+                    terminal.WriteLine(GetVendorName(vendor, id));
+                    
+                    // print id - used to google the actual name xD 
+                    // System::KernelIO::WriteLineHex("", id);
 
-                        PCIDevice* device = (PCIDevice*)System::KernelIO::MemoryManager.Allocate(sizeof(PCIDevice));
-                        device->Vendor = vendor;
-                        device->Device = id;
-                        device->Function = function;
-                        device->Driver = 0;
-                        AddDevice(device);
-                    }
+                    PCIDevice* device = (PCIDevice*)System::KernelIO::MemoryManager.Allocate(sizeof(PCIDevice));
+                    device->Vendor = vendor;
+                    device->Device = id;
+                    device->Function = function;
+                    device->Driver = 0;
+                    AddDevice(device);
                 }
             }
+        }
     }
 
     void PCIBusController::AddDevice(PCIDevice* device)

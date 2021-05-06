@@ -44,7 +44,7 @@ extern "C"
     }
 
     // setup a new entry in a not known position
-    entry_t* setup_entry(void* at, size_t size)
+    entry_t* create_entry(void* at, size_t size)
     {
         entry_t* entry = (entry_t*)at;
         entry->offset = 0xFF;
@@ -55,6 +55,7 @@ extern "C"
         return entry;
     }
 
+    // allocate entry
     entry_t* alloc_entry(entry_t* current, size_t size)
     {
         size_t esize = size_of_region(current);
@@ -76,7 +77,7 @@ extern "C"
                 if (next->offset != 0xFF)
                 {
                     // if it is not, setup the entry
-                    next = setup_entry((void*)next, size-esize);
+                    next = create_entry((void*)next, size-esize);
                     // merge it
                     current->next = next->next;
                     esize = size_of_region(current);
@@ -120,7 +121,7 @@ extern "C"
 
             // increase the free position by the size of the allocated memory region
             free_pos = (uint32_t)(from + sizeof(struct entry) + size);
-            return setup_entry(from, size);
+            return create_entry(from, size);
         }
         // current entry we're working with
         entry_t* current = (entry_t*)from;
@@ -134,7 +135,7 @@ extern "C"
             if (current->offset != 0xFF)
             {
                 // so we just allocate a new one here
-                return setup_entry((void*)current, size);
+                return create_entry((void*)current, size);
             }
         }
         // if we still alive, we just call the alloc_entry, where all the magic happens
@@ -163,8 +164,7 @@ extern "C"
         
         entry->used = true;
 
-        System::KernelIO::Write("ALLOCATION ", COL4::COL4_YELLOW);
-        System::KernelIO::Write("at ");
+        System::KernelIO::Write("ALLOCATION at ");
         char s[6];
         strdec((uint32_t)(uint32_t)entry + sizeof(struct entry), s);
         System::KernelIO::WriteLine(s);
@@ -173,6 +173,7 @@ extern "C"
         return (void*)((uint32_t)entry + sizeof(struct entry));
     }
 
+    // free region of memory
     void mem_free(void* ptr)
     {
         System::KernelIO::Write("FREE at ");
