@@ -66,7 +66,7 @@ namespace System
 
             // fetch multiboot header information from memory
             Multiboot.Read();
-
+            
             // initialize interrupt service routines
             isr_init();
 
