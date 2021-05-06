@@ -1,5 +1,6 @@
 #!/bin/bash
 FILE=serial.out
+DISK=disk.img
 if ! command -v bochs &> /dev/null
 then
     echo "bochs could not be found, installing...."
@@ -13,10 +14,12 @@ then
     fi
     exit
 else
+if [ ! -f "$DISK"]; then
+dd if=/dev/zero of=disk.img bs=1M count=32
+fi
 if [ -f "$FILE" ]; then
     rm serial.out
     touch serial.out
-    exit
 else
 touch serial.out
 fi    

@@ -52,6 +52,7 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
+            debug_bochs_break();
             // initialize terminal interface
             Terminal.Initialize();
 
@@ -100,11 +101,11 @@ namespace System
             ThrowOK("Initialized real time clock");
 
             // initialize ata controller driver
-            ATA.Initialize();
+           // ATA.Initialize();
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
-            FAT.Initialize();
+            //FAT.Initialize();
             ThrowOK("Initialized FAT file system");
 
             // initialize keyboard

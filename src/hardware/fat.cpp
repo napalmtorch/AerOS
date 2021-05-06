@@ -158,7 +158,6 @@ namespace HAL
         // add extension if needed
         if (src[i]=='.') 
         {
-
             // cant just copy over-extension might not be 3 chars
             for (int k=0; k<3; k++) {
 
