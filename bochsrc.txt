@@ -27,13 +27,15 @@ optramimage3: file=none
 optramimage4: file=none
 pci: enabled=1, chipset=i440fx
 vga: extension=vbe, update_freq=5, realtime=1
+sb16: midimode=1, wavemode=1, loglevel=2, log=sb16.log, dmatimer=600000
+e1000: enabled=1, mac=52:54:00:12:34:56, ethmod=slirp, script=slirp.conf
 cpu: count=1, ips=40000000, model=p4_prescott_celeron_336, reset_on_triple_fault=1, cpuid_limit_winnt=0, ignore_bad_msrs=1, mwait_is_nop=0
 print_timestamps: enabled=0
 debugger_log: -
 magic_break: enabled=1
 port_e9_hack: enabled=0
 private_colormap: enabled=0
-clock: sync=realtime, time0=local, rtc_sync=0
+clock: sync=realtime, time0=local, rtc_sync=1
 # no cmosimage
 log: /dev/null
 logprefix: %t%e%d
