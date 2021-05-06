@@ -23,6 +23,7 @@ i686-elf-g++ -Iinclude -c 'src/hardware/ports.cpp' -o 'bin/objs/ports.o' -ffrees
 i686-elf-g++ -Iinclude -c 'src/hardware/multiboot.cpp' -o 'bin/objs/mb.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 i686-elf-g++ -Iinclude -c 'src/hardware/memory.cpp' -o 'bin/objs/mem.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -Wno-unused-parameter
 i686-elf-g++ -Iinclude -c 'src/hardware/terminal.cpp' -o 'bin/objs/term.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -Wno-unused-parameter
+i686-elf-g++ -Iinclude -c 'src/hardware/ptfs.cpp' -o 'bin/objs/ptfs.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -Wno-unused-parameter
 
 # drivers
 i686-elf-g++ -Iinclude -c 'src/hardware/drivers/serial.cpp' -o 'bin/objs/serial.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
@@ -51,4 +52,4 @@ cp 'include/boot/grub.cfg' 'bin/isodir/boot/grub/grub.cfg'
 grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
 
 # run 
-qemu-system-i386 -m 256M -vga std -cdrom 'AerOS.iso' -serial stdio -boot d
+qemu-system-i386 -m 256M -vga std -hda disk.img -cdrom 'AerOS.iso' -serial stdio -boot d

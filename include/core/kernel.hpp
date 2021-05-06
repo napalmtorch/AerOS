@@ -4,6 +4,7 @@
 #include "hardware/ports.hpp"
 #include "hardware/multiboot.hpp"
 #include "hardware/terminal.hpp"
+#include "hardware/ptfs.hpp"
 #include "hardware/interrupt/idt.hpp"
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/interrupt/interrupt.hpp"
@@ -63,6 +64,9 @@
 
             // ata controller driver
             extern HAL::ATAController ATA;
+
+            // file system
+            extern HAL::PTFSFileSystem PTFS;
 
             // real time clock
             extern HAL::RTCManager RTC;
