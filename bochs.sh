@@ -12,5 +12,5 @@ then
     fi
     exit
 else
-bochs -q -f bochsrc.txt
+bochs -q -f bochsrc.txt > out.log 2> err.log && xterm -e tail -f serial.out
 fi

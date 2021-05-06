@@ -1,4 +1,6 @@
 bin/*
 *.iso
 *.ini
+*.out
+*.log
 *.img
