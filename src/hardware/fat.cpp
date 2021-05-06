@@ -46,11 +46,13 @@ namespace HAL
             if (xx >= 80) { debug_write("\n"); xx = 0; }
         }
         debug_write("\n"); */
-        System::KernelIO::DumpMemory(BootSectorData, 512, 12, true);        
+        //System::KernelIO::DumpMemory(BootSectorData, 512, 12, true);  
+        //System::KernelIO::ATA.ReadSectors(DataBuffer, 0x13, 1);      
+        //System::KernelIO::DumpMemory(DataBuffer, 512, 12, true);  
 
         // print information
-        PrintBIOSParameterBlock();
-        PrintExtendedBootRecord();
+        //PrintBIOSParameterBlock();
+        //PrintExtendedBootRecord();
 
         
     }
