@@ -39,7 +39,7 @@ extern "C"
         for (size_t i = 0; i < (buffer_width * buffer_height) * 2; i += 2)
         {
             buffer[i] = 0x20;
-            buffer[i + 1] = term_pack_colors((COL4)((buffer[i + 1] & 0xF0) >> 4), color);
+            buffer[i + 1] = term_pack_colors(fore_color, color);
         }
 
         // reset cursor position
@@ -214,6 +214,23 @@ extern "C"
         outb(0x3D5, (uint8_t)(offset & 0xFF));
         outb(0x3D4, 0x0E);
         outb(0x3D5, (uint8_t)((offset >> 8) & 0xFF));
+    }
+
+    // enable terminal cursor and set size
+    void term_cursor_enable(uint8_t start, uint8_t end)
+    {
+        outb(0x3D4, 0x0A);
+        outb(0x3D5, (inb(0x3D5) & 0xC0) | start);
+    
+        outb(0x3D4, 0x0B);
+        outb(0x3D5, (inb(0x3D5) & 0xE0) | end);
+    }
+    
+    // disable terminal cursor
+    void term_cursor_disable()
+    {
+        outb(0x3D4, 0x0A);
+	    outb(0x3D5, 0x20);
     }
 
     // set terminal cursor x position

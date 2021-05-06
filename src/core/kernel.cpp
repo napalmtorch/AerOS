@@ -46,13 +46,26 @@ namespace System
         {
             // initialize terminal interface
             term_init();
+
+            // initialize fonts
+            Graphics::InitializeFonts();
+
+            // setup vga graphics driver
+            VGA.Initialize();
+
+            // set mode to 90x60
+            VGA.SetMode(VGA.GetAvailableMode(2));
+
+            // prepare terminal
+            term_clear(COL4_BLACK);
+            term_cursor_disable();
+            term_cursor_enable(0, 15);
+
+            // boot message
             term_writeln_ext("Starting AerOS...", COL4_GRAY);
 
             // fetch multiboot header information from memory
             Multiboot.Read();
-
-            // initialize fonts
-            Graphics::InitializeFonts();
 
             // initialize interrupt service routines
             isr_init();
@@ -73,10 +86,6 @@ namespace System
 
             // initialize pci bus
             PCIBus.Initialize();
-
-            // setup vga graphics driver
-            VGA.Initialize();
-            ThrowOK("Initialized VGA driver");
 
             // initialize real time clock
             RTC.Initialize();

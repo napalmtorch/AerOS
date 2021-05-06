@@ -68,6 +68,12 @@ extern "C"
     // set terminal cursor x and y position
     void term_set_cursor(uint8_t x, uint8_t y);
 
+    // enable terminal cursor and set size
+    void term_cursor_enable(uint8_t start, uint8_t end);
+    
+    // disable terminal cursor
+    void term_cursor_disable();
+
     // set terminal cursor x position
     void term_set_cursor_x(uint8_t x);
 
