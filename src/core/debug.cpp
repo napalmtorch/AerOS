@@ -206,8 +206,11 @@ namespace System
                     Write(" ");
 
                     // ascii
-                    if (src[pos + j] >= 32 && src[pos + j] <= 126) { stradd(chars, src[pos + j]); }
-                    else { stradd(chars, '.'); }
+                    if (ascii)
+                    {
+                        if (src[pos + j] >= 32 && src[pos + j] <= 126) { stradd(chars, src[pos + j]); }
+                        else { stradd(chars, '.'); }
+                    }
                 }
 
                 Write("    ");

@@ -54,7 +54,7 @@ namespace Graphics
         }
 
         // draw pixel with palette value
-        void DrawPixel(uint16_t x, uint16_t y, uint8_t color) { System::KernelIO::VGA.Clear(color); }
+        void DrawPixel(uint16_t x, uint16_t y, uint8_t color) { System::KernelIO::VGA.SetPixel(x, y, color); }
 
         // draw pixel
         virtual void DrawPixel(uint16_t x, uint16_t y, Color color)
