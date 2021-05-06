@@ -8,6 +8,7 @@ namespace HAL
     {
         // read data
         ReadRecordBlock();
+        PrintRecordBlock();
     }
 
     // read record block on disk
@@ -23,7 +24,10 @@ namespace HAL
     // print record block data to debugger
     void PTFSFileSystem::PrintRecordBlock()
     {
-
+        System::KernelIO::WriteLine("FILE SYSTEM INFORMATION", COL4_YELLOW);
+        System::KernelIO::WriteLineDecimal("SECTORS COUNT                   ", (int32_t)RecordBlock->SectorCount);
+        System::KernelIO::WriteLineDecimal("SECTORS USED                    ", (int32_t)RecordBlock->SectorsUsed);
+        System::KernelIO::WriteLineDecimal("BYTES/SECTOR                    ", (int32_t)RecordBlock->BytesPerSector);
     }
 
     void PTFSFileSystem::Format(uint32_t size_mb)
@@ -35,6 +39,9 @@ namespace HAL
         RecordBlock->SectorCount = (size_mb * 1024 * 1024) / 512;
         RecordBlock->BytesPerSector = 512;
         RecordBlock->SizeInBytes = size_mb * 1024 * 1024;
+        RecordBlock->MaxEntries = RecordBlock->SectorCount / 20;
+        RecordBlock->SectorsUsed = 1;
+        RecordBlock->Position = RecordBlock->MaxEntries + 1;
         System::KernelIO::ATA.WriteSectors((uint32_t*)RecordBlockData, 0, 1);
     }
 }
