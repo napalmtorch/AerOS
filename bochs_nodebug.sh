@@ -40,8 +40,9 @@ then
 rm disk.img.lock
 fi
 if [ "$1" == "--gnome-terminal" ]; then
-gnome-terminal -- bochs -q -f bochsrc.txt &
+chmod +x ./bochs_hack.sh
+gnome-terminal -- ./bochs_hack.sh &
 else
-xterm -e bochs -q -f bochsrc.txt &
+xterm -e "echo "c" | bochs -q -f bochsrc_nodebug.txt" &
 fi
 fi
