@@ -55,6 +55,125 @@ namespace HAL
         else { FATType = FAT_TYPE_EXFAT; }
     }
 
+    int32_t FATFileSystem::ReadTable(uint32_t cluster)
+    {
+        // check if cluster number is valid
+        if (cluster < 2 || cluster >= ClusterCount) { System::KernelIO::ThrowError("Invalid cluster number"); return -1; }
+
+        // clear fat table array
+        mem_fill(FATTable, 0, 32 * 1024);
+
+        // fat 12
+        if (FATType == FAT_TYPE_FAT12)
+        {
+            System::KernelIO::ThrowError("FAT12 not yet implemented");
+            return -1;
+        }
+        // fat 16
+        else if (FATType == FAT_TYPE_FAT16)
+        {
+            // calculate offsets
+            uint32_t cluster_size = BIOSBlock->BytesPerSector * BIOSBlock->SectorsPerCluster;
+            uint32_t fat_offset = cluster * 2;
+            uint32_t fat_sector = FirstFATSector + (fat_offset / cluster_size);
+            uint32_t entry_offset = fat_offset % cluster_size;
+
+            // read sector into table
+            System::KernelIO::ATA.ReadSectors((uint8_t*)FATTable, fat_sector, 1);
+
+            // calculate table value
+            uint16_t table_value = *(uint16_t*)FATTable[entry_offset];
+            
+            // return table value
+            return table_value;
+        }
+        // fat 32
+        else if (FATType == FAT_TYPE_FAT32)
+        {
+            // calculate offsets
+            uint32_t cluster_size = BIOSBlock->BytesPerSector * BIOSBlock->SectorsPerCluster;
+            uint32_t fat_offset = cluster * 4;
+            uint32_t fat_sector = FirstFATSector + (fat_offset / cluster_size);
+            uint32_t entry_offset = fat_offset % cluster_size;
+
+            // read sector into table
+            System::KernelIO::ATA.ReadSectors((uint8_t*)FATTable, fat_sector, 1);
+
+            // calculate fat table value - ignore high 4-bits
+            uint32_t table_value = *(uint32_t*)&FATTable[entry_offset] & 0x0FFFFFFF;
+
+            // return table value
+            return table_value;
+        }
+        // exfat
+        else if (FATType == FAT_TYPE_EXFAT)
+        {
+            System::KernelIO::ThrowError("EXFAT not yet implemented");
+            return -1;
+        }      
+    }
+
+    int32_t FATFileSystem::WriteTable(uint32_t cluster, uint32_t cluster_val)
+    {
+        // check if cluster number is valid
+        if (cluster < 2 || cluster >= ClusterCount) { System::KernelIO::ThrowError("Invalid cluster number"); return -1; }
+
+        // clear fat table array
+        mem_fill(FATTable, 0, 32 * 1024);
+
+         // fat 12
+        if (FATType == FAT_TYPE_FAT12)
+        {
+            System::KernelIO::ThrowError("FAT12 not yet implemented");
+            return -1;
+        }
+        // fat 16
+        else if (FATType == FAT_TYPE_FAT16)
+        {
+            // calculate offsets
+            uint32_t cluster_size = BIOSBlock->BytesPerSector * BIOSBlock->SectorsPerCluster;
+            uint32_t fat_offset = cluster * 2;
+            uint32_t fat_sector = FirstFATSector + (fat_offset / cluster_size);
+            uint32_t entry_offset = fat_offset % cluster_size;
+
+            // read sector into table
+            System::KernelIO::ATA.ReadSectors((uint8_t*)FATTable, fat_sector, 1);
+
+            // copy cluster value into fat table
+            *(uint16_t*)&FATTable[entry_offset] = (uint16_t)cluster_val;
+
+            // write modified fat table to disk
+            System::KernelIO::ATA.WriteSectors((uint32_t*)FATTable, fat_sector, 1);
+            
+            // return table value
+            return 0;
+        }
+        // fat 32
+        else if (FATType == FAT_TYPE_FAT32)
+        {
+            // calculate offsets
+            uint32_t cluster_size = BIOSBlock->BytesPerSector * BIOSBlock->SectorsPerCluster;
+            uint32_t fat_offset = cluster * 4;
+            uint32_t fat_sector = FirstFATSector + (fat_offset / cluster_size);
+            uint32_t entry_offset = fat_offset % cluster_size;
+
+            // read sector into table
+            System::KernelIO::ATA.ReadSectors((uint8_t*)FATTable, fat_sector, 1);
+
+            // calculate fat table value - ignore high 4-bits
+            uint32_t table_value = *(uint32_t*)&FATTable[entry_offset] & 0x0FFFFFFF;
+
+            // return table value
+            return table_value;
+        }
+        // exfat
+        else if (FATType == FAT_TYPE_EXFAT)
+        {
+            System::KernelIO::ThrowError("EXFAT not yet implemented");
+            return -1;
+        }
+    }
+
     // check if FS info structure is valid
     bool FATFileSystem::IsFSInfoValid(FSInfoFAT* fs_info)
     {

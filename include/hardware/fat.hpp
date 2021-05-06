@@ -87,6 +87,7 @@ namespace HAL
         private:
             uint8_t BootSectorData[512];
             uint8_t DataBuffer[512];
+            uint8_t FATTable[32 * 1024];
             BIOSParameterBlock* BIOSBlock;
             BootRecordFAT32* BootRecord32;
             BootRecordFAT16* BootRecord16;
@@ -102,6 +103,8 @@ namespace HAL
             uint32_t ClusterCount;
 
             void DetermineFATType();
+            int32_t ReadTable(uint32_t cluster);
+            int32_t WriteTable(uint32_t cluster, uint32_t cluster_val);
             bool IsFSInfoValid(FSInfoFAT* fs_info);
     };
 }
