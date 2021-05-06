@@ -31,6 +31,7 @@ i686-elf-g++ -Iinclude -c 'src/hardware/drivers/ata.cpp' -o 'bin/objs/ata.o' -ff
 i686-elf-g++ -Iinclude -c 'src/hardware/drivers/rtc.cpp' -o 'bin/objs/rtc.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 i686-elf-g++ -Iinclude -c 'src/hardware/drivers/vga.cpp' -o 'bin/objs/vga.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 i686-elf-g++ -Iinclude -c 'src/hardware/drivers/pci.cpp' -o 'bin/objs/pci.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -Wno-unused-parameter
+i686-elf-g++ -Iinclude -c 'src/hardware/drivers/keyboard.cpp' -o 'bin/objs/kb.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -Wno-unused-parameter
 
 # interrupt
 i686-elf-g++ -Iinclude -c 'src/hardware/interrupt/idt.cpp' -o 'bin/objs/idt.o' -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable

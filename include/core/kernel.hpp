@@ -13,6 +13,7 @@
 #include "hardware/drivers/rtc.hpp"
 #include "hardware/drivers/vga.hpp"
 #include "hardware/drivers/pci.hpp"
+#include "hardware/drivers/keyboard.hpp"
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
 
@@ -70,6 +71,9 @@
 
             // real time clock
             extern HAL::RTCManager RTC;
+
+            // ps2 keyboard controller driver
+            extern HAL::PS2Keyboard Keyboard;
         }
 }
 #else

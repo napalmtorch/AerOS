@@ -62,6 +62,8 @@ extern "C"
             cursor_x++;
             // create new line when cursor passes screen width
             if (cursor_x >= buffer_width) { term_newline(); }
+            // update cursor posotion
+            term_set_cursor(cursor_x, cursor_y);
         }
     }
 

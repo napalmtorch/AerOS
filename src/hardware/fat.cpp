@@ -110,7 +110,9 @@ namespace HAL
         {
             System::KernelIO::ThrowError("EXFAT not yet implemented");
             return -1;
-        }      
+        }     
+
+        return -1; 
     }
 
     int32_t FATFileSystem::WriteTable(uint32_t cluster, uint32_t cluster_val)
@@ -172,6 +174,8 @@ namespace HAL
             System::KernelIO::ThrowError("EXFAT not yet implemented");
             return -1;
         }
+
+        return -1;
     }
 
     // check if FS info structure is valid

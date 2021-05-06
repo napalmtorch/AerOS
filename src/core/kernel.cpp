@@ -38,6 +38,9 @@ namespace System
         // real time clock
         HAL::RTCManager RTC;
 
+        // ps2 keyboard controller driver
+        HAL::PS2Keyboard Keyboard;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -87,9 +90,10 @@ namespace System
             FAT.Initialize();
             ThrowOK("Initialized FAT file system");
 
-            // print multiboot name
-            SerialPort.Write("\nBOOT LOADER: ", COL4_YELLOW);
-            SerialPort.WriteLine(Multiboot.GetName(), COL4_WHITE);
+            // initialize keyboard
+            Keyboard.Initialize();
+            Keyboard.BufferEnabled = true;
+            ThrowOK("Initialized PS/2 keyboard driver");
 
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
