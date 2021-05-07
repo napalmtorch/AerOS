@@ -57,6 +57,9 @@ namespace HAL
 
     void PCIBusController::List()
     {
+        terminal.NewLine();
+        terminal.WriteLine("   ---- PCI Devices ----   ",COL4_GREEN);
+        terminal.NewLine();
         char temp[16];
         for (uint32_t bus = 0; bus < 256; bus++)
         {
@@ -70,7 +73,17 @@ namespace HAL
                     uint16_t classID = GetClassID(bus, slot, function);
                     
                     terminal.Write(" - ");
+                    char vendorbuf[32];
+                    strhex(vendor,vendorbuf);
+                    char vendoridbuf[32];
+                    strhex(id,vendoridbuf);
+                    
                     terminal.Write("DEVICE: ", COL4_MAGENTA);
+                    terminal.Write("0x");
+                    terminal.Write(vendorbuf);
+                    terminal.Write(":0x");
+                    terminal.Write(vendoridbuf);
+                    terminal.Write(" Name: ");
                     terminal.WriteLine(GetVendorName(vendor, id));
                     
                     // print id - used to google the actual name xD 
@@ -85,6 +98,7 @@ namespace HAL
                 }
             }
         }
+        terminal.NewLine();
     }
 
     void PCIBusController::AddDevice(PCIDevice* device)
