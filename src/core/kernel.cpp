@@ -87,7 +87,7 @@ namespace System
             HAL::CPU::EnableInterrupts();
 
             // disable console output for debugger
-            SetDebugConsoleOutput(true);
+            SetDebugConsoleOutput(false);
 
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
