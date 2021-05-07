@@ -82,7 +82,7 @@ namespace HAL
                     System::KernelIO::Write(vendorbuf);
                     System::KernelIO::Write(":0x");
                     System::KernelIO::Write(vendoridbuf);
-                    System::KernelIO::Write(" Name: ");
+                    System::KernelIO::Write("     Name: ", COL4_CYAN);
                     System::KernelIO::WriteLine(GetVendorName(vendor, id));
                     
                     // print id - used to google the actual name xD 
@@ -163,10 +163,10 @@ namespace HAL
                 case 0x7020: { return "Intel 82371SB PIIX3 USB"; }
                 case 0x7111: { return "Intel 82371AB/EB/MB PIIX4 IDE"; }
                 case 0x7113: { return "Intel 82371AB/EB/MB PIIX4 ACPI"; }
-                case 0x100E: { return "Intel 82540EM Gigabit Ethernet Controller"; }
-                case 0x0041: { return "Intel Core Processor PCI Express x16 Root Port"; }
-                case 0x0042: { return "Intel Core Processor IGPU Controller"; }
-                case 0x0044: { return "Intel Core Processor DRAM Controller"; }
+                case 0x100E: { return "Intel 82540EM Ethernet Controller"; }
+                case 0x0041: { return "Intel Core PCI Express x16 Root Port"; }
+                case 0x0042: { return "Intel Core IGPU Controller"; }
+                case 0x0044: { return "Intel Core DRAM Controller"; }
                 case 0x0600: { return "Intel RAID Controller"; }
                 case 0x061F: { return "Intel 80303 I/O Processor"; }
                 default: { return "Unrecognized Intel Device"; }
