@@ -137,6 +137,7 @@ extern "C"
                 return create_entry((void*)current, size);
             }
         }
+        
         // if we still alive, we just call the alloc_entry, where all the magic happens
         entry_t* e = alloc_entry(current, size);
         if (e == nullptr)
@@ -172,9 +173,24 @@ extern "C"
         return (void*)((uint32_t)entry + sizeof(struct entry));
     }
 
+int memcmp(const void* a, const void* b, size_t len) {
+    int r = 0;
+    const unsigned char *x = (const unsigned char*)a;
+    const unsigned char *y = (const unsigned char*)b;
+
+    while (len--) {
+        r = *x - *y;
+        if (r)
+            return r;
+        x++, y++;
+    }
+    return 0;
+}
     // free region of memory
     void mem_free(void* ptr)
     {
+        if ((uint32_t)ptr == 0) { debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr"); return; }
+
         System::KernelIO::Write("FREE at ");
         char s[6];
         strdec((uint32_t)ptr, s);

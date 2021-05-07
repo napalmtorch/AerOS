@@ -41,6 +41,6 @@ SECTIONS
   {
     *(.kend)
   }
-
+  endKernel = ALIGN(4K);
   /DISCARD/ : { *(.fini_array*) *(.comment) *(.dis) }
 }

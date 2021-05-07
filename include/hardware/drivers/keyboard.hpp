@@ -3,7 +3,7 @@
 #include "lib/string.hpp"
 #include "hardware/ports.hpp"
 #include "hardware/interrupt/isr.hpp"
-#include "hardware/interrupt/interrupt.hpp"
+#include "hardware/cpu.hpp"
 #include "hardware/terminal.hpp"
 
 #define KB_SCANCODE_MAX 256
@@ -101,6 +101,24 @@ namespace HAL
         F12,
     };
 
+    typedef enum
+    {
+        KB_LAYOUT_US,
+        KB_LAYOUT_DE,
+        KB_LAYOUT_IT,
+    } KB_LAYOUT;
+
+    // structure to manage different keyboard layouts
+    struct KeyboardLayout
+    {
+        KB_LAYOUT Type;
+        char Name[32];
+        char UpperCase[60];
+        char LowerCase[60];
+        KeyboardLayout();
+        KeyboardLayout(KB_LAYOUT type, char* name, char* upper, char* lower);
+    };
+
     class PS2Keyboard
     {
         public:
@@ -108,6 +126,10 @@ namespace HAL
             bool BufferEnabled;
             char Buffer[256];
             void (*Event_OnEnterPressed)(char*);
+
+            // keyboard layouts
+            KeyboardLayout KeyboardLayoutUS;
+            KeyboardLayout KeyboardLayoutDE;
 
             // initialize ps2 keyboard controller
             void Initialize();
@@ -135,6 +157,22 @@ namespace HAL
             
             // get pressed keys array
             bool* GetPressedKeys();
+
+            // check if caps lock is pressed
+            bool GetCapsLockDown();
+
+            // check if either shift key is down
+            bool GetShiftDown();
+
+            // check if control key is down
+            bool GetControlDown();
+
+            // check if alt key is down
+            bool GetAltDown();
+
+            // check if enter key is down
+            bool GetEnterDown();
+
         private:
             // array of currently pressed keys
             bool PressedKeys[KB_SCANCODE_MAX];

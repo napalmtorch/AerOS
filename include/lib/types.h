@@ -15,7 +15,9 @@ typedef short int16_t;
 // 8-bit integer
 typedef unsigned char uint8_t;
 typedef char int8_t;
-
+typedef unsigned char byte;
+typedef unsigned int dword;
+typedef unsigned short word;
 // size
 typedef unsigned long int size_t;
 
@@ -34,7 +36,7 @@ typedef struct
     int32_t Width;
     int32_t Height;
 } __attribute__((packed)) bounds_t;
-
+typedef uint64_t                 uintptr_t;
 // null
 #define NULL 0
 

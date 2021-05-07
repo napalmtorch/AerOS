@@ -1,9 +1,10 @@
-rm -R 'bin'
-mkdir 'bin'
-mkdir 'bin/objs'
-
+#!/bin/sh
+if [ -d "bin" ]; then
+rm -Rf 'bin'
+mkdir -p 'bin/objs'
+fi
 # bootloader
-as --32 'src/boot/boot.asm' -o 'bin/boot.o'
+as --32 'src/boot/boot.asm' -o 'bin/objs/boot.o'
 nasm -felf32 'src/boot/realmode.asm' -o 'bin/objs/rm.o'
 nasm -felf32 'src/boot/gdt.asm' -o 'bin/objs/gdt.o'
 nasm -felf32 'include/hardware/interrupt/irqs.asm' -o 'bin/objs/irqs.o'
@@ -13,7 +14,7 @@ for file in src/core/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/core/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/core/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # graphics
@@ -21,7 +22,7 @@ for file in src/graphics/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/graphics/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/graphics/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # hardware
@@ -29,7 +30,7 @@ for file in src/hardware/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/hardware/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/hardware/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # drivers
@@ -37,7 +38,7 @@ for file in src/hardware/drivers/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/hardware/drivers/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/hardware/drivers/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # interrupt
@@ -45,7 +46,7 @@ for file in src/hardware/interrupt/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/hardware/interrupt/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/hardware/interrupt/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # lib
@@ -58,7 +59,7 @@ done
 
 # linker
 cd 'bin/objs'
-i686-elf-gcc -w -T '../../include/boot/linker.ld' -o '../kernel.bin' -ffreestanding -O2 -nostdlib *.o '../boot.o' -lgcc
+i686-elf-gcc -w -T '../../include/boot/linker.ld' -o '../kernel.bin' -ffreestanding -O2 -nostdlib *.o -lgcc
 cd '../../'
 
 options=$(getopt -l "no-qemu" -o "hv:Vrd" -a -- "$@")
@@ -88,5 +89,5 @@ cp 'include/boot/grub.cfg' 'bin/isodir/boot/grub/grub.cfg'
 grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
 
 # run 
-qemu-system-i386 -m 256M -vga std -soundhw sb16 -hda disk.img -cdrom 'AerOS.iso' -serial stdio -boot d
+qemu-system-i386 -cpu host -m 256M -vga std -hda 'disks/disk.img' -cdrom 'AerOS.iso' -name 'AerOS Development Copy' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm
 fi

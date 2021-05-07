@@ -6,7 +6,6 @@
 
 namespace HAL
 {
-    TerminalManager terminal;
     // initialize pci bus controller driver
     void PCIBusController::Initialize()
     {
@@ -57,9 +56,9 @@ namespace HAL
 
     void PCIBusController::List()
     {
-        terminal.NewLine();
-        terminal.WriteLine("   ---- PCI Devices ----   ",COL4_GREEN);
-        terminal.NewLine();
+        System::KernelIO::Write("\n");
+        System::KernelIO::WriteLine("------- PCI Devices -------", COL4_GREEN);
+        System::KernelIO::Write("\n");
         char temp[16];
         for (uint32_t bus = 0; bus < 256; bus++)
         {
@@ -72,19 +71,19 @@ namespace HAL
                     uint16_t id = GetDeviceID(bus, slot, function);
                     uint16_t classID = GetClassID(bus, slot, function);
                     
-                    terminal.Write(" - ");
+                    debug_write("- ");
                     char vendorbuf[32];
-                    strhex(vendor,vendorbuf);
+                    strhex32(vendor,vendorbuf);
                     char vendoridbuf[32];
-                    strhex(id,vendoridbuf);
+                    strhex32(id,vendoridbuf);
                     
-                    terminal.Write("DEVICE: ", COL4_MAGENTA);
-                    terminal.Write("0x");
-                    terminal.Write(vendorbuf);
-                    terminal.Write(":0x");
-                    terminal.Write(vendoridbuf);
-                    terminal.Write(" Name: ");
-                    terminal.WriteLine(GetVendorName(vendor, id));
+                    System::KernelIO::Write("DEVICE: ", COL4_MAGENTA);
+                    System::KernelIO::Write("0x");
+                    System::KernelIO::Write(vendorbuf);
+                    System::KernelIO::Write(":0x");
+                    System::KernelIO::Write(vendoridbuf);
+                    System::KernelIO::Write(" Name: ", COL4_CYAN);
+                    System::KernelIO::WriteLine(GetVendorName(vendor, id));
                     
                     // print id - used to google the actual name xD 
                     // System::KernelIO::WriteLineHex("", id);
@@ -98,7 +97,7 @@ namespace HAL
                 }
             }
         }
-        terminal.NewLine();
+        System::KernelIO::Write("\n");
     }
 
     void PCIBusController::AddDevice(PCIDevice* device)
@@ -164,12 +163,14 @@ namespace HAL
                 case 0x7020: { return "Intel 82371SB PIIX3 USB"; }
                 case 0x7111: { return "Intel 82371AB/EB/MB PIIX4 IDE"; }
                 case 0x7113: { return "Intel 82371AB/EB/MB PIIX4 ACPI"; }
-                case 0x100E: { return "Intel 82540EM Gigabit Ethernet Controller"; }
-                case 0x0041: { return "Intel Core Processor PCI Express x16 Root Port"; }
-                case 0x0042: { return "Intel Core Processor IGPU Controller"; }
-                case 0x0044: { return "Intel Core Processor DRAM Controller"; }
+                case 0x100E: { return "Intel 82540EM Ethernet Controller"; }
+                case 0x0041: { return "Intel Core PCI Express x16 Root Port"; }
+                case 0x0042: { return "Intel Core IGPU Controller"; }
+                case 0x0044: { return "Intel Core DRAM Controller"; }
                 case 0x0600: { return "Intel RAID Controller"; }
                 case 0x061F: { return "Intel 80303 I/O Processor"; }
+                case 0x2415: { return "Intel 82801AA AC'97 Audio"; }
+                case 0x2668: { return "Intel 82801(ICH6 Family) HD Audio"; }
                 default: { return "Unrecognized Intel Device"; }
             }
         }
@@ -235,6 +236,15 @@ namespace HAL
             switch (id)
             {
                 case 0x2000: { return "AMD 79C970 Ethernet Controller"; }
+            }
+        }
+
+        // ensoniq
+        if (vendor == PCI_VENDOR_ENSONIQ)
+        {
+            switch (id)
+            {
+                case 0x5000: { return "Ensoniq ES1370 [AudioPCI]"; }
             }
         }
 

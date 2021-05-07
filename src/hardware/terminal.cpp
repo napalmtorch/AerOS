@@ -177,10 +177,10 @@ extern "C"
             // move buffer up 1 line
             mem_copy((uint8_t*)(buffer + (buffer_width * 2)), buffer, (buffer_width * buffer_height * 2) - (buffer_width * 2));
             // clear bottom line
-            for (size_t j = (buffer_width * buffer_height * 2) - (buffer_width * 2); i < (buffer_width * buffer_height * 2); i += 2)
+            for (size_t j = (buffer_width * buffer_height * 2) - (buffer_width * 2); j < (buffer_width * buffer_height * 2); j += 2)
             {
-                buffer[i] = 0x20;
-                buffer[i + 1] = term_pack_colors(fore_color, back_color);
+                buffer[j] = 0x20;
+                buffer[j + 1] = term_pack_colors(COL4_WHITE, back_color);
             }
         }
     }
@@ -208,10 +208,16 @@ extern "C"
         buffer_height = h;
     }
 
+    // set terminal buffer
+    void term_set_buffer(uint8_t* buf)
+    {
+        buffer = buf;
+    }
 
     // set terminal cursor x and y position
     void term_set_cursor(uint8_t x, uint8_t y)
     {
+        cursor_x = x; cursor_y = y;
         uint32_t offset = x + (y * buffer_width);
         outb(0x3D4, 0x0F);
         outb(0x3D5, (uint8_t)(offset & 0xFF));
@@ -255,7 +261,7 @@ namespace HAL
     void TerminalManager::Initialize() { term_init(); }
 
     // clear the terminal
-    void TerminalManager::Clear() { term_clear(COL4_BLACK); }
+    void TerminalManager::Clear() { term_clear(back_color); }
     void TerminalManager::Clear(COL4 color) { term_clear(color); }
 
     // new line

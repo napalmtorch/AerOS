@@ -11,7 +11,7 @@ static void enter_pressed(char* input)
 {
     System::KernelIO::Kernel.OnEnterPressed(input);
 }
-
+        extern "C" int endKernel;
 namespace System
 {
     namespace KernelIO
@@ -45,17 +45,21 @@ namespace System
 
         // ps2 keyboard controller driver
         HAL::PS2Keyboard Keyboard;
-        
-        // pci devices
-        HAL::PCIBusController PCIdevices;
 
         // terminal interface
         HAL::TerminalManager Terminal;
+
+        // shell
+        System::ShellHost Shell;
+
+        // acpi controller
+        HAL::ACPI ACPI;
 
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
             debug_bochs_break();
+
             // initialize terminal interface
             Terminal.Initialize();
 
@@ -66,7 +70,7 @@ namespace System
             VGA.Initialize();
 
             // set mode to 90x60
-            VGA.SetMode(VGA.GetAvailableMode(2));
+            VGA.SetMode(VGA.GetAvailableMode(0));
 
             // prepare terminal
             Terminal.Clear(COL4_BLACK);
@@ -82,15 +86,15 @@ namespace System
             // initialize interrupt service routines
             HAL::CPU::InitializeISRs();
 
-            // enable interrupts
-            HAL::CPU::EnableInterrupts();
-
             // disable console output for debugger
             SetDebugConsoleOutput(false);
 
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
             ThrowOK("Initialized serial port on COM1");
+            //Initialise ACPI
+            ACPI.ACPIInit();
+            ThrowOK("ACPI Initialised");
 
             // initialize memory manager
             MemoryManager.Initialize();
@@ -120,14 +124,11 @@ namespace System
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
 
-            // string test
-            String testStr = "Hello world";
-            Terminal.WriteLine(testStr.ToCharArray());
-            testStr = "POOP";
-            Terminal.WriteLine(testStr.ToCharArray());
+            // enable interrupts
+            HAL::CPU::EnableInterrupts();
 
-            // ready
-            Terminal.Write("shell> ", COL4_YELLOW);
+            // ready shell
+            Shell.Initialize();    
 
             // test fat driver
             /*          
@@ -160,29 +161,6 @@ namespace System
         {
             // increment ticks
             HAL::CPU::Ticks++;
-
-            // increment delta ticks
-            HAL::CPU::DeltaTicks++;
-
-            // second has passed
-            if (HAL::CPU::DeltaTicks >= HAL::CPU::GetPITFrequency())
-            {
-                // increment seconds
-                HAL::CPU::Seconds++;
-
-                HAL::CPU::TimerTick++;
-
-                // check if timer is expired
-                if (HAL::CPU::TimerTick >= HAL::CPU::TimerMax) 
-                {
-                    HAL::CPU::TimerTick = 0; 
-                    HAL::CPU::TimerMax = 0; 
-                    HAL::CPU::TimerRunning = false; 
-                }
-
-                // reset delta ticks
-                HAL::CPU::DeltaTicks = 0;
-            }
         }
 
         // triggered when interrupt 0x80 is triggered
@@ -190,50 +168,11 @@ namespace System
         {
             Terminal.WriteLine("This is a motherfucking syscall OK?!!");
         }
+
         // triggered when enter key is pressed
         void KernelBase::OnEnterPressed(char* input)
         {
-            HandleCommand(input);
-            Terminal.Write("shell> ",COL4_YELLOW);
-        }
-
-        void KernelBase::HandleCommand(char* input)
-        {
-            char* str = strsplit_index(input,0,' ');
-            if(strcmp ("lspci", input) == 0) { PCIdevices.List(); }
-            else if (streql("test", input))
-            {
-                asm volatile("int $0x80");
-            }
-            else if(strcmp ("clear", input) == 0) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
-            else if(strcmp ("", input) == 0) { Terminal.WriteLine(""); }
-            else if(streql ("color", str)) { 
-                
-                char* background = strsplit_index(input,2,' ');
-                char* foreground = strsplit_index(input,1,' ');
-                if(streql(str,foreground) || streql(str,background)) { Terminal.WriteLine("All Parameters are required"); Terminal.WriteLine("Usage: color foreground background"); Terminal.WriteLine("Example: color white black"); return; }//man let me test
-                System::KernelIO::WriteLine(foreground);
-                System::KernelIO::WriteLine(background);
-                Terminal.Clear(Graphics::GetColorFromName(background));
-                Terminal.SetForeColor(Graphics::GetColorFromName(foreground));
-                Terminal.Write("shell> ",COL4_YELLOW);
-                Terminal.WriteLine("Color Set!");
-                delete background;
-                delete foreground;
-                delete str;
-                return;
-            }
-            else if (streql("debug", input)){
-                char* s = new char[5];
-                char* j = new char[5];
-                delete s;
-                delete j;
-                char* q = new char[10];
-            }
-            else { Terminal.Write("You typed: ",COL4_WHITE); 
-            Terminal.WriteLine(input); }
-            delete str;
-            return;
+            Shell.HandleInput(input);
         }
     }
 }

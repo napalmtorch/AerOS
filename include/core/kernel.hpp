@@ -1,13 +1,17 @@
 #pragma once
 #include "lib/types.h"
+#include "lib/string.hpp"
+#include "lib/vector.hpp"
 #include "core/debug.hpp"
+#include "hardware/acpi.hpp"
+#include "hardware/cpu.hpp"
 #include "hardware/ports.hpp"
 #include "hardware/multiboot.hpp"
 #include "hardware/terminal.hpp"
 #include "hardware/fat.hpp"
 #include "hardware/interrupt/idt.hpp"
 #include "hardware/interrupt/isr.hpp"
-#include "hardware/interrupt/interrupt.hpp"
+#include "hardware/cpu.hpp"
 #include "hardware/drivers/serial.hpp"
 #include "hardware/drivers/ata.hpp"
 #include "hardware/drivers/rtc.hpp"
@@ -16,6 +20,14 @@
 #include "hardware/drivers/keyboard.hpp"
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
+#include "core/shell.hpp"
+
+// kernel offsets
+extern "C"
+{
+    extern uint32_t kernel_begin;
+    extern uint32_t kernel_end;
+}
 
 // Kernel IO API by napalmtorch and Nik300
 
@@ -46,9 +58,6 @@
 
                     // triggered when enter key is pressed
                     void OnEnterPressed(char* input);
-
-                    // register command
-                    void HandleCommand(char* input);
 
             };
 
@@ -84,6 +93,12 @@
 
             // terminal interface
             extern HAL::TerminalManager Terminal;
+
+            // shell
+            extern System::ShellHost Shell;
+
+            // acpi
+            extern HAL::ACPI ACPI;
         }
     }
 #else

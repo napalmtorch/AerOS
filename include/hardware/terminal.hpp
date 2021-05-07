@@ -65,6 +65,9 @@ extern "C"
     // set size of terminal buffer
     void term_set_size(uint8_t w, uint8_t h);
 
+    // set terminal buffer
+    void term_set_buffer(uint8_t* buf);
+
     // set terminal cursor x and y position
     void term_set_cursor(uint8_t x, uint8_t y);
 
@@ -152,6 +155,5 @@ namespace HAL
             // get colors
             COL4 GetForeColor();
             COL4 GetBackColor(); 
-            uint8_t cursor_x, cursor_y;
     };
 }
