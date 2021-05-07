@@ -14,10 +14,10 @@ iso:
 	cp 'include/boot/grub.cfg' 'bin/isodir/boot/grub/grub.cfg'
 	grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
 qemu:
-	qemu-system-i386 -m 256M -vga std -hda disk.img -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw sb16
+	qemu-system-i386 -m 256M -vga std -hda disk.img -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw sb16 -device e1000 -enable-kvm
 
 qemu-kernel:
-	qemu-system-i386 -m 256M -vga std -hda disk.img -kernel bin/kernel.bin -serial stdio -boot d -soundhw sb16
+	qemu-system-i386 -m 256M -vga std -hda disk.img -kernel bin/kernel.bin -serial stdio -boot d -soundhw sb16 -enable-kvm
 
 bochs:
 	$(shell ./bochs.sh)
