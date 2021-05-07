@@ -3,7 +3,7 @@
 #include "lib/string.hpp"
 #include "hardware/ports.hpp"
 #include "hardware/interrupt/isr.hpp"
-#include "hardware/interrupt/interrupt.hpp"
+#include "hardware/cpu.hpp"
 #include "hardware/terminal.hpp"
 
 #define KB_SCANCODE_MAX 256

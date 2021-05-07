@@ -82,7 +82,7 @@ namespace HAL
                     System::KernelIO::Write(vendorbuf);
                     System::KernelIO::Write(":0x");
                     System::KernelIO::Write(vendoridbuf);
-                    System::KernelIO::Write("     Name: ", COL4_CYAN);
+                    System::KernelIO::Write(" Name: ", COL4_CYAN);
                     System::KernelIO::WriteLine(GetVendorName(vendor, id));
                     
                     // print id - used to google the actual name xD 
@@ -169,6 +169,8 @@ namespace HAL
                 case 0x0044: { return "Intel Core DRAM Controller"; }
                 case 0x0600: { return "Intel RAID Controller"; }
                 case 0x061F: { return "Intel 80303 I/O Processor"; }
+                case 0x2415: { return "Intel 82801AA AC'97 Audio"; }
+                case 0x2668: { return "Intel 82801(ICH6 Family) HD Audio"; }
                 default: { return "Unrecognized Intel Device"; }
             }
         }
@@ -234,6 +236,15 @@ namespace HAL
             switch (id)
             {
                 case 0x2000: { return "AMD 79C970 Ethernet Controller"; }
+            }
+        }
+
+        // ensoniq
+        if (vendor == PCI_VENDOR_ENSONIQ)
+        {
+            switch (id)
+            {
+                case 0x5000: { return "Ensoniq ES1370 [AudioPCI]"; }
             }
         }
 

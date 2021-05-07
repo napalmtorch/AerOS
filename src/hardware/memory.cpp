@@ -137,6 +137,7 @@ extern "C"
                 return create_entry((void*)current, size);
             }
         }
+        
         // if we still alive, we just call the alloc_entry, where all the magic happens
         entry_t* e = alloc_entry(current, size);
         if (e == nullptr)

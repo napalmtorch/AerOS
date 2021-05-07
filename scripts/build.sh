@@ -89,5 +89,5 @@ cp 'include/boot/grub.cfg' 'bin/isodir/boot/grub/grub.cfg'
 grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
 
 # run 
-qemu-system-i386 -m 256M -vga std -hda 'disks/disk.img' -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm
+qemu-system-i386 -cpu host -m 256M -vga std -hda 'disks/disk.img' -cdrom 'AerOS.iso' -name 'AerOS Development Copy' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm
 fi
