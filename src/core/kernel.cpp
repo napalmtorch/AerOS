@@ -49,8 +49,6 @@ namespace System
         // terminal interface
         HAL::TerminalManager Terminal;
 
-        HAL::CPUInfo CPUInfo;
-
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -160,29 +158,6 @@ namespace System
         {
             // increment ticks
             HAL::CPU::Ticks++;
-
-            // increment delta ticks
-            HAL::CPU::DeltaTicks++;
-
-            // second has passed
-            if (HAL::CPU::DeltaTicks >= HAL::CPU::GetPITFrequency())
-            {
-                // increment seconds
-                HAL::CPU::Seconds++;
-
-                HAL::CPU::TimerTick++;
-
-                // check if timer is expired
-                if (HAL::CPU::TimerTick >= HAL::CPU::TimerMax) 
-                {
-                    HAL::CPU::TimerTick = 0; 
-                    HAL::CPU::TimerMax = 0; 
-                    HAL::CPU::TimerRunning = false; 
-                }
-
-                // reset delta ticks
-                HAL::CPU::DeltaTicks = 0;
-            }
         }
 
         // triggered when interrupt 0x80 is triggered
@@ -216,7 +191,7 @@ namespace System
             else if (streql("clear", input) || streql("cls", input)) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
 
             //cpuinfo
-            else if (streql("cpuinfo", input)) { CPUInfo.CPUDetect(); return; }
+            else if (streql("cpuinfo", input)) { HAL::CPU::Detect(); return; }
             // set colors
             else if (streql ("color", str))
             {          
