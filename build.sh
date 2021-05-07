@@ -3,7 +3,7 @@ mkdir 'bin'
 mkdir 'bin/objs'
 
 # bootloader
-as --32 'src/boot/boot.asm' -o 'bin/boot.o'
+as --32 'src/boot/boot.asm' -o 'bin/objs/boot.o'
 nasm -felf32 'src/boot/realmode.asm' -o 'bin/objs/rm.o'
 nasm -felf32 'src/boot/gdt.asm' -o 'bin/objs/gdt.o'
 nasm -felf32 'include/hardware/interrupt/irqs.asm' -o 'bin/objs/irqs.o'
@@ -58,7 +58,7 @@ done
 
 # linker
 cd 'bin/objs'
-i686-elf-gcc -w -T '../../include/boot/linker.ld' -o '../kernel.bin' -ffreestanding -O2 -nostdlib *.o '../boot.o' -lgcc
+i686-elf-gcc -w -T '../../include/boot/linker.ld' -o '../kernel.bin' -ffreestanding -O2 -nostdlib *.o -lgcc
 cd '../../'
 
 options=$(getopt -l "no-qemu" -o "hv:Vrd" -a -- "$@")
