@@ -17,6 +17,13 @@
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
 
+// kernel offsets
+extern "C"
+{
+    extern uint32_t kernel_begin;
+    extern uint32_t kernel_end;
+}
+
 // Kernel IO API by napalmtorch and Nik300
 
 #ifdef __cplusplus

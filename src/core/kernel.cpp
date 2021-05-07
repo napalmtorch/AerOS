@@ -124,6 +124,9 @@ namespace System
             testStr = "POOP";
             Terminal.WriteLine(testStr.ToCharArray());
 
+            WriteLineHex("KERNEL_START: ", kernel_begin);
+            WriteLineHex("KERNEL_END: ", kernel_end);
+
             // ready
             Terminal.Write("shell> ", COL4_YELLOW);
 
