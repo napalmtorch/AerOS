@@ -141,8 +141,6 @@ namespace System
             WriteLineDecimal("POSITION: ", file.Position);
             WriteLineDecimal("EOF: ", file.EOF);
             */
-
-            
         }
 
         // kernel core code, runs in a loop
