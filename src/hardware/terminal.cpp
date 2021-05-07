@@ -180,7 +180,7 @@ extern "C"
             for (size_t j = (buffer_width * buffer_height * 2) - (buffer_width * 2); j < (buffer_width * buffer_height * 2); j += 2)
             {
                 buffer[j] = 0x20;
-                buffer[j + 1] = term_pack_colors(fore_color, back_color);
+                buffer[j + 1] = term_pack_colors(COL4_WHITE, back_color);
             }
         }
     }
@@ -261,7 +261,7 @@ namespace HAL
     void TerminalManager::Initialize() { term_init(); }
 
     // clear the terminal
-    void TerminalManager::Clear() { term_clear(COL4_BLACK); }
+    void TerminalManager::Clear() { term_clear(back_color); }
     void TerminalManager::Clear(COL4 color) { term_clear(color); }
 
     // new line

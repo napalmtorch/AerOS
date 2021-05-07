@@ -30,10 +30,12 @@ namespace System
     void ShellHost::Initialize()
     {
         // add commands to list
-        CommandList[0] = ShellCommand("CLEAR", "Clear the screen", "", Commands::CLEAR);
-        CommandList[1] = ShellCommand("LSPCI", "List detected PCI devices", "", Commands::LSPCI);
-        CommandList[2] = ShellCommand("CPUINFO", "List processor information", "", Commands::CPUINFO);
-        CommandList[3] = ShellCommand("COLOR", "Change terminal colors", "", Commands::COLOR);
+        CommandList[0] = ShellCommand("CLEAR",      "Clear the screen", "",                 Commands::CLEAR);
+        CommandList[1] = ShellCommand("LSPCI",      "List detected PCI devices", "",        Commands::LSPCI);
+        CommandList[2] = ShellCommand("CPUINFO",    "List processor information", "",       Commands::CPUINFO);
+        CommandList[3] = ShellCommand("FG",         "Change foreground color", "",          Commands::FG);
+        CommandList[4] = ShellCommand("BG",         "Change background color", "",          Commands::BG);
+        CommandList[5] = ShellCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
 
         // print caret to screen
         PrintCaret();
@@ -56,10 +58,16 @@ namespace System
         char* cmd = strsplit_index(input, 0 ,' ');
         strupper(cmd);
 
+        // hack to use second command for clearing
+        if (streql(cmd, "CLS")) { Commands::CLEAR(input); return; }
+
+        // loop through commands
         for (size_t i = 0; i < 32; i++)
         {
+            // found match
             if (streql(cmd, CommandList[i].Name) == true)
             {
+                // execute command and return
                 CommandList[i].Execute(input);
                 return;
             }
@@ -92,31 +100,70 @@ namespace System
 
         void CPUINFO(char* input) { HAL::CPU::Detect(); }
 
-        void COLOR(char* input)
+        void FG(char* input)
         {
-            char* cmd = strsplit_index(input, 0 ,' ');
-            char* background = strsplit_index(input,2,' ');
-            char* foreground = strsplit_index(input,1,' ');
+            char* color = strsplit_index(input, 1,' ');
 
-            if (background != nullptr && foreground != nullptr)
-            {
-                if(streql(cmd, foreground) || streql(cmd, background))
-                { 
-                    KernelIO::Terminal.WriteLine("All Parameters are required");
-                    KernelIO::Terminal.WriteLine("Usage: color foreground background"); 
-                    KernelIO::Terminal.WriteLine("Example: color white black"); return; 
-                }
+            // invalid color
+            if (strlen(color) == 0) 
+            { 
+                KernelIO::WriteLine("No color selected"); 
+                KernelIO::Write("Usage: ", COL4_CYAN); 
+                KernelIO::WriteLine("fg [color]"); 
+                delete color;
+                return;
+            }
 
-                System::KernelIO::WriteLine(foreground);
-                System::KernelIO::WriteLine(background);
-                KernelIO::Terminal.Clear(Graphics::GetColorFromName(background));
-                KernelIO::Terminal.SetForeColor(Graphics::GetColorFromName(foreground));
-                KernelIO::Terminal.WriteLine("Color Set!");
+            // set color
+            KernelIO::Terminal.SetForeColor(Graphics::GetColorFromName(color));
 
-                delete background;
-                delete foreground;
-                delete cmd;
-            }       
+            delete color;
+        }
+
+        void BG(char* input)
+        {
+            char* color = strsplit_index(input, 1, ' ');
+
+            // invalid color
+            if (strlen(color) == 0) 
+            { 
+                KernelIO::WriteLine("No color selected"); 
+                KernelIO::Write("Usage: ", COL4_CYAN); 
+                KernelIO::WriteLine("bg [color]"); 
+                delete color;
+                return;
+            }
+
+            // set color
+            KernelIO::Terminal.SetBackColor(Graphics::GetColorFromName(color));
+
+            delete color;
+        }
+
+        void DUMP(char* input)
+        {
+            // get data from input
+            char* str_offset = strsplit_index(input, 1, ' ');
+            char* str_len    = strsplit_index(input, 2, ' ');
+
+            uint32_t offset = stod(str_offset);
+            uint32_t length = stod(str_len);
+
+            KernelIO::Terminal.WriteLine("Showing memory at ");
+            char temp[16];
+            strhex32(offset, temp);
+            KernelIO::Terminal.WriteLine(temp, COL4_GRAY);
+
+            bool oldConsole = debug_console_enabled;
+            bool oldSerial = debug_serial_enabled;
+            KernelIO::SetDebugConsoleOutput(true);
+            KernelIO::SetDebugSerialOutput(false);
+            KernelIO::DumpMemory((uint8_t*)offset, length, 12, true);
+            KernelIO::SetDebugConsoleOutput(oldConsole);
+            KernelIO::SetDebugSerialOutput(oldSerial);
+
+            delete str_offset;
+            delete str_len;
         }
     }
 }

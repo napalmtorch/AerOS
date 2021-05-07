@@ -95,5 +95,5 @@ namespace Graphics
         const Color Gray            = { 0xFF, 0x7F, 0x7F, 0x7F }; 
     }
     
-    COL4 GetColorFromName(char* colorname);
+    COL4 GetColorFromName(char* name);
 }

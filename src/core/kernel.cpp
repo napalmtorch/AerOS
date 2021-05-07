@@ -52,6 +52,7 @@ namespace System
         // shell
         System::ShellHost Shell;
 
+        // acpi controller
         HAL::ACPI ACPI;
 
         // called as first function before kernel run
@@ -133,7 +134,7 @@ namespace System
             HAL::CPU::EnableInterrupts();
 
             // ready shell
-            Shell.Initialize();
+            Shell.Initialize();    
 
             // test fat driver
             /*          
@@ -173,11 +174,11 @@ namespace System
         {
 
         }
+        
         // triggered when enter key is pressed
         void KernelBase::OnEnterPressed(char* input)
         {
             Shell.HandleInput(input);
-            Terminal.Write("shell> ",COL4_YELLOW);
         }
     }
 }

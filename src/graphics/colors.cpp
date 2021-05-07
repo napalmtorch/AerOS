@@ -1,5 +1,6 @@
 #include "graphics/colors.hpp"
 #include "lib/string.hpp"
+#include "core/kernel.hpp"
 
 namespace Graphics
 {
@@ -37,57 +38,32 @@ namespace Graphics
         return 0;
     }
 
-    COL4 GetColorFromName(char* colorname)
+    COL4 GetColorFromName(char* name)
     {
-        COL4 background = COL4_BLACK;
-        if(streql("black",colorname)) {
-            background = COL4_BLACK;
-        }
-        else if(streql("darkblue",colorname)) {
-            background = COL4_DARK_BLUE;
-        }
-        else if(streql("darkgreen",colorname)) {
-            background = COL4_DARK_GREEN;
-        }
-        else if(streql("darkcyan",colorname)) {
-            background = COL4_DARK_CYAN;
-        }
-        else if(streql("darkred",colorname)) {
-            background = COL4_DARK_RED;
-        }
-        else if(streql("darkmagenta",colorname)) {
-            background = COL4_DARK_MAGENTA;
-        }
-        else if(streql("darkyellow",colorname)) {
-            background = COL4_DARK_YELLOW;
-        }
-        else if(streql("gray",colorname)) {
-            background = COL4_GRAY;
-        }
-        else if(streql("darkgray",colorname)) {
-            background = COL4_DARK_GRAY;
-        }
-        else if(streql("blue",colorname)) {
-            background = COL4_BLUE;
-        }
-        else if(streql("green",colorname)) {
-            background = COL4_GREEN;
-        }
-        else if(streql("cyan",colorname)) {
-            background = COL4_CYAN;
-        }
-        else if(streql("red",colorname)) {
-            background = COL4_RED;
-        }
-        else if(streql("magenta",colorname)) {
-            background = COL4_MAGENTA;
-        }
-        else if(streql("yellow",colorname)) {
-            background = COL4_YELLOW;
-        }
-        else if(streql("WHITE",colorname)) {
-            background = COL4_MAGENTA;
-        }
-        return background;
+        // convert name to upper case
+        char upper[strlen(name)];
+        strcpy(name, upper);
+        strupper(upper);
+        
+        // black
+        if (streql(upper, "BLACK")) { return COL4_BLACK; }
+        if (streql(upper, "DARK BLUE") || streql(upper, "DARKBLUE") || streql(upper, "DARK_BLUE"))       { return COL4_DARK_BLUE; }
+        if (streql(upper, "DARK GREEN") || streql(upper, "DARKGREEN") || streql(upper, "DARK_GREEN"))    { return COL4_DARK_GREEN; }
+        if (streql(upper, "DARK CYAN") || streql(upper, "DARKCYAN") || streql(upper, "DARK_CYAN"))       { return COL4_DARK_CYAN; }
+        if (streql(upper, "DARK RED") || streql(upper, "DARKRED") || streql(upper, "DARK_RED"))          { return COL4_DARK_RED; }
+        if (streql(upper, "DARK MAGENTA") || streql(upper, "DARKMAGENTA") || streql(upper, "DARK_MAGENTA") || streql(upper, "PURPLE")) { return COL4_DARK_MAGENTA; }
+        if (streql(upper, "DARK YELLOW") || streql(upper, "DARKYELLOW") || streql(upper, "DARK_YELLOW")) { return COL4_DARK_YELLOW; }
+        if (streql(upper, "DARK GRAY") || streql(upper, "DARKGRAY") || streql(upper, "DARK_GRAY"))       { return COL4_DARK_GRAY; }
+        if (streql(upper, "GRAY"))    { return COL4_GRAY; }
+        if (streql(upper, "BLUE"))    { return COL4_BLUE; }
+        if (streql(upper, "GREEN"))   { return COL4_GREEN; }
+        if (streql(upper, "CYAN"))    { return COL4_CYAN; }
+        if (streql(upper, "RED"))     { return COL4_RED; }
+        if (streql(upper, "MAGENTA") || streql(upper, "PINK")) { return COL4_MAGENTA; }
+        if (streql(upper, "YELLOW"))  { return COL4_YELLOW; }
+        if (streql(upper, "WHITE"))   { return COL4_WHITE; }
+
+        // return
+        return COL4_BLACK;
     }
 }

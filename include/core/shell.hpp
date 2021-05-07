@@ -35,6 +35,8 @@ namespace System
         void CLEAR(char* input);
         void LSPCI(char* input);
         void CPUINFO(char* input);
-        void COLOR(char* input);
+        void FG(char* input);
+        void BG(char* input);
+        void DUMP(char* input);
     }
 }
