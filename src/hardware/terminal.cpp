@@ -175,12 +175,13 @@ extern "C"
         for (size_t i = 0; i < amount; i++)
         {
             // move buffer up 1 line
-            mem_copy((uint8_t*)(buffer + (buffer_width * 2)), buffer, (buffer_width * buffer_height * 2) - (buffer_width * 2));
+            mem_copy((uint8_t*)(buffer + (buffer_width * 2)), buffer, (80 * 25 * 2) - 160);
+            //mem_copy((uint8_t*)(buffer + (buffer_width * 2)), buffer, (buffer_width * buffer_height * 2) - (buffer_width * 2));
             // clear bottom line
-            for (size_t j = (buffer_width * buffer_height * 2) - (buffer_width * 2); i < (buffer_width * buffer_height * 2); i += 2)
+            for (size_t j = (buffer_width * buffer_height * 2) - (buffer_width * 2); j < (buffer_width * buffer_height * 2); j += 2)
             {
-                buffer[i] = 0x20;
-                buffer[i + 1] = term_pack_colors(fore_color, back_color);
+                buffer[j] = 0x20;
+                buffer[j + 1] = term_pack_colors(fore_color, back_color);
             }
         }
     }
@@ -208,6 +209,11 @@ extern "C"
         buffer_height = h;
     }
 
+    // set terminal buffer
+    void term_set_buffer(uint8_t* buf)
+    {
+        buffer = buf;
+    }
 
     // set terminal cursor x and y position
     void term_set_cursor(uint8_t x, uint8_t y)

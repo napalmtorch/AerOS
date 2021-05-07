@@ -157,6 +157,7 @@ namespace HAL
         if (mode.IsTextMode())
         {
             term_set_size(mode.GetWidth(), mode.GetHeight());
+            term_set_buffer(Buffer);
         }
     }
 
