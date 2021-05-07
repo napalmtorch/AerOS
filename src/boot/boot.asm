@@ -6,6 +6,7 @@
     .long MAGIC
     .long FLAGS
     .long CHECKSUM
+    .skip 20
 
 
 .section .text

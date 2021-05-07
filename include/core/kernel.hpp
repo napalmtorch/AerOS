@@ -1,6 +1,7 @@
 #pragma once
 #include "lib/types.h"
 #include "core/debug.hpp"
+#include "hardware/cpuinfo.hpp"
 #include "hardware/ports.hpp"
 #include "hardware/multiboot.hpp"
 #include "hardware/terminal.hpp"
@@ -91,6 +92,8 @@ extern "C"
 
             // terminal interface
             extern HAL::TerminalManager Terminal;
+
+            extern HAL::CPUInfo CPUInfo;
         }
     }
 #else

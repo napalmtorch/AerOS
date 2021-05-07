@@ -11,7 +11,7 @@ static void enter_pressed(char* input)
 {
     System::KernelIO::Kernel.OnEnterPressed(input);
 }
-
+        extern "C" int endKernel;
 namespace System
 {
     namespace KernelIO
@@ -48,6 +48,8 @@ namespace System
 
         // terminal interface
         HAL::TerminalManager Terminal;
+
+        HAL::CPUInfo CPUInfo;
 
         // called as first function before kernel run
         void KernelBase::Initialize()
@@ -123,9 +125,6 @@ namespace System
             Terminal.WriteLine(testStr.ToCharArray());
             testStr = "POOP";
             Terminal.WriteLine(testStr.ToCharArray());
-
-            WriteLineHex("KERNEL_START: ", kernel_begin);
-            WriteLineHex("KERNEL_END: ", kernel_end);
 
             // ready
             Terminal.Write("shell> ", COL4_YELLOW);
@@ -215,6 +214,9 @@ namespace System
             }
             // clear the screen
             else if (streql("clear", input) || streql("cls", input)) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
+
+            //cpuinfo
+            else if (streql("cpuinfo", input)) { CPUInfo.CPUDetect(); return; }
             // set colors
             else if (streql ("color", str))
             {          
