@@ -120,11 +120,17 @@ namespace System
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
 
+            // string test
+            String testStr = "Hello world";
+            Terminal.WriteLine(testStr.ToCharArray());
+            testStr = "POOP";
+            Terminal.WriteLine(testStr.ToCharArray());
+
             // ready
             Terminal.Write("shell> ", COL4_YELLOW);
 
             // test fat driver
-            
+            /*          
             HAL::FATFile file = FAT.OpenFile("test.txt");
             Write("FILE_NAME: "); WriteLine(file.Name);
             WriteLineDecimal("LENGTH: ", file.FileLength);
@@ -134,6 +140,8 @@ namespace System
             WriteLineDecimal("ID: ", file.ID);
             WriteLineDecimal("POSITION: ", file.Position);
             WriteLineDecimal("EOF: ", file.EOF);
+            */
+
             
         }
 
@@ -188,13 +196,12 @@ namespace System
         void KernelBase::OnEnterPressed(char* input)
         {
             Terminal.Write("shell> ",COL4_YELLOW);
-            HandleCommand(input);
+            //HandleCommand(input);
         }
 
         void KernelBase::HandleCommand(char* input)
         {
-         
-            
+                 
             if(strcmp ("lspci", input) == 0) { PCIdevices.List(); }
             else if(strcmp ("clear", input) == 0) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
             else if(strcmp ("", input) == 0) { Terminal.WriteLine(""); }

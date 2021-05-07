@@ -18,7 +18,6 @@ extern "C"
         void* next;
     } entry_t;
     
-
     uint32_t free_pos;
     uint32_t max_pos;
     uint32_t start;
@@ -29,7 +28,7 @@ extern "C"
         free_pos = 10 * 1024 * 1024;
 
         // set the start pointer to 10 megabytes
-        start = 10 * 1204 * 1024;
+        start = 10 * 1024 * 1024;
 
         // maximum size is installed memory minus 12 megabytes
         max_pos = (mem_get_total_mb() - 12) * 1024 * 1024;

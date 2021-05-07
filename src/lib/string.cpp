@@ -225,3 +225,205 @@ extern "C"
     // check if string equal to string
     bool streql(char text[], char comp[]) { return strcmp(text, comp) == 0; }
 }
+
+namespace System
+{
+    // default constructor
+    String::String() { Set(""); }
+
+    // constructor with pointer
+    String::String(char* text) { Set(text); }
+
+    // constructor with two pointers
+    String::String(char* left, char* right)
+    {
+        if (this->Data != nullptr) { delete this->Data; }
+        uint32_t len = strlen(left) + strlen(right);
+        this->Data = new char[len + 1];
+
+        int pos = 0;
+        for (size_t i = 0; i < strlen(left); i++) { this->Data[pos] = left[i]; pos++; }
+        for (size_t i = 0; i < strlen(right); i++) { this->Data[pos] = right[i]; pos++; }
+        ToCharArray()[len - 1] = '\0';
+    }
+
+    // constructor copy
+    String::String(const String& text)
+    {
+        if (this->Data != nullptr) { delete this->Data; }
+        this->Data = new char[strlen(text.Data) + 1];
+        strcpy(text.Data, this->Data);
+        ToCharArray()[strlen(text.Data)] = '\0';
+    }
+
+    // constructor move
+    String::String(String&& text)
+    {
+        if (this->Data != nullptr) { delete this->Data; }
+        this->Data = new char[strlen(text.Data) + 1];
+        strcpy(text.Data, this->Data);
+        ToCharArray()[strlen(text.Data)] = '\0';
+        delete text.Data;
+    }
+
+    // destructor
+    String::~String() { delete Data; Data = nullptr; }
+
+    // set text
+    void String::Set(const char text[])
+    {
+        if (this->Data != nullptr) { delete this->Data; }
+        this->Data = new char[strlen_c(text) + 1];
+        strcpy_c(text, this->Data);
+        ToCharArray()[strlen_c(text)] = '\0';
+    }
+    
+    // append character
+    String& String::Append(char c)
+    {
+        uint32_t len = strlen(ToCharArray()) + 1;
+        char temp[len];
+        for (size_t i = 0; i < strlen(ToCharArray()); i++) { temp[i] = Data[i]; }
+        temp[len - 1] = c;
+        if (this->Data != nullptr) { delete this->Data; }
+        this->Data = new char[len];
+        strcpy(temp, ToCharArray());
+        ToCharArray()[len - 1] = '\0';
+        return *this;
+    }
+
+    // append constant string
+    String& String::Append(const char text[])
+    {
+        uint32_t len = strlen(ToCharArray()) + strlen_c(text) + 1;
+        char temp[len];
+        uint32_t pos = 0;
+        for (size_t i = 0; i < strlen(ToCharArray()); i++)
+        {
+            temp[pos] = ToCharArray()[i];
+            pos++;
+        }
+        for (size_t i = 0; i < strlen_c(text); i++)
+        {
+            temp[pos] = text[i];
+            pos++;
+        }
+        if (this->Data != nullptr) { delete this->Data; }
+        this->Data = new char[len];
+        strcpy(temp, ToCharArray());
+        ToCharArray()[len - 1] = '\0';
+        return *this;
+    }
+
+    // remove last
+    String& String::RemoveLast()
+    {
+        uint32_t len = strlen(ToCharArray());
+        char temp[len];
+        uint32_t pos = 0;
+        for (size_t i = 0; i < len; i++)
+        {
+            temp[pos] = ToCharArray()[i];
+            pos++;
+        }
+        if (this->Data != nullptr) { delete this->Data; }
+        this->Data = new char[len];
+        strcpy(temp, ToCharArray());
+        ToCharArray()[len - 1] = '\0';
+        return *this;
+    }
+
+    // substring
+    char* String::Substring(uint32_t index, uint32_t len)
+    {
+        char* temp = new char[len];
+        for (size_t i = 0; i < len; i++)
+        {
+            temp[i] = Data[index + i];
+        }
+        return temp;
+    }
+
+    // get character at index
+    char String::GetChar(uint32_t index)
+    {
+        if (index >= GetLength()) { return 0; }
+        char data = Data[index];
+        return data;
+    }
+
+    // get index of first instance of character
+    uint32_t String::IndexOf(char c)
+    {
+        for (size_t i = 0; i < GetLength(); i++) { if (Data[i] == c) { return i; } }
+        return 0;
+    }
+
+    // get index of last instance of character
+    uint32_t String::LastIndexOf(char c)
+    {
+        for (size_t i = GetLength() - 1; i >= 0; i--) { if (Data[i] == c) { return i; } }
+    }
+
+     // convert to upper case
+    void String::ToUpper()
+    {
+        for (size_t i = 0; i < GetLength(); i++)
+        {
+            if (Data[i] >= 97 && Data[i] <= 122) { Data[i] -= 32; }
+        }
+    }
+    
+    // compare two strings
+    uint32_t String::CompareTo(String& text) { return strcmp(this->ToCharArray(), text.ToCharArray()); }
+
+    // is string equal to another string
+    bool String::Equals(String& text) { return strcmp(this->ToCharArray(), text.ToCharArray()) == 0; }
+
+    // is string equal to another constant string
+    bool String::Equals(char text[]) { return strcmp(this->ToCharArray(), text) == 0; }
+
+    // convert string to integer
+    uint32_t String::ToDecimal()
+    {
+        uint32_t output = stod(this->ToCharArray());
+        return output;
+    }
+
+    // return length of string
+    size_t String::GetLength() { return strlen(this->Data); }
+
+    // return character array pointer
+    char* String::ToCharArray() { return this->Data; }
+
+    // assign operator
+    String &String::operator = (const char text[])
+    {
+        if (this->Data != nullptr) { delete this->Data; }
+        this->Data = new char[strlen_c(text) + 1];
+        strcpy_c(text, this->Data);
+        ToCharArray()[strlen_c(text)] = '\0';
+        return *this;
+    }
+    String &String::operator = (const String &text)
+    {
+        if (this->Data != nullptr) { delete this->Data; }
+        this->Data = new char[strlen(text.Data) + 1];
+        strcpy(text.Data, this->Data);
+        ToCharArray()[strlen(text.Data)] = '\0';
+        return *this;
+    }
+    String &String::operator = (String &&text)
+    {
+        if (this->Data != nullptr) { delete this->Data; }
+        this->Data = new char[strlen(text.Data) + 1];
+        strcpy(text.Data, this->Data);
+        ToCharArray()[strlen(text.Data)] = '\0';
+        return *this;
+    }
+
+    // plus equal operator
+    String &String::operator += (const char text[]) { Append(text); return *this; }
+    String &String::operator += (const String &text) { Append(text.Data); return *this; }
+    String &String::operator += (String &&text) { Append(text.Data); return *this; }
+}

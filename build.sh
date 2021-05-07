@@ -88,5 +88,5 @@ cp 'include/boot/grub.cfg' 'bin/isodir/boot/grub/grub.cfg'
 grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
 
 # run 
-qemu-system-i386 -m 256M -vga std -hda disk.img -cdrom 'AerOS.iso' -serial stdio -boot d
+qemu-system-i386 -m 256M -vga std -soundhw sb16 -hda disk.img -cdrom 'AerOS.iso' -serial stdio -boot d
 fi
