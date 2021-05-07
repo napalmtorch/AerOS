@@ -173,6 +173,19 @@ extern "C"
         return (void*)((uint32_t)entry + sizeof(struct entry));
     }
 
+int memcmp(const void* a, const void* b, size_t len) {
+    int r = 0;
+    const unsigned char *x = (const unsigned char*)a;
+    const unsigned char *y = (const unsigned char*)b;
+
+    while (len--) {
+        r = *x - *y;
+        if (r)
+            return r;
+        x++, y++;
+    }
+    return 0;
+}
     // free region of memory
     void mem_free(void* ptr)
     {

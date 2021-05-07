@@ -3,6 +3,7 @@
 #include "lib/string.hpp"
 #include "lib/vector.hpp"
 #include "core/debug.hpp"
+#include "hardware/acpi.hpp"
 #include "hardware/cpu.hpp"
 #include "hardware/ports.hpp"
 #include "hardware/multiboot.hpp"
@@ -95,6 +96,9 @@ extern "C"
 
             // shell
             extern System::ShellHost Shell;
+
+            // acpi
+            extern HAL::ACPI ACPI;
         }
     }
 #else

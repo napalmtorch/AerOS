@@ -52,6 +52,8 @@ namespace System
         // shell
         System::ShellHost Shell;
 
+        HAL::ACPI ACPI;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -89,6 +91,9 @@ namespace System
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
             ThrowOK("Initialized serial port on COM1");
+            //Initialise ACPI
+            ACPI.ACPIInit();
+            ThrowOK("ACPI Initialised");
 
             // initialize memory manager
             MemoryManager.Initialize();
@@ -172,6 +177,7 @@ namespace System
         void KernelBase::OnEnterPressed(char* input)
         {
             Shell.HandleInput(input);
+            Terminal.Write("shell> ",COL4_YELLOW);
         }
     }
 }
