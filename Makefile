@@ -57,4 +57,4 @@ fullbochs: clean all iso bochs
 
 fullqemu: clean all iso qemu
 
-fullqemuk: clean all iso qemu-kernel
+fullqemuk: clean all qemu-kernel
