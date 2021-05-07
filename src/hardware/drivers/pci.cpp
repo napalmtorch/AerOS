@@ -57,7 +57,7 @@ namespace HAL
     void PCIBusController::List()
     {
         System::KernelIO::Write("\n");
-        System::KernelIO::WriteLine("   ---- PCI Devices ----   ", COL4_GREEN);
+        System::KernelIO::WriteLine("------- PCI Devices -------", COL4_GREEN);
         System::KernelIO::Write("\n");
         char temp[16];
         for (uint32_t bus = 0; bus < 256; bus++)
@@ -71,11 +71,11 @@ namespace HAL
                     uint16_t id = GetDeviceID(bus, slot, function);
                     uint16_t classID = GetClassID(bus, slot, function);
                     
-                    debug_write(" - ");
+                    debug_write("- ");
                     char vendorbuf[32];
-                    strhex(vendor,vendorbuf);
+                    strhex32(vendor,vendorbuf);
                     char vendoridbuf[32];
-                    strhex(id,vendoridbuf);
+                    strhex32(id,vendoridbuf);
                     
                     System::KernelIO::Write("DEVICE: ", COL4_MAGENTA);
                     System::KernelIO::Write("0x");

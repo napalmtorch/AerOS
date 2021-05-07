@@ -217,6 +217,7 @@ extern "C"
     // set terminal cursor x and y position
     void term_set_cursor(uint8_t x, uint8_t y)
     {
+        cursor_x = x; cursor_y = y;
         uint32_t offset = x + (y * buffer_width);
         outb(0x3D4, 0x0F);
         outb(0x3D5, (uint8_t)(offset & 0xFF));

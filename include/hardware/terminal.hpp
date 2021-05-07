@@ -155,6 +155,5 @@ namespace HAL
             // get colors
             COL4 GetForeColor();
             COL4 GetBackColor(); 
-            uint8_t cursor_x, cursor_y;
     };
 }

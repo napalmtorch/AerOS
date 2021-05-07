@@ -45,9 +45,6 @@ namespace System
 
         // ps2 keyboard controller driver
         HAL::PS2Keyboard Keyboard;
-        
-        // pci devices
-        HAL::PCIBusController PCIdevices;
 
         // terminal interface
         HAL::TerminalManager Terminal;
@@ -200,35 +197,57 @@ namespace System
 
         void KernelBase::HandleCommand(char* input)
         {
+            // split input into arguments
             char* str = strsplit_index(input,0,' ');
-            if(strcmp ("lspci", input) == 0) { PCIdevices.List(); }
-            else if(strcmp ("clear", input) == 0) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
-            else if(strcmp ("", input) == 0) { Terminal.WriteLine(""); }
-            else if(streql ("color", str)) { 
-                
+
+            // blank input
+            if (strlen(input) == 0) { return; }
+            // list pci devices
+            if (streql("lspci", input))
+            {
+                bool old = debug_console_enabled;
+                SetDebugConsoleOutput(true);
+                PCIBus.List(); 
+                SetDebugConsoleOutput(old);
+            }
+            // clear the screen
+            else if (streql("clear", input) || streql("cls", input)) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
+            // set colors
+            else if (streql ("color", str))
+            {          
                 char* background = strsplit_index(input,2,' ');
                 char* foreground = strsplit_index(input,1,' ');
-                if(streql(str,foreground) || streql(str,background)) { Terminal.WriteLine("All Parameters are required"); Terminal.WriteLine("Usage: color foreground background"); Terminal.WriteLine("Example: color white black"); return; }//man let me test
-                System::KernelIO::WriteLine(foreground);
-                System::KernelIO::WriteLine(background);
-                Terminal.Clear(Graphics::GetColorFromName(background));
-                Terminal.SetForeColor(Graphics::GetColorFromName(foreground));
-                Terminal.Write("shell> ",COL4_YELLOW);
-                Terminal.WriteLine("Color Set!");
-                delete background;
-                delete foreground;
-                delete str;
+
+                if (background != nullptr && foreground != nullptr)
+                {
+                    if(streql(str, foreground) || streql(str, background))
+                    { Terminal.WriteLine("All Parameters are required"); Terminal.WriteLine("Usage: color foreground background"); Terminal.WriteLine("Example: color white black"); return; }
+
+                    System::KernelIO::WriteLine(foreground);
+                    System::KernelIO::WriteLine(background);
+                    Terminal.Clear(Graphics::GetColorFromName(background));
+                    Terminal.SetForeColor(Graphics::GetColorFromName(foreground));
+                    Terminal.WriteLine("Color Set!");
+
+                    delete background;
+                    delete foreground;
+                    delete str;
+                }
                 return;
             }
-            else if (streql("debug", input)){
+            // debug
+            else if (streql("debug", input))
+            {
                 char* s = new char[5];
                 char* j = new char[5];
                 delete s;
                 delete j;
                 char* q = new char[10];
             }
-            else { Terminal.Write("You typed: ",COL4_WHITE); 
-            Terminal.WriteLine(input); }
+            // invalid command
+            else { Terminal.WriteLine("Invalid command or file", COL4_RED); }
+
+            // finish
             delete str;
             return;
         }
