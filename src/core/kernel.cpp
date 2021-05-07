@@ -49,6 +49,9 @@ namespace System
         // terminal interface
         HAL::TerminalManager Terminal;
 
+        // shell
+        System::ShellHost Shell;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -79,9 +82,6 @@ namespace System
             
             // initialize interrupt service routines
             HAL::CPU::InitializeISRs();
-
-            // enable interrupts
-            HAL::CPU::EnableInterrupts();
 
             // disable console output for debugger
             SetDebugConsoleOutput(false);
@@ -124,8 +124,11 @@ namespace System
             testStr = "POOP";
             Terminal.WriteLine(testStr.ToCharArray());
 
-            // ready
-            Terminal.Write("shell> ", COL4_YELLOW);
+            // enable interrupts
+            HAL::CPU::EnableInterrupts();
+
+            // ready shell
+            Shell.Initialize();
 
             // test fat driver
             /*          
@@ -168,68 +171,7 @@ namespace System
         // triggered when enter key is pressed
         void KernelBase::OnEnterPressed(char* input)
         {
-            HandleCommand(input);
-            Terminal.Write("shell> ",COL4_YELLOW);
-        }
-
-        void KernelBase::HandleCommand(char* input)
-        {
-            // split input into arguments
-            char* str = strsplit_index(input,0,' ');
-
-            // blank input
-            if (strlen(input) == 0) { return; }
-            // list pci devices
-            if (streql("lspci", input))
-            {
-                bool old = debug_console_enabled;
-                SetDebugConsoleOutput(true);
-                PCIBus.List(); 
-                SetDebugConsoleOutput(old);
-            }
-            // clear the screen
-            else if (streql("clear", input) || streql("cls", input)) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
-
-            //cpuinfo
-            else if (streql("cpuinfo", input)) { HAL::CPU::Detect(); return; }
-            // set colors
-            else if (streql ("color", str))
-            {          
-                char* background = strsplit_index(input,2,' ');
-                char* foreground = strsplit_index(input,1,' ');
-
-                if (background != nullptr && foreground != nullptr)
-                {
-                    if(streql(str, foreground) || streql(str, background))
-                    { Terminal.WriteLine("All Parameters are required"); Terminal.WriteLine("Usage: color foreground background"); Terminal.WriteLine("Example: color white black"); return; }
-
-                    System::KernelIO::WriteLine(foreground);
-                    System::KernelIO::WriteLine(background);
-                    Terminal.Clear(Graphics::GetColorFromName(background));
-                    Terminal.SetForeColor(Graphics::GetColorFromName(foreground));
-                    Terminal.WriteLine("Color Set!");
-
-                    delete background;
-                    delete foreground;
-                    delete str;
-                }
-                return;
-            }
-            // debug
-            else if (streql("debug", input))
-            {
-                char* s = new char[5];
-                char* j = new char[5];
-                delete s;
-                delete j;
-                char* q = new char[10];
-            }
-            // invalid command
-            else { Terminal.WriteLine("Invalid command or file", COL4_RED); }
-
-            // finish
-            delete str;
-            return;
+            Shell.HandleInput(input);
         }
     }
 }

@@ -14,7 +14,7 @@ for file in src/core/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/core/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/core/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # graphics
@@ -22,7 +22,7 @@ for file in src/graphics/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/graphics/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/graphics/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # hardware
@@ -30,7 +30,7 @@ for file in src/hardware/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/hardware/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/hardware/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # drivers
@@ -38,7 +38,7 @@ for file in src/hardware/drivers/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/hardware/drivers/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/hardware/drivers/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # interrupt
@@ -46,7 +46,7 @@ for file in src/hardware/interrupt/*.cpp
 do
 infile=$(basename $file)
 outfile="$(echo $infile | sed 's/cpp/o/g')"
-i686-elf-g++ -w -Iinclude -c src/hardware/interrupt/$infile -o "bin/objs/$outfile" -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+i686-elf-g++ -w -Iinclude -c src/hardware/interrupt/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
 # lib

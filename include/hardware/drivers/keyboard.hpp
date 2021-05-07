@@ -135,6 +135,22 @@ namespace HAL
             
             // get pressed keys array
             bool* GetPressedKeys();
+
+            // check if caps lock is pressed
+            bool GetCapsLockDown();
+
+            // check if either shift key is down
+            bool GetShiftDown();
+
+            // check if control key is down
+            bool GetControlDown();
+
+            // check if alt key is down
+            bool GetAltDown();
+
+            // check if enter key is down
+            bool GetEnterDown();
+
         private:
             // array of currently pressed keys
             bool PressedKeys[KB_SCANCODE_MAX];

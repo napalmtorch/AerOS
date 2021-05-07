@@ -1,5 +1,7 @@
 #pragma once
 #include "lib/types.h"
+#include "lib/string.hpp"
+#include "lib/vector.hpp"
 #include "core/debug.hpp"
 #include "hardware/cpu.hpp"
 #include "hardware/ports.hpp"
@@ -17,6 +19,7 @@
 #include "hardware/drivers/keyboard.hpp"
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
+#include "core/shell.hpp"
 
 // kernel offsets
 extern "C"
@@ -55,9 +58,6 @@ extern "C"
                     // triggered when enter key is pressed
                     void OnEnterPressed(char* input);
 
-                    // register command
-                    void HandleCommand(char* input);
-
             };
 
             // kernel base class
@@ -92,6 +92,9 @@ extern "C"
 
             // terminal interface
             extern HAL::TerminalManager Terminal;
+
+            // shell
+            extern System::ShellHost Shell;
         }
     }
 #else

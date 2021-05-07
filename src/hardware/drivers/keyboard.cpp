@@ -71,7 +71,7 @@ namespace HAL
             }
         }
         // handle shift
-        else if (ScanCode == (uint8_t)HAL::Keys::LSHIFT) { ShiftDown = true; }
+        else if (ScanCode == (uint8_t)HAL::Keys::LSHIFT || ScanCode == (uint8_t)HAL::Keys::RSHIFT) { ShiftDown = true; }
         else if (ScanCode == 0xAA) { ShiftDown = false; }
         // handle caps lock
         else if (ScanCode == (uint8_t)HAL::Keys::CAPSLOCK) { CapsLockDown = !CapsLockDown; }
@@ -184,4 +184,19 @@ namespace HAL
 
     // get pressed keys array
     bool* PS2Keyboard::GetPressedKeys() { return PressedKeys; }
+
+    // check if caps lock is pressed
+    bool PS2Keyboard::GetCapsLockDown() { return IsKeyDown(HAL::Keys::CAPSLOCK); }
+
+    // check if either shift key is down
+    bool PS2Keyboard::GetShiftDown() { return IsKeyDown(HAL::Keys::LSHIFT) || IsKeyDown(HAL::Keys::RSHIFT); }
+
+    // check if control key is down
+    bool PS2Keyboard::GetControlDown() { return false; } // not yet implemented
+
+    // check if alt key is down
+    bool PS2Keyboard::GetAltDown() { return false; } // not yet implemented
+
+    // check if enter key is down
+    bool PS2Keyboard::GetEnterDown() { return IsKeyDown(HAL::Keys::ENTER); }
 }
