@@ -2,12 +2,30 @@
 all:
 	./build.sh --no-qemu
 clean:
-	rm -Rf bin/isodir/boot/kernel.bin
-	rm -Rf bin/objs/*.o
-	rm -Rf bin/*.o
-	rm AerOS.iso
-	rm *.log
-	rm *.out
+	for file in $(wildcard bin/isodir/boot/*.bin) ; do \
+		rm -Rf $$file ; \
+	done
+
+	for file in $(wildcard bin/objs/*.o) ; do \
+		rm -Rf $$file ; \
+	done
+
+	for file in $(wildcard bin/*.o) ; do \
+		rm -Rf $$file ; \
+	done
+
+	for file in $(wildcard *.iso) ; do \
+		rm $$file ; \
+	done
+
+	for file in $(wildcard *.log) ; do \
+		rm $$file ; \
+	done
+
+	for file in $(wildcard *.log) ; do \
+		rm $$file ; \
+	done
+
 iso:
 	mkdir -p 'bin/isodir/boot/grub'
 	cp 'bin/kernel.bin' 'bin/isodir/boot/kernel.bin'
@@ -38,3 +56,5 @@ win:
 fullbochs: clean all iso bochs
 
 fullqemu: clean all iso qemu
+
+fullqemuk: clean all qemu-kernel
