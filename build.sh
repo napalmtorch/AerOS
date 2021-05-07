@@ -1,7 +1,8 @@
-rm -R 'bin'
-mkdir 'bin'
-mkdir 'bin/objs'
-
+#!/bin/sh
+if [ -d "bin" ]; then
+rm -Rf 'bin'
+mkdir -p 'bin/objs'
+fi
 # bootloader
 as --32 'src/boot/boot.asm' -o 'bin/objs/boot.o'
 nasm -felf32 'src/boot/realmode.asm' -o 'bin/objs/rm.o'
