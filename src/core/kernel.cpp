@@ -124,12 +124,6 @@ namespace System
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
 
-            // string test
-            String testStr = "Hello world";
-            Terminal.WriteLine(testStr.ToCharArray());
-            testStr = "POOP";
-            Terminal.WriteLine(testStr.ToCharArray());
-
             // enable interrupts
             HAL::CPU::EnableInterrupts();
 
@@ -174,7 +168,7 @@ namespace System
         {
 
         }
-        
+
         // triggered when enter key is pressed
         void KernelBase::OnEnterPressed(char* input)
         {

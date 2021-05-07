@@ -36,6 +36,7 @@ namespace System
         CommandList[3] = ShellCommand("FG",         "Change foreground color", "",          Commands::FG);
         CommandList[4] = ShellCommand("BG",         "Change background color", "",          Commands::BG);
         CommandList[5] = ShellCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
+        CommandList[6] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
 
         // print caret to screen
         PrintCaret();
@@ -69,6 +70,7 @@ namespace System
             {
                 // execute command and return
                 CommandList[i].Execute(input);
+                delete cmd;
                 return;
             }
         }
@@ -78,6 +80,8 @@ namespace System
         // don't print if no text was typed
         if (strlen(input) > 0) { KernelIO::Terminal.WriteLine("Invalid command or file", COL4_RED); }
     }
+
+    ShellCommand ShellHost::GetCommand(uint32_t index) { return CommandList[index]; }
 
     char* ShellHost::GetCurrentPath() { return CurrentPath.ToCharArray(); }
 
@@ -164,6 +168,21 @@ namespace System
 
             delete str_offset;
             delete str_len;
+        }
+
+        void HELP(char* input)
+        {
+            // loop through commands
+            for (size_t i = 0; i < 32; i++)
+            {
+                if (strlen(KernelIO::Shell.GetCommand(i).Name) > 0)
+                {
+                    KernelIO::Terminal.Write("- ");
+                    KernelIO::Terminal.Write(KernelIO::Shell.GetCommand(i).Name);
+                    KernelIO::Terminal.SetCursorX(30);
+                    KernelIO::Terminal.WriteLine(KernelIO::Shell.GetCommand(i).Help, COL4_GRAY);
+                }
+            }
         }
     }
 }

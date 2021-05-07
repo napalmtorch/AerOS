@@ -25,6 +25,7 @@ namespace System
             void HandleInput(char* input);
             void ParseCommand(char* input);
             char* GetCurrentPath();
+            ShellCommand GetCommand(uint32_t index);
         private:
             String CurrentPath;
             ShellCommand CommandList[32];
@@ -38,5 +39,6 @@ namespace System
         void FG(char* input);
         void BG(char* input);
         void DUMP(char* input);
+        void HELP(char* input);
     }
 }
