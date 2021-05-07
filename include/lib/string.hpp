@@ -41,3 +41,64 @@ extern "C"
     bool IsEmpty(char* text);
 }
 
+namespace System
+{
+    class String
+    {
+        private:
+            char* Data;
+        public:
+            // default constructor
+            String();
+            // constructor with pointer
+            String(char* text);
+            // constructor with two pointers
+            String(char* left, char* right);
+            // constructor copy
+            String(const String& text);
+            // constructor move
+            String(String&& text);
+            // destructor
+            ~String();
+            // set text
+            void Set(const char text[]);
+            // append character
+            String& Append(char c);
+            // append constant string
+            String& Append(const char text[]);
+            // remove last
+            String& RemoveLast();
+            // substring
+            char* Substring(uint32_t index, uint32_t len);
+            // get character at index
+            char GetChar(uint32_t index);
+            // get index of first instance of character
+            uint32_t IndexOf(char c);
+            // get index of last instance of character
+            uint32_t LastIndexOf(char c);
+            // convert to upper case
+            void ToUpper();
+            // compare two strings
+            uint32_t CompareTo(String& text);
+            // is string equal to another string
+            bool Equals(String& text);
+            // is string equal to another constant string
+            bool Equals(char text[]);
+            // convert string to integer
+            uint32_t ToDecimal();
+            // get length of string
+            size_t GetLength();
+            // return character array pointer
+            char* ToCharArray();
+
+            // assign operators
+            String & operator = (const char []);
+            String & operator = (const String &);
+            String & operator = (String &&);
+
+            // add-assign operators
+            String & operator += (const char []);
+            String & operator += (const String &);
+            String & operator += (String &&);
+    };
+}
