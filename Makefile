@@ -1,7 +1,9 @@
 
 all:
-	./build.sh --no-qemu
+	./scripts/build.sh --no-qemu
 clean:
+	touch sb16.log
+	
 	for file in $(wildcard bin/isodir/boot/*.bin) ; do \
 		rm -Rf $$file ; \
 	done
@@ -32,21 +34,21 @@ iso:
 	cp 'include/boot/grub.cfg' 'bin/isodir/boot/grub/grub.cfg'
 	grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
 qemu:
-	qemu-system-i386 -m 256M -vga std -hda disk.img -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm
+	qemu-system-i386 -m 256M -vga std -hda disks/disk.img -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm
 
 qemu-kernel:
-	qemu-system-i386 -m 256M -vga std -hda disk.img -kernel bin/kernel.bin -serial stdio -boot d -soundhw all -enable-kvm
+	qemu-system-i386 -m 256M -vga std -hda disks/disk.img -kernel bin/kernel.bin -serial stdio -boot d -soundhw all -enable-kvm
 
 bochs:
-	$(shell ./bochs.sh)
+	 ./scripts/bochs.sh
 bochs-gnome:
-	$(shell ./bochs.sh --gnome-terminal)
+	./scripts/bochs.sh --gnome-terminal
 
 bochsn:
-	./bochs_nodebug.sh
+	./scripts/bochs_nodebug.sh
 
 bochsn-gnome:
-	./bochs_nodebug.sh --gnome-terminal
+	./scripts/bochs_nodebug.sh --gnome-terminal
 
 lazy-will: clean all iso bochsn
 
