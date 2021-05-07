@@ -1,6 +1,6 @@
 #!/bin/bash
 FILE=serial.out
-DISK=disk.img
+DISK=disks/disk.img
 DISK_LOCK_FILE=disk.img.lock 
 if ! command -v bochs &> /dev/null
 then
@@ -40,9 +40,8 @@ then
 rm disk.img.lock
 fi
 if [ "$1" == "--gnome-terminal" ]; then
-chmod +x ./bochs_hack.sh
-gnome-terminal -- ./bochs_hack.sh &
+gnome-terminal -- bochs -q -f ../configs/bochsrc.txt &
 else
-xterm -e "echo "c" | bochs -q -f bochsrc_nodebug.txt" &
+xterm -e bochs -q -f ./configs/bochsrc.txt 
 fi
 fi
