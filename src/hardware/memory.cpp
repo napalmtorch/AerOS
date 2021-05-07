@@ -175,6 +175,8 @@ extern "C"
     // free region of memory
     void mem_free(void* ptr)
     {
+        if ((uint32_t)ptr == 0) { debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr"); return; }
+
         System::KernelIO::Write("FREE at ");
         char s[6];
         strdec((uint32_t)ptr, s);

@@ -201,32 +201,38 @@ namespace System
             char* str = strsplit_index(input,0,' ');
 
             // blank input
-            if (strlen(input) == 0) { Terminal.NewLine(); }
+            if (strlen(input) == 0) { return; }
             // list pci devices
             if (streql("lspci", input))
             {
+                bool old = debug_console_enabled;
+                SetDebugConsoleOutput(true);
                 PCIBus.List(); 
+                SetDebugConsoleOutput(old);
             }
             // clear the screen
             else if (streql("clear", input) || streql("cls", input)) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
             // set colors
             else if (streql ("color", str))
-            {
-                
+            {          
                 char* background = strsplit_index(input,2,' ');
                 char* foreground = strsplit_index(input,1,' ');
-                if(streql(str,foreground) || streql(str,background))
-                { Terminal.WriteLine("All Parameters are required"); Terminal.WriteLine("Usage: color foreground background"); Terminal.WriteLine("Example: color white black"); return; }
 
-                System::KernelIO::WriteLine(foreground);
-                System::KernelIO::WriteLine(background);
-                Terminal.Clear(Graphics::GetColorFromName(background));
-                Terminal.SetForeColor(Graphics::GetColorFromName(foreground));
-                Terminal.WriteLine("Color Set!");
+                if (background != nullptr && foreground != nullptr)
+                {
+                    if(streql(str, foreground) || streql(str, background))
+                    { Terminal.WriteLine("All Parameters are required"); Terminal.WriteLine("Usage: color foreground background"); Terminal.WriteLine("Example: color white black"); return; }
 
-                delete background;
-                delete foreground;
-                delete str;
+                    System::KernelIO::WriteLine(foreground);
+                    System::KernelIO::WriteLine(background);
+                    Terminal.Clear(Graphics::GetColorFromName(background));
+                    Terminal.SetForeColor(Graphics::GetColorFromName(foreground));
+                    Terminal.WriteLine("Color Set!");
+
+                    delete background;
+                    delete foreground;
+                    delete str;
+                }
                 return;
             }
             // debug
