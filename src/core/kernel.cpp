@@ -51,6 +51,8 @@ namespace System
 
         HAL::CPUInfo CPUInfo;
 
+        HAL::ACPI Acpi;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -91,6 +93,9 @@ namespace System
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
             ThrowOK("Initialized serial port on COM1");
+            //Initialise ACPI
+            Acpi.ACPIInit();
+            ThrowOK("ACPI Initialised");
 
             // initialize memory manager
             MemoryManager.Initialize();
@@ -217,6 +222,7 @@ namespace System
 
             //cpuinfo
             else if (streql("cpuinfo", input)) { CPUInfo.CPUDetect(); return; }
+             else if (streql("shutdown", input)) { Acpi.Shutdown(); return; }
             // set colors
             else if (streql ("color", str))
             {          
