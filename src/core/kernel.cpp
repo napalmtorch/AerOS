@@ -188,7 +188,7 @@ namespace System
         // triggered when interrupt 0x80 is triggered
         void KernelBase::OnSystemCall()
         {
-
+            Terminal.WriteLine("This is a motherfucking syscall OK?!!");
         }
         // triggered when enter key is pressed
         void KernelBase::OnEnterPressed(char* input)
@@ -201,6 +201,10 @@ namespace System
         {
             char* str = strsplit_index(input,0,' ');
             if(strcmp ("lspci", input) == 0) { PCIdevices.List(); }
+            else if (streql("test", input))
+            {
+                asm volatile("int $0x80");
+            }
             else if(strcmp ("clear", input) == 0) { Terminal.Clear(COL4_BLACK); Terminal.SetCursorPos(0,0); }
             else if(strcmp ("", input) == 0) { Terminal.WriteLine(""); }
             else if(streql ("color", str)) { 

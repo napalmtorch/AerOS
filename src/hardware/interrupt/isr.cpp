@@ -112,6 +112,8 @@ extern "C"
         idt_set_gate(46, (uint32_t)irq14);
         idt_set_gate(47, (uint32_t)irq15);
 
+        idt_set_gate(0x80, (uint32_t)syscall);
+
         // load with asm
         idt_set();
     }
@@ -119,6 +121,13 @@ extern "C"
     void isr_register(uint8_t irq, isr_t handler)
     {
         interrupt_handlers[irq] = handler;
+    }
+
+    extern void syscall_event(uint32_t* regs);
+    uint32_t scall_handler(uint32_t regs)
+    {
+        syscall_event(&regs);
+        return regs;
     }
 
     void isr_handler(registers_t regs)

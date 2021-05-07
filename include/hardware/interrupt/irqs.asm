@@ -66,6 +66,46 @@ irq_common_stub:
     add esp, 8
     ;jmp $
     sti
+    iret
+
+[extern scall_handler]
+
+scall_common_stub:
+    push eax
+    push ecx
+    push edx
+    push ebx
+    push ebp
+    push esi
+    push edi
+
+    mov ax, ds
+    push eax
+    ;mov ax, 0x10
+    ;mov ds, ax
+    ;mov es, ax
+    ;mov fs, ax
+    ;mov gs, ax
+    push esp
+    call scall_handler ; Different than the ISR code
+    pop esp
+    pop ebx  ; Different than the ISR code
+    ;mov ds, bx
+    ;mov es, bx
+    ;mov fs, bx
+    ;mov gs, bx
+
+    pop edi
+    pop esi
+    pop ebp
+    pop ebx
+    pop edx
+    pop ecx
+    pop eax
+
+    add esp, 8
+    ;jmp $
+    sti
     iret 
 	
 ; We don't get information about which interrupt was caller
@@ -440,3 +480,10 @@ irq15:
 	push byte 15
 	push byte 47
 	jmp irq_common_stub
+    
+global syscall
+syscall:
+    cli
+    push byte 0
+    push byte 0
+    jmp scall_common_stub
