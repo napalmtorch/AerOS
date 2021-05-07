@@ -101,6 +101,24 @@ namespace HAL
         F12,
     };
 
+    typedef enum
+    {
+        KB_LAYOUT_US,
+        KB_LAYOUT_DE,
+        KB_LAYOUT_IT,
+    } KB_LAYOUT;
+
+    // structure to manage different keyboard layouts
+    struct KeyboardLayout
+    {
+        KB_LAYOUT Type;
+        char Name[32];
+        char UpperCase[60];
+        char LowerCase[60];
+        KeyboardLayout();
+        KeyboardLayout(KB_LAYOUT type, char* name, char* upper, char* lower);
+    };
+
     class PS2Keyboard
     {
         public:
@@ -108,6 +126,10 @@ namespace HAL
             bool BufferEnabled;
             char Buffer[256];
             void (*Event_OnEnterPressed)(char*);
+
+            // keyboard layouts
+            KeyboardLayout KeyboardLayoutUS;
+            KeyboardLayout KeyboardLayoutDE;
 
             // initialize ps2 keyboard controller
             void Initialize();
