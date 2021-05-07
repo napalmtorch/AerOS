@@ -175,8 +175,7 @@ extern "C"
         for (size_t i = 0; i < amount; i++)
         {
             // move buffer up 1 line
-            mem_copy((uint8_t*)(buffer + (buffer_width * 2)), buffer, (80 * 25 * 2) - 160);
-            //mem_copy((uint8_t*)(buffer + (buffer_width * 2)), buffer, (buffer_width * buffer_height * 2) - (buffer_width * 2));
+            mem_copy((uint8_t*)(buffer + (buffer_width * 2)), buffer, (buffer_width * buffer_height * 2) - (buffer_width * 2));
             // clear bottom line
             for (size_t j = (buffer_width * buffer_height * 2) - (buffer_width * 2); j < (buffer_width * buffer_height * 2); j += 2)
             {

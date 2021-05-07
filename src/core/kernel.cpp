@@ -67,7 +67,7 @@ namespace System
             VGA.Initialize();
 
             // set mode to 90x60
-            VGA.SetMode(VGA.GetAvailableMode(0));
+            VGA.SetMode(VGA.GetAvailableMode(2));
 
             // prepare terminal
             Terminal.Clear(COL4_BLACK);
@@ -87,7 +87,7 @@ namespace System
             HAL::CPU::EnableInterrupts();
 
             // disable console output for debugger
-            SetDebugConsoleOutput(false);
+            SetDebugConsoleOutput(true);
 
             // setup serial port connection
             SerialPort.SetPort(SERIAL_PORT_COM1);
