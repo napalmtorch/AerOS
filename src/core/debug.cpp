@@ -26,7 +26,6 @@ extern "C"
         // print to console if enabled
         if (debug_console_enabled)
         {
-            /* TODO: not yet implemented */
             term_write("[");
             term_write_ext(header, (COL4)fg);
             term_write("] ");
@@ -69,7 +68,7 @@ extern "C"
         // write text to console if enabled
         if (debug_console_enabled)
         {
-            /* TODO: not yet implemented */
+            term_write_ext(text, color);
         }
 
         // write text to serial if enabled
@@ -103,7 +102,7 @@ extern "C"
         // write text to console if enabled
         if (debug_console_enabled)
         {
-            /* TODO: not yet implemented */
+            term_writeln_ext(text, color);
         }
 
         // write text to serial if enabled

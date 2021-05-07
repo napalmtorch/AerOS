@@ -6,7 +6,6 @@
 
 namespace HAL
 {
-    TerminalManager terminal;
     // initialize pci bus controller driver
     void PCIBusController::Initialize()
     {
@@ -57,9 +56,9 @@ namespace HAL
 
     void PCIBusController::List()
     {
-        terminal.NewLine();
-        terminal.WriteLine("   ---- PCI Devices ----   ",COL4_GREEN);
-        terminal.NewLine();
+        System::KernelIO::Write("\n");
+        System::KernelIO::WriteLine("   ---- PCI Devices ----   ", COL4_GREEN);
+        System::KernelIO::Write("\n");
         char temp[16];
         for (uint32_t bus = 0; bus < 256; bus++)
         {
@@ -72,19 +71,19 @@ namespace HAL
                     uint16_t id = GetDeviceID(bus, slot, function);
                     uint16_t classID = GetClassID(bus, slot, function);
                     
-                    terminal.Write(" - ");
+                    debug_write(" - ");
                     char vendorbuf[32];
                     strhex(vendor,vendorbuf);
                     char vendoridbuf[32];
                     strhex(id,vendoridbuf);
                     
-                    terminal.Write("DEVICE: ", COL4_MAGENTA);
-                    terminal.Write("0x");
-                    terminal.Write(vendorbuf);
-                    terminal.Write(":0x");
-                    terminal.Write(vendoridbuf);
-                    terminal.Write(" Name: ");
-                    terminal.WriteLine(GetVendorName(vendor, id));
+                    System::KernelIO::Write("DEVICE: ", COL4_MAGENTA);
+                    System::KernelIO::Write("0x");
+                    System::KernelIO::Write(vendorbuf);
+                    System::KernelIO::Write(":0x");
+                    System::KernelIO::Write(vendoridbuf);
+                    System::KernelIO::Write(" Name: ");
+                    System::KernelIO::WriteLine(GetVendorName(vendor, id));
                     
                     // print id - used to google the actual name xD 
                     // System::KernelIO::WriteLineHex("", id);
@@ -98,7 +97,7 @@ namespace HAL
                 }
             }
         }
-        terminal.NewLine();
+        System::KernelIO::Write("\n");
     }
 
     void PCIBusController::AddDevice(PCIDevice* device)

@@ -56,6 +56,7 @@ namespace System
         void KernelBase::Initialize()
         {
             debug_bochs_break();
+
             // initialize terminal interface
             Terminal.Initialize();
 
@@ -66,7 +67,7 @@ namespace System
             VGA.Initialize();
 
             // set mode to 90x60
-            VGA.SetMode(VGA.GetAvailableMode(2));
+            VGA.SetMode(VGA.GetAvailableMode(0));
 
             // prepare terminal
             Terminal.Clear(COL4_BLACK);
