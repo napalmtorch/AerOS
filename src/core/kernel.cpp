@@ -1,6 +1,5 @@
 #include "core/kernel.hpp"
 
-uint32_t pos = 0;
 static void pit_callback(registers_t regs)
 {
     System::KernelIO::Kernel.OnInterrupt();
@@ -11,7 +10,9 @@ static void enter_pressed(char* input)
 {
     System::KernelIO::Kernel.OnEnterPressed(input);
 }
-        extern "C" int endKernel;
+
+extern "C" int endKernel;
+
 namespace System
 {
     namespace KernelIO
@@ -38,7 +39,7 @@ namespace System
         HAL::ATAController ATA;
 
         // file system
-       // HAL::FATFileSystem FAT;
+        VFS::FAT16 FAT16;
 
         // real time clock
         HAL::RTCManager RTC;
@@ -54,8 +55,6 @@ namespace System
 
         // acpi controller
         HAL::ACPI ACPI;
-
-        VFS::FAT16 FAT16;
 
         // called as first function before kernel run
         void KernelBase::Initialize()
@@ -96,18 +95,19 @@ namespace System
             HAL::CPU::InitializeISRs();
 
             // setup serial port connection
-            //SerialPort.SetPort(SERIAL_PORT_COM1);
-            //ThrowOK("Initialized serial port on COM1");
-            //Initialise ACPI
-            //ACPI.ACPIInit();
-            //ThrowOK("ACPI Initialised");
+            SerialPort.SetPort(SERIAL_PORT_COM1);
+            ThrowOK("Initialized serial port on COM1");
+            
+            // initialize ACPI
+            ACPI.ACPIInit();
+            ThrowOK("ACPI Initialised");
 
             // initialize memory manager
             MemoryManager.Initialize();
             ThrowOK("Initialized memory management system");
 
             // initialize pci bus
-            //PCIBus.Initialize();
+            PCIBus.Initialize();
 
             // initialize real time clock
             RTC.Initialize();
@@ -118,8 +118,6 @@ namespace System
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
-        //    FAT.Initialize();
-       //     FAT16.TestFat();
             FAT16.Initialize();
             ThrowOK("Initialized FAT file system");
 
@@ -133,22 +131,10 @@ namespace System
             ThrowOK("Initialized PS/2 keyboard driver");
 
             // initialize pit
-            //HAL::CPU::InitializePIT(60, pit_callback);
+            HAL::CPU::InitializePIT(60, pit_callback);
 
             // ready shell
-            Shell.Initialize();    
-            // test fat driver
-            /*          
-            HAL::FATFile file = FAT.OpenFile("test.txt");
-            Write("FILE_NAME: "); WriteLine(file.Name);
-            WriteLineDecimal("LENGTH: ", file.FileLength);
-            WriteLineDecimal("FLAGS: ", file.Flags);
-            WriteLineDecimal("DRIVE: ", file.Drive);
-            WriteLineDecimal("CLUSTER: ", file.CurrentCluster);
-            WriteLineDecimal("ID: ", file.ID);
-            WriteLineDecimal("POSITION: ", file.Position);
-            WriteLineDecimal("EOF: ", file.EOF);
-            */
+            Shell.Initialize();
         }
 
         // kernel core code, runs in a loop
@@ -160,12 +146,12 @@ namespace System
         // triggered when a kernel panic is injected
         void KernelBase::OnPanic(char* msg)
         {
-            
+            // messages 
             char* panic_string = "====PANIC====";
             char* expl ="A kernel panic was triggered";
             char* err = "Error Message: ";
+            
             Terminal.Clear(COL4_DARK_BLUE);
-            Terminal.SetBackColor(COL4::COL4_DARK_BLUE);
             Terminal.SetForeColor(COL4::COL4_WHITE);
             Terminal.WriteLineCenter(panic_string);
             Terminal.NewLine();

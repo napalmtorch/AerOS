@@ -453,7 +453,7 @@ void DetermineFATType()
 
             // volume id serial
             debug_write_ext("- VOLUME ID SERIAL               ", COL4_YELLOW);
-            debug_writeln_dec("", FAT16.BootRecord16->VolumeIDSerial);
+            debug_writeln_hex("0x", FAT16.BootRecord16->VolumeIDSerial);
 
             // volume label
             debug_write_ext("- VOLUME LABEL                   ", COL4_YELLOW);
@@ -581,10 +581,9 @@ void Init()
         uint imageSize = FAT16.TotalSectors * FAT16.DataSectorCount;
         uint8_t *image = FatAllocImage(imageSize);
         FatInitImage(image,(uint8_t*)FAT16.BootRecord16);
+        //PrintBIOSParameterBlock();
         PrintExtendedBootRecord();
-        PrintBIOSParameterBlock();
-        PrintFATInformation();
-        System::KernelIO::ThrowOK("Fat16 Driver Loaded!");
+        //PrintFATInformation();
 }
 }
 namespace VFS

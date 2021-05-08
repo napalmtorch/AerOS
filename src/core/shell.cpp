@@ -222,8 +222,7 @@ namespace System
         void PANIC(char* input)
         {
             char* err = strsplit_index(input, 1, ' ');
-            if (err == nullptr)
-                debug_throw_panic("shell test panic.");
+            if (err == nullptr) { debug_throw_panic("Nothing actually crashed, I'm just a cunt."); return; }
             debug_throw_panic(err);
         }
     }
