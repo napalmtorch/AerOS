@@ -37,6 +37,7 @@ namespace System
         CommandList[4] = ShellCommand("BG",         "Change background color", "",          Commands::BG);
         CommandList[5] = ShellCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
         CommandList[6] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
+        CommandList[7] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
 
         // print caret to screen
         PrintCaret();
@@ -183,6 +184,10 @@ namespace System
                     KernelIO::Terminal.WriteLine(KernelIO::Shell.GetCommand(i).Help, COL4_GRAY);
                 }
             }
+        }
+        void SHUTDOWN(char* input)
+        {
+            System::KernelIO::ACPI.Shutdown();
         }
     }
 }

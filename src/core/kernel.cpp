@@ -38,7 +38,7 @@ namespace System
         HAL::ATAController ATA;
 
         // file system
-        HAL::FATFileSystem FAT;
+       // HAL::FATFileSystem FAT;
 
         // real time clock
         HAL::RTCManager RTC;
@@ -54,6 +54,8 @@ namespace System
 
         // acpi controller
         HAL::ACPI ACPI;
+
+        VFS::FAT16 FAT16;
 
         // called as first function before kernel run
         void KernelBase::Initialize()
@@ -112,7 +114,9 @@ namespace System
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
-            FAT.Initialize();
+        //    FAT.Initialize();
+       //     FAT16.TestFat();
+            FAT16.Initialise();
             ThrowOK("Initialized FAT file system");
 
             // initialize keyboard
