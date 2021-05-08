@@ -1,4 +1,5 @@
 #include "core/debug.hpp"
+#include "core/kernel.hpp"
 
 extern "C"
 {
@@ -53,6 +54,9 @@ extern "C"
 
         // temporary solution
         debug_throw_message(MSG_TYPE_ERROR, msg);
+
+        // call kernel's OnPanic function
+        System::KernelIO::Kernel.OnPanic(msg);
 
         // stop execution
         __asm__ __volatile__("cli");

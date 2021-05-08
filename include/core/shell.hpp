@@ -40,5 +40,7 @@ namespace System
         void BG(char* input);
         void DUMP(char* input);
         void HELP(char* input);
+        void TEST(char* input);
+        void PANIC(char* input);
     }
 }
