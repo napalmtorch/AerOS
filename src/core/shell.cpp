@@ -37,13 +37,10 @@ namespace System
         CommandList[4] = ShellCommand("BG",         "Change background color", "",          Commands::BG);
         CommandList[5] = ShellCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
         CommandList[6] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
-        CommandList[7] = ShellCommand("FAT",        "Show FAT information", "",             Commands::FAT);
-        CommandList[8] = ShellCommand("FATMBR",     "Show FAT master boot record", "",      Commands::FAT_MBR);
-        CommandList[9] = ShellCommand("FATEXT",     "Show FAT extended boot record", "",    Commands::FAT_EXT);
-        CommandList[10] = ShellCommand("DISKDUMP",  "Dump disk sectors into memory", "",  Commands::FAT_ROOT);
-        CommandList[7] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
-        CommandList[8] = ShellCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
-        CommandList[9] = ShellCommand("PANIC",       "Throw a fake kernel panic", "",       Commands::PANIC);
+        CommandList[7] = ShellCommand("DISKDUMP",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
+        CommandList[8] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
+        CommandList[9] = ShellCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
+        CommandList[10] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
 
         // print caret to screen
         PrintCaret();
@@ -188,24 +185,21 @@ namespace System
             }
         }
 
-        void FAT(char* input)
+        void DISK_DUMP(char* input)
         {
-              
-        }
+            char* str_sector = strsplit_index(input, 1, ' ');
+            char* str_bytes  = strsplit_index(input, 2, ' ');
+            uint8_t* buffer = new uint8_t[512];
 
-        void FAT_MBR(char* input)
-        {
-            
-        }
+            uint32_t sector = stod(str_sector);
+            uint32_t bytes =  stod(str_bytes);
+            if (bytes > 512) { bytes = 512; }
 
-        void FAT_EXT(char* input)
-        {
-            
-        }
+            uint32_t offset = (uint32_t)((sector * 512) + buffer);
 
-        void FAT_ROOT(char* input)
-        {
-            
+            KernelIO::ATA.ReadSectors(buffer, sector, 1);
+
+            KernelIO::DumpMemory((uint8_t*)offset, bytes, 12, true);
         }
 
         void SHUTDOWN(char* input)

@@ -41,9 +41,7 @@ namespace System
         void DUMP(char* input);
         void HELP(char* input);
         void FAT(char* input);
-        void FAT_MBR(char* input);
-        void FAT_EXT(char* input);
-        void FAT_ROOT(char* input);
+        void DISK_DUMP(char* input);
         void SHUTDOWN(char* input);
         void TEST(char* input);
         void PANIC(char* input);
