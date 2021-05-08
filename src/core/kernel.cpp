@@ -155,9 +155,20 @@ namespace System
         }
 
         // triggered when a kernel panic is injected
-        void KernelBase::OnPanic()
+        void KernelBase::OnPanic(char* msg)
         {
-            
+            Terminal.SetCursorPos(0, 0);
+            Terminal.DisableCursor();
+            Terminal.SetBackColor(COL4::COL4_DARK_BLUE);
+            Terminal.SetForeColor(COL4::COL4_WHITE);
+            Terminal.WriteLine("====PANIC====");
+            Terminal.WriteLine("A kernel panic was triggered");
+            Terminal.Write("Error: ");
+            Terminal.SetForeColor(COL4::COL4_RED);
+            Terminal.Write(msg);
+            Terminal.SetForeColor(COL4::COL4_WHITE);
+            Terminal.WriteLine(".");
+            Terminal.WriteLine("====PANIC====");
         }
 
         // triggered when a handled interrupt call is finished

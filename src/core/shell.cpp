@@ -38,6 +38,8 @@ namespace System
         CommandList[5] = ShellCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
         CommandList[6] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
         CommandList[7] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
+        CommandList[8] = ShellCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
+        CommandList[9] = ShellCommand("PANIC",       "Throw a fake kernel panic", "",       Commands::PANIC);
 
         // print caret to screen
         PrintCaret();
@@ -61,7 +63,7 @@ namespace System
         strupper(cmd);
 
         // hack to use second command for clearing
-        if (streql(cmd, "CLS")) { Commands::CLEAR(input); return; }
+        if (streql(cmd, "CLS")) { Commands::CLEAR(input); delete cmd; return; }
 
         // loop through commands
         for (size_t i = 0; i < 32; i++)
@@ -92,15 +94,11 @@ namespace System
         void CLEAR(char* input)
         {
             KernelIO::Terminal.Clear();
-            UNUSED(input);
         }
 
         void LSPCI(char* input)
         {
-            bool old = debug_console_enabled;
-            KernelIO::SetDebugConsoleOutput(true);
             KernelIO::PCIBus.List(); 
-            KernelIO::SetDebugConsoleOutput(old);
         }
 
         void CPUINFO(char* input) { HAL::CPU::Detect(); }
@@ -110,12 +108,12 @@ namespace System
             char* color = strsplit_index(input, 1,' ');
 
             // invalid color
-            if (strlen(color) == 0) 
+            if (color == nullptr) 
             { 
-                KernelIO::WriteLine("No color selected"); 
-                KernelIO::Write("Usage: ", COL4_CYAN); 
-                KernelIO::WriteLine("fg [color]"); 
-                delete color;
+                KernelIO::Terminal.WriteLine("No color selected"); 
+                KernelIO::Terminal.Write("Usage: ", COL4_CYAN); 
+                KernelIO::Terminal.WriteLine("fg [color]"); 
+                //delete color;
                 return;
             }
 
@@ -130,12 +128,12 @@ namespace System
             char* color = strsplit_index(input, 1, ' ');
 
             // invalid color
-            if (strlen(color) == 0) 
+            if (color == nullptr) 
             { 
-                KernelIO::WriteLine("No color selected"); 
-                KernelIO::Write("Usage: ", COL4_CYAN); 
-                KernelIO::WriteLine("bg [color]"); 
-                delete color;
+                KernelIO::Terminal.WriteLine("No color selected"); 
+                KernelIO::Terminal.Write("Usage: ", COL4_CYAN); 
+                KernelIO::Terminal.WriteLine("bg [color]"); 
+                //delete color;
                 return;
             }
 
@@ -185,9 +183,24 @@ namespace System
                 }
             }
         }
+
         void SHUTDOWN(char* input)
         {
             System::KernelIO::ACPI.Shutdown();
+        }
+
+        void TEST(char* input)
+        {
+            // call syscall
+            asm volatile("int $0x80");
+        }
+
+        void PANIC(char* input)
+        {
+            char* err = strsplit_index(input, 1, ' ');
+            if (err == nullptr)
+                debug_throw_panic("shell test panic");
+            debug_throw_panic(err);
         }
     }
 }

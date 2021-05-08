@@ -174,10 +174,11 @@ char* strsplit_index(char text[], int index, char separator)
 {
     size_t len = strlen(text);
     //man no this has to start from 0
+    int last = -1;
     for (int i = 0, ind = 0; i < len; i += strindexof(text+i, ' ') + 1, ind++)
     {
-        char c[10];
-        strdec(ind, c);
+        if (i == last)
+            break;
         if (index == ind)
         {
             int len = strindexof(text+i, ' ');
@@ -189,6 +190,7 @@ char* strsplit_index(char text[], int index, char separator)
             str[len] = 0;
             return str; // try now
         }
+        last = i;
     }
     
     return nullptr;

@@ -49,7 +49,7 @@ extern "C"
                     void Run();
                     
                     // triggered when a kernel panic is injected
-                    void OnPanic();
+                    void OnPanic(char* error);
                     
                     // triggered when a handled interrupt call is finished
                     void OnInterrupt();
