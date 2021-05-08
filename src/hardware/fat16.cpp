@@ -5,6 +5,7 @@
 
 VFS::FAT16 FAT16;
 HAL::ATAController ATA;
+
 extern "C" {
 // ------------------------------------------------------------------------------------------------
 uint FatGetTotalSectorCount(uint8_t *image)

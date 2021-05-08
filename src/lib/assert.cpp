@@ -1,96 +1,98 @@
 #include <lib/assert.hpp>
 #include <hardware/memory.hpp>
 
-// assert trye
-void assert_true(const char *expr, bool result, const char *file, unsigned line)
+extern "C"
 {
-    System::KernelIO::Write("Testing: ");
-    System::KernelIO::WriteLine((char*)file);
-    if (!result)
+    // assert true
+    void assert_true(const char *expr, bool result, const char *file, unsigned line)
     {
-    System::KernelIO::WriteLine("Test AssertTrue Failed");
+        System::KernelIO::Write("Testing: ");
+        System::KernelIO::WriteLine((char*)file);
+        if (!result)
+        {
+        System::KernelIO::WriteLine("Test AssertTrue Failed");
+        }
+        System::KernelIO::WriteLine("Test AssertTrue Succeeded");
+        return;
     }
-    System::KernelIO::WriteLine("Test AssertTrue Succeeded");
-    return;
-}
 
-// assert equals char
-void assert_eql_char(const char *expr, char result, char expected, const char *file, unsigned line)
-{
-    System::KernelIO::Write("Testing: ");
-    System::KernelIO::WriteLine((char*)file);
-    if (result != expected)
+    // assert equals char
+    void assert_eql_char(const char *expr, char result, char expected, const char *file, unsigned line)
     {
-            System::KernelIO::WriteLine("Test AssertEqChar failed");
+        System::KernelIO::Write("Testing: ");
+        System::KernelIO::WriteLine((char*)file);
+        if (result != expected)
+        {
+                System::KernelIO::WriteLine("Test AssertEqChar failed");
+        }
+        System::KernelIO::WriteLine("Test AssertEqChar Succeeded");
+        return;
     }
-    System::KernelIO::WriteLine("Test AssertEqChar Succeeded");
-    return;
-}
 
-// assert equals hex
-void assert_eql_hex(const char *expr, unsigned short result, unsigned short expected, unsigned width, const char *file, unsigned line)
-{
-    if (result != expected)
+    // assert equals hex
+    void assert_eql_hex(const char *expr, unsigned short result, unsigned short expected, unsigned width, const char *file, unsigned line)
     {
-        System::KernelIO::WriteLine("Test AssertEqHex failed");
+        if (result != expected)
+        {
+            System::KernelIO::WriteLine("Test AssertEqHex failed");
+        }
+        System::KernelIO::WriteLine("Test AssertEqHex Succeeded");
+        return;
     }
-    System::KernelIO::WriteLine("Test AssertEqHex Succeeded");
-    return;
-}
 
-// assert equals mem
-void assert_eql_mem(const char *expr, void *result, void *expected, size_t len, const char *file, unsigned line)
-{
-    if (memcmp(result, expected, len))
+    // assert equals mem
+    void assert_eql_mem(const char *expr, void *result, void *expected, size_t len, const char *file, unsigned line)
     {
+        if (memcmp(result, expected, len))
+        {
 
-        unsigned char *p = (unsigned char *)result;
-        unsigned char *q = (unsigned char *)expected;
-        for (size_t i = 0; i < len; ++i)
+            unsigned char *p = (unsigned char *)result;
+            unsigned char *q = (unsigned char *)expected;
+            for (size_t i = 0; i < len; ++i)
+            {
+            }
+            System::KernelIO::WriteLine("Test memcmp Succeeded");
+        return;
+        }
+    }
+
+    // assert equals pointer
+    void assert_eql_ptr(const char *expr, void *result, void *expected, const char *file, unsigned line)
+    {
+        System::KernelIO::Write("Testing: ");
+        System::KernelIO::WriteLine((char*)file);
+        if (result != expected)
+        {
+            System::KernelIO::WriteLine("Test AssertEqPtr failed");
+        }
+        System::KernelIO::WriteLine("Test AssertEqPtr Succeeded");
+        return;
+    }
+
+    // assert equals string
+    void assert_eql_str(const char *expr, const char *result, const char *expected, const char *file, unsigned line)
+    {
+        if (strcmp((char*)result, (char*)expected))
         {
         }
-        System::KernelIO::WriteLine("Test memcmp Succeeded");
-    return;
     }
-}
 
-// assert equals pointer
-void assert_eql_ptr(const char *expr, void *result, void *expected, const char *file, unsigned line)
-{
-    System::KernelIO::Write("Testing: ");
-    System::KernelIO::WriteLine((char*)file);
-    if (result != expected)
+    // assert equals integer
+    void assert_eql_int(const char *expr, long long result, long long expected, const char *file, unsigned line)
     {
-        System::KernelIO::WriteLine("Test AssertEqPtr failed");
+        if (result != expected)
+        {
+        }
     }
-    System::KernelIO::WriteLine("Test AssertEqPtr Succeeded");
-    return;
-}
 
-// assert equals string
-void assert_eql_str(const char *expr, const char *result, const char *expected, const char *file, unsigned line)
-{
-    if (strcmp((char*)result, (char*)expected))
+    // assert equals unsigned integer
+    void assert_eql_uint(const char *expr, unsigned long long result, unsigned long long expected, const char *file, unsigned line)
     {
+        if (result != expected)
+        {
+        }
     }
 }
-
-// assert equals integer
-void assert_eql_int(const char *expr, long long result, long long expected, const char *file, unsigned line)
-{
-    if (result != expected)
-    {
-    }
-}
-
-// assert equals unsigned integer
-void assert_eql_uint(const char *expr, unsigned long long result, unsigned long long expected, const char *file, unsigned line)
-{
-    if (result != expected)
-    {
-    }
-}
-
 namespace Assert
 {
     static ExpectedQueue *s_params;

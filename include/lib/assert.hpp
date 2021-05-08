@@ -1,25 +1,28 @@
 #pragma once
 #include <lib/types.h>
 
-void assert_true(const char *expr, bool result, const char *file, unsigned line);
-void assert_eql_char(const char *expr, char result, char expected, const char *file, unsigned line);
-void assert_eql_hex(const char *expr, unsigned short result, unsigned short expected, unsigned width, const char *file, unsigned line);
-void assert_eql_mem(const char *expr, void *result, void *expected, size_t len, const char *file, unsigned line);
-void assert_eql_ptr(const char *expr, void *result, void *expected, const char *file, unsigned line);
-void assert_eql_str(const char *expr, const char *result, const char *expected, const char *file, unsigned line);
-void assert_eql_int(const char *expr, long long result, long long expected, const char *file, unsigned line);
-void assert_eql_uint(const char *expr, unsigned long long result, unsigned long long expected, const char *file, unsigned line);
+extern "C"
+{
+    void assert_true(const char *expr, bool result, const char *file, unsigned line);
+    void assert_eql_char(const char *expr, char result, char expected, const char *file, unsigned line);
+    void assert_eql_hex(const char *expr, unsigned short result, unsigned short expected, unsigned width, const char *file, unsigned line);
+    void assert_eql_mem(const char *expr, void *result, void *expected, size_t len, const char *file, unsigned line);
+    void assert_eql_ptr(const char *expr, void *result, void *expected, const char *file, unsigned line);
+    void assert_eql_str(const char *expr, const char *result, const char *expected, const char *file, unsigned line);
+    void assert_eql_int(const char *expr, long long result, long long expected, const char *file, unsigned line);
+    void assert_eql_uint(const char *expr, unsigned long long result, unsigned long long expected, const char *file, unsigned line);
 
-#define ASSERT_TRUE(expr)       assert_true(#expr, expr, __FILE__, __LINE__)
-#define ASSERT_EQ_CHAR(x, y)    assert_eql_char(#x, x, y, __FILE__, __LINE__)
-#define ASSERT_EQ_HEX8(x, y)    assert_eql_hex(#x, x, y, 2, __FILE__, __LINE__)
-#define ASSERT_EQ_HEX16(x, y)   assert_eql_hex(#x, x, y, 4, __FILE__, __LINE__)
-#define ASSERT_EQ_HEX32(x, y)   assert_eql_hex(#x, x, y, 8, __FILE__, __LINE__)
-#define ASSERT_EQ_HEX64(x, y)   assert_eql_hex(#x, x, y, 16, __FILE__, __LINE__)
-#define ASSERT_EQ_PTR(x, y)     assert_eql_ptr(#x, x, y, __FILE__, __LINE__)
-#define ASSERT_EQ_STR(x, y)     assert_eql_str(#x, x, y, __FILE__, __LINE__)
-#define ASSERT_EQ_INT(x, y)     assert_eql_int(#x, x, y, __FILE__, __LINE__)
-#define ASSERT_EQ_UINT(x, y)    assert_eql_uint(#x, x, y, __FILE__, __LINE__)
+    #define ASSERT_TRUE(expr)       assert_true(#expr, expr, __FILE__, __LINE__)
+    #define ASSERT_EQ_CHAR(x, y)    assert_eql_char(#x, x, y, __FILE__, __LINE__)
+    #define ASSERT_EQ_HEX8(x, y)    assert_eql_hex(#x, x, y, 2, __FILE__, __LINE__)
+    #define ASSERT_EQ_HEX16(x, y)   assert_eql_hex(#x, x, y, 4, __FILE__, __LINE__)
+    #define ASSERT_EQ_HEX32(x, y)   assert_eql_hex(#x, x, y, 8, __FILE__, __LINE__)
+    #define ASSERT_EQ_HEX64(x, y)   assert_eql_hex(#x, x, y, 16, __FILE__, __LINE__)
+    #define ASSERT_EQ_PTR(x, y)     assert_eql_ptr(#x, x, y, __FILE__, __LINE__)
+    #define ASSERT_EQ_STR(x, y)     assert_eql_str(#x, x, y, __FILE__, __LINE__)
+    #define ASSERT_EQ_INT(x, y)     assert_eql_int(#x, x, y, __FILE__, __LINE__)
+    #define ASSERT_EQ_UINT(x, y)    assert_eql_uint(#x, x, y, __FILE__, __LINE__)
+}
 
 // ------------------------------------------------------------------------------------------------
 
