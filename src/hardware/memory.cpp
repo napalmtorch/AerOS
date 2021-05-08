@@ -189,7 +189,7 @@ int memcmp(const void* a, const void* b, size_t len) {
     // free region of memory
     void mem_free(void* ptr)
     {
-        if ((uint32_t)ptr == 0) { debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr"); return; }
+        if (ptr == nullptr) { debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr"); return; }
 
         System::KernelIO::Write("FREE at ");
         char s[6];
@@ -197,6 +197,11 @@ int memcmp(const void* a, const void* b, size_t len) {
         System::KernelIO::WriteLine(s);
 
         entry_t* entry = (entry_t*)((uint32_t)ptr - sizeof(struct entry));
+        if (entry->offset != 0xFF)
+        {
+            debug_throw_message(MSG_TYPE_ERROR, "Tried to free non-entry pointer");
+            return;
+        }
         entry->used = false;
     }
 
