@@ -142,7 +142,6 @@ extern "C"
         entry_t* e = alloc_entry(current, size);
         if (e == nullptr)
         {
-            debug_throw_message(MSG_TYPE::MSG_TYPE_WARNING, "fell into next region manager");
             return get_free_entry(current->next, size);
         }
         return e;
