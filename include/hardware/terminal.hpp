@@ -121,10 +121,19 @@ namespace HAL
             void WriteChar(char c, COL4 fg);
             void WriteChar(char c, COL4 fg, COL4 bg);
 
+            // write string to next position in the center of the screen
+            void WriteCenter(char* text);
+            void WriteCenter(char* text, COL4 fg);
+            void WriteCenter(char* text, COL4 fg, COL4 bg);
             // write string to next position
             void Write(char* text);
             void Write(char* text, COL4 fg);
             void Write(char* text, COL4 fg, COL4 bg);
+
+            // write line to next position in the center of the screen
+            void WriteLineCenter(char* text);
+            void WriteLineCenter(char* text, COL4 fg);
+            void WriteLineCenter(char* text, COL4 fg, COL4 bg);
 
             // write line to next position
             void WriteLine(char* text);

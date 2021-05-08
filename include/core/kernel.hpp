@@ -8,7 +8,7 @@
 #include "hardware/ports.hpp"
 #include "hardware/multiboot.hpp"
 #include "hardware/terminal.hpp"
-#include "hardware/fat.hpp"
+//#include "hardware/fat.hpp"
 #include "hardware/interrupt/idt.hpp"
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/cpu.hpp"
@@ -21,6 +21,7 @@
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
 #include "core/shell.hpp"
+#include "hardware/fat16.hpp"
 
 // kernel offsets
 extern "C"
@@ -48,7 +49,7 @@ extern "C"
                     void Run();
                     
                     // triggered when a kernel panic is injected
-                    void OnPanic();
+                    void OnPanic(char* error);
                     
                     // triggered when a handled interrupt call is finished
                     void OnInterrupt();
@@ -60,7 +61,7 @@ extern "C"
                     void OnEnterPressed(char* input);
 
             };
-
+            extern VFS::FAT16 FAT16;
             // kernel base class
             extern KernelIO::KernelBase Kernel;
 
@@ -83,7 +84,7 @@ extern "C"
             extern HAL::ATAController ATA;
 
             // file system
-            extern HAL::FATFileSystem FAT;
+          //  extern HAL::FATFileSystem FAT;
 
             // real time clock
             extern HAL::RTCManager RTC;

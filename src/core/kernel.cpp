@@ -38,7 +38,7 @@ namespace System
         HAL::ATAController ATA;
 
         // file system
-        HAL::FATFileSystem FAT;
+       // HAL::FATFileSystem FAT;
 
         // real time clock
         HAL::RTCManager RTC;
@@ -54,6 +54,8 @@ namespace System
 
         // acpi controller
         HAL::ACPI ACPI;
+
+        VFS::FAT16 FAT16;
 
         // called as first function before kernel run
         void KernelBase::Initialize()
@@ -116,7 +118,9 @@ namespace System
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
-            FAT.Initialize();
+        //    FAT.Initialize();
+       //     FAT16.TestFat();
+            FAT16.Initialize();
             ThrowOK("Initialized FAT file system");
 
             // enable interrupts
@@ -152,11 +156,31 @@ namespace System
         {
             
         }
-
+        
         // triggered when a kernel panic is injected
-        void KernelBase::OnPanic()
+        void KernelBase::OnPanic(char* msg)
         {
             
+            char* panic_string = "====PANIC====";
+            char* expl ="A kernel panic was triggered";
+            char* err = "Error Message: ";
+            Terminal.Clear(COL4_DARK_BLUE);
+            Terminal.SetBackColor(COL4::COL4_DARK_BLUE);
+            Terminal.SetForeColor(COL4::COL4_WHITE);
+            Terminal.WriteLineCenter(panic_string);
+            Terminal.NewLine();
+            Terminal.NewLine();
+            Terminal.WriteLineCenter(expl);
+            Terminal.NewLine();
+            Terminal.NewLine();
+            Terminal.WriteLineCenter(err);
+            Terminal.SetForeColor(COL4_RED);
+            Terminal.WriteCenter(msg);
+            Terminal.SetForeColor(COL4_WHITE);
+            Terminal.NewLine();
+            Terminal.NewLine();
+            Terminal.WriteLineCenter(panic_string);
+            Terminal.DisableCursor();
         }
 
         // triggered when a handled interrupt call is finished

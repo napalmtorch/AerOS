@@ -17,6 +17,7 @@ typedef unsigned char uint8_t;
 typedef char int8_t;
 typedef unsigned char byte;
 typedef unsigned int dword;
+typedef unsigned int uint;
 typedef unsigned short word;
 // size
 typedef unsigned long int size_t;

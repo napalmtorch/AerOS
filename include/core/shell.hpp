@@ -44,5 +44,8 @@ namespace System
         void FAT_MBR(char* input);
         void FAT_EXT(char* input);
         void FAT_ROOT(char* input);
+        void SHUTDOWN(char* input);
+        void TEST(char* input);
+        void PANIC(char* input);
     }
 }
