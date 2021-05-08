@@ -97,10 +97,7 @@ namespace System
 
         void LSPCI(char* input)
         {
-            bool old = debug_console_enabled;
-            KernelIO::SetDebugConsoleOutput(true);
             KernelIO::PCIBus.List(); 
-            KernelIO::SetDebugConsoleOutput(old);
         }
 
         void CPUINFO(char* input) { HAL::CPU::Detect(); }
