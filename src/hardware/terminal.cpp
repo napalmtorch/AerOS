@@ -330,8 +330,13 @@ namespace HAL
         term_set_colors(fg_old, bg_old);
     }
 
+    // write line to next position in the center of the screen
     void TerminalManager::WriteLineCenter(char* text) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());  term_writeln(text); }
+    
+    // write line to next position in the center of the screen with foreground color
     void TerminalManager::WriteLineCenter(char* text, COL4 fg) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());  term_writeln_ext(text,fg); }
+    
+    // write line to next position in the center of the screen with foreground and background color
     void TerminalManager::WriteLineCenter(char* text, COL4 fg, COL4 bg)
     {
         term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());
