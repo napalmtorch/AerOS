@@ -581,5 +581,5 @@ void Init()
 }
 namespace VFS
 {
-    void FAT16::Initialise() { return Init(); }
+    void FAT16::Initialize() { return Init(); }
 }

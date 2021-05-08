@@ -116,7 +116,7 @@ namespace System
             // initialize fat file system
         //    FAT.Initialize();
        //     FAT16.TestFat();
-            FAT16.Initialise();
+            FAT16.Initialize();
             ThrowOK("Initialized FAT file system");
 
             // initialize keyboard

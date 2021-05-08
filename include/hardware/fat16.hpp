@@ -149,8 +149,8 @@ namespace VFS
     class FAT16
     {
         public:
-        void TestFat();
-        void Initialise();
+            void TestFat();
+            void Initialize();
             bool DiskValid;
             uint8_t BootSectorData[512];
             uint8_t DataBuffer[512];
