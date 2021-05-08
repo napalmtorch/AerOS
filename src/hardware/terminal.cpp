@@ -298,21 +298,21 @@ namespace HAL
         term_write_char(c);
         term_set_colors(fg_old, bg_old);
     }
-    // write string to next position in the center of the screen
-    void TerminalManager::WriteCenter(char* text) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y()); term_write(text); }
 
-    // write string to next position in the center of the screen with foreground color
-    void TerminalManager::WriteCenter(char* text, COL4 fg) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y()); term_write_ext(text, fg); }
+    // write aligned char to position
+    void TerminalManager::WriteChar(char c, int y, TEXT_ALIGN align) { WriteChar(c, y, align, fore_color, back_color); }
 
-        // write string in the center of the screen with foreground color
-    void TerminalManager::WriteCenter(char* text, COL4 fg, COL4 bg) { 
-    term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());
-        COL4 fg_old = fore_color;
-        COL4 bg_old = back_color;
-        term_set_colors(fg, bg);
-        term_write(text);
-        term_set_colors(fg_old, bg_old);
-     }
+    void TerminalManager::WriteChar(char c, int y, TEXT_ALIGN align, COL4 fg) { WriteChar(c, y, align, fg, back_color); }
+
+    void TerminalManager::WriteChar(char c, int y, TEXT_ALIGN align, COL4 fg, COL4 bg)
+    {
+        uint8_t old_x = cursor_x, old_y = cursor_y;
+        if (align == TEXT_ALIGN_LEFT) { cursor_x = 0; }
+        else if (align == TEXT_ALIGN_CENTER) { cursor_x = (buffer_width / 2) - 4; }
+        else if (align == TEXT_ALIGN_RIGHT) { cursor_x = buffer_width - 1; }
+        PutChar(cursor_x, y, c, fg, bg);
+        term_set_cursor(old_x, old_y);
+    }
 
     // write string to next position
     void TerminalManager::Write(char* text) { term_write(text); }
@@ -330,22 +330,23 @@ namespace HAL
         term_set_colors(fg_old, bg_old);
     }
 
-    // write line to next position in the center of the screen
-    void TerminalManager::WriteLineCenter(char* text) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());  term_writeln(text); }
-    
-    // write line to next position in the center of the screen with foreground color
-    void TerminalManager::WriteLineCenter(char* text, COL4 fg) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());  term_writeln_ext(text,fg); }
-    
-    // write line to next position in the center of the screen with foreground and background color
-    void TerminalManager::WriteLineCenter(char* text, COL4 fg, COL4 bg)
+    // write aligned string to position
+    void TerminalManager::Write(char* text, int y, TEXT_ALIGN align) { Write(text, y, align, fore_color, back_color); }
+
+    void TerminalManager::Write(char* text, int y, TEXT_ALIGN align, COL4 fg) { Write(text, y, align, fg, back_color); }
+
+    void TerminalManager::Write(char* text, int y, TEXT_ALIGN align, COL4 fg, COL4 bg)
     {
-        term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());
-        COL4 fg_old = fore_color;
-        COL4 bg_old = back_color;
-        term_set_colors(fg, bg);
-        term_writeln(text);
-        term_set_colors(fg_old, bg_old);
+        uint8_t old_x = cursor_x, old_y = cursor_y;
+        uint32_t xx;
+        if (align == TEXT_ALIGN_LEFT) { xx = 0; }
+        else if (align == TEXT_ALIGN_CENTER) { xx = (buffer_width / 2) - (strlen(text) / 2); }
+        else if (align == TEXT_ALIGN_RIGHT) { xx = buffer_width - 1; }
+        term_set_cursor(xx, y);
+        for (size_t i = 0; i < strlen(text); i++) { WriteChar(text[i], fg, bg); }
+        term_set_cursor(old_x, old_y);
     }
+
     // write line to next position
     void TerminalManager::WriteLine(char* text) { term_writeln(text); }
 

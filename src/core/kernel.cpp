@@ -147,25 +147,23 @@ namespace System
         void KernelBase::OnPanic(char* msg)
         {
             // messages 
-            char* panic_string = "====PANIC====";
-            char* expl ="A kernel panic was triggered";
-            char* err = "Error Message: ";
+            char panic_string[] = "====PANIC====";
+            char expl[] ="A kernel panic was triggered";
+            char err[] = "Error Message: ";
             
+            uint8_t yy = 0; 
             Terminal.Clear(COL4_DARK_BLUE);
-            Terminal.SetForeColor(COL4::COL4_WHITE);
-            Terminal.WriteLineCenter(panic_string);
-            Terminal.NewLine();
-            Terminal.NewLine();
-            Terminal.WriteLineCenter(expl);
-            Terminal.NewLine();
-            Terminal.NewLine();
-            Terminal.WriteLineCenter(err);
-            Terminal.SetForeColor(COL4_RED);
-            Terminal.WriteCenter(msg);
             Terminal.SetForeColor(COL4_WHITE);
+            Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER, COL4_WHITE);
+            yy += 2;
+            Terminal.Write(expl, yy++, TEXT_ALIGN_CENTER);
+            yy += 2;
+            Terminal.Write(err, yy++, TEXT_ALIGN_CENTER);
+            Terminal.Write(msg, yy++, TEXT_ALIGN_CENTER, COL4_RED);
+            yy += 2;
             Terminal.NewLine();
             Terminal.NewLine();
-            Terminal.WriteLineCenter(panic_string);
+            Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER);
             Terminal.DisableCursor();
         }
 

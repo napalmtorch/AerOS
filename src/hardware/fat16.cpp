@@ -398,161 +398,160 @@ void FatRemoveFile(uint8_t *image, DirEntry *entry)
     FatRemoveDirEntry(entry);
 }
 void DetermineFATType()
+{
+    if (FAT16.ClusterCount < 4085) { FAT16.FATType = FAT_TYPE_FAT12; }
+    else if (FAT16.ClusterCount < 65525) { FAT16.FATType = FAT_TYPE_FAT16; }
+    else if (FAT16.ClusterCount < 268435445) { FAT16.FATType = FAT_TYPE_FAT32; }
+    else { FAT16.FATType = FAT_TYPE_EXFAT; }
+}
+
+void PrintFATInformation()
+{
+    debug_writeln("FAT INFORMATION");
+
+    debug_write_ext("- TOTAL SECTORS                  ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.TotalSectors);
+
+    debug_write_ext("- ROOT SECTOR                    ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.FirstRootSector);
+
+    debug_write_ext("- ROOT SECTOR COUNT              ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.RootSectorCount);
+
+    debug_write_ext("- DATA SECTOR COUNT              ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.DataSectorCount);
+
+    debug_write_ext("- CLUSTER COUNT                  ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.ClusterCount);
+
+    debug_write_ext("- FAT SIZE                       ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.FATSize);
+
+    debug_write_ext("- FIRST FAT SECTOR               ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.FirstFATSector);
+
+    debug_write_ext("- FIRST DATA SECTOR              ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.FirstDataSector);
+}
+
+void PrintExtendedBootRecord()
+{
+    debug_writeln("EXTENDED BOOT RECORD");
+
+    // FAT12/FAT16
+    if (FAT16.FATType == FAT_TYPE_FAT12 || FAT16.FATType == FAT_TYPE_FAT16)
     {
-        if (FAT16.ClusterCount < 4085) { FAT16.FATType = FAT_TYPE_FAT12; }
-        else if (FAT16.ClusterCount < 65525) { FAT16.FATType = FAT_TYPE_FAT16; }
-        else if (FAT16.ClusterCount < 268435445) { FAT16.FATType = FAT_TYPE_FAT32; }
-        else { FAT16.FATType = FAT_TYPE_EXFAT; }
+        // drive number
+        debug_write_ext("- DRIVE NUMBER                   ", COL4_YELLOW);
+        debug_writeln_dec("", FAT16.BootRecord16->DriveNumber);
+
+        // windows nt flags
+        debug_write_ext("- WINNT FLAGS                    ", COL4_YELLOW);
+        debug_writeln_dec("", FAT16.BootRecord16->FlagsWindowsNT);
+
+        // signature
+        debug_write_ext("- SIGNATURE                      ", COL4_YELLOW);
+        debug_writeln_hex("0x", FAT16.BootRecord16->Signature);
+
+        // volume id serial
+        debug_write_ext("- VOLUME ID SERIAL               ", COL4_YELLOW);
+        debug_writeln_hex("0x", FAT16.BootRecord16->VolumeIDSerial);
+
+        // volume label
+        debug_write_ext("- VOLUME LABEL                   ", COL4_YELLOW);
+        char temp[2] = { ' ', '\0' };
+        for (size_t i = 0; i < 11; i++) { temp[0] = FAT16.BootRecord16->VolumeLabel[i]; debug_write(temp); }
+        debug_write("\n");
+
+        // system identifier
+        debug_write_ext("- SYSTEM ID                      ", COL4_YELLOW);
+        for (size_t i = 0; i < 8; i++) { temp[0] = FAT16.BootRecord16->SystemIdentifier[i]; debug_write(temp); }
+        debug_write("\n");
+
+        // boot signature
+        debug_write_ext("- BOOT SIGNATURE                 ", COL4_YELLOW);
+        debug_writeln_hex("0x", FAT16.BootRecord16->BootSignature);
+        
     }
-    void PrintFATInformation()
+    // FAT32
+    else if (FAT16.FATType == FAT_TYPE_FAT32)
     {
-        debug_writeln("FAT INFORMATION");
-
-        debug_write_ext("- TOTAL SECTORS                  ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.TotalSectors);
-
-        debug_write_ext("- ROOT SECTOR                    ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.FirstRootSector);
-
-        debug_write_ext("- ROOT SECTOR COUNT              ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.RootSectorCount);
-
-        debug_write_ext("- DATA SECTOR COUNT              ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.DataSectorCount);
-
-        debug_write_ext("- CLUSTER COUNT                  ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.ClusterCount);
-
-        debug_write_ext("- FAT SIZE                       ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.FATSize);
-
-        debug_write_ext("- FIRST FAT SECTOR               ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.FirstFATSector);
-
-        debug_write_ext("- FIRST DATA SECTOR              ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.FirstDataSector);
+        debug_writeln_ext("FAT32", COL4_YELLOW);
     }
-      void PrintExtendedBootRecord()
+    // EXFAT
+    else if (FAT16.FATType == FAT_TYPE_EXFAT)
     {
-        debug_writeln("EXTENDED BOOT RECORD");
-
-        // FAT12/FAT16
-        if (FAT16.FATType == FAT_TYPE_FAT12 || FAT16.FATType == FAT_TYPE_FAT16)
-        {
-            // drive number
-            debug_write_ext("- DRIVE NUMBER                   ", COL4_YELLOW);
-            debug_writeln_dec("", FAT16.BootRecord16->DriveNumber);
-
-            // windows nt flags
-            debug_write_ext("- WINNT FLAGS                    ", COL4_YELLOW);
-            debug_writeln_dec("", FAT16.BootRecord16->FlagsWindowsNT);
-
-            // signature
-            debug_write_ext("- SIGNATURE                      ", COL4_YELLOW);
-            debug_writeln_hex("0x", FAT16.BootRecord16->Signature);
-
-            // volume id serial
-            debug_write_ext("- VOLUME ID SERIAL               ", COL4_YELLOW);
-            debug_writeln_hex("0x", FAT16.BootRecord16->VolumeIDSerial);
-
-            // volume label
-            debug_write_ext("- VOLUME LABEL                   ", COL4_YELLOW);
-            char temp[2] = { ' ', '\0' };
-            for (size_t i = 0; i < 11; i++) { temp[0] = FAT16.BootRecord16->VolumeLabel[i]; debug_write(temp); }
-            debug_write("\n");
-
-            // system identifier
-            debug_write_ext("- SYSTEM ID                      ", COL4_YELLOW);
-            for (size_t i = 0; i < 8; i++) { temp[0] = FAT16.BootRecord16->SystemIdentifier[i]; debug_write(temp); }
-            debug_write("\n");
-
-            // boot signature
-            debug_write_ext("- BOOT SIGNATURE                 ", COL4_YELLOW);
-            debug_writeln_hex("0x", FAT16.BootRecord16->BootSignature);
-            
-        }
-        // FAT32
-        else if (FAT16.FATType == FAT_TYPE_FAT32)
-        {
-            debug_writeln_ext("FAT32", COL4_YELLOW);
-        }
-        // EXFAT
-        else if (FAT16.FATType == FAT_TYPE_EXFAT)
-        {
-
-        }
-    }
-    void PrintBIOSParameterBlock()
-    {
-        char temp[8];
-
-        debug_writeln("BIOS PARAMETER BLOCK DATA");
-
-        // jump code
-        debug_write_ext("- JUMP CODE                      ", COL4_YELLOW);
-        strhex(FAT16.BIOSBlock->JumpCode[0], temp); debug_write(temp); debug_write("  ");
-        strhex(FAT16.BIOSBlock->JumpCode[1], temp); debug_write(temp); debug_write("  ");
-        strhex(FAT16.BIOSBlock->JumpCode[2], temp); debug_write(temp); debug_writeln("  ");
-
-        // oem identifier
-        debug_write_ext("- OEM ID                         ", COL4_YELLOW);
-        debug_writeln(FAT16.BIOSBlock->OEMIdentifier);
-
-        // bytes per sector
-        debug_write_ext("- BYTES/SECTOR                   ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->BytesPerSector);
-
-        // sectors per cluster
-        debug_write_ext("- SECTORS/CLUSTER                ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->SectorsPerCluster);
-
-        // reserved sectors
-        debug_write_ext("- RESERVED SECTORS               ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->ReservedSectors);
-
-        // number of fats on disk
-        debug_write_ext("- FAT COUNT                      ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->FATCount);
-
-        // directory entries
-        debug_write_ext("- DIRECTORY ENTRIES              ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->DirectoryCount);
-
-        // logical sectors
-        debug_write_ext("- LOGICAL SECTORS                ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->LogicalSectors);
-
-        // media descriptor type
-        debug_write_ext("- MEDIA DESCRIPTOR               ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->MediaDescriptorType);
-
-        // sectors per fat
-        debug_write_ext("- SECTORS/FAT                    ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->SectorsPerFAT);
-
-        // sectors per track
-        debug_write_ext("- SECTORS/TRACK                  ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->SectorsPerTrack);
-
-        // heads
-        debug_write_ext("- HEADS                          ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->HeadCount);
-
-        // hidden sectors
-        debug_write_ext("- HIDDEN SECTORS                 ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->HiddenSectors);
-
-        // large sector count
-        debug_write_ext("- LARGE SECTORS                  ", COL4_YELLOW);
-        debug_writeln_dec("", FAT16.BIOSBlock->LargeSectors);
 
     }
+}
+void PrintBIOSParameterBlock()
+{
+    char temp[8];
+
+    debug_writeln("BIOS PARAMETER BLOCK DATA");
+
+    // jump code
+    debug_write_ext("- JUMP CODE                      ", COL4_YELLOW);
+    strhex(FAT16.BIOSBlock->JumpCode[0], temp); debug_write(temp); debug_write("  ");
+    strhex(FAT16.BIOSBlock->JumpCode[1], temp); debug_write(temp); debug_write("  ");
+    strhex(FAT16.BIOSBlock->JumpCode[2], temp); debug_write(temp); debug_writeln("  ");
+
+    // oem identifier
+    debug_write_ext("- OEM ID                         ", COL4_YELLOW);
+    debug_writeln(FAT16.BIOSBlock->OEMIdentifier);
+
+    // bytes per sector
+    debug_write_ext("- BYTES/SECTOR                   ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->BytesPerSector);
+
+    // sectors per cluster
+    debug_write_ext("- SECTORS/CLUSTER                ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->SectorsPerCluster);
+
+    // reserved sectors
+    debug_write_ext("- RESERVED SECTORS               ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->ReservedSectors);
+
+    // number of fats on disk
+    debug_write_ext("- FAT COUNT                      ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->FATCount);
+
+    // directory entries
+    debug_write_ext("- DIRECTORY ENTRIES              ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->DirectoryCount);
+
+    // logical sectors
+    debug_write_ext("- LOGICAL SECTORS                ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->LogicalSectors);
+
+    // media descriptor type
+    debug_write_ext("- MEDIA DESCRIPTOR               ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->MediaDescriptorType);
+
+    // sectors per fat
+    debug_write_ext("- SECTORS/FAT                    ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->SectorsPerFAT);
+
+    // sectors per track
+    debug_write_ext("- SECTORS/TRACK                  ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->SectorsPerTrack);
+
+    // heads
+    debug_write_ext("- HEADS                          ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->HeadCount);
+
+    // hidden sectors
+    debug_write_ext("- HIDDEN SECTORS                 ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->HiddenSectors);
+
+    // large sector count
+    debug_write_ext("- LARGE SECTORS                  ", COL4_YELLOW);
+    debug_writeln_dec("", FAT16.BIOSBlock->LargeSectors);
+
+}
 
 void Init()
-{
-
-
-        
+{      
         ATA.ReadSectors((uint8_t*)FAT16.BootSectorData, 0, 1);
 
         // confirm that boot sector is not blank

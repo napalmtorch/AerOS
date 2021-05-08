@@ -8,7 +8,6 @@
 #include "hardware/ports.hpp"
 #include "hardware/multiboot.hpp"
 #include "hardware/terminal.hpp"
-//#include "hardware/fat.hpp"
 #include "hardware/interrupt/idt.hpp"
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/cpu.hpp"
@@ -61,7 +60,7 @@ extern "C"
                     void OnEnterPressed(char* input);
 
             };
-            extern VFS::FAT16 FAT16;
+
             // kernel base class
             extern KernelIO::KernelBase Kernel;
 
@@ -83,8 +82,8 @@ extern "C"
             // ata controller driver
             extern HAL::ATAController ATA;
 
-            // file system
-          //  extern HAL::FATFileSystem FAT;
+            // fat file system
+            extern VFS::FAT16 FAT16;
 
             // real time clock
             extern HAL::RTCManager RTC;

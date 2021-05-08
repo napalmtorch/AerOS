@@ -1,4 +1,5 @@
 #include "graphics/canvas.hpp"
+#include <core/kernel.hpp>
 
 namespace Graphics
 {

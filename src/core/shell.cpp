@@ -221,7 +221,7 @@ namespace System
 
         void PANIC(char* input)
         {
-            char* err = strsplit_index(input, 1, ' ');
+            char* err = strsub(input, 6, strlen(input));
             if (err == nullptr) { debug_throw_panic("Nothing actually crashed, I'm just a cunt."); return; }
             debug_throw_panic(err);
         }

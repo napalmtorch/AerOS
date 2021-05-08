@@ -2,7 +2,25 @@
 #include "lib/types.h"
 #include "graphics/colors.hpp"
 #include "graphics/font.hpp"
-#include "core/kernel.hpp"
+typedef enum
+{
+    TEXT_ALIGN_LEFT,
+    TEXT_ALIGN_CENTER,
+    TEXT_ALIGN_RIGHT,
+} TEXT_ALIGN;
+
+typedef enum
+{
+    ALIGN_TOP_LEFT,
+    ALIGN_TOP_CENTER,
+    ALIGN_TOP_RIGHT,
+    ALIGN_MIDDLE_LEFT,
+    ALIGN_MIDDLE_CENTER,
+    ALIGN_MIDDLE_RIGHT,
+    ALIGN_BOTTOM_LEFT,
+    ALIGN_BOTTOM_CENTER,
+    ALIGN_BOTTOM_RIGHT,
+} ALIGN;
 
 namespace Graphics
 {
@@ -39,36 +57,5 @@ namespace Graphics
             void DrawString(point_t pos, char* text, Color fg, Font font);
             void DrawString(uint16_t x, uint16_t y, char* text, Color fg, Color bg, Font font);
             void DrawString(point_t pos, char* text, Color fg, Color bg, Font font);
-    };
-
-    // vga canvas
-    class VGACanvas : public Canvas
-    {
-        // clear the screen with palette value
-        void Clear(uint8_t color) { System::KernelIO::VGA.Clear(color); }
-
-        // clear the screen
-        virtual void Clear(Color color)
-        {
-            System::KernelIO::VGA.Clear(RGBToVGAPallete(color));
-        }
-
-        // draw pixel with palette value
-        void DrawPixel(uint16_t x, uint16_t y, uint8_t color) { System::KernelIO::VGA.SetPixel(x, y, color); }
-
-        // draw pixel
-        virtual void DrawPixel(uint16_t x, uint16_t y, Color color)
-        {
-            System::KernelIO::VGA.SetPixel(x, y, RGBToVGAPallete(color));
-        }
-
-        // draw filled rectangle
-        virtual void DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color color)
-        {
-            for (size_t i = 0; i < w * h; i++)
-            {
-                DrawPixel(x + (i % w), y + (i / w), color);
-            }
-        }
     };
 }
