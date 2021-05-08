@@ -62,7 +62,7 @@ namespace System
             //debug_bochs_break();
 
             // disable console output for debugger
-            SetDebugConsoleOutput(true);
+            SetDebugConsoleOutput(false);
 
             // initialize terminal interface
             Terminal.Initialize();

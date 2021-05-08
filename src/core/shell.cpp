@@ -216,7 +216,7 @@ namespace System
         void PANIC(char* input)
         {
             char* err = strsub(input, 6, strlen(input));
-            if (err == nullptr) { debug_throw_panic("Nothing actually crashed, I'm just a cunt."); return; }
+            if (err == nullptr) { debug_throw_message(MSG_TYPE_OK, "nullptr"); debug_throw_panic("Nothing actually crashed, I'm just a cunt."); return; }
             debug_throw_panic(err);
         }
     }

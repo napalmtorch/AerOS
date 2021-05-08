@@ -121,6 +121,7 @@ void strdel(char text[])
 // substring
 char* strsub(char* str, uint16_t start, uint16_t end)
 {
+    if (strlen(str) < start) return nullptr;
     char* ret = (char* )mem_alloc((sizeof(char)) * (end - start + 1));
     ret[end-start] = 0;
 
