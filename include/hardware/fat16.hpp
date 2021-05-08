@@ -2,10 +2,6 @@
 #include <hardware/drivers/ata.hpp>
 extern "C"
 {
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef unsigned int uint;
 
 #include <stdbool.h>
 
@@ -72,77 +68,77 @@ typedef unsigned int uint;
 // ------------------------------------------------------------------------------------------------
 typedef struct BiosParamBlock
 {
-    u8 jump[3];
-    u8 oem[8];
-    u16 bytesPerSector;
-    u8 sectorsPerCluster;
-    u16 reservedSectorCount;
-    u8 fatCount;
-    u16 rootEntryCount;
-    u16 sectorCount;
-    u8 mediaType;
-    u16 sectorsPerFat;
-    u16 sectorsPerTrack;
-    u16 headCount;
-    u32 hiddenSectorCount;
-    u32 largeSectorCount;
+    uint8_t jump[3];
+    uint8_t oem[8];
+    uint16_t bytesPerSector;
+    uint8_t sectorsPerCluster;
+    uint16_t reservedSectorCount;
+    uint8_t fatCount;
+    uint16_t rootEntryCount;
+    uint16_t sectorCount;
+    uint8_t mediaType;
+    uint16_t sectorsPerFat;
+    uint16_t sectorsPerTrack;
+    uint16_t headCount;
+    uint32_t hiddenSectorCount;
+    uint32_t largeSectorCount;
 
     // Extended block
-    u8 driveNumber;
-    u8 flags;
-    u8 signature;
-    u32 volumeId;
-    u8 volumeLabel[11];
-    u8 fileSystem[8];
+    uint8_t driveNumber;
+    uint8_t flags;
+    uint8_t signature;
+    uint32_t volumeId;
+    uint8_t volumeLabel[11];
+    uint8_t fileSystem[8];
 } PACKED BiosParamBlock;
 
 // ------------------------------------------------------------------------------------------------
 typedef struct DirEntry
 {
     // Following conventions of DOS 7.0
-    u8 name[8];
-    u8 ext[3];
-    u8 attribs;
-    u8 reserved;
-    u8 createTimeMs;
-    u16 createTime;
-    u16 createDate;
-    u16 accessDate;
-    u16 extendedAttribsIndex;
-    u16 mTime;
-    u16 mDate;
-    u16 clusterIndex;
-    u32 fileSize;
+    uint8_t name[8];
+    uint8_t ext[3];
+    uint8_t attribs;
+    uint8_t reserved;
+    uint8_t createTimeMs;
+    uint16_t createTime;
+    uint16_t createDate;
+    uint16_t accessDate;
+    uint16_t extendedAttribsIndex;
+    uint16_t mTime;
+    uint16_t mDate;
+    uint16_t clusterIndex;
+    uint32_t fileSize;
 } PACKED DirEntry;
 
 #define ENTRY_AVAILABLE 0x00
 #define ENTRY_ERASED 0xe5
 
 // ------------------------------------------------------------------------------------------------
-uint FatGetTotalSectorCount(u8 *image);
-uint FatGetMetaSectorCount(u8 *image);
-uint FatGetClusterCount(u8 *image);
-uint FatGetImageSize(u8 *image);
+uint FatGetTotalSectorCount(uint8_t *image);
+uint FatGetMetaSectorCount(uint8_t *image);
+uint FatGetClusterCount(uint8_t *image);
+uint FatGetImageSize(uint8_t *image);
 
-u16 *FatGetTable(u8 *image, uint fatIndex);
-u16 FatGetClusterValue(u8 *image, uint fatIndex, uint clusterIndex);
-void FatSetClusterValue(u8 *image, uint fatIndex, uint clusterIndex, u16 value);
-uint FatGetClusterOffset(u8 *image, uint clusterIndex);
-DirEntry *FatGetRootDirectory(u8 *image);
+uint16_t *FatGetTable(uint8_t *image, uint fatIndex);
+uint16_t FatGetClusterValue(uint8_t *image, uint fatIndex, uint clusterIndex);
+void FatSetClusterValue(uint8_t *image, uint fatIndex, uint clusterIndex, uint16_t value);
+uint FatGetClusterOffset(uint8_t *image, uint clusterIndex);
+DirEntry *FatGetRootDirectory(uint8_t *image);
 
-u8 *FatAllocImage(uint imageSize);
-bool FatInitImage(u8 *image, u8 *bootSector);
+uint8_t *FatAllocImage(uint imageSize);
+bool FatInitImage(uint8_t *image, uint8_t *bootSector);
 
-void FatSplitPath(u8 dstName[8], u8 dstExt[3], const char *path);
-u16 FatFindFreeCluster(u8 *image);
-void FatUpdateCluster(u8 *image, uint clusterIndex, u16 value);
-DirEntry *FatFindFreeRootEntry(u8 *image);
-void FatUpdateDirEntry(DirEntry *entry, u16 clusterIndex, const u8 name[8], const u8 ext[3], uint fileSize);
+void FatSplitPath(uint8_t dstName[8], uint8_t dstExt[3], const char *path);
+uint16_t FatFindFreeCluster(uint8_t *image);
+void FatUpdateCluster(uint8_t *image, uint clusterIndex, uint16_t value);
+DirEntry *FatFindFreeRootEntry(uint8_t *image);
+void FatUpdateDirEntry(DirEntry *entry, uint16_t clusterIndex, const uint8_t name[8], const uint8_t ext[3], uint fileSize);
 void FatRemoveDirEntry(DirEntry *entry);
-u16 FatAddData(u8 *image, const void *data, uint len);
-void FatRemoveData(u8 *image, uint rootClusterIndex);
-DirEntry *FatAddFile(u8 *image, const char *path, const void *data, uint len);
-void FatRemoveFile(u8 *image, DirEntry *entry);
+uint16_t FatAddData(uint8_t *image, const void *data, uint len);
+void FatRemoveData(uint8_t *image, uint rootClusterIndex);
+DirEntry *FatAddFile(uint8_t *image, const char *path, const void *data, uint len);
+void FatRemoveFile(uint8_t *image, DirEntry *entry);
 }
 namespace VFS
 {

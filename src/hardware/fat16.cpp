@@ -7,7 +7,7 @@ VFS::FAT16 FAT16;
 HAL::ATAController ATA;
 extern "C" {
 // ------------------------------------------------------------------------------------------------
-uint FatGetTotalSectorCount(u8 *image)
+uint FatGetTotalSectorCount(uint8_t *image)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
 
@@ -22,7 +22,7 @@ uint FatGetTotalSectorCount(u8 *image)
 }
 
 // ------------------------------------------------------------------------------------------------
-uint FatGetMetaSectorCount(u8 *image)
+uint FatGetMetaSectorCount(uint8_t *image)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
 
@@ -33,7 +33,7 @@ uint FatGetMetaSectorCount(u8 *image)
 }
 
 // ------------------------------------------------------------------------------------------------
-uint FatGetClusterCount(u8 *image)
+uint FatGetClusterCount(uint8_t *image)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
 
@@ -45,7 +45,7 @@ uint FatGetClusterCount(u8 *image)
 }
 
 // ------------------------------------------------------------------------------------------------
-uint FatGetImageSize(u8 *image)
+uint FatGetImageSize(uint8_t *image)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
 
@@ -53,26 +53,26 @@ uint FatGetImageSize(u8 *image)
 }
 
 // ------------------------------------------------------------------------------------------------
-u16 *FatGetTable(u8 *image, uint fatIndex)
+uint16_t *FatGetTable(uint8_t *image, uint fatIndex)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
 
 
     uint offset = (bpb->reservedSectorCount + fatIndex * bpb->sectorsPerFat) * bpb->bytesPerSector;
 
-    return (u16 *)(image + offset);
+    return (uint16_t *)(image + offset);
 }
 
 // ------------------------------------------------------------------------------------------------
-u16 FatGetClusterValue(u8 *image, uint fatIndex, uint clusterIndex)
+uint16_t FatGetClusterValue(uint8_t *image, uint fatIndex, uint clusterIndex)
 {
-    u16 *fat = FatGetTable(image, fatIndex);
+    uint16_t *fat = FatGetTable(image, fatIndex);
 
     return fat[clusterIndex];
 }
 
 // ------------------------------------------------------------------------------------------------
-uint FatGetClusterOffset(u8 *image, uint clusterIndex)
+uint FatGetClusterOffset(uint8_t *image, uint clusterIndex)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
 
@@ -83,15 +83,15 @@ uint FatGetClusterOffset(u8 *image, uint clusterIndex)
 }
 
 // ------------------------------------------------------------------------------------------------
-void FatSetClusterValue(u8 *image, uint fatIndex, uint clusterIndex, u16 value)
+void FatSetClusterValue(uint8_t *image, uint fatIndex, uint clusterIndex, uint16_t value)
 {
-    u16 *fat = FatGetTable(image, fatIndex);
+    uint16_t *fat = FatGetTable(image, fatIndex);
 
     fat[clusterIndex] = value;
 }
 
 // ------------------------------------------------------------------------------------------------
-DirEntry *FatGetRootDirectory(u8 *image)
+DirEntry *FatGetRootDirectory(uint8_t *image)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
 
@@ -103,15 +103,15 @@ DirEntry *FatGetRootDirectory(u8 *image)
 }
 
 // ------------------------------------------------------------------------------------------------
-u8 *FatAllocImage(uint imageSize)
+uint8_t *FatAllocImage(uint imageSize)
 {
-    u8 *image = (u8 *)imageSize;
+    uint8_t *image = (uint8_t *)imageSize;
     
     return image;
 }
 
 // ------------------------------------------------------------------------------------------------
-bool FatInitImage(u8 *image, u8 *bootSector)
+bool FatInitImage(uint8_t *image, uint8_t *bootSector)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)bootSector;
 
@@ -139,15 +139,15 @@ bool FatInitImage(u8 *image, u8 *bootSector)
 }
 
 // ------------------------------------------------------------------------------------------------
-u16 FatFindFreeCluster(u8 *image)
+uint16_t FatFindFreeCluster(uint8_t *image)
 {
     uint clusterCount = FatGetClusterCount(image);
 
-    u16 *fat = FatGetTable(image, 0);
+    uint16_t *fat = FatGetTable(image, 0);
 
     for (uint clusterIndex = 2; clusterIndex < clusterCount; ++clusterIndex)
     {
-        u16 data = fat[clusterIndex];
+        uint16_t data = fat[clusterIndex];
         if (data == 0)
         {
             return clusterIndex;
@@ -158,7 +158,7 @@ u16 FatFindFreeCluster(u8 *image)
 }
 
 // ------------------------------------------------------------------------------------------------
-void FatUpdateCluster(u8 *image, uint clusterIndex, u16 value)
+void FatUpdateCluster(uint8_t *image, uint clusterIndex, uint16_t value)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
 
@@ -169,7 +169,7 @@ void FatUpdateCluster(u8 *image, uint clusterIndex, u16 value)
 }
 
 // ------------------------------------------------------------------------------------------------
-DirEntry *FatFindFreeRootEntry(u8 *image)
+DirEntry *FatFindFreeRootEntry(uint8_t *image)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
 
@@ -178,7 +178,7 @@ DirEntry *FatFindFreeRootEntry(u8 *image)
 
     for (DirEntry *entry = start; entry != end; ++entry)
     {
-        u8 marker = entry->name[0];
+        uint8_t marker = entry->name[0];
         if (marker == ENTRY_AVAILABLE || marker == ENTRY_ERASED)
         {
             return entry;
@@ -198,7 +198,7 @@ char toupper(char c)
 }
 
 // ------------------------------------------------------------------------------------------------
-static void SetPaddedString(u8 *dst, uint dstLen, const char *src, uint srcLen)
+static void SetPaddedString(uint8_t *dst, uint dstLen, const char *src, uint srcLen)
 {
     if (src)
     {
@@ -236,7 +236,7 @@ char* strchr(const char *s, char c) {
 }
 
 // ------------------------------------------------------------------------------------------------
-void FatSplitPath(u8 dstName[8], u8 dstExt[3], const char *path)
+void FatSplitPath(uint8_t dstName[8], uint8_t dstExt[3], const char *path)
 {
     const char *name = strrchr(path, '/');
     if (name)
@@ -265,7 +265,7 @@ void FatSplitPath(u8 dstName[8], u8 dstExt[3], const char *path)
 }
 
 // ------------------------------------------------------------------------------------------------
-void FatUpdateDirEntry(DirEntry *entry, u16 clusterIndex, const u8 name[8], const u8 ext[3], uint fileSize)
+void FatUpdateDirEntry(DirEntry *entry, uint16_t clusterIndex, const uint8_t name[8], const uint8_t ext[3], uint fileSize)
 {
     entry->clusterIndex = clusterIndex;
     mem_copy((uint8_t*)name,entry->name, sizeof(entry->name));
@@ -280,7 +280,7 @@ void FatRemoveDirEntry(DirEntry *entry)
 }
 
 // ------------------------------------------------------------------------------------------------
-u16 FatAddData(u8 *image, const void *data, uint len)
+uint16_t FatAddData(uint8_t *image, const void *data, uint len)
 {
     BiosParamBlock *bpb = (BiosParamBlock *)image;
     uint bytesPerCluster = bpb->sectorsPerCluster * bpb->bytesPerSector;
@@ -291,18 +291,18 @@ u16 FatAddData(u8 *image, const void *data, uint len)
         return 0;
     }
 
-    u16 endOfChainValue = FatGetClusterValue(image, 0, 1);
+    uint16_t endOfChainValue = FatGetClusterValue(image, 0, 1);
 
-    u16 prevClusterIndex = 0;
-    u16 rootClusterIndex = 0;
+    uint16_t prevClusterIndex = 0;
+    uint16_t rootClusterIndex = 0;
 
     // Copy data one cluster at a time.
-    const u8 *p = (const u8 *)data;
-    const u8 *end = p + len;
+    const uint8_t *p = (const uint8_t *)data;
+    const uint8_t *end = p + len;
     while (p < end)
     {
         // Find a free cluster
-        u16 clusterIndex = FatFindFreeCluster(image);
+        uint16_t clusterIndex = FatFindFreeCluster(image);
         if (clusterIndex == 0)
         {
             // Ran out of disk space, free allocated clusters
@@ -323,7 +323,7 @@ u16 FatAddData(u8 *image, const void *data, uint len)
 
         // Transfer bytes into image at cluster location
         uint offset = FatGetClusterOffset(image, clusterIndex);
-        mem_copy((u8*)p, image + offset, count);
+        mem_copy((uint8_t*)p, image + offset, count);
         p += count;
 
         // Update FAT clusters
@@ -344,21 +344,21 @@ u16 FatAddData(u8 *image, const void *data, uint len)
 }
 
 // ------------------------------------------------------------------------------------------------
-void FatRemoveData(u8 *image, uint clusterIndex)
+void FatRemoveData(uint8_t *image, uint clusterIndex)
 {
 
-    u16 endOfChainValue = FatGetClusterValue(image, 0, 1);
+    uint16_t endOfChainValue = FatGetClusterValue(image, 0, 1);
 
     while (clusterIndex != endOfChainValue)
     {
-        u16 nextClusterIndex = FatGetClusterValue(image, 0, clusterIndex);
+        uint16_t nextClusterIndex = FatGetClusterValue(image, 0, clusterIndex);
         FatUpdateCluster(image, clusterIndex, 0);
         clusterIndex = nextClusterIndex;
     }
 }
 
 // ------------------------------------------------------------------------------------------------
-DirEntry *FatAddFile(u8 *image, const char *path, const void *data, uint len)
+DirEntry *FatAddFile(uint8_t *image, const char *path, const void *data, uint len)
 {
     // Find Directory Entry
     DirEntry *entry = FatFindFreeRootEntry(image);
@@ -368,15 +368,15 @@ DirEntry *FatAddFile(u8 *image, const char *path, const void *data, uint len)
     }
 
     // Add File
-    u16 rootClusterIndex = FatAddData(image, data, len);
+    uint16_t rootClusterIndex = FatAddData(image, data, len);
     if (!rootClusterIndex)
     {
         return 0;
     }
 
     // Update Directory Entry
-    u8 name[8];
-    u8 ext[3];
+    uint8_t name[8];
+    uint8_t ext[3];
     FatSplitPath(name, ext, path);
 
     FatUpdateDirEntry(entry, rootClusterIndex, name, ext, len);
@@ -384,7 +384,7 @@ DirEntry *FatAddFile(u8 *image, const char *path, const void *data, uint len)
 }
 
 // ------------------------------------------------------------------------------------------------
-void FatRemoveFile(u8 *image, DirEntry *entry)
+void FatRemoveFile(uint8_t *image, DirEntry *entry)
 {
     FatRemoveData(image, entry->clusterIndex);
     FatRemoveDirEntry(entry);
@@ -571,8 +571,8 @@ void Init()
         FAT16.ClusterCount = FAT16.DataSectorCount / FAT16.BIOSBlock->SectorsPerCluster;
         FAT16.FirstRootSector = FAT16.FirstDataSector - FAT16.RootSectorCount;
         uint imageSize = FAT16.TotalSectors * FAT16.DataSectorCount;
-        u8 *image = FatAllocImage(imageSize);
-        FatInitImage(image,(u8*)FAT16.BootRecord16);
+        uint8_t *image = FatAllocImage(imageSize);
+        FatInitImage(image,(uint8_t*)FAT16.BootRecord16);
         PrintExtendedBootRecord();
         PrintBIOSParameterBlock();
         PrintFATInformation();

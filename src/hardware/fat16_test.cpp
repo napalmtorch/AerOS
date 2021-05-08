@@ -37,22 +37,19 @@ void main()
     uint metaSectorCount = 536;
     uint clusterCount = 63880;
 
-    // Allocate image
     uint imageSize = bpb.sectorCount * bpb.bytesPerSector;
-    u8 *image = FatAllocImage(imageSize);
+    uint8_t *image = FatAllocImage(imageSize);
     for (uint i = 0; i < imageSize; ++i)
     {
         ASSERT_EQ_UINT(image[i], ENTRY_ERASED);
     }
 
-    // Create dummy boot sector
-    u8 bootSector[0x200];
+    uint8_t bootSector[0x200];
     mem_fill(bootSector, 0, sizeof(bootSector));
-    mem_copy((u8*)&bpb,bootSector, sizeof(bpb));
+    mem_copy((uint8_t*)&bpb,bootSector, sizeof(bpb));
     bootSector[0x1fe] = 0x55;
     bootSector[0x1ff] = 0xaa;
 
-    // Initialize image
     ASSERT_TRUE(FatInitImage(image, bootSector));
     ASSERT_EQ_UINT(FatGetImageSize(image), imageSize);
     ASSERT_EQ_UINT(FatGetMetaSectorCount(image), metaSectorCount);
@@ -66,13 +63,13 @@ void main()
     // Allocate all clusters
     for (uint i = 2; i < clusterCount; ++i)
     {
-        u16 index = FatFindFreeCluster(image);
+        uint16_t index = FatFindFreeCluster(image);
         ASSERT_TRUE(index != 0);
         FatUpdateCluster(image, index, 0xffff);
     }
 
     // Try to allocate another cluster -- this should fail.
-    u16 clusterIndex = FatFindFreeCluster(image);
+    uint16_t clusterIndex = FatFindFreeCluster(image);
     ASSERT_EQ_UINT(clusterIndex, 0);
 
     // Free all clusters we just allocated
@@ -82,8 +79,8 @@ void main()
     }
 
     // Name splitting
-    u8 name[8];
-    u8 ext[3];
+    uint8_t name[8];
+    uint8_t ext[3];
 
     FatSplitPath(name, ext, "a");
 
@@ -130,7 +127,7 @@ void main()
 
     // Add file data, single cluster
     char *data = "Hello World!";
-    u16 rootClusterIndex = FatAddData(image, data, strlen(data) + 1);
+    uint16_t rootClusterIndex = FatAddData(image, data, strlen(data) + 1);
     ASSERT_TRUE(rootClusterIndex != 0);
     ASSERT_EQ_HEX16(FatGetClusterValue(image, 0, rootClusterIndex), 0xffff);
     char *writtenData = (char *)(image + FatGetClusterOffset(image, rootClusterIndex));
