@@ -153,22 +153,38 @@ namespace System
         {
             
         }
-
+        
         // triggered when a kernel panic is injected
         void KernelBase::OnPanic(char* msg)
         {
-            Terminal.SetCursorPos(0, 0);
-            Terminal.DisableCursor();
+            
+            char* panic_string = "====PANIC====";
+            char* expl ="A kernel panic was triggered";
+            char* err = "Error Message: ";
+            size_t center_loc = (80 - strlen(panic_string)) / 2;
+            Terminal.Clear(COL4_DARK_BLUE);
+            Terminal.SetCursorPos(center_loc, 0);
+            System::KernelIO::WriteDecimal("String Length ",center_loc);
             Terminal.SetBackColor(COL4::COL4_DARK_BLUE);
             Terminal.SetForeColor(COL4::COL4_WHITE);
-            Terminal.WriteLine("====PANIC====");
-            Terminal.WriteLine("A kernel panic was triggered");
-            Terminal.Write("Error: ");
-            Terminal.SetForeColor(COL4::COL4_RED);
+            Terminal.WriteLine(panic_string);
+            Terminal.SetCursorPos((80 - strlen(expl)) / 2, 1);
+            Terminal.WriteLine(expl);
+            Terminal.NewLine();
+            Terminal.NewLine();
+            Terminal.SetCursorPos((80 - strlen(err)) / 2, 2);
+            Terminal.Write(err);
+            Terminal.NewLine();
+            Terminal.SetForeColor(COL4_RED);
+            Terminal.SetCursorPos((80 - strlen(msg)) / 2, 3);
             Terminal.Write(msg);
-            Terminal.SetForeColor(COL4::COL4_WHITE);
             Terminal.WriteLine(".");
-            Terminal.WriteLine("====PANIC====");
+            Terminal.SetForeColor(COL4_WHITE);
+            Terminal.NewLine();
+            Terminal.NewLine();
+            Terminal.SetCursorPos((80 - strlen(panic_string)) / 2, 4);
+            Terminal.WriteLine(panic_string);
+            Terminal.DisableCursor();
         }
 
         // triggered when a handled interrupt call is finished
