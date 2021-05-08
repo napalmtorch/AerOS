@@ -382,7 +382,15 @@ DirEntry *FatAddFile(uint8_t *image, const char *path, const void *data, uint le
     FatUpdateDirEntry(entry, rootClusterIndex, name, ext, len);
     return entry;
 }
+//TODO: Implement me please? :puppy eyes:
+fs_node_t *fopen(char *filename, uint32_t flags) {
 
+	return NULL;
+}
+fs_node_t *fread(char *filename) {
+
+	return NULL;
+}
 // ------------------------------------------------------------------------------------------------
 void FatRemoveFile(uint8_t *image, DirEntry *entry)
 {

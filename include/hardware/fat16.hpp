@@ -111,6 +111,23 @@ typedef struct DirEntry
     uint32_t fileSize;
 } PACKED DirEntry;
 
+typedef struct fs_node {
+	char name[256];			// The filename.
+	uint32_t mask;			// The permissions mask.
+	uint32_t uid;			// The owning user.
+	uint32_t gid;			// The owning group.
+	uint32_t flags;			// Flags (node type, etc).
+	uint32_t inode;			// Inode number.
+	uint32_t length;		// Size of the file, in byte.
+	uint32_t impl;			// Used to keep track which fs it belongs to.
+	struct fs_node *ptr;	// Used by mountpoints and symlinks.
+	uint32_t offset;
+	int32_t shared_with;
+	uint32_t atime;
+	uint32_t mtime;
+	uint32_t ctime;
+} fs_node_t;
+
 #define ENTRY_AVAILABLE 0x00
 #define ENTRY_ERASED 0xe5
 
