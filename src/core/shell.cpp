@@ -37,6 +37,10 @@ namespace System
         CommandList[4] = ShellCommand("BG",         "Change background color", "",          Commands::BG);
         CommandList[5] = ShellCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
         CommandList[6] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
+        CommandList[7] = ShellCommand("FAT",        "Show FAT information", "",             Commands::FAT);
+        CommandList[8] = ShellCommand("FATMBR",     "Show FAT master boot record", "",      Commands::FAT_MBR);
+        CommandList[9] = ShellCommand("FATEXT",     "Show FAT extended boot record", "",    Commands::FAT_EXT);
+        CommandList[10] = ShellCommand("DISKDUMP",  "Dump disk sectors into memory", "",  Commands::FAT_ROOT);
 
         // print caret to screen
         PrintCaret();
@@ -183,6 +187,47 @@ namespace System
                     KernelIO::Terminal.WriteLine(KernelIO::Shell.GetCommand(i).Help, COL4_GRAY);
                 }
             }
+        }
+
+        void FAT(char* input)
+        {
+            KernelIO::FAT.PrintFATInformation();   
+        }
+
+        void FAT_MBR(char* input)
+        {
+            KernelIO::FAT.PrintBIOSParameterBlock();
+        }
+
+        void FAT_EXT(char* input)
+        {
+            KernelIO::FAT.PrintExtendedBootRecord();
+        }
+
+        void FAT_ROOT(char* input)
+        {
+            KernelIO::FAT.LoadRootDirectory();
+
+            // get data from input
+            char* str_offset = strsplit_index(input, 1, ' ');
+            char* str_len    = strsplit_index(input, 2, ' ');
+
+            uint32_t str_offset_dec = stod(str_offset);
+            uint32_t offset = (uint32_t)KernelIO::FAT.FATTable + (str_offset_dec * 512);
+            char offset_new[16];
+            strdec(offset, offset_new);
+
+            char cmd[64];
+            strcat(cmd, "dump ");
+            strcat(cmd, offset_new);
+            strcat(cmd, " ");
+            strcat(cmd, str_len);
+
+            KernelIO::Shell.ParseCommand(cmd);
+
+            delete str_offset;
+            delete str_len;            
+
         }
     }
 }

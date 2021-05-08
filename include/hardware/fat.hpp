@@ -129,17 +129,18 @@ namespace HAL
     class FATFileSystem
     {
         public:
+            uint8_t FATTable[32 * 1024];
             void Initialize();
             void PrintBIOSParameterBlock();
             void PrintExtendedBootRecord();
             void PrintFATInformation();
             FATFile OpenFile(char* name);
             void ReadFile(FATFile file, uint8_t* dest, uint32_t len);
+            void LoadRootDirectory();
         private:
             bool DiskValid;
             uint8_t BootSectorData[512];
             uint8_t DataBuffer[512];
-            uint8_t FATTable[32 * 1024];
             FATBootRecord* BIOSBlock;
             FAT32ExtendedBootRecord* BootRecord32;
             FAT16ExtendedBootRecord* BootRecord16;
@@ -156,7 +157,7 @@ namespace HAL
 
             void DetermineFATType();
             bool IsFSInfoValid(FATFSInfo32* fs_info);
-            void LoadRootDirectory();
+            
             FATFile LocateEntry(char* path);
             void ConvertToDOSName(char* src, char* dest, uint32_t len);
     };

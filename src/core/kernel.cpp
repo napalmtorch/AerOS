@@ -58,10 +58,18 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
-            debug_bochs_break();
+            //debug_bochs_break();
+
+            // disable console output for debugger
+            SetDebugConsoleOutput(true);
 
             // initialize terminal interface
             Terminal.Initialize();
+
+            // prepare terminal
+            Terminal.Clear(COL4_BLACK);
+            Terminal.DisableCursor();
+            Terminal.EnableCursor();
 
             // initialize fonts
             Graphics::InitializeFonts();
@@ -69,39 +77,35 @@ namespace System
             // setup vga graphics driver
             VGA.Initialize();
 
-            // set mode to 90x60
-            VGA.SetMode(VGA.GetAvailableMode(0));
-
-            // prepare terminal
-            Terminal.Clear(COL4_BLACK);
-            Terminal.DisableCursor();
-            Terminal.EnableCursor();
-
             // boot message
             Terminal.WriteLine("Starting AerOS...", COL4_GRAY);
 
+            VGA.SetMode(VGA.GetAvailableMode(0));
+            ThrowOK("Initialized VGA driver");
+            ThrowOK("Set VGA mode to 80x25");
+
+            ThrowOK("Initialized terminal interface");
+ 
             // fetch multiboot header information from memory
             Multiboot.Read();
+            ThrowOK("Multiboot header detected");
             
             // initialize interrupt service routines
             HAL::CPU::InitializeISRs();
 
-            // disable console output for debugger
-            SetDebugConsoleOutput(false);
-
             // setup serial port connection
-            SerialPort.SetPort(SERIAL_PORT_COM1);
-            ThrowOK("Initialized serial port on COM1");
+            //SerialPort.SetPort(SERIAL_PORT_COM1);
+            //ThrowOK("Initialized serial port on COM1");
             //Initialise ACPI
-            ACPI.ACPIInit();
-            ThrowOK("ACPI Initialised");
+            //ACPI.ACPIInit();
+            //ThrowOK("ACPI Initialised");
 
             // initialize memory manager
             MemoryManager.Initialize();
-            ThrowOK("Initialize memory management system");
+            ThrowOK("Initialized memory management system");
 
             // initialize pci bus
-            PCIBus.Initialize();
+            //PCIBus.Initialize();
 
             // initialize real time clock
             RTC.Initialize();
@@ -115,6 +119,9 @@ namespace System
             FAT.Initialize();
             ThrowOK("Initialized FAT file system");
 
+            // enable interrupts
+            HAL::CPU::EnableInterrupts();
+
             // initialize keyboard
             Keyboard.Initialize();
             Keyboard.BufferEnabled = true;
@@ -122,14 +129,10 @@ namespace System
             ThrowOK("Initialized PS/2 keyboard driver");
 
             // initialize pit
-            HAL::CPU::InitializePIT(60, pit_callback);
-
-            // enable interrupts
-            HAL::CPU::EnableInterrupts();
+            //HAL::CPU::InitializePIT(60, pit_callback);
 
             // ready shell
             Shell.Initialize();    
-
             // test fat driver
             /*          
             HAL::FATFile file = FAT.OpenFile("test.txt");

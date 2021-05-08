@@ -19,9 +19,6 @@ namespace HAL
         BootRecord32 = (FAT32ExtendedBootRecord*)(BootSectorData + 36);
         BootRecord16 = (FAT16ExtendedBootRecord*)(BootSectorData + 36);
 
-        // get type
-        DetermineFATType();
-
         // calculate properties based on provided data
         TotalSectors = (BIOSBlock->LogicalSectors == 0) ? BIOSBlock->LargeSectors : BIOSBlock->LogicalSectors;
         FATSize = (BIOSBlock->SectorsPerFAT == 0) ? BootRecord32->SectorsPerFAT : BIOSBlock->SectorsPerFAT;
@@ -31,6 +28,9 @@ namespace HAL
         DataSectorCount = TotalSectors - (BIOSBlock->ReservedSectors + (BIOSBlock->FATCount * FATSize) + RootSectorCount);
         ClusterCount = DataSectorCount / BIOSBlock->SectorsPerCluster;
         FirstRootSector = FirstDataSector - RootSectorCount;
+
+        // get type
+        DetermineFATType();
 
         // print boot sector as hex
         /*
@@ -49,14 +49,6 @@ namespace HAL
         //System::KernelIO::DumpMemory(BootSectorData, 512, 12, true);  
         //System::KernelIO::ATA.ReadSectors(DataBuffer, 0x13, 1);      
         //System::KernelIO::DumpMemory(DataBuffer, 512, 12, true);  
-
-        // print information
-        PrintBIOSParameterBlock();
-        PrintExtendedBootRecord();
-        PrintFATInformation();
-        
-        // load root directory data
-        LoadRootDirectory();
     }
 
     void FATFileSystem::DetermineFATType()
@@ -84,7 +76,7 @@ namespace HAL
     void FATFileSystem::LoadRootDirectory()
     {
         // load data into buffer
-        System::KernelIO::ATA.ReadSectors(FATTable, FirstRootSector, RootSectorCount);
+        System::KernelIO::ATA.ReadSectors(FATTable, 0, 64);
     }
 
     FATFile FATFileSystem::LocateEntry(char* path)
@@ -327,6 +319,12 @@ namespace HAL
     {
         debug_writeln("EXTENDED BOOT RECORD");
 
+        debug_write_ext("- FAT TYPE:                      ", COL4_YELLOW);
+        if (FATType == FAT_TYPE_FAT12) { debug_writeln("FAT-12"); }
+        else if (FATType == FAT_TYPE_FAT16) { debug_writeln("FAT-16"); }
+        else if (FATType == FAT_TYPE_FAT32) { debug_writeln("FAT-32"); }
+        else if (FATType == FAT_TYPE_EXFAT) { debug_writeln("EX-FAT"); }
+
         // FAT12/FAT16
         if (FATType == FAT_TYPE_FAT12 || FATType == FAT_TYPE_FAT16)
         {
@@ -370,7 +368,7 @@ namespace HAL
         // EXFAT
         else if (FATType == FAT_TYPE_EXFAT)
         {
-
+            debug_throw_message(MSG_TYPE_ERROR, "EXFAT not supported");
         }
     }
 
