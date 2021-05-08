@@ -298,6 +298,21 @@ namespace HAL
         term_write_char(c);
         term_set_colors(fg_old, bg_old);
     }
+    // write string to next position in the center of the screen
+    void TerminalManager::WriteCenter(char* text) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y()); term_write(text); }
+
+    // write string to next position in the center of the screen with foreground color
+    void TerminalManager::WriteCenter(char* text, COL4 fg) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y()); term_write_ext(text, fg); }
+
+        // write string in the center of the screen with foreground color
+    void TerminalManager::WriteCenter(char* text, COL4 fg, COL4 bg) { 
+    term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());
+        COL4 fg_old = fore_color;
+        COL4 bg_old = back_color;
+        term_set_colors(fg, bg);
+        term_write(text);
+        term_set_colors(fg_old, bg_old);
+     }
 
     // write string to next position
     void TerminalManager::Write(char* text) { term_write(text); }
@@ -315,6 +330,17 @@ namespace HAL
         term_set_colors(fg_old, bg_old);
     }
 
+    void TerminalManager::WriteLineCenter(char* text) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());  term_writeln(text); }
+    void TerminalManager::WriteLineCenter(char* text, COL4 fg) { term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());  term_writeln_ext(text,fg); }
+    void TerminalManager::WriteLineCenter(char* text, COL4 fg, COL4 bg)
+    {
+        term_set_cursor((80 - strlen(text)) / 2,term_get_cursor_y());
+        COL4 fg_old = fore_color;
+        COL4 bg_old = back_color;
+        term_set_colors(fg, bg);
+        term_writeln(text);
+        term_set_colors(fg_old, bg_old);
+    }
     // write line to next position
     void TerminalManager::WriteLine(char* text) { term_writeln(text); }
 

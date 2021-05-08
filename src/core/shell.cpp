@@ -199,7 +199,7 @@ namespace System
         {
             char* err = strsplit_index(input, 1, ' ');
             if (err == nullptr)
-                debug_throw_panic("shell test panic");
+                debug_throw_panic("shell test panic.");
             debug_throw_panic(err);
         }
     }

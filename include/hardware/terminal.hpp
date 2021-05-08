@@ -122,11 +122,17 @@ namespace HAL
             void WriteChar(char c, COL4 fg, COL4 bg);
 
             // write string to next position
+            void WriteCenter(char* text);
+            void WriteCenter(char* text, COL4 fg);
+            void WriteCenter(char* text, COL4 fg, COL4 bg);
             void Write(char* text);
             void Write(char* text, COL4 fg);
             void Write(char* text, COL4 fg, COL4 bg);
 
             // write line to next position
+            void WriteLineCenter(char* text);
+            void WriteLineCenter(char* text, COL4 fg);
+            void WriteLineCenter(char* text, COL4 fg, COL4 bg);
             void WriteLine(char* text);
             void WriteLine(char* text, COL4 fg);
             void WriteLine(char* text, COL4 fg, COL4 bg);
