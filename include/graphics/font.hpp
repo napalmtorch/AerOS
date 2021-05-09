@@ -29,5 +29,5 @@ namespace Graphics
     // initialize fonts
     void InitializeFonts();
 
-    uint8_t ConvertByteToBitAddress(uint8_t to_convert, int32_t to_return);
+    bool ConvertByteToBitAddress(uint8_t to_convert, int32_t to_return);
 }

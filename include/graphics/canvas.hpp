@@ -58,4 +58,40 @@ namespace Graphics
             void DrawString(uint16_t x, uint16_t y, char* text, Color fg, Color bg, Font font);
             void DrawString(point_t pos, char* text, Color fg, Color bg, Font font);
     };
+
+    class VGACanvas
+    {
+        public:
+            void Clear();
+            void Clear(COL8 color);
+            
+            // display
+            void Display();
+
+            // draw pixel
+            void DrawPixel(uint16_t x, uint16_t y, COL8 color);
+            void DrawPixel(point_t pos, COL8 color);
+
+            // draw filled rectangle
+            void DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, COL8 color);
+            void DrawFilledRectangle(point_t pos, point_t size, COL8 color);
+            void DrawFilledRectangle(bounds_t bounds, COL8 color);
+
+            // draw rectangle outline
+            void DrawRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t thickness, COL8 color);
+            void DrawRectangle(point_t pos, point_t size, uint16_t thickness, COL8 color);
+            void DrawRectangle(bounds_t bounds, uint16_t thickness, COL8 color);
+
+            // draw character
+            void DrawChar(uint16_t x, uint16_t y, char c, COL8 fg, Font font);
+            void DrawChar(point_t pos, char c, COL8 fg, Font font);
+            void DrawChar(uint16_t x, uint16_t y, char c, COL8 fg, COL8 bg, Font font);
+            void DrawChar(point_t pos, char c, COL8 fg, COL8 bg, Font font);
+
+            // draw string
+            void DrawString(uint16_t x, uint16_t y, char* text, COL8 fg, Font font);
+            void DrawString(point_t pos, char* text, COL8 fg, Font font);
+            void DrawString(uint16_t x, uint16_t y, char* text, COL8 fg, COL8 bg, Font font);
+            void DrawString(point_t pos, char* text, COL8 fg, COL8 bg, Font font);
+    };
 }

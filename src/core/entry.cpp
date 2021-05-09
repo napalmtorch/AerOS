@@ -8,5 +8,5 @@ extern "C" void syscall_event(uint32_t* regs)
 extern "C" void kernel_main(void)
 {
     System::KernelIO::Kernel.Initialize();
-    while (1) { System::KernelIO::Kernel.Run(); }
+    while (true) { System::KernelIO::Kernel.Run(); }
 }

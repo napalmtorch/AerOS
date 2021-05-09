@@ -254,30 +254,24 @@ namespace System
         void GFX(char* input)
         {
             KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
-            uint32_t mx = 99, my = 99;
-            char str[16];
+            Graphics::VGACanvas canvas;
+
+            // loop
             while (true)
             {
-                KernelIO::VGA.Clear(0x03);
+                // clear the screen
+                canvas.Clear(COL8_DARK_CYAN);
 
-                strdec(KernelIO::Mouse.GetX(), str);
-                System::KernelIO::Write("MOUSE POS: ", COL4_CYAN);
-                System::KernelIO::Write(str);
-                strdec(KernelIO::Mouse.GetY(), str);
-                System::KernelIO::Write(", ");
-                System::KernelIO::WriteLine(str);
-                mx = KernelIO::Mouse.GetX();
-                my = KernelIO::Mouse.GetY();
-                
-                for (size_t y = 0; y < 6; y++)
-                {
-                    for (size_t x = 0; x < 6; x++)
-                    {
-                        KernelIO::VGA.SetPixel(x + KernelIO::Mouse.GetX(), y + KernelIO::Mouse.GetY(), 0x1F);
-                    }
-                }
+                canvas.DrawFilledRectangle(64, 64, 64, 64, COL8_DARK_BLUE);
 
-                KernelIO::VGA.Swap();
+                canvas.DrawFilledRectangle(KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY(), 4, 4, COL8_WHITE);
+
+                canvas.DrawChar(128, 128, '9', COL8_WHITE, Graphics::FONT_8x8);
+
+                canvas.DrawString(0, 0, "AerOS", COL8_YELLOW, Graphics::FONT_8x8);
+
+                // swap buffer
+                canvas.Display();
             }
         }
     }

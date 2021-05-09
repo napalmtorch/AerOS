@@ -163,7 +163,7 @@ bool StringContains(char* text)
 {
     if (strstr(System::KernelIO::Multiboot.GetCommandLine(), text) != nullptr)
     {
-
+        
     }
 }
 int strindexof(char text[], char character)
