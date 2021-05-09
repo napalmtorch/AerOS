@@ -141,7 +141,7 @@ namespace System
             Keyboard.BufferEnabled = true;
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
-
+            WriteDecimal("Kernel end: ",kernel_end);
             Mouse.Initialize();
 
             // initialize pit
