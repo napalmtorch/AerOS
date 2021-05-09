@@ -169,9 +169,6 @@ namespace System
         // triggered when a kernel panic is injected
         void KernelBase::OnPanic(char* msg)
         {
-            asm volatile("cli");
-            asm volatile("hlt");
-
             // messages 
             char panic_string[] = "====PANIC====";
             char expl[] ="A kernel panic was triggered";
