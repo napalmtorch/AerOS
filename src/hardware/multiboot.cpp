@@ -32,7 +32,7 @@ namespace HAL
     // lower memory
     uint32_t MultibootHeader::GetMemoryLower() { return MemoryLower; }
     // kernel command line
-    uint32_t MultibootHeader::GetCommandLine() { return CommandLine; }
+    char* MultibootHeader::GetCommandLine() { return CommandLine; }
     // boot modules address
     uint32_t MultibootHeader::GetModulesAddress() { return ModulesAddress; }
     // boot modules count
