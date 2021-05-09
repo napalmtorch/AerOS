@@ -62,7 +62,6 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
-            //debug_bochs_break();
 
             // fetch multiboot header information from memory
             // we need this VERY early on since it contains the boot parameters,
@@ -70,6 +69,7 @@ namespace System
             Multiboot.Read();
             if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--debug") != NULL)
             {
+                debug_bochs_break();
                 // We only enable console output for the debugger when the kernel was booted with --debug
                 SetDebugConsoleOutput(true);
                 if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--serial") != NULL)
