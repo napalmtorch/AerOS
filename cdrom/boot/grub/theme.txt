@@ -18,7 +18,7 @@ desktop-color: "#000000"
     width = 100%
     align = center
     color = #fff
-    text = "This is a Hobby OS, Things well be broken."
+    text = "This is a Hobby OS, Things will be broken."
 }
 + label {
     top = 77%
