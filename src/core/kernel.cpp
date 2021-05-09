@@ -163,22 +163,9 @@ namespace System
         }
 
         // kernel core code, runs in a loop
-        uint32_t mx = 99, my = 99;
-        char str[16];
-        char str2[16];
         void KernelBase::Run()
         {
-            if (mx != Mouse.GetX() || my != Mouse.GetY())
-            {
-                strdec(Mouse.GetX(), str);
-                Write("MOUSE POS: ", COL4_CYAN);
-                Write(str);
-                strdec(Mouse.GetY(), str2);
-                Write(", ");
-                WriteLine(str2);
-                mx = Mouse.GetX();
-                my = Mouse.GetY();
-            }
+            
         }
         
         // triggered when a kernel panic is injected
