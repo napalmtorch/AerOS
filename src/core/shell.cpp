@@ -1,6 +1,5 @@
 #include <core/shell.hpp>
 #include <core/kernel.hpp>
-#include <core/debug.hpp>
 
 namespace System
 {
@@ -206,14 +205,7 @@ namespace System
 
             KernelIO::ATA.ReadSectors(buffer, sector, 1);
 
-            bool old = debug_console_enabled;
-            System::KernelIO::SetDebugConsoleOutput(true);
             KernelIO::DumpMemory((uint8_t*)offset, bytes, 12, true);
-            System::KernelIO::SetDebugConsoleOutput(old);
-
-            delete buffer;
-            delete str_sector;
-            delete str_bytes;
         }
 
         void SHUTDOWN(char* input)
@@ -268,18 +260,19 @@ namespace System
             {
                 KernelIO::VGA.Clear(0x03);
 
+                strdec(KernelIO::Mouse.GetX(), str);
+                System::KernelIO::Write("MOUSE POS: ", COL4_CYAN);
+                System::KernelIO::Write(str);
+                strdec(KernelIO::Mouse.GetY(), str);
+                System::KernelIO::Write(", ");
+                System::KernelIO::WriteLine(str);
+                mx = KernelIO::Mouse.GetX();
+                my = KernelIO::Mouse.GetY();
+                
                 for (size_t y = 0; y < 6; y++)
                 {
                     for (size_t x = 0; x < 6; x++)
                     {
-                        strdec(KernelIO::Mouse.GetX(), str);
-                        System::KernelIO::Write("MOUSE POS: ", COL4_CYAN);
-                        System::KernelIO::Write(str);
-                        strdec(KernelIO::Mouse.GetY(), str);
-                        System::KernelIO::Write(", ");
-                        System::KernelIO::WriteLine(str);
-                        mx = KernelIO::Mouse.GetX();
-                        my = KernelIO::Mouse.GetY();
                         KernelIO::VGA.SetPixel(x + KernelIO::Mouse.GetX(), y + KernelIO::Mouse.GetY(), 0x1F);
                     }
                 }

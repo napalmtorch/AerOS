@@ -151,6 +151,7 @@ namespace System
             HAL::CPU::InitializePIT(60, pit_callback);
 
             // enable interrupts
+            asm volatile("cli");
             HAL::CPU::EnableInterrupts();
 
             // ready shell

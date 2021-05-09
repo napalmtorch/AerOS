@@ -100,6 +100,8 @@ namespace HAL
     // initialize ports
     void VGADriver::Initialize()
     {
+        BackBuffer = new uint8_t[320 * 200];
+
         // set port values
         this->PortIndexAC = IOPort(0x3C0);
         this->PortWriteAC = IOPort(0x3C0);
@@ -159,12 +161,6 @@ namespace HAL
             term_set_size(mode.GetWidth(), mode.GetHeight());
             term_set_buffer(Buffer);
         }
-
-        // initialize back buffer if necessary
-        if (mode.IsDoubleBuffered() && BackBuffer == nullptr) { BackBuffer = new uint8_t[mode.GetWidth() * mode.GetHeight()]; }
-        
-        // free back buffer when not used
-        if (!mode.IsDoubleBuffered() && BackBuffer != nullptr) { delete BackBuffer; }
     }
 
     // get video mode
@@ -221,7 +217,6 @@ namespace HAL
 
             // direct memory access mode
             mem_fill(Buffer, color, Mode.GetWidth() * Mode.GetHeight());
-
         }
     }
 
@@ -242,6 +237,8 @@ namespace HAL
         // set pixel in graphics mode
         else
         {
+            offset = x + (y * Mode.GetWidth());
+
             // double buffered mode
             if (Mode.IsDoubleBuffered())
             {
@@ -261,7 +258,7 @@ namespace HAL
         if (!Mode.IsDoubleBuffered()) { return; }
 
         // copy buffer to screen
-        mem_copy(BackBuffer, Buffer, Mode.GetWidth() * Mode.GetWidth());
+        mem_copy(BackBuffer, Buffer, Mode.GetWidth() * Mode.GetHeight());
     }
 
 
