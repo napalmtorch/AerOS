@@ -22,23 +22,14 @@ namespace HAL
         this->RightPressed = ButtonState::Released;
         
         // setup controller
-        Wait(1);
         outb(0x64, 0xA8);
-
-        Wait(1);
         outb(0x64, 0x20);
-        Wait(0);
-        uint8_t status = (inb(0x60) | 2);
-        Wait(1);
+        uint8_t status = inb(0x60) | 2;
         outb(0x64, 0x60);
-        Wait(1);
         outb(0x60, status);
-
-        Write(0xF6);
-        Read();
-
-        Write(0xF4);
-        Read();
+        outb(0x64, 0xD4);
+        outb(0x60, 0xF4);
+        inb(0x60);
 
         // register interrupt
         CPU::RegisterIRQ(IRQ12, (isr_t)ms_callback);
@@ -61,75 +52,28 @@ namespace HAL
     // on interrupt
     void PS2Mouse::OnInterrupt()
     {
-        if (Cycle == 0)
-        {
-            Buffer[0] = inb(0x60);
-            Cycle++;
-        }
-        else if (Cycle == 1)
-        {
-            Buffer[1] = inb(0x60);
-            Cycle++;
-        }
-        else if (Cycle == 2)
-        {
-            Buffer[2] = inb(0x60);
-            Cycle = 0;
-        }
+        uint8_t status = inb(0x64);
+        if (!(status & 0x20)) { return; }
 
-        if (Buffer[1] != 0 || Buffer[2] != 0)
+        Buffer[Offset] = inb(0x60);
+        Offset = (Offset + 1) % 3;
+        if (Offset == 0)
         {
-            OnMouseMove((int8_t)Buffer[1], -((int8_t)Buffer[2]));
-        }
-
-        for (uint8_t i = 0; i < 3; i++)
-        {
-            if ((Buffer[0] & (0x1 << i)) != (Buttons & (0x1 << i)))
+            if (Buffer[1] != 0 || Buffer[2] != 0)
             {
-                if ((uint8_t)(Buttons & (0x1 << i))) { LeftPressed = ButtonState::Released; } else { LeftPressed = ButtonState::Pressed; }
+                OnMouseMove((int8_t)Buffer[1], -((int8_t)Buffer[2]));
             }
-        }
 
-        Buttons = Buffer[0];
-    }
-
-    // wait
-    void PS2Mouse::Wait(uint8_t type)
-    {
-        uint32_t time_out = 100000;
-
-        if (type == 0)
-        {
-            while (time_out--)
+            for (uint8_t i = 0; i < 3; i++)
             {
-                if ((inb(0x64) & 1) == 1) { return;}
+                if ((Buffer[0] & (0x1 << i)) != (Buttons & (0x1 << i)))
+                {
+                    if ((uint8_t)(Buttons & (0x1 << i))) { LeftPressed = ButtonState::Released; } else { LeftPressed = ButtonState::Pressed; }
+                }
             }
-            return;
-        }
-        else
-        {
-            while (time_out--)
-            {
-                if ((inb(0x64) & 2) == 0) { return; }
-            }
-            return;
-        }
-    }
 
-    // write data
-    void PS2Mouse::Write(uint8_t data)
-    {
-        Wait(1);
-        outb(0x64, 0xD4);
-        Wait(1);
-        outb(0x60, data);
-    }
-
-    // read
-    uint8_t PS2Mouse::Read()
-    {
-        Wait(0);
-        return inb(0x60);
+            Buttons = Buffer[0];
+        }
     }
 
     // get buttons flag
