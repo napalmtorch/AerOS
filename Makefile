@@ -28,7 +28,7 @@ clean:
 iso:
 	mkdir -p bin/isodir/boot
 	cp bin/kernel.bin bin/isodir/boot/
-	grub-mkrescue -d /usr/lib/grub/i386-pc --compress=xz -o AerOS.iso cdrom 'bin/isodir/boot/kernel.bin'
+	grub-mkrescue -d /usr/lib/grub/i386-pc --compress=xz -o AerOS.iso cdrom 'bin/isodir/boot/kernel.bin' -V 'AerOS'
 	
 qemu:
 	gnome-terminal -- /usr/bin/qemu-system-i386 -m 256M -vga std -hda disks/disk.img -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm -cpu host -name "AerOS"
