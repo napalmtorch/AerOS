@@ -99,7 +99,7 @@ namespace System
             VGA.SetMode(VGA.GetAvailableMode(0));
             ThrowOK("Initialized VGA driver");
             ThrowOK("Set VGA mode to 80x25");
-                     
+
             // initialize interrupt service routines
             HAL::CPU::InitializeISRs();
             
