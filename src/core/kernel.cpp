@@ -70,12 +70,12 @@ namespace System
             // we need this VERY early on since it contains the boot parameters,
             // NICO I AM LOOKING AT YOU, DONT FUCK WITH IT xD - Signed Kev         
             Multiboot.Read();
-            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--debug") != NULL)
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--debug"))
             {
                 debug_bochs_break();
                 // We only enable console output for the debugger when the kernel was booted with --debug
                 SetDebugConsoleOutput(true);
-                if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--serial") != NULL)
+                if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--serial"))
                 {
                     SetDebugSerialOutput(true);
                 }
@@ -229,6 +229,10 @@ namespace System
             HAL::CPU::EnableInterrupts();
 
             return;
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga"))
+            {
+                Shell.ParseCommand("gfx");
+            }
         }
 
         // kernel core code, runs in a loop

@@ -18,7 +18,22 @@ word SLP_EN;
 word SCI_EN;
 byte PM1_CNT_LEN;
 
-
+/* keyboard interface IO port: data and control
+   READ:   status port
+   WRITE:  control register */
+#define KBRD_INTRFC 0x64
+ 
+/* keyboard interface bits */
+#define KBRD_BIT_KDATA 0 /* keyboard data is in buffer (output buffer is empty) (bit 0) */
+#define KBRD_BIT_UDATA 1 /* user data is in buffer (command buffer is empty) (bit 1) */
+ 
+#define KBRD_IO 0x60 /* keyboard IO port */
+#define KBRD_RESET 0xFE /* reset CPU command */
+ 
+#define bit(n) (1<<(n)) /* Set bit n to 1 */
+ 
+/* Check if bit n in flags is set */
+#define check_flag(flags, n) ((flags) & bit(n))
 
 struct RSDPtr
 {
@@ -288,12 +303,24 @@ void OldShutdown()
 {
    __asm__ __volatile__ ("outw %1, %0" : : "dN" ((uint16_t)0xB004), "a" ((uint16_t)0x2000));
 }
-void Reboot() {
-		uint8_t out = 0x02;
-		while ((out & 0x02) != 0) {
-			out = inb(0x64);
-		}
-		outb(0x64, 0xFE);
+ 
+void Reboot()
+{
+    uint8_t temp;
+ 
+    asm volatile ("cli");
+ 
+    do
+    {
+        temp = inb(KBRD_INTRFC);
+        if (check_flag(temp, KBRD_BIT_KDATA) != 0)
+            inb(KBRD_IO);
+    } while (check_flag(temp, KBRD_BIT_UDATA) != 0);
+ 
+    outb(KBRD_INTRFC, KBRD_RESET);
+loop:
+    asm volatile ("hlt");
+    goto loop;
 }
 }
 namespace HAL
