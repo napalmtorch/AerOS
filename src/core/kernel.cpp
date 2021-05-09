@@ -62,6 +62,9 @@ namespace System
         // VMM
         HAL::VMM VMM;
 
+        // vesa driver
+        HAL::VESA VESA;
+
         // window server
         System::XServerHost XServer;
 

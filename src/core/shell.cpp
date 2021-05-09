@@ -253,19 +253,12 @@ namespace System
 
         void GFX(char* input)
         {
-            KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
-            asm volatile("cli");
-
-            // initialize keyboard
-            KernelIO::Keyboard.BufferEnabled = false;
-            KernelIO::Keyboard.Event_OnEnterPressed = nullptr;
-
-            KernelIO::Mouse.Initialize();
-
-            KernelIO::XServer.Initialize();
-            KernelIO::XServer.Start();
-
-            HAL::CPU::EnableInterrupts();
+            KernelIO::VESA.SwitchMode(800, 600, 32);
+            for (int16_t x = 0; x < 800; x++)
+                for (int16_t y = 0; y < 600; y++)
+                    KernelIO::VESA.SetPixel(x, y, (uint32_t)0xFF00A0);
+            KernelIO::VESA.Render();
+            while (true);
         }
     }
 }

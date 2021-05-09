@@ -24,6 +24,7 @@
 #include "core/shell.hpp"
 #include "hardware/fat.hpp"
 #include "gui/xserver.hpp"
+#include "hardware/drivers/vesa.hpp"
 
 // kernel offsets
 extern "C"
@@ -114,6 +115,9 @@ extern "C"
 
             // vmm
             extern HAL::VMM VMM;
+            
+            // vesa
+            extern HAL::VESA VESA;
         }
     }
 #else
