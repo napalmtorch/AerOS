@@ -74,11 +74,11 @@ namespace System
                 SetDebugConsoleOutput(true);
                 if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--serial") != NULL)
                 {
-                SetDebugSerialOutput(true);
+                    SetDebugSerialOutput(true);
                 }
                 else
                 {
-                  SetDebugSerialOutput(false);  
+                    SetDebugSerialOutput(false);  
                 }
                 // setup serial port connection, also only in --debug mode
                 SerialPort.SetPort(SERIAL_PORT_COM1);
@@ -88,6 +88,9 @@ namespace System
             {
                 SetDebugConsoleOutput(false);   
             }
+
+            SetDebugSerialOutput(true);
+            SetDebugConsoleOutput(false);
 
             // initialize terminal interface
             Terminal.Initialize();
@@ -142,14 +145,13 @@ namespace System
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
 
+            Mouse.Initialize();
+
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
 
             // enable interrupts
             HAL::CPU::EnableInterrupts();
-
-            // initialize mouse
-            Mouse.Initialize();
 
             // ready shell
             Shell.Initialize();
@@ -163,11 +165,11 @@ namespace System
             if (mx != Mouse.GetX() || my != Mouse.GetY())
             {
                 strdec(Mouse.GetX(), str);
-                Terminal.Write("MOUSE POS: ", COL4_CYAN);
-                Terminal.Write(str);
+                Write("MOUSE POS: ", COL4_CYAN);
+                Write(str);
                 strdec(Mouse.GetY(), str);
-                Terminal.Write(", ");
-                Terminal.WriteLine(str);
+                Write(", ");
+                WriteLine(str);
                 mx = Mouse.GetX();
                 my = Mouse.GetY();
             }

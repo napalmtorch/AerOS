@@ -105,7 +105,7 @@ namespace System
 
         void LSPCI(char* input)
         {
-            KernelIO::PCIBus.List(); 
+            KernelIO::PCIBus.List();
         }
 
         void CPUINFO(char* input) { HAL::CPU::Detect(); }
@@ -253,21 +253,15 @@ namespace System
 
         void GFX(char* input)
         {
-            KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
-            
+            KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(3));
+            KernelIO::VGA.Clear(0x03);
             while (true)
             {
-                KernelIO::VGA.Clear(0x03);
+                //KernelIO::VGA.Clear(0x03);
 
-                for (size_t y = 0; y < 6; y++)
-                {
-                    for (size_t x = 0; x < 6; x++)
-                    {
-                        KernelIO::VGA.SetPixel(x + KernelIO::Mouse.GetX(), y + KernelIO::Mouse.GetY(), 0x1F);
-                    }
-                }
+             KernelIO::VGA.SetPixel(KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY(), 0x1F);
 
-                KernelIO::VGA.Swap();
+                //KernelIO::VGA.Swap();
             }
         }
     }
