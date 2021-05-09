@@ -39,13 +39,15 @@ namespace System
         CommandList[6] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
         CommandList[7] = ShellCommand("DISKDUMP",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
         CommandList[8] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
-        CommandList[9] = ShellCommand("POWEROFF",   "Perform a Legacy Shutdown", "",          Commands::LEGACY_SHUTDOWN);
-        CommandList[10] = ShellCommand("REBOOT",   "Reboot the Computer", "",          Commands::REBOOT);
-        CommandList[11] = ShellCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
+        CommandList[9] = ShellCommand("POWEROFF",   "Perform a Legacy Shutdown", "",        Commands::LEGACY_SHUTDOWN);
+        CommandList[10] = ShellCommand("REBOOT",    "Reboot the Computer", "",              Commands::REBOOT);
+        CommandList[11] = ShellCommand("TEST",      "Call a test systemcall", "",           Commands::TEST);
         CommandList[12] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
-        CommandList[13] = ShellCommand("FAT",     "FAT information", "",        Commands::FAT_INFO);
-        CommandList[14] = ShellCommand("FATMBR",     "FAT master boot record", "",        Commands::FAT_MBR);
-        CommandList[15] = ShellCommand("FATEXT",     "FAT extended boot record", "",        Commands::FAT_EXT);
+        CommandList[13] = ShellCommand("FAT",       "FAT information", "",                  Commands::FAT_INFO);
+        CommandList[14] = ShellCommand("FATMBR",    "FAT master boot record", "",           Commands::FAT_MBR);
+        CommandList[15] = ShellCommand("FATEXT",    "FAT extended boot record", "",         Commands::FAT_EXT);
+        CommandList[16] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
+
         // print caret to screen
         PrintCaret();
     }
@@ -247,6 +249,26 @@ namespace System
         void FAT_INFO(char* input)
         {
             KernelIO::FAT16.PrintInfo();
+        }
+
+        void GFX(char* input)
+        {
+            KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
+            
+            while (true)
+            {
+                KernelIO::VGA.Clear(0x03);
+
+                for (size_t y = 0; y < 6; y++)
+                {
+                    for (size_t x = 0; x < 6; x++)
+                    {
+                        KernelIO::VGA.SetPixel(x + KernelIO::Mouse.GetX(), y + KernelIO::Mouse.GetY(), 0x1F);
+                    }
+                }
+
+                KernelIO::VGA.Swap();
+            }
         }
     }
 }

@@ -159,6 +159,12 @@ namespace HAL
             term_set_size(mode.GetWidth(), mode.GetHeight());
             term_set_buffer(Buffer);
         }
+
+        // initialize back buffer if necessary
+        if (mode.IsDoubleBuffered() && BackBuffer == nullptr) { BackBuffer = new uint8_t[mode.GetWidth() * mode.GetHeight()]; }
+        
+        // free back buffer when not used
+        if (!mode.IsDoubleBuffered() && BackBuffer != nullptr) { delete BackBuffer; }
     }
 
     // get video mode
@@ -209,12 +215,12 @@ namespace HAL
             // double buffered mode
             if (Mode.IsDoubleBuffered())
             {
-                /* TODO: not yet implemented */
+                mem_fill(BackBuffer, color, Mode.GetWidth() * Mode.GetHeight());
                 return; 
             }
 
             // direct memory access mode
-            for (i = 0; i < Mode.GetWidth() * Mode.GetHeight(); i++) { Buffer[i] = color; }
+            mem_fill(Buffer, color, Mode.GetWidth() * Mode.GetHeight());
 
         }
     }
@@ -239,7 +245,7 @@ namespace HAL
             // double buffered mode
             if (Mode.IsDoubleBuffered())
             {
-                /* TODO: not yet implemented */
+                BackBuffer[offset] = color;
                 return; 
             }
 
@@ -254,7 +260,8 @@ namespace HAL
         // confirm mode is double buffered
         if (!Mode.IsDoubleBuffered()) { return; }
 
-        // for (size_t i = 0; i < Mode.GetWidth() * Mode.GetHeight(); i++) { *(Buffer[] + i) = *(BackBuffer + i); }
+        // copy buffer to screen
+        mem_copy(BackBuffer, Buffer, Mode.GetWidth() * Mode.GetWidth());
     }
 
 
