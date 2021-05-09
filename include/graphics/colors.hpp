@@ -77,16 +77,20 @@ struct Color
         uint8_t G;
         uint8_t B;
     public:
-        Color(uint8_t a, uint8_t r, uint8_t g, uint8_t b) : A(a), R(r), G(g), B(b) { }
+        Color(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
+        {
+            A = a;
+            R = r;
+            G = g;
+            B = b;
+        }
         uint8_t GetAlpha() {return A; }
         uint8_t GetRed() { return R; }
         uint8_t GetGreen() { return G; }
         uint8_t GetBlue() { return B; }
-        uint32_t ToPackedValue(COLOR_ORDER order)
-       {
-           return 0;
-            /* TODO: not yet implemented */
-            UNUSED(order);
+        uint32_t ToPackedValue()
+        {
+            return (uint32_t)((R << 24) | (G << 16) | (B << 8) | A);
         }
 };
 

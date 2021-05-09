@@ -253,12 +253,15 @@ namespace System
 
         void GFX(char* input)
         {
-            KernelIO::VESA.SwitchMode(800, 600, 32);
-            for (int16_t x = 0; x < 800; x++)
-                for (int16_t y = 0; y < 600; y++)
-                    KernelIO::VESA.SetPixel(x, y, (uint32_t)0xFF00A0);
-            KernelIO::VESA.Render();
-            while (true);
+            KernelIO::VESA.SetMode(800, 600, 32);
+            KernelIO::XServer.FullCanvas.SetDriver(VIDEO_DRIVER_VESA);
+            KernelIO::SetDebugSerialOutput(true);
+
+            while (true)
+            {
+                KernelIO::XServer.FullCanvas.Clear(Graphics::Colors::Blue);
+                KernelIO::XServer.FullCanvas.Display();
+            }
         }
     }
 }

@@ -7,185 +7,199 @@
 #define SEG(addr) (((uint32_t)addr >> 4) & 0xF000)
 #define OFF(addr) ((uint32_t)addr & 0xFFFF)
 
-// populate the VbeInfoBlock
-void HAL::VESA::populate_vib()
+namespace HAL
 {
-    // if yet set, skip this
-    if (vibset) return;
-
-    System::KernelIO::ThrowMessage(MSG_TYPE_SYSTEM, "VESA: Gathering available VESA modes from BIOS...");
-    
-    // set the locvib location
-    VbeInfoBlock* locvib = (VbeInfoBlock*)0x80000;
-
-    // call the bios interrupt
-    regs16_t regs;
-	regs.ax = 0x4f00;
-	regs.es = 0x8000;
-    regs.di = 0x0;
-
-    int32(0x10, &regs);
-    
-    // state that the VbeInfoBlock was set up
-    vibset = true;
-    
-    // store data
-    vib = *locvib;
-    System::KernelIO::ThrowMessage(MSG_TYPE_SYSTEM, "VESA: Succeded");
-}
-
-static bool isVesaEnabled = false;
-bool HAL::VESA::SwitchMode(int16_t width, int16_t height, uint8_t depth)
-{
-    // if vesa is enabled, delete the old buffer
-    if (isVesaEnabled)
+    void VESA::Initialize()
     {
-        delete buffer;
+        InfoBlockSet = false;
+        Enabled = false;
+        Width = 0;
+        Height = 0;
     }
 
-    // populate the vib
-    populate_vib();
-    System::KernelIO::ThrowMessage(MSG_TYPE_SYSTEM, "VESA: Starting...");
-    
-    // prepare the environment for the BIOS calls
-    regs16_t regs;
-    ModeInfoBlock* locmib = (ModeInfoBlock*)(0x80000 + sizeof(VbeInfoBlock) + 512);
-    uint16_t* modes = (uint16_t*)REAL_PTR(vib.VideoModePtr);
-    // resulting mode
-    uint16_t mode;
-    // if the mode was set or not
-    bool set = false;
-    System::KernelIO::ThrowMessage(MSG_TYPE_SYSTEM, "VESA: Looking for requested mode...");
-    for (int i = 0; modes[i] != 0xFFFF; i++)
+    void VESA::Disable()
     {
-        // set up interrupt to get mode info
-        regs.ax = 0x4f01;
-		regs.cx = modes[i];
-		regs.es = SEG(locmib);
-		regs.di = OFF(locmib);
-        // call interrupt
-        int32(0x10, &regs);
+        if (Buffer != nullptr) { delete Buffer; }
+    }
 
-        // check if the mode is correct
-        if (locmib->Yres == height && locmib->Xres == width && locmib->bpp == depth)
+    // populate the VbeInfoBlock
+    void VESA::PopulateInfoBlock()
+    {
+        // if yet set, skip this
+        if (InfoBlockSet) return;
+
+        System::KernelIO::ThrowMessage(MSG_TYPE_SYSTEM, "VESA: Gathering available VESA modes from BIOS...");
+        
+        // set the locvib location
+        VBEInfoBlock* info = (VBEInfoBlock*)0x80000;
+
+        // call the bios interrupt
+        regs16_t regs;
+        regs.ax = 0x4f00;
+        regs.es = 0x8000;
+        regs.di = 0x0;
+
+        int32(0x10, &regs);
+        
+        // state that the VbeInfoBlock was set up
+        InfoBlockSet = true;
+        
+        // store data
+        InfoBlock = *info;
+        System::KernelIO::ThrowOK("Initialized VESA driver");
+    }
+
+    bool VESA::SetMode(int16_t width, int16_t height, uint8_t depth)
+    {
+        // if vesa is enabled, delete the old buffer
+        if (Buffer != nullptr) { Buffer = nullptr; }
+        if (!Enabled) { Enabled = true; }
+
+        // populate the vib
+        PopulateInfoBlock();
+        
+        // prepare the environment for the BIOS calls
+        regs16_t regs;
+        VBEModeInfoBlock* mode_info = (VBEModeInfoBlock*)(0x80000 + sizeof(VBEInfoBlock) + 512);
+        uint16_t* modes = (uint16_t*)REAL_PTR(InfoBlock.VideoMode);
+        // resulting mode
+        uint16_t mode;
+        // if the mode was set or not
+        bool set = false;
+        for (int i = 0; modes[i] != 0xFFFF; i++)
         {
-            // if so, store the found mmode, and break the loop
-            System::KernelIO::ThrowMessage(MSG_TYPE_OK, "VESA: Found!");
-            set = true;
-            mode = modes[i];
-            break;
+            // set up interrupt to get mode info
+            regs.ax = 0x4f01;
+            regs.cx = modes[i];
+            regs.es = SEG(mode_info);
+            regs.di = OFF(mode_info);
+            // call interrupt
+            int32(0x10, &regs);
+
+            // check if the mode is correct
+            if (mode_info->Width == width && mode_info->Height == height && mode_info->Depth == depth)
+            {
+                set = true;
+                mode = modes[i];
+                break;
+            }
+
+            // otherwise, continue
+        }
+        // if no mode was found, return false
+        if (!set) { System::KernelIO::ThrowError("VESA: No matching mode was found!"); return false; }
+        
+        // set the backbuffer up
+        System::KernelIO::ThrowSystem("VESA: setting up buffer");
+        // buffer size
+        int size = (mode_info->Height * mode_info->Pitch);
+        switch (depth)
+        {
+            case 8:
+                // 8bit buffer
+                Buffer = new uint8_t[size];
+                break;
+            case 16:
+                // 16bit buffer
+                Buffer = new uint16_t[size];
+                break;
+            case 32:
+                // 32bit buffer
+                Buffer = new uint32_t[size];
+                break;
+            default:
+                // depth not found
+                System::KernelIO::ThrowError("VESA: Depth not supported");
+                return false;
         }
 
-        // otherwise, continue
+        Width = mode_info->Height;
+        Height = mode_info->Width;
+
+        // enable the mode with the acording interrupt
+        regs.ax = 0x4F02;
+        regs.bx = mode | 0x4000;
+        int32(0x10, &regs);
+        System::KernelIO::ThrowSystem("VESA: done.");
+
+        // store mib data
+        ModeInfoBlock = *mode_info;
+        // return
+        return true;
     }
-    // if no mode was found, return false
-    if (!set) { System::KernelIO::ThrowError("VESA: No matching mode was found!"); return false; }
-    
-    // set the backbuffer up
-    System::KernelIO::ThrowSystem("VESA: setting up buffer");
-    // buffer size
-    int size = (locmib->Yres * locmib->pitch);
-    switch (depth)
+
+    void VESA::Clear(uint32_t color)
     {
-        case 8:
-            // 8bit buffer
-            buffer = new uint8_t[size];
-            break;
-        case 16:
-            // 16bit buffer
-            buffer = new uint16_t[size];
-            break;
-        case 32:
-            // 32bit buffer
-            buffer = new uint32_t[size];
-            break;
-        default:
-            // depth not found
-            System::KernelIO::ThrowError("VESA: colordepth not available");
-            return false;
+        if (ModeInfoBlock.Depth != 32) { return; }
+        for (size_t i = 0; i < Width * Height; i++) { ((uint32_t*)Buffer)[i] = color; }
     }
-    height = locmib->Yres;
-    width = locmib->Xres;
-    System::KernelIO::ThrowOK("VESA: buffer set up");
-    System::KernelIO::ThrowSystem("VESA: enabling mode...");
-    // enable the mode with the acording interrupt
-    regs.ax = 0x4F02;
-    regs.bx = mode | 0x4000;
-    int32(0x10, &regs);
-    System::KernelIO::ThrowSystem("VESA: done.");
+	void VESA::Clear(uint16_t color)
+    {
+        if (ModeInfoBlock.Depth != 16) { return; }
+        for (size_t i = 0; i < Width * Height; i++) { ((uint16_t*)Buffer)[i] = color; }
+    }
 
-    // store mib data
-    mib = *locmib;
-    // return
-    return true;
-}
+	void VESA::Clear(uint8_t color)
+    {
+        if (ModeInfoBlock.Depth != 8) { return; }
+        for (size_t i = 0; i < Width * Height; i++) { ((uint8_t*)Buffer)[i] = color; }
+    }
 
-void HAL::VESA::SetPixel(int16_t x, int16_t y, uint32_t color)
-{
-    if (x >= mib.Xres) return;
-    if (y >= mib.Yres) return;
+    void VESA::SetPixel(int16_t x, int16_t y, uint32_t color)
+    {
+        if (x >= ModeInfoBlock.Width || y >= ModeInfoBlock.Height)  { return; }
+        if (ModeInfoBlock.Depth != 32) return;
+        
+        // store the color in the allocated buffer
+        ((uint32_t*)Buffer)[x + (y * ModeInfoBlock.Width)] = color;
+    }
+    void VESA::SetPixel(int16_t x, int16_t y, uint16_t color)
+    {
+        if (x >= ModeInfoBlock.Width || y >= ModeInfoBlock.Height)  { return; }
+        if (ModeInfoBlock.Depth != 16) return;
 
-    if (mib.bpp != 32) return;
-    
-    // store the color in the allocated buffer
-    ((uint32_t*)buffer)[mib.Xres*y+x] = color;
-}
-void HAL::VESA::SetPixel(int16_t x, int16_t y, uint16_t color)
-{
-    if (x >= mib.Xres) return;
-    if (y >= mib.Yres) return;
+        // store the color in the allocated buffer
+        ((uint16_t*)Buffer)[x + (y * ModeInfoBlock.Width)] = color;
+    }
+    void VESA::SetPixel(int16_t x, int16_t y, uint8_t color)
+    {
+        if (x >= ModeInfoBlock.Width || y >= ModeInfoBlock.Height)  { return; }
+        if (ModeInfoBlock.Depth != 16) return;
 
-    if (mib.bpp != 16) return;
-    // store the color in the allocated buffer
-    ((uint16_t*)buffer)[mib.Xres*y+x] = color;
-}
-void HAL::VESA::SetPixel(int16_t x, int16_t y, uint8_t color)
-{
-    if (x >= mib.Xres) return;
-    if (y >= mib.Yres) return;
+        // store the color in the allocated buffer
+        ((uint8_t*)Buffer)[x + (y * ModeInfoBlock.Width)] = color;
+    }
 
-    if (mib.bpp != 8) return;
-    // store the color in the allocated buffer
-    ((uint8_t*)buffer)[mib.Xres*y+x] = color;
-}
+    uint32_t VESA::GetPixel32(int16_t x, int16_t y)
+    {
+        if (x >= ModeInfoBlock.Width || y >= ModeInfoBlock.Height)  { return 0; }
+        if (ModeInfoBlock.Depth != 32) { return 0; }
 
-uint32_t HAL::VESA::GetPixel32(int16_t x, int16_t y)
-{
-    if (x >= mib.Xres) return 0;
-    if (y >= mib.Yres) return 0;
+        // return the color stored into the buffer
+        return ((uint32_t*)Buffer)[x + (y * ModeInfoBlock.Width)];
+    }
+    uint16_t VESA::GetPixel16(int16_t x, int16_t y)
+    {
+        if (x >= ModeInfoBlock.Width || y >= ModeInfoBlock.Height)  { return 0; }
+        if (ModeInfoBlock.Depth != 16) { return 0; }
 
-    // return the color stored into the buffer
-    return ((uint32_t*)buffer)[width*y+x];
-}
-uint16_t HAL::VESA::GetPixel16(int16_t x, int16_t y)
-{
-    if (x >= mib.Xres) return 0;
-    if (y >= mib.Yres) return 0;
+        // return the color stored into the buffer
+        return ((uint16_t*)Buffer)[x + (y * ModeInfoBlock.Width)];
+    }
+    uint8_t VESA::GetPixel8(int16_t x, int16_t y)
+    {
+        if (x >= ModeInfoBlock.Width || y >= ModeInfoBlock.Height)  { return 0; }
+        if (ModeInfoBlock.Depth != 8) { return 0; }
 
-    // return the color stored into the buffer
-    return ((uint16_t*)buffer)[width*y+x];
-}
-uint8_t HAL::VESA::GetPixel8(int16_t x, int16_t y)
-{
-    if (x >= mib.Xres) return 0;
-    if (y >= mib.Yres) return 0;
+        // return the color stored into the buffer
+        return ((uint8_t*)Buffer)[x + (y * ModeInfoBlock.Width)];
+    }
+    void VESA::Render()
+    {
+        // copy data from buffer to video address
+        mem_copy((uint8_t*)Buffer, (uint8_t*)ModeInfoBlock.PhysicalBase, (ModeInfoBlock.Height * ModeInfoBlock.Pitch));
+    }
 
-    // return the color stored into the buffer
-    return ((uint8_t*)buffer)[width*y+x];
-}
-void HAL::VESA::Render()
-{
-    // copy data from buffer to video address
-    mem_copy((uint8_t*)buffer, (uint8_t*)mib.physbase, (mib.Yres * mib.pitch));
-}
-HAL::VESA::VESA():
-    vibset(false),
-    height(0),
-    width(0)
-{
-}
-HAL::VESA::~VESA()
-{
-    // delete the buffer
-    delete buffer;
+    uint32_t VESA::GetWidth() { return Width; }
+	uint32_t VESA::GetHeight() { return Height; }
 }

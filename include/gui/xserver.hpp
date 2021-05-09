@@ -10,6 +10,7 @@ namespace System
     {
         public:
             Graphics::VGACanvas Canvas;
+            Graphics::Canvas FullCanvas;
             void Initialize();
             void Start();
             void Update();

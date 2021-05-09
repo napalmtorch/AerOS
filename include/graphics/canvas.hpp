@@ -22,22 +22,35 @@ typedef enum
     ALIGN_BOTTOM_RIGHT,
 } ALIGN;
 
+typedef enum
+{
+    VIDEO_DRIVER_VGA,
+    VIDEO_DRIVER_VESA,
+    VIDEO_DRIVER_VMWARE,
+} VIDEO_DRIVER;
+
 namespace Graphics
 {
     // base class for canvas interface
     class Canvas
     {
         public:
+            void SetDriver(VIDEO_DRIVER driver);
+
             // clear the screen
-            virtual void Clear(Color color) = 0;
+            void Clear(Color color);
+            void Clear(uint32_t color);
             void Clear();
 
+            // display
+            void Display();
+
             // draw pixel
-            virtual void DrawPixel(uint16_t x, uint16_t y, Color color) = 0;
+            void DrawPixel(uint16_t x, uint16_t y, Color color);
             void DrawPixel(point_t pos, Color color);
 
             // draw filled rectangle
-            virtual void DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color color) = 0;
+            void DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color color);
             void DrawFilledRectangle(point_t pos, point_t size, Color color);
             void DrawFilledRectangle(bounds_t bounds, Color color);
 
@@ -57,6 +70,9 @@ namespace Graphics
             void DrawString(point_t pos, char* text, Color fg, Font font);
             void DrawString(uint16_t x, uint16_t y, char* text, Color fg, Color bg, Font font);
             void DrawString(point_t pos, char* text, Color fg, Color bg, Font font);
+        private:
+            VIDEO_DRIVER Driver;
+
     };
 
     class VGACanvas

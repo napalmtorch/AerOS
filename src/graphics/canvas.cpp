@@ -5,11 +5,55 @@ namespace Graphics
 {
     // ---------------------------------------- CANVAS BASE ---------------------------------------- // 
 
+    void Canvas::SetDriver(VIDEO_DRIVER driver)
+    {
+        Driver = driver;
+    }
+
+    // clear with color
+    void Canvas::Clear(Color color)
+    {
+        uint32_t col = Graphics::RGBToPackedValue(color.GetRed(), color.GetGreen(), color.GetBlue());
+        System::KernelIO::WriteLineDecimal("COL: ", col);
+        System::KernelIO::WriteLineDecimal("R: ", color.GetRed());
+        System::KernelIO::WriteLineDecimal("G: ", color.GetGreen());
+        System::KernelIO::WriteLineDecimal("B: ", color.GetBlue());
+        if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Clear(Graphics::RGBToPackedValue(color.GetRed(), color.GetGreen(), color.GetBlue())); }
+    }
+
+    // clear with packed color
+    void Canvas::Clear(uint32_t color)
+    {
+        if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Clear(color); }
+    }
+
     // clear the screen black
     void Canvas::Clear() { Clear(Colors::Black); }
 
+    // display
+    void Canvas::Display()
+    {
+        if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Render(); }
+    }
+
+    // draw pixel
+    void Canvas::DrawPixel(uint16_t x, uint16_t y, Color color)
+    {
+        if (Driver == VIDEO_DRIVER_VESA)
+        { System::KernelIO::VESA.SetPixel(x, y, Graphics::RGBToPackedValue(color.GetRed(), color.GetGreen(), color.GetBlue())); }
+    }
+
     // draw pixel
     void Canvas::DrawPixel(point_t pos, Color color) { DrawPixel(pos.X, pos.Y, color); }
+
+    // draw filled rectangle
+    void Canvas::DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color color)
+    {
+        for (size_t i = 0; i < w * h; i++)
+        {
+            DrawPixel(x + (i % w), y + (i / w), color);
+        }
+    }
 
     // draw filled rectangle
     void Canvas::DrawFilledRectangle(point_t pos, point_t size, Color color) { DrawFilledRectangle(pos.X, pos.Y, size.X, size.Y, color); }
