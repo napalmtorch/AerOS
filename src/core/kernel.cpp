@@ -71,7 +71,6 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
-
             // fetch multiboot header information from memory
             // we need this VERY early on since it contains the boot parameters,
             // NICO I AM LOOKING AT YOU, DONT FUCK WITH IT xD - Signed Kev         
@@ -101,12 +100,12 @@ namespace System
             // check for graphics mode
             if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga"))
             {
-                InitializeGUI();
+                InitializeGUI(VIDEO_DRIVER_VGA);
                 return;
             }
             if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vesa"))
             {
-
+                InitializeGUI(VIDEO_DRIVER_VESA);
             }
 
             // initialize terminal interface
@@ -119,9 +118,6 @@ namespace System
 
             // initialize fonts
             Graphics::InitializeFonts();
-
-            // setup vga graphics driver
-            VGA.Initialize();
 
             // boot message
             Terminal.WriteLine("Starting AerOS...", COL4_GRAY);
@@ -156,13 +152,13 @@ namespace System
 
             if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--no_fs"))
             {
-                Terminal.WriteLine("Filesystem disabled by Kernel Argument");
+                Terminal.WriteLine("FAT file system disabled by kernel argument");
             }
             else
             {
-            // initialize fat file system
-            FAT16.Initialize();
-            ThrowOK("Initialized FAT file system");
+                // initialize fat file system
+                FAT16.Initialize();
+                ThrowOK("Initialized FAT file system");
             }   
 
             // initialize keyboard
@@ -185,13 +181,13 @@ namespace System
         }
 
         // boot process when starting in graphics mode
-        void KernelBase::InitializeGUI()
+        void KernelBase::InitializeGUI(VIDEO_DRIVER driver)
         {
             if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga_debug"))
             {
-            SerialPort.SetPort(SERIAL_PORT_COM1);
-            SetDebugConsoleOutput(false);
-            SetDebugSerialOutput(true);
+                SerialPort.SetPort(SERIAL_PORT_COM1);
+                SetDebugConsoleOutput(false);
+                SetDebugSerialOutput(true);
             }
 
             // initialize fonts
@@ -225,33 +221,13 @@ namespace System
             }
             else
             {
-            // initialize fat file system
-            FAT16.Initialize();
-            ThrowOK("Initialized FAT file system");
+                // initialize fat file system
+                FAT16.Initialize();
+                ThrowOK("Initialized FAT file system");
             }
-            // setup vga graphics driver
-            VGA.Initialize();
-
-            VGA.SetMode(VGA.GetAvailableMode(4));
-            ThrowOK("Initialized VGA driver");
-
-            // initialize keyboard
-            Keyboard.Initialize();
-            Keyboard.BufferEnabled = false;
-            Keyboard.Event_OnEnterPressed = nullptr;
-            ThrowOK("Initialized PS/2 keyboard driver");
-
-            Mouse.Initialize();
 
             XServer.Initialize();
-            XServer.Start();
-
-            // initialize pit
-            HAL::CPU::InitializePIT(60, pit_callback);
-
-            // enable interrupts
-            asm volatile("cli");
-            HAL::CPU::EnableInterrupts();
+            XServer.Start(driver);
 
             return;
         }

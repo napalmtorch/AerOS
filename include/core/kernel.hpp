@@ -49,7 +49,7 @@ extern "C"
                     void Initialize();
 
                     // start graphics mode
-                    void InitializeGUI();
+                    void InitializeGUI(VIDEO_DRIVER driver);
                     
                     // kernel core code, runs in a loop
                     void Run();

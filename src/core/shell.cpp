@@ -253,9 +253,7 @@ namespace System
 
         void GFX(char* input)
         {
-            KernelIO::VESA.SetMode(800, 600, 32);
-            KernelIO::XServer.FullCanvas.SetDriver(VIDEO_DRIVER_VESA);
-            KernelIO::XServer.Start();
+            KernelIO::XServer.Start(VIDEO_DRIVER_VESA);
         }
     }
 }

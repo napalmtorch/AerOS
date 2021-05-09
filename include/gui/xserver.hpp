@@ -12,7 +12,7 @@ namespace System
             Graphics::VGACanvas Canvas;
             Graphics::Canvas FullCanvas;
             void Initialize();
-            void Start();
+            void Start(VIDEO_DRIVER driver);
             void Update();
             void Draw();
             bool IsRunning();

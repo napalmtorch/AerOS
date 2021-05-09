@@ -10,6 +10,8 @@ namespace Graphics
         Driver = driver;
     }
 
+    VIDEO_DRIVER Canvas::GetDriver() { return Driver; }
+
     // clear with color
     void Canvas::Clear(Color color)
     {
@@ -29,6 +31,11 @@ namespace Graphics
     void Canvas::Display()
     {
         if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Render(); }
+    }
+
+    void Canvas::DrawPixel(uint16_t x, uint16_t y, uint32_t color)
+    {
+        System::KernelIO::VESA.SetPixel(x, y, color);
     }
 
     // draw pixel

@@ -36,6 +36,7 @@ namespace Graphics
     {
         public:
             void SetDriver(VIDEO_DRIVER driver);
+            VIDEO_DRIVER GetDriver();
 
             // clear the screen
             void Clear(Color color);
@@ -46,6 +47,7 @@ namespace Graphics
             void Display();
 
             // draw pixel
+            void DrawPixel(uint16_t x, uint16_t y, uint32_t color);
             void DrawPixel(uint16_t x, uint16_t y, Color color);
             void DrawPixel(point_t pos, Color color);
 
