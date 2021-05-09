@@ -161,13 +161,9 @@ bool IsEmpty(char* text)
 } 
 bool StringContains(char* text)
 {
-    if(strstr(System::KernelIO::Multiboot.GetCommandLine(),text) =! NULL)
+    if (strstr(System::KernelIO::Multiboot.GetCommandLine(), text) != nullptr)
     {
-        return true;
-    }
-    else
-    {
-        return false;
+
     }
 }
 int strindexof(char text[], char character)
@@ -222,7 +218,7 @@ char* strcpy(char* src, char* dest)
 }
 //Will Wrap this in a Contains method! xD
 //check is string contains
-char * strstr(const char * haystack, const char * needle) {
+char * strstr(char * haystack, char * needle) {
 	const char * out = NULL;
 	const char * ptr;
 	const char * acc;

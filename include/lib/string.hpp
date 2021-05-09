@@ -33,7 +33,7 @@
         // copy string
         char* strcpy(char* src, char* dest);
         //check if string contains
-        char * strstr(const char * haystack, const char * needle);
+        char * strstr(char * haystack, char * needle);
         // copy constant string
         char* strcpy_c(const char src[], char* dest);
         //check if string starts with a specific word
@@ -138,6 +138,7 @@ namespace System
     char* strcpy(char* src, char* dest);
     // copy constant string
     char* strcpy_c(const char src[], char* dest);
+    char * strstr(char * haystack, char * needle);
     // compare strings
     int32_t strcmp(char text[], char comp[]);
     // check if string equal to string
