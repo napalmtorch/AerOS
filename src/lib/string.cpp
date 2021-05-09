@@ -250,7 +250,16 @@ char* strcpy_c(const char src[], char* dest)
     *dest = '\0';
     return ptr;
 }
-
+//check if string starts with a specific word
+uint8_t startswith(const char * str, const char * accept) {
+	size_t s = strlen_c(accept);
+	for (size_t i = 0; i < s; ++i) {
+		if (*str != *accept) return 0;
+		str++;
+		accept++;
+	}
+	return 1;
+}
 // compare strings
 int32_t strcmp(char text[], char comp[])
 {

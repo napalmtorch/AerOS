@@ -36,6 +36,8 @@
         char * strstr(const char * haystack, const char * needle);
         // copy constant string
         char* strcpy_c(const char src[], char* dest);
+        //check if string starts with a specific word
+        uint8_t startswith(const char * str, const char * accept);
         // compare strings
         int32_t strcmp(char text[], char comp[]);
         // check if string equal to string
