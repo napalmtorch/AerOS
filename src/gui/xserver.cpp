@@ -35,8 +35,9 @@ namespace System
         // clear the screen
         Canvas.Clear(COL8_DARK_CYAN);
 
-        Canvas.DrawString(0, 0, "FPS: ", COL8_WHITE, Graphics::FONT_3x5);
-        Canvas.DrawString(20, 0, fpsString, COL8_WHITE, Graphics::FONT_3x5);
+        Canvas.DrawString(0, 0, "FPS: ", COL8_BLACK, Graphics::FONT_3x5);
+        Canvas.DrawString(20, 0, fpsString, COL8_BLACK, Graphics::FONT_3x5);
+        Canvas.DrawFilledRectangle(KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY(), 4, 4, COL8_DARK_RED);
 
         // swap buffer
         Canvas.Display();

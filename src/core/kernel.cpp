@@ -99,9 +99,6 @@ namespace System
                 return;
             }
 
-            SetDebugSerialOutput(true);
-            SetDebugConsoleOutput(false);
-
             // initialize terminal interface
             Terminal.Initialize();
 
@@ -171,10 +168,6 @@ namespace System
         // boot process when starting in graphics mode
         void KernelBase::InitializeGUI()
         {
-            SerialPort.SetPort(SERIAL_PORT_COM1);
-            SetDebugConsoleOutput(false);
-            SetDebugSerialOutput(true);
-
             // initialize fonts
             Graphics::InitializeFonts();
 
@@ -229,10 +222,6 @@ namespace System
             HAL::CPU::EnableInterrupts();
 
             return;
-            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga"))
-            {
-                Shell.ParseCommand("gfx");
-            }
         }
 
         // kernel core code, runs in a loop

@@ -254,25 +254,18 @@ namespace System
         void GFX(char* input)
         {
             KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
-            Graphics::VGACanvas canvas;
+            asm volatile("cli");
 
-            // loop
-            while (true)
-            {
-                // clear the screen
-                canvas.Clear(COL8_DARK_CYAN);
+            // initialize keyboard
+            KernelIO::Keyboard.BufferEnabled = false;
+            KernelIO::Keyboard.Event_OnEnterPressed = nullptr;
 
-                canvas.DrawFilledRectangle(64, 64, 64, 64, COL8_DARK_BLUE);
+            KernelIO::Mouse.Initialize();
 
-                canvas.DrawFilledRectangle(KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY(), 4, 4, COL8_WHITE);
+            KernelIO::XServer.Initialize();
+            KernelIO::XServer.Start();
 
-                canvas.DrawChar(128, 128, '9', COL8_WHITE, Graphics::FONT_8x8);
-
-                canvas.DrawString(0, 0, "AerOS", COL8_YELLOW, Graphics::FONT_8x8);
-
-                // swap buffer
-                canvas.Display();
-            }
+            HAL::CPU::EnableInterrupts();
         }
     }
 }
