@@ -93,7 +93,7 @@ namespace System
             }
 
             // check for graphics mode
-            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--vga") != NULL)
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga"))
             {
                 InitializeGUI();
                 return;
@@ -151,7 +151,7 @@ namespace System
             Keyboard.BufferEnabled = true;
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
-
+            WriteDecimal("Kernel end: ",kernel_end);
             Mouse.Initialize();
 
             // initialize pit
@@ -168,6 +168,16 @@ namespace System
         // boot process when starting in graphics mode
         void KernelBase::InitializeGUI()
         {
+<<<<<<< HEAD
+=======
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga_debug"))
+            {
+            SerialPort.SetPort(SERIAL_PORT_COM1);
+            SetDebugConsoleOutput(false);
+            SetDebugSerialOutput(true);
+            }
+
+>>>>>>> 91045f7f540ca8d9bbb60525840d2d8b44794212
             // initialize fonts
             Graphics::InitializeFonts();
 
