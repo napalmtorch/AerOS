@@ -59,6 +59,9 @@ namespace System
         // acpi controller
         HAL::ACPI ACPI;
 
+        // VMM
+        HAL::VMM VMM;
+
         // window server
         System::XServerHost XServer;
 
@@ -130,6 +133,8 @@ namespace System
             // initialize memory manager
             MemoryManager.Initialize();
             ThrowOK("Initialized memory management system");
+            
+            VMM.Initialize();
 
             // initialize pci bus
             PCIBus.Initialize();

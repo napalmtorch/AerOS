@@ -11,6 +11,7 @@
 #include "hardware/interrupt/idt.hpp"
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/cpu.hpp"
+#include "hardware/vmm.hpp"
 #include "hardware/drivers/serial.hpp"
 #include "hardware/drivers/ata.hpp"
 #include "hardware/drivers/rtc.hpp"
@@ -110,6 +111,9 @@ extern "C"
 
             // acpi
             extern HAL::ACPI ACPI;
+
+            // vmm
+            extern HAL::VMM VMM;
         }
     }
 #else
