@@ -3,6 +3,8 @@ all:
 	./scripts/build.sh --no-qemu
 clean:
 
+	rm -Rf bin/isodir
+
 	for file in $(wildcard bin/isodir/boot/*.bin) ; do \
 		rm -Rf $$file ; \
 	done
@@ -24,10 +26,10 @@ clean:
 	done
 
 iso:
-	mkdir -p 'bin/isodir/boot/grub'
-	cp 'bin/kernel.bin' 'bin/isodir/boot/kernel.bin'
-	cp 'include/boot/grub.cfg' 'bin/isodir/boot/grub/grub.cfg'
-	grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
+	mkdir -p bin/isodir/boot
+	cp bin/kernel.bin bin/isodir/boot/
+	grub-mkrescue -d /usr/lib/grub/i386-pc --compress=xz -o AerOS.iso cdrom 'bin/isodir/boot/kernel.bin'
+	
 qemu:
 	gnome-terminal -- /usr/bin/qemu-system-i386 -m 256M -vga std -hda disks/disk.img -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm -cpu host -name "AerOS"
 
