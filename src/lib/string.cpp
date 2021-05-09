@@ -1,5 +1,5 @@
 #include "lib/string.hpp"
-#include "core/debug.hpp"
+#include "core/kernel.hpp"
 
 // get length of string
 size_t strlen(char text[])
@@ -159,7 +159,17 @@ bool IsEmpty(char* text)
         return false;
     }
 } 
-
+bool StringContains(char* text)
+{
+    if(strstr(System::KernelIO::Multiboot.GetCommandLine(),text) =! NULL)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 int strindexof(char text[], char character)
 {
     for (int i = 0; text[i] != 0; i++)
