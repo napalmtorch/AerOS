@@ -31,6 +31,12 @@ namespace HAL
             void OnMouseMove(int8_t x, int8_t y);
             // on interrupt
             void OnInterrupt();
+            // wait
+            void Wait(uint8_t type);
+            // write data
+            void Write(uint8_t data);
+            // read
+            uint8_t Read();
             // buttons
             uint8_t GetButtons();
             ButtonState IsLeftPressed();
@@ -48,6 +54,7 @@ namespace HAL
             uint8_t Buffer[3];
             uint8_t Offset;
             uint8_t Buttons;
+            uint8_t Cycle;
             ButtonState LeftPressed;
             ButtonState RightPressed;
     };

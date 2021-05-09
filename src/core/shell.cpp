@@ -254,11 +254,11 @@ namespace System
         void GFX(char* input)
         {
             KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
-                    uint32_t mx = 99, my = 99;
-                    char str[16];
+            uint32_t mx = 99, my = 99;
+            char str[16];
             while (true)
             {
-                //KernelIO::VGA.Clear(0x03);
+                KernelIO::VGA.Clear(0x03);
 
                 for (size_t y = 0; y < 6; y++)
                 {
@@ -276,7 +276,7 @@ namespace System
                     }
                 }
 
-                //KernelIO::VGA.Swap();
+                KernelIO::VGA.Swap();
             }
         }
     }
