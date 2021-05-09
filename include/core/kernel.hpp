@@ -17,6 +17,7 @@
 #include "hardware/drivers/vga.hpp"
 #include "hardware/drivers/pci.hpp"
 #include "hardware/drivers/keyboard.hpp"
+#include "hardware/drivers/mouse.hpp"
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
 #include "core/shell.hpp"
@@ -90,6 +91,9 @@ extern "C"
 
             // ps2 keyboard controller driver
             extern HAL::PS2Keyboard Keyboard;
+
+            // ps2 mouse controller driver
+            extern HAL::PS2Mouse Mouse;
 
             // terminal interface
             extern HAL::TerminalManager Terminal;
