@@ -37,6 +37,7 @@ namespace System
 
         Canvas.DrawString(0, 0, "FPS: ", COL8_BLACK, Graphics::FONT_3x5);
         Canvas.DrawString(20, 0, fpsString, COL8_BLACK, Graphics::FONT_3x5);
+        Canvas.DrawString(0, 194, KernelIO::RTC.GetTimeString(), COL8_BLACK, Graphics::FONT_3x5);
         KernelIO::Mouse.Draw();
 
         // swap buffer
