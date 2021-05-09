@@ -27,7 +27,7 @@ namespace Graphics
 
         return 0;
     }
-    uint8_t RGBToVGAPallete(Color color) { return RGBToVGAPallete(color.GetRed(), color.GetGreen(), color.GetBlue()); }
+    uint8_t RGBToVGAPallete(Color color) { return RGBToVGAPallete(color.R, color.G, color.B); }
 
     // convert rgb value to packed color
     uint32_t RGBToPackedValue(uint8_t r, uint8_t g, uint8_t b)
@@ -63,5 +63,18 @@ namespace Graphics
 
         // return
         return COL4_BLACK;
+    }
+
+    namespace Colors
+    {
+        const Color Black           = { 0xFF, 0x00, 0x00, 0x00 };
+        const Color White           = { 0xFF, 0xFF, 0xFF, 0xFF };
+        const Color Red             = { 0xFF, 0xFF, 0x00, 0x00 };
+        const Color Green           = { 0xFF, 0x00, 0xFF, 0x00 };
+        const Color Blue            = { 0xFF, 0x00, 0x00, 0xFF };
+        const Color Yellow          = { 0xFF, 0xFF, 0xFF, 0x00 };
+        const Color Cyan            = { 0xFF, 0x00, 0xFF, 0xFF };
+        const Color Magenta         = { 0xFF, 0xFF, 0x00, 0xFF };
+        const Color Gray            = { 0xFF, 0x7F, 0x7F, 0x7F }; 
     }
 }

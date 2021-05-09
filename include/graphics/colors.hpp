@@ -69,30 +69,13 @@ extern "C"
 }
 
 // rgb color
-struct Color
+typedef struct
 {
-    private:
-        uint8_t A;
-        uint8_t R;
-        uint8_t G;
-        uint8_t B;
-    public:
-        Color(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
-        {
-            A = a;
-            R = r;
-            G = g;
-            B = b;
-        }
-        uint8_t GetAlpha() {return A; }
-        uint8_t GetRed() { return R; }
-        uint8_t GetGreen() { return G; }
-        uint8_t GetBlue() { return B; }
-        uint32_t ToPackedValue()
-        {
-            return (uint32_t)((R << 24) | (G << 16) | (B << 8) | A);
-        }
-};
+    uint8_t A;
+    uint8_t R;
+    uint8_t G;
+    uint8_t B;
+} __attribute__((packed)) Color;
 
 namespace Graphics
 {
@@ -109,15 +92,15 @@ namespace Graphics
     // pre-defined rgb colors
     namespace Colors
     {
-        const Color Black           = { 0xFF, 0x00, 0x00, 0x00 };
-        const Color White           = { 0xFF, 0xFF, 0xFF, 0xFF };
-        const Color Red             = { 0xFF, 0xFF, 0x00, 0x00 };
-        const Color Green           = { 0xFF, 0x00, 0xFF, 0x00 };
-        const Color Blue            = { 0xFF, 0x00, 0x00, 0xFF };
-        const Color Yellow          = { 0xFF, 0xFF, 0xFF, 0x00 };
-        const Color Cyan            = { 0xFF, 0x00, 0xFF, 0xFF };
-        const Color Magenta         = { 0xFF, 0xFF, 0x00, 0xFF };
-        const Color Gray            = { 0xFF, 0x7F, 0x7F, 0x7F }; 
+        extern const Color Black;
+        extern const Color White;
+        extern const Color Red;
+        extern const Color Green;
+        extern const Color Blue;
+        extern const Color Yellow;
+        extern const Color Cyan;
+        extern const Color Magenta;
+        extern const Color Gray;
     }
     
     COL4 GetColorFromName(char* name);

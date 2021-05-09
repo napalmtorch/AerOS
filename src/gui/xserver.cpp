@@ -34,19 +34,19 @@ namespace System
     void XServerHost::Draw()
     {
         // clear the screen
-        Canvas.Clear(COL8_DARK_CYAN);
+        FullCanvas.Clear({ 0xFF, 0x00, 0x7F, 0x7F });
 
-        Canvas.DrawString(0, 0, "FPS: ", COL8_BLACK, Graphics::FONT_3x5);
-        Canvas.DrawString(20, 0, fpsString, COL8_BLACK, Graphics::FONT_3x5);
-        Canvas.DrawString(0, 194, KernelIO::RTC.GetTimeString(), COL8_BLACK, Graphics::FONT_3x5);
-        Canvas.DrawString(px, 90, "PENIS", COL8_DARK_RED, Graphics::FONT_8x16);
+        FullCanvas.DrawString(0, 0, "FPS: ", Graphics::Colors::White, Graphics::FONT_8x16);
+        FullCanvas.DrawString(40, 0, fpsString, Graphics::Colors::White, Graphics::FONT_8x16);
+        FullCanvas.DrawString(0, 584, KernelIO::RTC.GetTimeString(), Graphics::Colors::White, Graphics::FONT_8x16);
+        FullCanvas.DrawString(px, 400, "PENIS", Graphics::Colors::Red, Graphics::FONT_8x16);
         KernelIO::Mouse.Draw();
 
-        px += 0.0005;
-        if (px >= 320) { px = -40; }
+        px += 0.005;
+        if (px >= 800) { px = -40; }
 
         // swap buffer
-        Canvas.Display();
+        FullCanvas.Display();
     }
 
     bool XServerHost::IsRunning() { return Running; }

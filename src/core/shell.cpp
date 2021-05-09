@@ -255,13 +255,7 @@ namespace System
         {
             KernelIO::VESA.SetMode(800, 600, 32);
             KernelIO::XServer.FullCanvas.SetDriver(VIDEO_DRIVER_VESA);
-            KernelIO::SetDebugSerialOutput(true);
-
-            while (true)
-            {
-                KernelIO::XServer.FullCanvas.Clear(Graphics::Colors::Blue);
-                KernelIO::XServer.FullCanvas.Display();
-            }
+            KernelIO::XServer.Start();
         }
     }
 }

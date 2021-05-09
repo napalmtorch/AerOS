@@ -13,12 +13,7 @@ namespace Graphics
     // clear with color
     void Canvas::Clear(Color color)
     {
-        uint32_t col = Graphics::RGBToPackedValue(color.GetRed(), color.GetGreen(), color.GetBlue());
-        System::KernelIO::WriteLineDecimal("COL: ", col);
-        System::KernelIO::WriteLineDecimal("R: ", color.GetRed());
-        System::KernelIO::WriteLineDecimal("G: ", color.GetGreen());
-        System::KernelIO::WriteLineDecimal("B: ", color.GetBlue());
-        if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Clear(Graphics::RGBToPackedValue(color.GetRed(), color.GetGreen(), color.GetBlue())); }
+        if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Clear(Graphics::RGBToPackedValue(color.R, color.G, color.B)); }
     }
 
     // clear with packed color
@@ -40,7 +35,7 @@ namespace Graphics
     void Canvas::DrawPixel(uint16_t x, uint16_t y, Color color)
     {
         if (Driver == VIDEO_DRIVER_VESA)
-        { System::KernelIO::VESA.SetPixel(x, y, Graphics::RGBToPackedValue(color.GetRed(), color.GetGreen(), color.GetBlue())); }
+        { System::KernelIO::VESA.SetPixel(x, y, Graphics::RGBToPackedValue(color.R, color.G, color.B)); }
     }
 
     // draw pixel
