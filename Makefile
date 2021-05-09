@@ -31,10 +31,10 @@ iso:
 	grub-mkrescue -d /usr/lib/grub/i386-pc --compress=xz -o AerOS.iso cdrom 'bin/isodir/boot/kernel.bin' -V 'AerOS'
 	
 qemu:
-	gnome-terminal -- /usr/bin/qemu-system-i386 -m 256M -vga std -drive file=disks/disk.img,format=raw -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm -cpu host -name "AerOS Development Copy"
+	qemu-system-i386 -m 256M -vga std -drive file=disks/disk.img,format=raw -cdrom 'AerOS.iso' -serial stdio -boot d -rtc base=$(shell date +"%y-%m-%dT-%r") -soundhw all -device e1000 -enable-kvm -cpu host -name "AerOS Development Copy"
 
 qemu-kernel:
-	qemu-system-i386 -m 256M -vga std -drive file=disks/disk.img,format=raw -kernel bin/kernel.bin -serial stdio -boot d -soundhw all -enable-kvm -cpu host -name "AerOS Development Copy"
+	qemu-system-i386 -m 256M -vga std -drive file=disks/disk.img,format=raw -kernel bin/kernel.bin -serial stdio -boot d -rtc base=$(shell date +"%y-%m-%dT-%r") -soundhw all -enable-kvm -cpu host -name "AerOS Development Copy"
 
 bochs:
 	 ./scripts/bochs.sh
