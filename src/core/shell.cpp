@@ -253,13 +253,37 @@ namespace System
 
         void GFX(char* input)
         {
+<<<<<<< HEAD
             KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(3));
             KernelIO::VGA.Clear(0x03);
+=======
+            KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
+                    uint32_t mx = 99, my = 99;
+                    char str[16];
+>>>>>>> 945f78471b83066993bee4ca2243f03374d948b7
             while (true)
             {
                 //KernelIO::VGA.Clear(0x03);
 
+<<<<<<< HEAD
              KernelIO::VGA.SetPixel(KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY(), 0x1F);
+=======
+                for (size_t y = 0; y < 6; y++)
+                {
+                    for (size_t x = 0; x < 6; x++)
+                    {
+                        strdec(KernelIO::Mouse.GetX(), str);
+                        System::KernelIO::Write("MOUSE POS: ", COL4_CYAN);
+                        System::KernelIO::Write(str);
+                        strdec(KernelIO::Mouse.GetY(), str);
+                        System::KernelIO::Write(", ");
+                        System::KernelIO::WriteLine(str);
+                        mx = KernelIO::Mouse.GetX();
+                        my = KernelIO::Mouse.GetY();
+                        KernelIO::VGA.SetPixel(x + KernelIO::Mouse.GetX(), y + KernelIO::Mouse.GetY(), 0x1F);
+                    }
+                }
+>>>>>>> 945f78471b83066993bee4ca2243f03374d948b7
 
                 //KernelIO::VGA.Swap();
             }

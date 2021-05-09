@@ -155,6 +155,10 @@ namespace System
 
             // ready shell
             Shell.Initialize();
+            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--vga") != NULL)
+            {
+                Shell.ParseCommand("gfx");
+            }
         }
 
         // kernel core code, runs in a loop
