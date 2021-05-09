@@ -63,7 +63,7 @@ namespace System
 
             // fetch multiboot header information from memory
             // we need this VERY early on since it contains the boot parameters,
-            // NICO I AM LOOKING AT YOU, DONT FUCK WITH IT xD            
+            // NICO I AM LOOKING AT YOU, DONT FUCK WITH IT xD - Signed Kev         
             Multiboot.Read();
             if(streql(System::KernelIO::Multiboot.GetCommandLine(),"--debug"))
             {
