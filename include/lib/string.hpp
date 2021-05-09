@@ -32,6 +32,8 @@
         void strlower(char text[]);
         // copy string
         char* strcpy(char* src, char* dest);
+        //check if string contains
+        char * strstr(const char * haystack, const char * needle);
         // copy constant string
         char* strcpy_c(const char src[], char* dest);
         // compare strings

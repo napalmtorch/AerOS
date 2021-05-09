@@ -210,6 +210,32 @@ char* strcpy(char* src, char* dest)
     *dest = '\0';
     return ptr;
 }
+//Will Wrap this in a Contains method! xD
+//check is string contains
+char * strstr(const char * haystack, const char * needle) {
+	const char * out = NULL;
+	const char * ptr;
+	const char * acc;
+	const char * p;
+	size_t s = strlen_c(needle);
+	for (ptr = haystack; *ptr != '\0'; ++ptr) {
+		size_t accept = 0;
+		out = ptr;
+		p = ptr;
+		for (acc = needle; (*acc != '\0') && (*p != '\0'); ++acc) {
+			if (*p == *acc) {
+				accept++;
+				p++;
+			} else {
+				break;
+			}
+		}
+		if (accept == s) {
+			return (char *)out;
+		}
+	}
+	return NULL;
+}
 
 // copy constant string
 char* strcpy_c(const char src[], char* dest)
