@@ -142,9 +142,16 @@ namespace System
             ATA.Initialize();
             ThrowOK("Initialized ATA controller driver");
 
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--no_fs"))
+            {
+                Terminal.WriteLine("Filesystem disabled by Kernel Argument");
+            }
+            else
+            {
             // initialize fat file system
-            //FAT16.Initialize();
-            //ThrowOK("Initialized FAT file system");       
+            FAT16.Initialize();
+            ThrowOK("Initialized FAT file system");
+            }   
 
             // initialize keyboard
             Keyboard.Initialize();
@@ -200,10 +207,16 @@ namespace System
             ATA.Initialize();
             ThrowOK("Initialized ATA controller driver");
 
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--no_fs"))
+            {
+                Terminal.WriteLine("Filesystem disabled by Kernel Argument");
+            }
+            else
+            {
             // initialize fat file system
-            //FAT16.Initialize();
-            //ThrowOK("Initialized FAT file system");
-
+            FAT16.Initialize();
+            ThrowOK("Initialized FAT file system");
+            }
             // setup vga graphics driver
             VGA.Initialize();
 
