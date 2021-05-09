@@ -43,14 +43,22 @@ namespace HAL
     private:
         VbeInfoBlock vib;
         ModeInfoBlock mib;
+		int16_t width;
+		int16_t height;
 		bool vibset = false;
         void* buffer;
 		void populate_vib();
     public:
-        VESA(int16_t width, int16_t height, uint8_t depth);
-        void SwitchMode(int16_t width, int16_t height, uint8_t depth);
+        VESA();
+		~VESA();
+
+        bool SwitchMode(int16_t width, int16_t height, uint8_t depth);
         void SetPixel(int16_t x, int16_t y, uint32_t color);
-        uint32_t GetPixel(int16_t x, int16_t y);
+        void SetPixel(int16_t x, int16_t y, uint16_t color);
+        void SetPixel(int16_t x, int16_t y, uint8_t color);
+        uint32_t GetPixel32(int16_t x, int16_t y);
+        uint16_t GetPixel16(int16_t x, int16_t y);
+        uint8_t GetPixel8(int16_t x, int16_t y);
         void Render();
     };
 }

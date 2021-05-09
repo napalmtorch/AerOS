@@ -59,6 +59,9 @@ namespace System
         // acpi controller
         HAL::ACPI ACPI;
 
+        // vesa driver
+        HAL::VESA VESA;
+
         // window server
         System::XServerHost XServer;
 
