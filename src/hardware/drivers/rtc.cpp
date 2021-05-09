@@ -40,6 +40,24 @@ namespace HAL
                 month   = (month & 0x0F) + (month / 16) * 10;
                 year    = (year & 0x0F) + (year / 16) * 10;
             }
+
+            // update time string
+            TimeString[0] = '\0';
+            char hr[4];
+            strdec(hour, hr);
+            if (hour < 10) { stradd(TimeString, '0'); }
+            strcat(TimeString, hr);
+            strcat(TimeString, ":");
+            char min[4];
+            strdec(minute, min);
+            if (minute < 10) { stradd(TimeString, '0');}
+            strcat(TimeString, min);
+            strcat(TimeString, ":");
+            char sec[4];
+            strdec(second, sec);
+            if (second < 10) { stradd(TimeString, '0'); }
+            strcat(TimeString, sec);
+            last_time = time;
         }
     }
 
@@ -88,22 +106,6 @@ namespace HAL
     // get time as string
     char* RTCManager::GetTimeString() 
     {
-        TimeString[0] = '\0';
-        char hr[4];
-        strdec(hour, hr);
-        if (hour < 10) { stradd(TimeString, '0'); }
-        strcat(TimeString, hr);
-        strcat(TimeString, ":");
-        char min[4];
-        strdec(minute, min);
-        if (minute < 10) { stradd(TimeString, '0');}
-        strcat(TimeString, min);
-        strcat(TimeString, ":");
-        char sec[4];
-        strdec(second, sec);
-        if (second < 10) { stradd(TimeString, '0'); }
-        strcat(TimeString, sec);
-        last_time = time;
         return TimeString; 
     }
 
