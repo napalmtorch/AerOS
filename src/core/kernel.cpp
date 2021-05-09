@@ -93,14 +93,11 @@ namespace System
             }
 
             // check for graphics mode
-            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--vga") != NULL)
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga"))
             {
                 InitializeGUI();
                 return;
             }
-
-            SetDebugSerialOutput(true);
-            SetDebugConsoleOutput(false);
 
             // initialize terminal interface
             Terminal.Initialize();
@@ -171,9 +168,12 @@ namespace System
         // boot process when starting in graphics mode
         void KernelBase::InitializeGUI()
         {
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga_debug"))
+            {
             SerialPort.SetPort(SERIAL_PORT_COM1);
             SetDebugConsoleOutput(false);
             SetDebugSerialOutput(true);
+            }
 
             // initialize fonts
             Graphics::InitializeFonts();
