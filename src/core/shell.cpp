@@ -39,11 +39,13 @@ namespace System
         CommandList[6] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
         CommandList[7] = ShellCommand("DISKDUMP",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
         CommandList[8] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
-        CommandList[9] = ShellCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
-        CommandList[10] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
-        CommandList[11] = ShellCommand("FAT",     "FAT information", "",        Commands::FAT_INFO);
-        CommandList[12] = ShellCommand("FATMBR",     "FAT master boot record", "",        Commands::FAT_MBR);
-        CommandList[13] = ShellCommand("FATEXT",     "FAT extended boot record", "",        Commands::FAT_EXT);
+        CommandList[9] = ShellCommand("POWEROFF",   "Perform a Legacy Shutdown", "",          Commands::LEGACY_SHUTDOWN);
+        CommandList[10] = ShellCommand("REBOOT",   "Reboot the Computer", "",          Commands::REBOOT);
+        CommandList[11] = ShellCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
+        CommandList[12] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
+        CommandList[13] = ShellCommand("FAT",     "FAT information", "",        Commands::FAT_INFO);
+        CommandList[14] = ShellCommand("FATMBR",     "FAT master boot record", "",        Commands::FAT_MBR);
+        CommandList[15] = ShellCommand("FATEXT",     "FAT extended boot record", "",        Commands::FAT_EXT);
         // print caret to screen
         PrintCaret();
     }
@@ -209,6 +211,16 @@ namespace System
             System::KernelIO::ACPI.Shutdown();
         }
 
+        void LEGACY_SHUTDOWN(char* input)
+        {
+            System::KernelIO::ACPI.LegacyShutdown();
+        }
+
+        void REBOOT(char* input)
+        {
+            System::KernelIO::ACPI.Reboot();
+        }
+        
         void TEST(char* input)
         {
             // call syscall

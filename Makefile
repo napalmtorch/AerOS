@@ -57,3 +57,6 @@ fullbochs: clean all iso bochs
 fullqemu: clean all iso qemu
 
 fullqemuk: clean all qemu-kernel
+
+#add this because i (kev) keep typing "make run"
+run: qemu
