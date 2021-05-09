@@ -41,7 +41,9 @@ namespace System
         CommandList[8] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
         CommandList[9] = ShellCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
         CommandList[10] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
-
+        CommandList[11] = ShellCommand("FAT",     "FAT information", "",        Commands::FAT_INFO);
+        CommandList[12] = ShellCommand("FATMBR",     "FAT master boot record", "",        Commands::FAT_MBR);
+        CommandList[13] = ShellCommand("FATEXT",     "FAT extended boot record", "",        Commands::FAT_EXT);
         // print caret to screen
         PrintCaret();
     }
@@ -218,6 +220,21 @@ namespace System
             char* err = strsub(input, 6, strlen(input));
             if (err == nullptr) { debug_throw_panic("Nothing actually crashed, I'm just a cunt."); return; }
             debug_throw_panic(err);
+        }
+
+        void FAT_MBR(char* input)
+        {
+            KernelIO::FAT16.PrintMBR();
+        }
+
+        void FAT_EXT(char* input)
+        {
+            KernelIO::FAT16.PrintEXT();
+        }
+
+        void FAT_INFO(char* input)
+        {
+            KernelIO::FAT16.PrintInfo();
         }
     }
 }

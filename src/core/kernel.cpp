@@ -118,11 +118,12 @@ namespace System
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
-            FAT16.Initialize();
+            HAL::FATFileSystem fatfs;
+            //FAT16.Initialize();
+            fatfs.Initialize();
+            fatfs.PrintMBR();
+            fatfs.PrintEXT();
             ThrowOK("Initialized FAT file system");
-
-            // enable interrupts
-            HAL::CPU::EnableInterrupts();
 
             // initialize keyboard
             Keyboard.Initialize();
@@ -132,6 +133,9 @@ namespace System
 
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
+
+            // enable interrupts
+            HAL::CPU::EnableInterrupts();
 
             // ready shell
             Shell.Initialize();
@@ -146,6 +150,9 @@ namespace System
         // triggered when a kernel panic is injected
         void KernelBase::OnPanic(char* msg)
         {
+            asm volatile("cli");
+            asm volatile("hlt");
+
             // messages 
             char panic_string[] = "====PANIC====";
             char expl[] ="A kernel panic was triggered";
