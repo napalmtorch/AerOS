@@ -168,8 +168,6 @@ namespace System
         // boot process when starting in graphics mode
         void KernelBase::InitializeGUI()
         {
-<<<<<<< HEAD
-=======
             if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga_debug"))
             {
             SerialPort.SetPort(SERIAL_PORT_COM1);
@@ -177,7 +175,6 @@ namespace System
             SetDebugSerialOutput(true);
             }
 
->>>>>>> 91045f7f540ca8d9bbb60525840d2d8b44794212
             // initialize fonts
             Graphics::InitializeFonts();
 
