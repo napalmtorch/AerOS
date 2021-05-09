@@ -42,7 +42,7 @@ namespace System
         Canvas.DrawString(px, 90, "PENIS", COL8_DARK_RED, Graphics::FONT_8x16);
         KernelIO::Mouse.Draw();
 
-        px += 0.005;
+        px += 0.0005;
         if (px >= 320) { px = -40; }
 
         // swap buffer
