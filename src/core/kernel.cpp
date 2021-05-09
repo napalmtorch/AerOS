@@ -68,11 +68,18 @@ namespace System
             // we need this VERY early on since it contains the boot parameters,
             // NICO I AM LOOKING AT YOU, DONT FUCK WITH IT xD - Signed Kev         
             Multiboot.Read();
-            if(streql(System::KernelIO::Multiboot.GetCommandLine(),"--debug"))
+            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--debug") != NULL)
             {
                 // We only enable console output for the debugger when the kernel was booted with --debug
                 SetDebugConsoleOutput(true);
-                SetDebugSerialOutput(false);
+                if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--serial") != NULL)
+                {
+                SetDebugSerialOutput(true);
+                }
+                else
+                {
+                  SetDebugSerialOutput(false);  
+                }
                 // setup serial port connection, also only in --debug mode
                 SerialPort.SetPort(SERIAL_PORT_COM1);
                 ThrowOK("Initialized serial port on COM1");
