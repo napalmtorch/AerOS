@@ -159,12 +159,13 @@ bool IsEmpty(char* text)
         return false;
     }
 } 
-bool StringContains(char* text)
+bool StringContains(char* text, char* find)
 {
-    if (strstr(System::KernelIO::Multiboot.GetCommandLine(), text) != nullptr)
+    if (strstr(text,find) != nullptr)
     {
-
+        return true;
     }
+    return false;
 }
 int strindexof(char text[], char character)
 {
