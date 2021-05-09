@@ -1,5 +1,6 @@
 #include <core/shell.hpp>
 #include <core/kernel.hpp>
+#include <core/debug.hpp>
 
 namespace System
 {
@@ -205,7 +206,14 @@ namespace System
 
             KernelIO::ATA.ReadSectors(buffer, sector, 1);
 
+            bool old = debug_console_enabled;
+            System::KernelIO::SetDebugConsoleOutput(true);
             KernelIO::DumpMemory((uint8_t*)offset, bytes, 12, true);
+            System::KernelIO::SetDebugConsoleOutput(old);
+
+            delete buffer;
+            delete str_sector;
+            delete str_bytes;
         }
 
         void SHUTDOWN(char* input)

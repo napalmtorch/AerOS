@@ -142,7 +142,6 @@ extern "C"
         entry_t* e = alloc_entry(current, size);
         if (e == nullptr)
         {
-            debug_throw_message(MSG_TYPE::MSG_TYPE_WARNING, "fell into next region manager");
             return get_free_entry(current->next, size);
         }
         return e;
@@ -164,10 +163,10 @@ extern "C"
         
         entry->used = true;
 
-        //System::KernelIO::Write("ALLOCATION at ");
-        //char s[6];
-        //strdec((uint32_t)(uint32_t)entry + sizeof(struct entry), s);
-        //System::KernelIO::WriteLine(s);
+        System::KernelIO::Write("ALLOCATION at ");
+        char s[6];
+        strdec((uint32_t)(uint32_t)entry + sizeof(struct entry), s);
+        System::KernelIO::WriteLine(s);
 
         //return alloc result
         return (void*)((uint32_t)entry + sizeof(struct entry));
@@ -191,10 +190,10 @@ int memcmp(const void* a, const void* b, size_t len) {
     {
         if (ptr == nullptr) { debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr"); return; }
 
-        //System::KernelIO::Write("FREE at ");
-        //char s[6];
-        //strdec((uint32_t)ptr, s);
-        //System::KernelIO::WriteLine(s);
+        System::KernelIO::Write("FREE at ");
+        char s[6];
+        strdec((uint32_t)ptr, s);
+        System::KernelIO::WriteLine(s);
 
         entry_t* entry = (entry_t*)((uint32_t)ptr - sizeof(struct entry));
         if (entry->offset != 0xFF)
