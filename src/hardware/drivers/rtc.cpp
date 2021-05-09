@@ -2,6 +2,8 @@
 
 namespace HAL
 {
+    uint8_t time, last_time;
+
     // initialize real time clock
     void RTCManager::Initialize()
     {
@@ -86,8 +88,22 @@ namespace HAL
     // get time as string
     char* RTCManager::GetTimeString() 
     {
-        /* TODO: not yet implemented */ 
         TimeString[0] = '\0';
+        char hr[4];
+        strdec(hour, hr);
+        if (hour < 10) { stradd(TimeString, '0'); }
+        strcat(TimeString, hr);
+        strcat(TimeString, ":");
+        char min[4];
+        strdec(minute, min);
+        if (minute < 10) { stradd(TimeString, '0');}
+        strcat(TimeString, min);
+        strcat(TimeString, ":");
+        char sec[4];
+        strdec(second, sec);
+        if (second < 10) { stradd(TimeString, '0'); }
+        strcat(TimeString, sec);
+        last_time = time;
         return TimeString; 
     }
 

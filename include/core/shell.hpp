@@ -1,6 +1,7 @@
 #pragma once
 #include <lib/types.h>
 #include <lib/string.hpp>
+#include <graphics/canvas.hpp>
 
 namespace System
 {

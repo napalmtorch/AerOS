@@ -22,6 +22,7 @@
 #include "graphics/colors.hpp"
 #include "core/shell.hpp"
 #include "hardware/fat.hpp"
+#include "gui/xserver.hpp"
 
 // kernel offsets
 extern "C"
@@ -44,6 +45,9 @@ extern "C"
                 public:
                     // called as first function before kernel run
                     void Initialize();
+
+                    // start graphics mode
+                    void InitializeGUI();
                     
                     // kernel core code, runs in a loop
                     void Run();
@@ -100,6 +104,9 @@ extern "C"
 
             // shell
             extern System::ShellHost Shell;
+
+            // window server
+            extern System::XServerHost XServer;
 
             // acpi
             extern HAL::ACPI ACPI;

@@ -254,31 +254,18 @@ namespace System
         void GFX(char* input)
         {
             KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
-            uint32_t mx = 99, my = 99;
-            char str[16];
-            while (true)
-            {
-                KernelIO::VGA.Clear(0x03);
+            asm volatile("cli");
 
-                strdec(KernelIO::Mouse.GetX(), str);
-                System::KernelIO::Write("MOUSE POS: ", COL4_CYAN);
-                System::KernelIO::Write(str);
-                strdec(KernelIO::Mouse.GetY(), str);
-                System::KernelIO::Write(", ");
-                System::KernelIO::WriteLine(str);
-                mx = KernelIO::Mouse.GetX();
-                my = KernelIO::Mouse.GetY();
-                
-                for (size_t y = 0; y < 6; y++)
-                {
-                    for (size_t x = 0; x < 6; x++)
-                    {
-                        KernelIO::VGA.SetPixel(x + KernelIO::Mouse.GetX(), y + KernelIO::Mouse.GetY(), 0x1F);
-                    }
-                }
+            // initialize keyboard
+            KernelIO::Keyboard.BufferEnabled = false;
+            KernelIO::Keyboard.Event_OnEnterPressed = nullptr;
 
-                KernelIO::VGA.Swap();
-            }
+            KernelIO::Mouse.Initialize();
+
+            KernelIO::XServer.Initialize();
+            KernelIO::XServer.Start();
+
+            HAL::CPU::EnableInterrupts();
         }
     }
 }

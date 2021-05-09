@@ -35,6 +35,19 @@ namespace HAL
         CPU::RegisterIRQ(IRQ12, (isr_t)ms_callback);
     }
 
+    // draw mouse to screen
+    void PS2Mouse::Draw()
+    {
+        for (uint8_t y = 0; y < 10; y++)
+        {
+            for (uint8_t x = 0; x < 6; x++)
+            {
+                if (CursorData[x + (y * 6)] != 159)
+                { System::KernelIO::XServer.Canvas.DrawPixel(Position.X + x, Position.Y + y, (COL8)CursorData[x + (y * 6)]); }
+            }
+        }
+    }
+
     // handle mouse movement offsets
     void PS2Mouse::OnMouseMove(int8_t x, int8_t y)
     {
@@ -108,4 +121,7 @@ namespace HAL
 
     // get y position
     int32_t PS2Mouse::GetY() { return Position.Y; }
+
+    // get cursor image pixel array
+    uint8_t* PS2Mouse::GetCursor() { return (uint8_t*)CursorData; }
 }

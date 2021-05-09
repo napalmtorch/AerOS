@@ -59,6 +59,9 @@ namespace System
         // acpi controller
         HAL::ACPI ACPI;
 
+        // window server
+        System::XServerHost XServer;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -67,12 +70,12 @@ namespace System
             // we need this VERY early on since it contains the boot parameters,
             // NICO I AM LOOKING AT YOU, DONT FUCK WITH IT xD - Signed Kev         
             Multiboot.Read();
-            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--debug") != NULL)
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--debug"))
             {
                 debug_bochs_break();
                 // We only enable console output for the debugger when the kernel was booted with --debug
                 SetDebugConsoleOutput(true);
-                if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--serial") != NULL)
+                if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--serial"))
                 {
                     SetDebugSerialOutput(true);
                 }
@@ -89,8 +92,12 @@ namespace System
                 SetDebugConsoleOutput(false);   
             }
 
-            SetDebugSerialOutput(true);
-            SetDebugConsoleOutput(false);
+            // check for graphics mode
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga"))
+            {
+                InitializeGUI();
+                return;
+            }
 
             // initialize terminal interface
             Terminal.Initialize();
@@ -144,7 +151,7 @@ namespace System
             Keyboard.BufferEnabled = true;
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
-
+            WriteDecimal("Kernel end: ",kernel_end);
             Mouse.Initialize();
 
             // initialize pit
@@ -156,28 +163,82 @@ namespace System
 
             // ready shell
             Shell.Initialize();
-            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--vga") != NULL)
+        }
+
+        // boot process when starting in graphics mode
+        void KernelBase::InitializeGUI()
+        {
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga_debug"))
             {
-                Shell.ParseCommand("gfx");
+            SerialPort.SetPort(SERIAL_PORT_COM1);
+            SetDebugConsoleOutput(false);
+            SetDebugSerialOutput(true);
             }
+
+            // initialize fonts
+            Graphics::InitializeFonts();
+
+            // initialize interrupt service routines
+            HAL::CPU::InitializeISRs();
+            
+            // initialize ACPI
+            ACPI.ACPIInit();
+            ThrowOK("ACPI Initialised");
+
+            // initialize memory manager
+            MemoryManager.Initialize();
+            ThrowOK("Initialized memory management system");
+
+            // initialize pci bus
+            PCIBus.Initialize();
+
+            // initialize real time clock
+            RTC.Initialize();
+            ThrowOK("Initialized real time clock");
+
+            // initialize ata controller driver
+            ATA.Initialize();
+            ThrowOK("Initialized ATA controller driver");
+
+            // initialize fat file system
+            //FAT16.Initialize();
+            //ThrowOK("Initialized FAT file system");
+
+            // setup vga graphics driver
+            VGA.Initialize();
+
+            VGA.SetMode(VGA.GetAvailableMode(4));
+            ThrowOK("Initialized VGA driver");
+
+            // initialize keyboard
+            Keyboard.Initialize();
+            Keyboard.BufferEnabled = false;
+            Keyboard.Event_OnEnterPressed = nullptr;
+            ThrowOK("Initialized PS/2 keyboard driver");
+
+            Mouse.Initialize();
+
+            XServer.Initialize();
+            XServer.Start();
+
+            // initialize pit
+            HAL::CPU::InitializePIT(60, pit_callback);
+
+            // enable interrupts
+            asm volatile("cli");
+            HAL::CPU::EnableInterrupts();
+
+            return;
         }
 
         // kernel core code, runs in a loop
-        uint32_t mx = 99, my = 99;
-        char str[16];
-        char str2[16];
+        Graphics::VGACanvas canvas;
         void KernelBase::Run()
         {
-            if (mx != Mouse.GetX() || my != Mouse.GetY())
+            if (XServer.IsRunning())
             {
-                strdec(Mouse.GetX(), str);
-                Write("MOUSE POS: ", COL4_CYAN);
-                Write(str);
-                strdec(Mouse.GetY(), str2);
-                Write(", ");
-                WriteLine(str2);
-                mx = Mouse.GetX();
-                my = Mouse.GetY();
+                XServer.Update();
+                XServer.Draw();
             }
         }
         
@@ -206,10 +267,18 @@ namespace System
         }
 
         // triggered when a handled interrupt call is finished
+        uint32_t delta = 0;
         void KernelBase::OnInterrupt()
         {
             // increment ticks
             HAL::CPU::Ticks++;
+        
+            delta++;
+            if (delta >= 60)
+            {
+                RTC.Read();
+                delta = 0;
+            }
         }
 
         // triggered when interrupt 0x80 is triggered

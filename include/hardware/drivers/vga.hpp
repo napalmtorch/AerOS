@@ -100,7 +100,7 @@ namespace HAL
             VideoMode Mode;
 
             // available modes
-            VideoMode AvailableModes[5];
+            VideoMode AvailableModes[8];
             uint8_t AvailableModeCount;
 
             // ports
