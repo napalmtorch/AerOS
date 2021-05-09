@@ -130,12 +130,7 @@ namespace System
             fatfs.PrintMBR();
             fatfs.PrintEXT();
             ThrowOK("Initialized FAT file system");
-<<<<<<< HEAD
-=======
-            // enable interrupts
-            HAL::CPU::EnableInterrupts();
->>>>>>> ae376da0ca8758254cd36059dedcb6f57ffd2d58
-
+            
             // initialize keyboard
             Keyboard.Initialize();
             Keyboard.BufferEnabled = true;
