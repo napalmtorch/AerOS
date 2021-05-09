@@ -153,6 +153,10 @@ namespace System
 
             // ready shell
             Shell.Initialize();
+            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--vga") != NULL)
+            {
+                Shell.ParseCommand("gfx");
+            }
         }
 
         // kernel core code, runs in a loop
@@ -163,11 +167,11 @@ namespace System
             if (mx != Mouse.GetX() || my != Mouse.GetY())
             {
                 strdec(Mouse.GetX(), str);
-                Terminal.Write("MOUSE POS: ", COL4_CYAN);
-                Terminal.Write(str);
+                Write("MOUSE POS: ", COL4_CYAN);
+                Write(str);
                 strdec(Mouse.GetY(), str);
-                Terminal.Write(", ");
-                Terminal.WriteLine(str);
+                Write(", ");
+                WriteLine(str);
                 mx = Mouse.GetX();
                 my = Mouse.GetY();
             }
