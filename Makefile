@@ -3,6 +3,8 @@ all:
 	./scripts/build.sh --no-qemu
 clean:
 
+	rm -Rf bin/isodir
+
 	for file in $(wildcard bin/isodir/boot/*.bin) ; do \
 		rm -Rf $$file ; \
 	done
@@ -24,15 +26,15 @@ clean:
 	done
 
 iso:
-	mkdir -p 'bin/isodir/boot/grub'
-	cp 'bin/kernel.bin' 'bin/isodir/boot/kernel.bin'
-	cp 'include/boot/grub.cfg' 'bin/isodir/boot/grub/grub.cfg'
-	grub-mkrescue -o  'AerOS.iso' 'bin/isodir' -V 'AerOS'
+	mkdir -p bin/isodir/boot
+	cp bin/kernel.bin bin/isodir/boot/
+	grub-mkrescue -d /usr/lib/grub/i386-pc --compress=xz -o AerOS.iso cdrom 'bin/isodir/boot/kernel.bin' -V 'AerOS'
+	
 qemu:
-	gnome-terminal -- /usr/bin/qemu-system-i386 -m 256M -vga std -hda disks/disk.img -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm -cpu host -name "AerOS"
+	gnome-terminal -- /usr/bin/qemu-system-i386 -m 256M -vga std -drive file=disks/disk.img,format=raw -cdrom 'AerOS.iso' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm -cpu host -name "AerOS Development Copy"
 
 qemu-kernel:
-	qemu-system-i386 -m 256M -vga std -hda disks/disk.img -kernel bin/kernel.bin -serial stdio -boot d -soundhw all -enable-kvm -cpu host -name "AerOS"
+	qemu-system-i386 -m 256M -vga std -drive file=disks/disk.img,format=raw -kernel bin/kernel.bin -serial stdio -boot d -soundhw all -enable-kvm -cpu host -name "AerOS Development Copy"
 
 bochs:
 	 ./scripts/bochs.sh
@@ -55,3 +57,6 @@ fullbochs: clean all iso bochs
 fullqemu: clean all iso qemu
 
 fullqemuk: clean all qemu-kernel
+
+#add this because i (kev) keep typing "make run"
+run: qemu

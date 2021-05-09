@@ -284,9 +284,22 @@ void acpiPowerOff(void)
 
    System::KernelIO::WriteLine("acpi poweroff failed.\n");
 }
+void OldShutdown()
+{
+   __asm__ __volatile__ ("outw %1, %0" : : "dN" ((uint16_t)0xB004), "a" ((uint16_t)0x2000));
+}
+void Reboot() {
+		uint8_t out = 0x02;
+		while ((out & 0x02) != 0) {
+			out = inb(0x64);
+		}
+		outb(0x64, 0xFE);
+}
 }
 namespace HAL
 {
   int ACPI::ACPIInit() { return initAcpi(); }
   void ACPI::Shutdown() { return acpiPowerOff(); }
+  void ACPI::LegacyShutdown() { return OldShutdown(); }
+  void ACPI::Reboot() { return Reboot(); }
 }

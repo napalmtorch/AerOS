@@ -1,10 +1,11 @@
 
-#include <hardware/fat16.hpp>
+#include <hardware/fat.hpp>
 #include <hardware/memory.hpp>
 #include <lib/string.hpp>
 
 VFS::FAT16 FAT16;
 HAL::ATAController ATA;
+FAT32ExtendedBootRecord ExtBootRecord32;
 
 extern "C" {
 // ------------------------------------------------------------------------------------------------
@@ -438,7 +439,6 @@ void PrintFATInformation()
 void PrintExtendedBootRecord()
 {
     debug_writeln("EXTENDED BOOT RECORD");
-
     // FAT12/FAT16
     if (FAT16.FATType == FAT_TYPE_FAT12 || FAT16.FATType == FAT_TYPE_FAT16)
     {
@@ -477,7 +477,40 @@ void PrintExtendedBootRecord()
     // FAT32
     else if (FAT16.FATType == FAT_TYPE_FAT32)
     {
-        debug_writeln_ext("FAT32", COL4_YELLOW);
+        debug_write_ext("- FAT TYPE                       ", COL4_YELLOW);
+        debug_writeln("FAT32");
+        
+        // drive number
+        debug_write_ext("- DRIVE NUMBER                   ", COL4_YELLOW);
+        debug_writeln_dec("", FAT16.BootRecord32->DriveNumber);
+
+        // windows nt flags
+        debug_write_ext("- WINNT FLAGS                    ", COL4_YELLOW);
+        debug_writeln_dec("", FAT16.BootRecord32->FlagsWindowsNT);
+
+        // signature
+        debug_write_ext("- SIGNATURE                      ", COL4_YELLOW);
+        debug_writeln_hex("0x", FAT16.BootRecord32->Signature);
+
+        // volume id serial
+        debug_write_ext("- VOLUME ID SERIAL               ", COL4_YELLOW);
+        debug_writeln_hex("0x", FAT16.BootRecord32->VolumeIDSerial);
+
+        // volume label
+        debug_write_ext("- VOLUME LABEL                   ", COL4_YELLOW);
+        char temp[2] = { ' ', '\0' };
+        for (size_t i = 0; i < 11; i++) { temp[0] = FAT16.BootRecord32->VolumeLabel[i]; debug_write(temp); }
+        debug_write("\n");
+
+        // system identifier
+        debug_write_ext("- SYSTEM ID                      ", COL4_YELLOW);
+        for (size_t i = 0; i < 8; i++) { temp[0] = FAT16.BootRecord32->SystemIdentifier[i]; debug_write(temp); }
+        debug_write("\n");
+
+        // boot signature
+        debug_write_ext("- BOOT SIGNATURE                 ", COL4_YELLOW);
+        debug_writeln_hex("0x", FAT16.BootRecord32->BootSignature);
+        
     }
     // EXFAT
     else if (FAT16.FATType == FAT_TYPE_EXFAT)
@@ -485,6 +518,7 @@ void PrintExtendedBootRecord()
 
     }
 }
+
 void PrintBIOSParameterBlock()
 {
     char temp[8];
@@ -581,12 +615,16 @@ void Init()
         uint imageSize = FAT16.TotalSectors * FAT16.DataSectorCount;
         uint8_t *image = FatAllocImage(imageSize);
         FatInitImage(image,(uint8_t*)FAT16.BootRecord16);
-        //PrintBIOSParameterBlock();
+        PrintBIOSParameterBlock();
         PrintExtendedBootRecord();
-        //PrintFATInformation();
+        PrintFATInformation();
 }
 }
 namespace VFS
 {
     void FAT16::Initialize() { return Init(); }
+
+    void FAT16::PrintMBR() { PrintBIOSParameterBlock(); }
+    void FAT16::PrintEXT() { PrintExtendedBootRecord(); }
+    void FAT16::PrintInfo() { PrintFATInformation(); }
 }

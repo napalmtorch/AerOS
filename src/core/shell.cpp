@@ -40,8 +40,14 @@ namespace System
         CommandList[6] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
         CommandList[7] = ShellCommand("DISKDUMP",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
         CommandList[8] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
-        CommandList[9] = ShellCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
-        CommandList[10] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
+        CommandList[9] = ShellCommand("POWEROFF",   "Perform a Legacy Shutdown", "",        Commands::LEGACY_SHUTDOWN);
+        CommandList[10] = ShellCommand("REBOOT",    "Reboot the Computer", "",              Commands::REBOOT);
+        CommandList[11] = ShellCommand("TEST",      "Call a test systemcall", "",           Commands::TEST);
+        CommandList[12] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
+        CommandList[13] = ShellCommand("FAT",       "FAT information", "",                  Commands::FAT_INFO);
+        CommandList[14] = ShellCommand("FATMBR",    "FAT master boot record", "",           Commands::FAT_MBR);
+        CommandList[15] = ShellCommand("FATEXT",    "FAT extended boot record", "",         Commands::FAT_EXT);
+        CommandList[16] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
 
         // print caret to screen
         PrintCaret();
@@ -100,7 +106,7 @@ namespace System
 
         void LSPCI(char* input)
         {
-            KernelIO::PCIBus.List(); 
+            KernelIO::PCIBus.List();
         }
 
         void CPUINFO(char* input) { HAL::CPU::Detect(); }
@@ -215,6 +221,16 @@ namespace System
             System::KernelIO::ACPI.Shutdown();
         }
 
+        void LEGACY_SHUTDOWN(char* input)
+        {
+            System::KernelIO::ACPI.LegacyShutdown();
+        }
+
+        void REBOOT(char* input)
+        {
+            System::KernelIO::ACPI.Reboot();
+        }
+        
         void TEST(char* input)
         {
             // call syscall
@@ -226,6 +242,50 @@ namespace System
             char* err = strsub(input, 6, strlen(input));
             if (err == nullptr) { debug_throw_message(MSG_TYPE_OK, "nullptr"); debug_throw_panic("Nothing actually crashed, I'm just a cunt."); return; }
             debug_throw_panic(err);
+        }
+
+        void FAT_MBR(char* input)
+        {
+            KernelIO::FAT16.PrintMBR();
+        }
+
+        void FAT_EXT(char* input)
+        {
+            KernelIO::FAT16.PrintEXT();
+        }
+
+        void FAT_INFO(char* input)
+        {
+            KernelIO::FAT16.PrintInfo();
+        }
+
+        void GFX(char* input)
+        {
+            KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
+            uint32_t mx = 99, my = 99;
+            char str[16];
+            while (true)
+            {
+                KernelIO::VGA.Clear(0x03);
+
+                for (size_t y = 0; y < 6; y++)
+                {
+                    for (size_t x = 0; x < 6; x++)
+                    {
+                        strdec(KernelIO::Mouse.GetX(), str);
+                        System::KernelIO::Write("MOUSE POS: ", COL4_CYAN);
+                        System::KernelIO::Write(str);
+                        strdec(KernelIO::Mouse.GetY(), str);
+                        System::KernelIO::Write(", ");
+                        System::KernelIO::WriteLine(str);
+                        mx = KernelIO::Mouse.GetX();
+                        my = KernelIO::Mouse.GetY();
+                        KernelIO::VGA.SetPixel(x + KernelIO::Mouse.GetX(), y + KernelIO::Mouse.GetY(), 0x1F);
+                    }
+                }
+
+                KernelIO::VGA.Swap();
+            }
         }
     }
 }

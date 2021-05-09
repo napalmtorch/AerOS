@@ -12,5 +12,7 @@ namespace HAL
         public:
         int ACPIInit();
         void Shutdown();
+        void LegacyShutdown();
+        void Reboot();
     };
 }

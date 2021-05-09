@@ -46,6 +46,9 @@ namespace System
 
         // ps2 keyboard controller driver
         HAL::PS2Keyboard Keyboard;
+        
+        // ps2 mouse controller driver
+        HAL::PS2Mouse Mouse;
 
         // terminal interface
         HAL::TerminalManager Terminal;
@@ -61,7 +64,32 @@ namespace System
         {
             //debug_bochs_break();
 
-            // disable console output for debugger
+            // fetch multiboot header information from memory
+            // we need this VERY early on since it contains the boot parameters,
+            // NICO I AM LOOKING AT YOU, DONT FUCK WITH IT xD - Signed Kev         
+            Multiboot.Read();
+            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--debug") != NULL)
+            {
+                // We only enable console output for the debugger when the kernel was booted with --debug
+                SetDebugConsoleOutput(true);
+                if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--serial") != NULL)
+                {
+                    SetDebugSerialOutput(true);
+                }
+                else
+                {
+                    SetDebugSerialOutput(false);  
+                }
+                // setup serial port connection, also only in --debug mode
+                SerialPort.SetPort(SERIAL_PORT_COM1);
+                ThrowOK("Initialized serial port on COM1");
+            }
+            else
+            {
+                SetDebugConsoleOutput(false);   
+            }
+
+            SetDebugSerialOutput(true);
             SetDebugConsoleOutput(false);
 
             // initialize terminal interface
@@ -85,18 +113,8 @@ namespace System
             ThrowOK("Initialized VGA driver");
             ThrowOK("Set VGA mode to 80x25");
 
-            ThrowOK("Initialized terminal interface");
- 
-            // fetch multiboot header information from memory
-            Multiboot.Read();
-            ThrowOK("Multiboot header detected");
-            
             // initialize interrupt service routines
             HAL::CPU::InitializeISRs();
-
-            // setup serial port connection
-            SerialPort.SetPort(SERIAL_PORT_COM1);
-            ThrowOK("Initialized serial port on COM1");
             
             // initialize ACPI
             ACPI.ACPIInit();
@@ -118,11 +136,8 @@ namespace System
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
-            FAT16.Initialize();
-            ThrowOK("Initialized FAT file system");
-
-            // enable interrupts
-            HAL::CPU::EnableInterrupts();
+            //FAT16.Initialize();
+            //ThrowOK("Initialized FAT file system");       
 
             // initialize keyboard
             Keyboard.Initialize();
@@ -130,17 +145,38 @@ namespace System
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
 
+            Mouse.Initialize();
+
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
 
+            // enable interrupts
+            HAL::CPU::EnableInterrupts();
+
             // ready shell
             Shell.Initialize();
+            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--vga") != NULL)
+            {
+                Shell.ParseCommand("gfx");
+            }
         }
 
         // kernel core code, runs in a loop
+        uint32_t mx = 99, my = 99;
+        char str[16];
         void KernelBase::Run()
         {
-            
+            if (mx != Mouse.GetX() || my != Mouse.GetY())
+            {
+                strdec(Mouse.GetX(), str);
+                Write("MOUSE POS: ", COL4_CYAN);
+                Write(str);
+                strdec(Mouse.GetY(), str);
+                Write(", ");
+                WriteLine(str);
+                mx = Mouse.GetX();
+                my = Mouse.GetY();
+            }
         }
         
         // triggered when a kernel panic is injected

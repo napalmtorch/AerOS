@@ -17,7 +17,7 @@ extern "C"
         /* "root" partition */
         uint32_t boot_device;
         /* Kernel command line */
-        uint32_t cmdline;
+        char* cmdline;
         /* Boot-Module list */
         uint32_t mods_count;
         uint32_t mods_addr;
@@ -69,7 +69,7 @@ extern "C"
                     uint32_t GetMemoryUpper();
                     uint32_t GetMemoryLower();
                     // kernel command line
-                    uint32_t GetCommandLine();
+                    char* GetCommandLine();
                     // boot module list
                     uint32_t GetModulesAddress();
                     uint32_t GetModulesCount();
@@ -97,7 +97,7 @@ extern "C"
                     uint32_t Flags;
                     uint32_t MemoryUpper;
                     uint32_t MemoryLower;
-                    uint32_t CommandLine;
+                    char* CommandLine;
                     uint32_t ModulesAddress;
                     uint32_t ModulesCount;
                     uint32_t Symbol_1;

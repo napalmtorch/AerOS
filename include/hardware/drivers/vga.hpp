@@ -94,6 +94,7 @@ namespace HAL
 
             // video buffer address
             uint8_t* Buffer;
+            uint8_t* BackBuffer;
 
             // active video mode
             VideoMode Mode;
