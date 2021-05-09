@@ -104,6 +104,10 @@ namespace System
                 InitializeGUI();
                 return;
             }
+            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vesa"))
+            {
+
+            }
 
             // initialize terminal interface
             Terminal.Initialize();
