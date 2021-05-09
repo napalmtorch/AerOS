@@ -20,7 +20,7 @@
 #include "graphics/font.hpp"
 #include "graphics/colors.hpp"
 #include "core/shell.hpp"
-#include "hardware/fat16.hpp"
+#include "hardware/fat.hpp"
 
 // kernel offsets
 extern "C"
