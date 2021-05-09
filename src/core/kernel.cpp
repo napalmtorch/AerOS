@@ -67,16 +67,18 @@ namespace System
             Multiboot.Read();
             if(streql(System::KernelIO::Multiboot.GetCommandLine(),"--debug"))
             {
-            // We only enable console output for the debugger when the kernel was booted with --debug
-            SetDebugConsoleOutput(true);
-            // setup serial port connection, also only in --debug mode
-            SerialPort.SetPort(SERIAL_PORT_COM1);
-            ThrowOK("Initialized serial port on COM1");
+                // We only enable console output for the debugger when the kernel was booted with --debug
+                SetDebugConsoleOutput(true);
+                SetDebugSerialOutput(false);
+                // setup serial port connection, also only in --debug mode
+                SerialPort.SetPort(SERIAL_PORT_COM1);
+                ThrowOK("Initialized serial port on COM1");
             }
             else
             {
-             SetDebugConsoleOutput(false);   
+                SetDebugConsoleOutput(false);   
             }
+
             // initialize terminal interface
             Terminal.Initialize();
 
@@ -97,10 +99,7 @@ namespace System
             VGA.SetMode(VGA.GetAvailableMode(0));
             ThrowOK("Initialized VGA driver");
             ThrowOK("Set VGA mode to 80x25");
-
-            ThrowOK("Initialized terminal interface");
- 
-            
+                     
             // initialize interrupt service routines
             HAL::CPU::InitializeISRs();
             
@@ -124,13 +123,9 @@ namespace System
             ThrowOK("Initialized ATA controller driver");
 
             // initialize fat file system
-            HAL::FATFileSystem fatfs;
             //FAT16.Initialize();
-            fatfs.Initialize();
-            fatfs.PrintMBR();
-            fatfs.PrintEXT();
-            ThrowOK("Initialized FAT file system");
-            
+            //ThrowOK("Initialized FAT file system");       
+
             // initialize keyboard
             Keyboard.Initialize();
             Keyboard.BufferEnabled = true;

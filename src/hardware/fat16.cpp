@@ -5,7 +5,7 @@
 
 VFS::FAT16 FAT16;
 HAL::ATAController ATA;
-HAL::FAT32ExtendedBootRecord ExtBootRecord32;
+FAT32ExtendedBootRecord ExtBootRecord32;
 
 extern "C" {
 // ------------------------------------------------------------------------------------------------
@@ -596,9 +596,9 @@ void Init()
         if (!FAT16.DiskValid) { System::KernelIO::ThrowWarning("Non-bootable hard disk detected"); return; }
 
         // set pointers
-        FAT16.BIOSBlock = (HAL::FATBootRecord*)FAT16.BootSectorData;
-        FAT16.BootRecord32 = (HAL::FAT32ExtendedBootRecord*)(FAT16.BootSectorData + 36);
-        FAT16.BootRecord16 = (HAL::FAT16ExtendedBootRecord*)(FAT16.BootSectorData + 36);
+        FAT16.BIOSBlock = (FATBootRecord*)FAT16.BootSectorData;
+        FAT16.BootRecord32 = (FAT32ExtendedBootRecord*)(FAT16.BootSectorData + 36);
+        FAT16.BootRecord16 = (FAT16ExtendedBootRecord*)(FAT16.BootSectorData + 36);
 
         // get type
         DetermineFATType();
