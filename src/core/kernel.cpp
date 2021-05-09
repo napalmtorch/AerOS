@@ -46,6 +46,9 @@ namespace System
 
         // ps2 keyboard controller driver
         HAL::PS2Keyboard Keyboard;
+        
+        // ps2 mouse controller driver
+        HAL::PS2Mouse Mouse;
 
         // terminal interface
         HAL::TerminalManager Terminal;
@@ -138,14 +141,29 @@ namespace System
             // enable interrupts
             HAL::CPU::EnableInterrupts();
 
+            // initialize mouse
+            Mouse.Initialize();
+
             // ready shell
             Shell.Initialize();
         }
 
         // kernel core code, runs in a loop
+        uint32_t mx = 99, my = 99;
+        char str[16];
         void KernelBase::Run()
         {
-            
+            if (mx != Mouse.GetX() || my != Mouse.GetY())
+            {
+                strdec(Mouse.GetX(), str);
+                Terminal.Write("MOUSE POS: ", COL4_CYAN);
+                Terminal.Write(str);
+                strdec(Mouse.GetY(), str);
+                Terminal.Write(", ");
+                Terminal.WriteLine(str);
+                mx = Mouse.GetX();
+                my = Mouse.GetY();
+            }
         }
         
         // triggered when a kernel panic is injected
