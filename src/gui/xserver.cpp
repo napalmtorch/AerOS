@@ -37,7 +37,7 @@ namespace System
 
         Canvas.DrawString(0, 0, "FPS: ", COL8_BLACK, Graphics::FONT_3x5);
         Canvas.DrawString(20, 0, fpsString, COL8_BLACK, Graphics::FONT_3x5);
-        Canvas.DrawFilledRectangle(KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY(), 4, 4, COL8_DARK_RED);
+        KernelIO::Mouse.Draw();
 
         // swap buffer
         Canvas.Display();
