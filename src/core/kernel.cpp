@@ -146,19 +146,19 @@ namespace System
             RTC.Initialize();
             ThrowOK("Initialized real time clock");
 
-            // initialize ata controller driver
-            ATA.Initialize();
-            ThrowOK("Initialized ATA controller driver");
-
             if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--no_fs"))
             {
                 Terminal.WriteLine("FAT file system disabled by kernel argument");
             }
             else
-            {
+            { 
+                // initialize ata controller driver
+                //ATA.Initialize();
+                //ThrowOK("Initialized ATA controller driver");
+
                 // initialize fat file system
-                FAT16.Initialize();
-                ThrowOK("Initialized FAT file system");
+                //FAT16.Initialize();
+                //ThrowOK("Initialized FAT file system");
             }   
 
             // initialize keyboard
@@ -211,19 +211,19 @@ namespace System
             RTC.Initialize();
             ThrowOK("Initialized real time clock");
 
-            // initialize ata controller driver
-            ATA.Initialize();
-            ThrowOK("Initialized ATA controller driver");
-
             if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--no_fs"))
             {
                 Terminal.WriteLine("Filesystem disabled by Kernel Argument");
             }
             else
             {
+                // initialize ata controller driver
+                //ATA.Initialize();
+                //ThrowOK("Initialized ATA controller driver");
+                
                 // initialize fat file system
-                FAT16.Initialize();
-                ThrowOK("Initialized FAT file system");
+                //FAT16.Initialize();
+                //ThrowOK("Initialized FAT file system");
             }
 
             XServer.Initialize();
