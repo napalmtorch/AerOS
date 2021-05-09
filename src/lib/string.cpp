@@ -217,8 +217,7 @@ char* strcpy(char* src, char* dest)
     *dest = '\0';
     return ptr;
 }
-//Will Wrap this in a Contains method! xD
-//check is string contains
+
 char * strstr(char * haystack, char * needle) {
 	const char * out = NULL;
 	const char * ptr;
