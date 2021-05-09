@@ -100,8 +100,6 @@ namespace HAL
     // initialize ports
     void VGADriver::Initialize()
     {
-        BackBuffer = new uint8_t[320 * 200];
-
         // set port values
         this->PortIndexAC = IOPort(0x3C0);
         this->PortWriteAC = IOPort(0x3C0);
@@ -160,6 +158,16 @@ namespace HAL
         {
             term_set_size(mode.GetWidth(), mode.GetHeight());
             term_set_buffer(Buffer);
+        }
+
+        if (mode.IsDoubleBuffered())
+        {
+            if (BackBuffer != nullptr) { delete BackBuffer; }
+            BackBuffer = new uint8_t[mode.GetWidth() * mode.GetHeight()];
+        }
+        else
+        {
+            if (BackBuffer != nullptr) { delete BackBuffer; }
         }
     }
 

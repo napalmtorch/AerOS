@@ -45,6 +45,27 @@ extern "C"
         COL4_YELLOW,
         COL4_WHITE,
     } COL4;
+
+    // 8 bit color enumerator
+    typedef enum
+    {
+        COL8_BLACK,
+        COL8_DARK_BLUE,
+        COL8_DARK_GREEN,
+        COL8_DARK_CYAN,
+        COL8_DARK_RED,
+        COL8_DARK_MAGENTA,
+        COL8_DARK_YELLOW,
+        COL8_GRAY,
+        COL8_DARK_GRAY,
+        COL8_BLUE,
+        COL8_GREEN,
+        COL8_CYAN,
+        COL8_RED,
+        COL8_MAGENTA,
+        COL8_YELLOW,
+        COL8_WHITE,
+    } COL8;
 }
 
 // rgb color

@@ -25,6 +25,14 @@ outfile="$(echo $infile | sed 's/cpp/o/g')"
 i686-elf-g++ -w -Iinclude -c src/graphics/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
+# gui
+for file in src/gui/*.cpp 
+do
+infile=$(basename $file)
+outfile="$(echo $infile | sed 's/cpp/o/g')"
+i686-elf-g++ -w -Iinclude -c src/gui/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+done
+
 # hardware
 for file in src/hardware/*.cpp 
 do

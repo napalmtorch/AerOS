@@ -666,7 +666,7 @@ namespace Graphics
         FONT_8x16 = { 8, 16, 0, 0, FONT_8x16_DATA };
     }
 
-	uint8_t ConvertByteToBitAddress(uint8_t to_convert, int32_t to_return)
+	bool ConvertByteToBitAddress(uint8_t to_convert, int32_t to_return)
     {
         int32_t mask = 1 << (to_return - 1);
         return (to_convert & mask) != 0;

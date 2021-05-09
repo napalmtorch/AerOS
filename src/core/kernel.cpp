@@ -59,6 +59,9 @@ namespace System
         // acpi controller
         HAL::ACPI ACPI;
 
+        // window server
+        System::XServerHost XServer;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -88,6 +91,16 @@ namespace System
             {
                 SetDebugConsoleOutput(false);   
             }
+
+            // check for graphics mode
+            if(strstr(System::KernelIO::Multiboot.GetCommandLine(),"--vga") != NULL)
+            {
+                InitializeGUI();
+                return;
+            }
+
+            SetDebugSerialOutput(true);
+            SetDebugConsoleOutput(false);
 
             // initialize terminal interface
             Terminal.Initialize();
@@ -153,6 +166,69 @@ namespace System
 
             // ready shell
             Shell.Initialize();
+        }
+
+        // boot process when starting in graphics mode
+        void KernelBase::InitializeGUI()
+        {
+            SerialPort.SetPort(SERIAL_PORT_COM1);
+            SetDebugConsoleOutput(false);
+            SetDebugSerialOutput(true);
+
+            // initialize fonts
+            Graphics::InitializeFonts();
+
+            // initialize interrupt service routines
+            HAL::CPU::InitializeISRs();
+            
+            // initialize ACPI
+            ACPI.ACPIInit();
+            ThrowOK("ACPI Initialised");
+
+            // initialize memory manager
+            MemoryManager.Initialize();
+            ThrowOK("Initialized memory management system");
+
+            // initialize pci bus
+            PCIBus.Initialize();
+
+            // initialize real time clock
+            RTC.Initialize();
+            ThrowOK("Initialized real time clock");
+
+            // initialize ata controller driver
+            ATA.Initialize();
+            ThrowOK("Initialized ATA controller driver");
+
+            // initialize fat file system
+            //FAT16.Initialize();
+            //ThrowOK("Initialized FAT file system");
+
+            // setup vga graphics driver
+            VGA.Initialize();
+
+            VGA.SetMode(VGA.GetAvailableMode(4));
+            ThrowOK("Initialized VGA driver");
+
+            // initialize keyboard
+            Keyboard.Initialize();
+            Keyboard.BufferEnabled = false;
+            Keyboard.Event_OnEnterPressed = nullptr;
+            ThrowOK("Initialized PS/2 keyboard driver");
+
+            Mouse.Initialize();
+
+            XServer.Initialize();
+            XServer.Start();
+
+            // initialize pit
+            HAL::CPU::InitializePIT(60, pit_callback);
+
+            // enable interrupts
+            asm volatile("cli");
+            HAL::CPU::EnableInterrupts();
+
+            return;
             if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga"))
             {
                 Shell.ParseCommand("gfx");
@@ -160,9 +236,14 @@ namespace System
         }
 
         // kernel core code, runs in a loop
+        Graphics::VGACanvas canvas;
         void KernelBase::Run()
         {
-            
+            if (XServer.IsRunning())
+            {
+                XServer.Update();
+                XServer.Draw();
+            }
         }
         
         // triggered when a kernel panic is injected
@@ -190,10 +271,18 @@ namespace System
         }
 
         // triggered when a handled interrupt call is finished
+        uint32_t delta = 0;
         void KernelBase::OnInterrupt()
         {
             // increment ticks
             HAL::CPU::Ticks++;
+        
+            delta++;
+            if (delta >= 60)
+            {
+                RTC.Read();
+                delta = 0;
+            }
         }
 
         // triggered when interrupt 0x80 is triggered
