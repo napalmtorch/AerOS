@@ -123,7 +123,7 @@ extern "C"
             extern System::ShellHost Shell;
 
             // window server
-            extern System::XServerHost XServer;
+            extern System::GUI::XServerHost XServer;
 
             // acpi
             extern HAL::ACPI ACPI;

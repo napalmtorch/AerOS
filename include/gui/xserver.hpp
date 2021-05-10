@@ -6,18 +6,21 @@
 
 namespace System
 {
-    class XServerHost
+    namespace GUI
     {
-        public:
-            Graphics::VGACanvas Canvas;
-            Graphics::Canvas FullCanvas;
-            void Initialize();
-            void Start(VIDEO_DRIVER driver);
-            void Update();
-            void Draw();
-            bool IsRunning();
-        private:
-            bool Running;
-            uint32_t FPS, frames, time, last_time;
-    };
+        class XServerHost
+        {
+            public:
+                Graphics::VGACanvas Canvas;
+                Graphics::Canvas FullCanvas;
+                void Initialize();
+                void Start(VIDEO_DRIVER driver);
+                void Update();
+                void Draw();
+                bool IsRunning();
+            private:
+                bool Running;
+                uint32_t FPS, frames, time, last_time;
+        };
+    }
 }

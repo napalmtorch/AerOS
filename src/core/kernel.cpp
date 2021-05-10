@@ -66,14 +66,13 @@ namespace System
         HAL::VESA VESA;
 
         // window server
-        System::XServerHost XServer;
+        System::GUI::XServerHost XServer;
 
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
             MemoryManager.Initialize();
-            ThrowOK("Initialized memory management system");
 
             // read multiboot
             Multiboot.Read();
@@ -116,7 +115,6 @@ namespace System
 
                 // setup serial port connection, also only in --debug mode
                 SerialPort.SetPort(SERIAL_PORT_COM1);
-                ThrowOK("Initialized serial port on COM1");
             }
 
             // boot message
@@ -180,7 +178,6 @@ namespace System
             Keyboard.BufferEnabled = true;
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
-            WriteDecimal("Kernel end: ",kernel_end);
             Mouse.Initialize();
 
             // initialize pit
@@ -189,6 +186,9 @@ namespace System
             // enable interrupts
             asm volatile("cli");
             HAL::CPU::EnableInterrupts();
+
+            // print kernel end
+            WriteLineDecimal("KERNEL_END: ",kernel_end);
 
             // initialize x server
             XServer.Initialize();
