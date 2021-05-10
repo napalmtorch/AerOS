@@ -240,18 +240,17 @@ namespace System
 
         void FAT_MBR(char* input)
         {
-            KernelIO::FAT16.PrintMBR();
+            //KernelIO::FAT16.PrintMBR();
         }
 
         void FAT_EXT(char* input)
         {
-            KernelIO::FAT16.PrintEXT();
+            //KernelIO::FAT16.PrintEXT();
         }
 
         void FAT_INFO(char* input)
         {
             List<uint32_t> list = List<uint32_t>();
-            KernelIO::FAT16.PrintInfo();
         }
 
         void GFX(char* input)
