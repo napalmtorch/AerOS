@@ -2,6 +2,7 @@
 #include <core/kernel.hpp>
 #include <gui/widget.hpp>
 #include <gui/winmgr.hpp>
+#include <apps/osinfo.hpp>
 
 namespace System
 {
@@ -103,8 +104,8 @@ namespace System
             WindowManager::Initialize();
 
             // test window
-            win = new Window(128, 128, 320, 240, "Window");
-            WindowManager::Start(win);
+            Applications::OSInfo::Start();
+            
 
             // running flag
             Running = true;

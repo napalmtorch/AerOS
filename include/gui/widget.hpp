@@ -87,6 +87,8 @@ namespace System
                 void Update();
                 void Draw();
                 void SetTitle(char* title);
+                void (*ChildUpdate)(void);
+                void (*ChildDraw)(void);
 
                 // base
                 Widget Base;

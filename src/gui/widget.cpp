@@ -20,7 +20,7 @@ namespace System
                 // mouse click
                 if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
                 {
-                    if (!widget->MSFlags.Clicked) { widget->OnClick(); widget->MSFlags.Clicked = true; }
+                    if (!widget->MSFlags.Clicked) { widget->MSFlags.Clicked = true; }
                     widget->MSFlags.Down = true;
                 }
                 // mouse not clicked
@@ -97,6 +97,8 @@ namespace System
                 GUI::WindowManager::Close(this);
                 return;
             }
+
+            if (ChildUpdate != nullptr) { ChildUpdate(); }
         }
 
         void Window::Draw()
@@ -108,6 +110,8 @@ namespace System
             KernelIO::XServer.FullCanvas.DrawRectangle3D(Base.Bounds.X, Base.Bounds.Y, Base.Bounds.Width, Base.Bounds.Height, Base.Style->Colors[2], Base.Style->Colors[3], Base.Style->Colors[4]);
 
             TBar.Draw();
+
+            if (ChildDraw != nullptr) { ChildDraw(); }
         }
 
         void Window::SetTitle(char* title) { SetWidgetText(&Base, title); }
@@ -239,10 +243,13 @@ namespace System
             {
                 uint32_t txt_w = strlen(Base.Text) * (Base.Style->Font->GetWidth() + Base.Style->Font->GetHorizontalSpacing());
                 uint32_t txt_h = Base.Style->Font->GetHeight() + Base.Style->Font->GetVerticalSpacing();
-                uint32_t dx = Base.Bounds.X + (Base.Bounds.Width / 2) - (txt_w / 2);
-                uint32_t dy = Base.Bounds.Y + (Base.Bounds.Height / 2) - (txt_h / 2);
-                if (Base.MSFlags.Down) { dx += 2; dy += 2; }
-                KernelIO::XServer.FullCanvas.DrawString(dx, dy, Base.Text, Base.Style->Colors[1], (*Base.Style->Font));
+                if (Base.Bounds.Width > 0 && Base.Bounds.Height > 0)
+                {
+                    uint32_t dx = Base.Bounds.X + (Base.Bounds.Width / 2) - (txt_w / 2);
+                    uint32_t dy = Base.Bounds.Y + (Base.Bounds.Height / 2) - (txt_h / 2);
+                    if (Base.MSFlags.Down) { dx += 2; dy += 2; }
+                    KernelIO::XServer.FullCanvas.DrawString(dx, dy, Base.Text, Base.Style->Colors[1], (*Base.Style->Font));
+                }
             }
         }
 

@@ -1,4 +1,5 @@
 #include <gui/winmgr.hpp>
+#include <core/kernel.hpp>
 
 namespace System
 {
@@ -7,9 +8,10 @@ namespace System
         // window manager
         namespace WindowManager
         {
-            System::GUI::Window* Windows[512];
-            uint32_t WindowCount;
-            uint32_t WindowIndex;
+            Window* Windows[512];
+            uint32_t WindowCount = 0;
+            uint32_t WindowIndex = 0;
+
             
             void Initialize()
             {
@@ -18,45 +20,53 @@ namespace System
 
             void Update()
             {   
-                for (size_t i = 0; i < WindowCount; i++)
+                if (WindowCount > 0)
                 {
-                    if (Windows[i] != nullptr)
+                    for (size_t i = 0; i < WindowCount; i++)
                     {
-                        Windows[i]->Update();
+                        if (Windows[i] != nullptr)
+                        {
+                            Windows[i]->Update();
+                        }
                     }
                 }
             }
 
             void Draw()
             {
-                for (size_t i = 0; i < WindowCount; i++)
+                if (WindowCount > 0)
                 {
-                    if (Windows[i] != nullptr)
+                    for (size_t i = 0; i < WindowCount; i++)
                     {
-                        if (Windows[i] != nullptr) { Windows[i]->Draw(); }
+                        if (Windows[i] != nullptr)
+                        {
+                            Windows[i]->Draw();
+                        }
                     }
                 }
+
             }
 
             void Start(System::GUI::Window* win)
             {
-                if (win == nullptr) { return; }
+                if (win == nullptr) { KernelIO::ThrowError("Tried to start null window"); return; }
                 Windows[WindowIndex] = win;
+                WindowIndex++;
                 WindowCount++;
             }
 
             void Close(System::GUI::Window* win)
             {
-                if (win == nullptr) { return; }
+                if (win == nullptr) { KernelIO::ThrowError("Tried to close null window"); return; }
                 for (size_t i = 0; i < WindowCount; i++)
                 {
-                    if (Windows[i] == win)
+                    if (Windows[i] == win && win != nullptr)
                     {
+                        delete Windows[i];
                         Windows[i] = nullptr;
-                        return;
+                        break;
                     }
                 }
-                KernelIO::ThrowError("Tried to close null window");
             }
         }
     }
