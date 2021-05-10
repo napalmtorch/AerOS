@@ -15,30 +15,7 @@ namespace System
     void XServerHost::Start(VIDEO_DRIVER driver)
     {
         FullCanvas.SetDriver(driver);
-
         Running = true;
-        if (driver == VIDEO_DRIVER_VGA)
-        {
-            KernelIO::VGA.Initialize();
-            KernelIO::VGA.SetMode(KernelIO::VGA.GetAvailableMode(4));
-        }
-        else if (driver == VIDEO_DRIVER_VESA)
-        {
-            KernelIO::VESA.SetMode(800, 600, 32);
-            HAL::CPU::DisableInterrupts();
-        }
-
-        // initialize keyboard
-        KernelIO::Keyboard.Initialize();
-        KernelIO::Keyboard.BufferEnabled = false;
-        KernelIO::Keyboard.Event_OnEnterPressed = nullptr;
-        KernelIO::ThrowOK("Initialized PS/2 keyboard driver");
-
-        KernelIO::Mouse.Initialize();
-        KernelIO::Mouse.SetBounds(0, 0, 800, 600);
-
-        // enable interrupts
-        HAL::CPU::EnableInterrupts();
     }
 
     void XServerHost::Update()

@@ -15,7 +15,7 @@ template <typename T> class VectorList
             SizeInBytes = 0;
         }
 
-        ~VectorList() { delete[] Data; Data = nullptr; }
+        ~VectorList() { delete Data; Data = nullptr; }
 
         void Push(T data)
         {

@@ -71,42 +71,12 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
-            // fetch multiboot header information from memory
-            // we need this VERY early on since it contains the boot parameters,
-            // NICO I AM LOOKING AT YOU, DONT FUCK WITH IT xD - Signed Kev         
-            Multiboot.Read();
-            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--debug"))
-            {
-                debug_bochs_break();
-                // We only enable console output for the debugger when the kernel was booted with --debug
-                SetDebugConsoleOutput(true);
-                if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--serial"))
-                {
-                    SetDebugSerialOutput(true);
-                }
-                else
-                {
-                    SetDebugSerialOutput(false);  
-                }
-                // setup serial port connection, also only in --debug mode
-                SerialPort.SetPort(SERIAL_PORT_COM1);
-                ThrowOK("Initialized serial port on COM1");
-            }
-            else
-            {
-                SetDebugConsoleOutput(false);   
-            }
+            // initialize memory manager - we need memory first to parse start parameters effectively
+            MemoryManager.Initialize();
+            ThrowOK("Initialized memory management system");
 
-            // check for graphics mode
-            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga"))
-            {
-                InitializeGUI(VIDEO_DRIVER_VGA);
-                return;
-            }
-            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vesa"))
-            {
-                InitializeGUI(VIDEO_DRIVER_VESA);
-            }
+            // read multiboot
+            Multiboot.Read();
 
             // initialize terminal interface
             Terminal.Initialize();
@@ -119,12 +89,64 @@ namespace System
             // initialize fonts
             Graphics::InitializeFonts();
 
+            // parse start parameters
+            ParseStartParameters();
+
+            // check if debugging flag is true
+            if (Parameters.Debug)
+            {
+                // test break
+                debug_bochs_break();
+
+                // use console output by default, unless serial is specified as well
+                SetDebugConsoleOutput(true);
+            }
+            // disable console debugging
+            else { SetDebugConsoleOutput(false); }
+
+            // check if serial flag is true
+            if (Parameters.Serial)
+            {
+                // check if console debugging is also enabled
+                if (Parameters.Debug) { SetDebugConsoleOutput(true); }
+                else { SetDebugConsoleOutput(false); }          
+
+                // enable serial debugging
+                SetDebugSerialOutput(true);
+
+                // setup serial port connection, also only in --debug mode
+                SerialPort.SetPort(SERIAL_PORT_COM1);
+                ThrowOK("Initialized serial port on COM1");
+            }
+
             // boot message
             Terminal.WriteLine("Starting AerOS...", COL4_GRAY);
 
-            VGA.SetMode(VGA.GetAvailableMode(0));
-            ThrowOK("Initialized VGA driver");
-            ThrowOK("Set VGA mode to 80x25");
+            // vga mode
+            if (Parameters.VGA)
+            {
+                VGA.SetMode(VGA.GetAvailableMode(4));
+                ThrowOK("Initialized VGA driver");
+                ThrowOK("Set VGA mode to 320x200 double buffered");
+                SetDebugConsoleOutput(false);
+            }
+            // vesa mode
+            else if (Parameters.VESA)
+            {
+                KernelIO::VESA.SetMode(800, 600, 32);
+                HAL::CPU::DisableInterrupts();
+                SetDebugConsoleOutput(false);
+                ThrowOK("Initialized VESA driver");
+                ThrowOK("Set VESA mode to 800x600 double buffered");
+            }
+            // text mode
+            else
+            {
+                VGA.Initialize();
+                VGA.SetMode(VGA.GetAvailableMode(0));
+                ThrowOK("Initialized VGA driver");
+                ThrowOK("Set VGA mode to 80x25");
+            }
 
             // initialize interrupt service routines
             HAL::CPU::InitializeISRs();
@@ -132,10 +154,6 @@ namespace System
             // initialize ACPI
             ACPI.ACPIInit();
             ThrowOK("ACPI Initialised");
-
-            // initialize memory manager
-            MemoryManager.Initialize();
-            ThrowOK("Initialized memory management system");
             
             VMM.Initialize();
 
@@ -146,20 +164,16 @@ namespace System
             RTC.Initialize();
             ThrowOK("Initialized real time clock");
 
-            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--no_fs"))
+            if (!Parameters.DisableFS)
             {
-                Terminal.WriteLine("FAT file system disabled by kernel argument");
-            }
-            else
-            { 
                 // initialize ata controller driver
-                //ATA.Initialize();
-                //ThrowOK("Initialized ATA controller driver");
+                ATA.Initialize();
+                ThrowOK("Initialized ATA controller driver");
 
                 // initialize fat file system
-                //FAT16.Initialize();
-                //ThrowOK("Initialized FAT file system");
-            }   
+                FAT16.Initialize();
+                ThrowOK("Initialized FAT file system");
+            }
 
             // initialize keyboard
             Keyboard.Initialize();
@@ -176,64 +190,57 @@ namespace System
             asm volatile("cli");
             HAL::CPU::EnableInterrupts();
 
+            // initialize x server
+            XServer.Initialize();
+
             // ready shell
-            Shell.Initialize();
+            if (Parameters.VGA) { XServer.Start(VIDEO_DRIVER_VGA); }
+            else if (Parameters.VESA) { XServer.Start(VIDEO_DRIVER_VESA); }
+            else { Shell.Initialize(); }
         }
 
-        // boot process when starting in graphics mode
-        void KernelBase::InitializeGUI(VIDEO_DRIVER driver)
+
+        // parse start parameters
+        void KernelBase::ParseStartParameters()
         {
-            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--vga_debug"))
+            // get command line arguments
+            char* input = System::KernelIO::Multiboot.GetCommandLine();
+
+            // temporary values
+            uint32_t delimiter_count = 0;
+            size_t i = 0;
+
+            // default parameters
+            Parameters.Debug = false;
+            Parameters.Serial = false;
+            Parameters.DisableFS = false;
+            Parameters.VGA = false;
+            Parameters.VESA = false;
+
+            // count delmiters
+            for (i = 0; i < strlen(input); i++)
+            { if (input[i] == 0x20) { delimiter_count++; } }
+
+            // loop through delimiters
+            for (i = 0; i < delimiter_count + 1; i++)
             {
-                SerialPort.SetPort(SERIAL_PORT_COM1);
-                SetDebugConsoleOutput(false);
-                SetDebugSerialOutput(true);
-            }
-
-            // initialize fonts
-            Graphics::InitializeFonts();
-
-            // initialize interrupt service routines
-            HAL::CPU::InitializeISRs();
-            
-            // initialize ACPI
-            ACPI.ACPIInit();
-            ThrowOK("ACPI Initialised");
-
-            // initialize memory manager
-            MemoryManager.Initialize();
-            ThrowOK("Initialized memory management system");
-
-            // initialize pci bus
-            PCIBus.Initialize();
-
-            // initialize real time clock
-            RTC.Initialize();
-            ThrowOK("Initialized real time clock");
-
-            if(StringContains(System::KernelIO::Multiboot.GetCommandLine(),"--no_fs"))
-            {
-                Terminal.WriteLine("Filesystem disabled by Kernel Argument");
-            }
-            else
-            {
-                // initialize ata controller driver
-                //ATA.Initialize();
-                //ThrowOK("Initialized ATA controller driver");
+                // grab string split from delimiter
+                char* val = strsplit_index(input, i, ' ');
                 
-                // initialize fat file system
-                //FAT16.Initialize();
-                //ThrowOK("Initialized FAT file system");
+                // debug flag
+                if (streql(val, "--debug")) { Parameters.Debug = true; }
+                // serial flag
+                if (streql(val, "--serial")) { Parameters.Serial = true; }
+                // vga flag
+                if (streql(val, "--vga")) { Parameters.VGA = true; }
+                // vesa/vbe flag
+                if (streql(val, "--vesa")) { Parameters.VESA = true; }
+                // disable filesystem flag
+                if (streql(val, "--no_fs")) { Parameters.DisableFS = true; }
             }
-
-            XServer.Initialize();
-            XServer.Start(driver);
-
-            return;
         }
 
         // kernel core code, runs in a loop
-        Graphics::VGACanvas canvas;
         void KernelBase::Run()
         {
             if (XServer.IsRunning())
