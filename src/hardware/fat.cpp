@@ -754,6 +754,7 @@ void mkdir(f32 *fs, struct directory *dir, char *dirname) {
 }
 
 void print_directory(f32 *fs, struct directory *dir) {
+            term_writeln_ext("Listing Directory",COL4_CYAN);
     uint32_t i;
     uint32_t max_name = 0;
     for(i = 0; i < dir->num_entries; i++) {
@@ -780,10 +781,8 @@ void print_directory(f32 *fs, struct directory *dir) {
             namebuff[j] = dir->entries[i].name[j];
         }
 
-  //      printf("%s %c %d ",
-    //           namebuff,
-      //         dir->entries[i].dir_attrs & DIRECTORY?'D':' ',
-        //       dir->entries[i].file_size);
+
+            if(dir->entries[i].dir_attrs == DIRECTORY) { term_write_ext(namebuff,COL4_BLUE); term_writeln(" (dir)"); } else { term_write_ext(namebuff,COL4_YELLOW); term_write(" "); term_write_dec(" Size: " ,dir->entries[i].file_size); term_writeln(" Bytes"); }
 
         uint32_t cluster = dir->entries[i].first_cluster;
         uint32_t cluster_count = 1;
