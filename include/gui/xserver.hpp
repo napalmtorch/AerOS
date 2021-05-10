@@ -4,6 +4,7 @@
 #include <hardware/ports.hpp>
 #include <graphics/canvas.hpp>
 #include <graphics/font.hpp>
+#include <gui/widget.hpp>
 
 // border style
 typedef enum
@@ -81,5 +82,15 @@ namespace System
         // title bar icons
         extern uint8_t TitleBarIcon_Exit[];
         extern uint8_t TitleBarIcon_Max[];
+
+        // window manager
+        namespace WindowManager
+        {
+            void Initialize();
+            void Update();
+            void Draw();
+
+            System::List<GUI::Window*> Windows;
+        }
     }
 }

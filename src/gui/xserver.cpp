@@ -188,5 +188,25 @@ namespace System
             char* time = KernelIO::RTC.GetTimeString(false, false);
             KernelIO::XServer.FullCanvas.DrawString(KernelIO::VESA.GetWidth() - (strlen(time) * 8) - 4, KernelIO::VESA.GetHeight() - 16, time, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
         }
+
+        namespace WindowManager
+        {
+            void Initialize()
+            {
+                // initialize window list
+                Windows = List<Window*>();
+            }
+
+            void Update()
+            {
+                // update windows
+                //for (size_t i = 0; i < Windows.)
+            }
+
+            void Draw()
+            {
+
+            }
+        }
     }
 }
