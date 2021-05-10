@@ -477,4 +477,7 @@ namespace System
     String &String::operator += (const char text[]) { Append(text); return *this; }
     String &String::operator += (const String &text) { Append(text.Data); return *this; }
     String &String::operator += (String &&text) { Append(text.Data); return *this; }
+
+    bool String::operator == (char text[]) { return streql(this->Data, text); }
+    bool String::operator == (String string) { return streql(this->Data, string.Data); }
 }
