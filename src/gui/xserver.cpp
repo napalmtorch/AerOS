@@ -75,7 +75,7 @@ namespace System
         Button StartBtn;
 
         // test window
-        Window win;
+        Window* win;
 
         // initialize xserver interface
         void XServerHost::Initialize()
@@ -103,8 +103,8 @@ namespace System
             WindowManager::Initialize();
 
             // test window
-            win = Window(128, 128, 320, 240, "Window");
-            WindowManager::Start(&win);
+            win = new Window(128, 128, 320, 240, "Window");
+            WindowManager::Start(win);
 
             // running flag
             Running = true;
@@ -146,7 +146,7 @@ namespace System
             FullCanvas.DrawString(40, 0, fpsString, Graphics::Colors::White, Graphics::FONT_8x16);
 
             // draw window count
-            strdec(WindowManager::Windows.Count, winCountStr);
+            strdec(WindowManager::WindowCount, winCountStr);
             FullCanvas.DrawString(0, 16, "WINS: ", Graphics::Colors::White, Graphics::FONT_8x16);
             FullCanvas.DrawString(48, 16, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
 

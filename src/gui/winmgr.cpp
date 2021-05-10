@@ -7,55 +7,56 @@ namespace System
         // window manager
         namespace WindowManager
         {
-            System::List<Window*> Windows;
+            System::GUI::Window* Windows[512];
+            uint32_t WindowCount;
+            uint32_t WindowIndex;
             
             void Initialize()
             {
-                // initialize window list
-                Windows = List<Window*>();
+                
             }   
 
             void Update()
             {   
-                // update windows
-                for (size_t i = 0; i < Windows.Count; i++)
+                for (size_t i = 0; i < WindowCount; i++)
                 {
-                    (*Windows.Get(i))->Update();
+                    if (Windows[i] != nullptr)
+                    {
+                        Windows[i]->Update();
+                    }
                 }
             }
 
             void Draw()
             {
-                // draw windows
-                for (size_t i = 0; i < Windows.Count; i++)
+                for (size_t i = 0; i < WindowCount; i++)
                 {
-                    (*Windows.Get(i))->Draw();
+                    if (Windows[i] != nullptr)
+                    {
+                        if (Windows[i] != nullptr) { Windows[i]->Draw(); }
+                    }
                 }
             }
 
-            void Start(Window* win)
+            void Start(System::GUI::Window* win)
             {
-                // check if window is already open
-                for (size_t i = 0; i < Windows.Count; i++)
-                {
-                    if ((*Windows.Get(i)) == win) { KernelIO::ThrowError("Window already open"); return; }
-                }
-
-                Windows.Add(win);
+                if (win == nullptr) { return; }
+                Windows[WindowIndex] = win;
+                WindowCount++;
             }
 
-            void Close(Window* win)
+            void Close(System::GUI::Window* win)
             {
-                // check if window is already open
-                bool open = false;
-                uint32_t open_index = 0;
-                for (size_t i = 0; i < Windows.Count; i++)
+                if (win == nullptr) { return; }
+                for (size_t i = 0; i < WindowCount; i++)
                 {
-                    if ((*Windows.Get(i)) == win) { open = true; open_index = i; break; }
+                    if (Windows[i] == win)
+                    {
+                        Windows[i] = nullptr;
+                        return;
+                    }
                 }
-                if (!open) { KernelIO::ThrowError("Tried to close open window"); return; }
-
-                Windows.RemoveAt(open_index);
+                KernelIO::ThrowError("Tried to close null window");
             }
         }
     }
