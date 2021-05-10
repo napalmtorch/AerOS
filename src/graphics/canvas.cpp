@@ -5,11 +5,57 @@ namespace Graphics
 {
     // ---------------------------------------- CANVAS BASE ---------------------------------------- // 
 
+    void Canvas::SetDriver(VIDEO_DRIVER driver)
+    {
+        Driver = driver;
+    }
+
+    VIDEO_DRIVER Canvas::GetDriver() { return Driver; }
+
+    // clear with color
+    void Canvas::Clear(Color color)
+    {
+        if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Clear(Graphics::RGBToPackedValue(color.R, color.G, color.B)); }
+    }
+
+    // clear with packed color
+    void Canvas::Clear(uint32_t color)
+    {
+        if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Clear(color); }
+    }
+
     // clear the screen black
     void Canvas::Clear() { Clear(Colors::Black); }
 
+    // display
+    void Canvas::Display()
+    {
+        if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Render(); }
+    }
+
+    void Canvas::DrawPixel(uint16_t x, uint16_t y, uint32_t color)
+    {
+        System::KernelIO::VESA.SetPixel(x, y, color);
+    }
+
+    // draw pixel
+    void Canvas::DrawPixel(uint16_t x, uint16_t y, Color color)
+    {
+        if (Driver == VIDEO_DRIVER_VESA)
+        { System::KernelIO::VESA.SetPixel(x, y, Graphics::RGBToPackedValue(color.R, color.G, color.B)); }
+    }
+
     // draw pixel
     void Canvas::DrawPixel(point_t pos, Color color) { DrawPixel(pos.X, pos.Y, color); }
+
+    // draw filled rectangle
+    void Canvas::DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color color)
+    {
+        for (size_t i = 0; i < w * h; i++)
+        {
+            DrawPixel(x + (i % w), y + (i / w), color);
+        }
+    }
 
     // draw filled rectangle
     void Canvas::DrawFilledRectangle(point_t pos, point_t size, Color color) { DrawFilledRectangle(pos.X, pos.Y, size.X, size.Y, color); }
@@ -31,6 +77,16 @@ namespace Graphics
 
     // draw rectangle outline
     void Canvas::DrawRectangle(bounds_t bounds, uint16_t thickness, Color color) { DrawRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height, thickness, color); }
+
+    void Canvas::DrawRectangle3D(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color tl, Color b_inner, Color b_outer)
+    {
+        DrawFilledRectangle(x, y, w, 1, tl);
+        DrawFilledRectangle(x, y, 1, h, tl);
+        DrawFilledRectangle(x + 1, y + h - 2, w - 2, 1, b_inner);
+        DrawFilledRectangle(x + w - 2, y + 1, 1, h - 2, b_inner);
+        DrawFilledRectangle(x, y + h - 1, w, 1, b_outer);
+        DrawFilledRectangle(x + w - 1, y, 1, h, b_outer);
+    }
 
     // draw character
     void Canvas::DrawChar(uint16_t x, uint16_t y, char c, Color fg, Font font)

@@ -1,53 +1,128 @@
 #include "gui/xserver.hpp"
 #include <core/kernel.hpp>
+#include <gui/widget.hpp>
 
 namespace System
 {
-    char fpsString[16];
-
-    void XServerHost::Initialize()
+    namespace GUI
     {
-        Running = false;
-        FPS = 0;
-        time = 1;
-    }
-
-    void XServerHost::Start()
-    {
-        Running = true;
-    }
-
-    void XServerHost::Update()
-    {
-        time = KernelIO::RTC.GetSecond();
-        frames++;
-        if (time != last_time)
+        // default button style
+        VisualStyle ButtonStyle = 
         {
-            FPS = frames;
-            strdec(FPS, fpsString);
-            frames = 0;
-            last_time = time;
+            "Default",
+            {
+                { 255, 200, 200, 200 },
+                { 255, 0,   0,   0   },
+                { 255, 255, 255, 255 },
+                { 255, 154, 151, 147 },
+                { 255, 0,   0,   0,  },
+                { 255, 0,   0,   0,  },
+                { 255, 0,   0,   0,  },
+                { 255, 0,   0,   0,  },
+            },
+            BORDER_STYLE_3D, 1
+        };
+
+        // performance stats
+        char fpsString[16];
+
+        // widgets
+        Button StartButton;
+
+        // initialize xserver interface
+        void XServerHost::Initialize()
+        {
+            Running = false;
+            FPS = 0;
+            time = 1;
+
+            StartButton.Create(4, 4, "Start");
+        }
+
+        // start
+        void XServerHost::Start(VIDEO_DRIVER driver)
+        {
+            FullCanvas.SetDriver(driver);
+            KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
+            KernelIO::Mouse.SetPosition(KernelIO::VESA.GetWidth() / 2, KernelIO::VESA.GetHeight() / 2);
+
+            // setup start button
+            StartButton.GetBounds()->X = 4;
+            StartButton.GetBounds()->Y = KernelIO::VESA.GetHeight() - 25;
+            StartButton.GetBounds()->Width = 56;
+
+            // running flag
+            Running = true;
+        }
+
+        // update
+        void XServerHost::Update()
+        {
+            // calculate framerate
+            time = KernelIO::RTC.GetSecond();
+            frames++;
+            if (time != last_time)
+            {
+                FPS = frames;
+                strdec(FPS, fpsString);
+                frames = 0;
+                last_time = time;
+            }
+
+            // update taskbar
+            Taskbar.Update();
+
+            // update widgets
+            StartButton.Update();
+        }
+
+        // draw
+        void XServerHost::Draw()
+        {
+            // clear the screen
+            FullCanvas.Clear({ 255, 58, 110, 165 });
+
+            // draw fps
+            FullCanvas.DrawString(0, 0, "FPS: ", Graphics::Colors::White, Graphics::FONT_8x16);
+            FullCanvas.DrawString(40, 0, fpsString, Graphics::Colors::White, Graphics::FONT_8x16);
+
+            // draw taskbar
+            Taskbar.Draw();
+
+            // draw button
+            StartButton.Draw();
+            
+            // draw mouse
+            KernelIO::Mouse.Draw();
+
+
+            // swap buffer
+            FullCanvas.Display();
+        }
+
+        // check if xserver is running
+        bool XServerHost::IsRunning() { return Running; }
+
+        // update taskbar
+        void XServerTaskbar::Update()
+        {
+
+        }
+
+        // draw taskbar
+        void XServerTaskbar::Draw()
+        {
+            // draw background
+            KernelIO::XServer.FullCanvas.DrawFilledRectangle(0, KernelIO::VESA.GetHeight() - 28, KernelIO::VESA.GetWidth(), 28, ButtonStyle.Colors[0]);
+
+            // draw border
+            KernelIO::XServer.FullCanvas.DrawFilledRectangle(0, KernelIO::VESA.GetHeight() - 27, KernelIO::VESA.GetWidth(), 1, ButtonStyle.Colors[2]);
+
+            // draw tray
+            KernelIO::XServer.FullCanvas.DrawRectangle3D(KernelIO::VESA.GetWidth() - 100, KernelIO::VESA.GetHeight() - 24, 97, 21, ButtonStyle.Colors[3], ButtonStyle.Colors[2], ButtonStyle.Colors[2]);
+
+            // draw time
+            KernelIO::XServer.FullCanvas.DrawString(KernelIO::VESA.GetWidth() - 72, KernelIO::VESA.GetHeight() - 18, KernelIO::RTC.GetTimeString(), ButtonStyle.Colors[1], Graphics::FONT_8x8);
         }
     }
-
-    float px = 0;
-    void XServerHost::Draw()
-    {
-        // clear the screen
-        Canvas.Clear(COL8_DARK_CYAN);
-
-        Canvas.DrawString(0, 0, "FPS: ", COL8_BLACK, Graphics::FONT_3x5);
-        Canvas.DrawString(20, 0, fpsString, COL8_BLACK, Graphics::FONT_3x5);
-        Canvas.DrawString(0, 194, KernelIO::RTC.GetTimeString(), COL8_BLACK, Graphics::FONT_3x5);
-        Canvas.DrawString(px, 90, "PENIS", COL8_DARK_RED, Graphics::FONT_8x16);
-        KernelIO::Mouse.Draw();
-
-        px += 0.005;
-        if (px >= 320) { px = -40; }
-
-        // swap buffer
-        Canvas.Display();
-    }
-
-    bool XServerHost::IsRunning() { return Running; }
 }

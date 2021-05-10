@@ -18,10 +18,10 @@ extern "C"
         // determine header text and foreground color
         switch (type)
         {
-            case MSG_TYPE_OK:       { strcat(header, "  OK   "); fg = 0xA; break; }
-            case MSG_TYPE_SYSTEM:   { strcat(header, "  SYS  "); fg = 0xB; break; }
-            case MSG_TYPE_WARNING:  { strcat(header, "WARNING"); fg = 0xE; break; }
-            case MSG_TYPE_ERROR:    { strcat(header, " ERROR "); fg = 0xC; break; }
+            case MSG_TYPE_OK:       { strcat(header, "  OK  "); fg = 0xA; break; }
+            case MSG_TYPE_SYSTEM:   { strcat(header, "  >>  "); fg = 0xB; break; }
+            case MSG_TYPE_WARNING:  { strcat(header, "  ??  "); fg = 0xE; break; }
+            case MSG_TYPE_ERROR:    { strcat(header, "  !!  "); fg = 0xC; break; }
         }
 
         // print to console if enabled

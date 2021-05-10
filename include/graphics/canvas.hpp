@@ -22,22 +22,37 @@ typedef enum
     ALIGN_BOTTOM_RIGHT,
 } ALIGN;
 
+typedef enum
+{
+    VIDEO_DRIVER_VGA,
+    VIDEO_DRIVER_VESA,
+    VIDEO_DRIVER_VMWARE,
+} VIDEO_DRIVER;
+
 namespace Graphics
 {
     // base class for canvas interface
     class Canvas
     {
         public:
+            void SetDriver(VIDEO_DRIVER driver);
+            VIDEO_DRIVER GetDriver();
+
             // clear the screen
-            virtual void Clear(Color color) = 0;
+            void Clear(Color color);
+            void Clear(uint32_t color);
             void Clear();
 
+            // display
+            void Display();
+
             // draw pixel
-            virtual void DrawPixel(uint16_t x, uint16_t y, Color color) = 0;
+            void DrawPixel(uint16_t x, uint16_t y, uint32_t color);
+            void DrawPixel(uint16_t x, uint16_t y, Color color);
             void DrawPixel(point_t pos, Color color);
 
             // draw filled rectangle
-            virtual void DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color color) = 0;
+            void DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color color);
             void DrawFilledRectangle(point_t pos, point_t size, Color color);
             void DrawFilledRectangle(bounds_t bounds, Color color);
 
@@ -45,6 +60,8 @@ namespace Graphics
             void DrawRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t thickness, Color color);
             void DrawRectangle(point_t pos, point_t size, uint16_t thickness, Color color);
             void DrawRectangle(bounds_t bounds, uint16_t thickness, Color color);
+
+            void DrawRectangle3D(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color tl, Color b_inner, Color b_outer);
 
             // draw character
             void DrawChar(uint16_t x, uint16_t y, char c, Color fg, Font font);
@@ -57,6 +74,9 @@ namespace Graphics
             void DrawString(point_t pos, char* text, Color fg, Font font);
             void DrawString(uint16_t x, uint16_t y, char* text, Color fg, Color bg, Font font);
             void DrawString(point_t pos, char* text, Color fg, Color bg, Font font);
+        private:
+            VIDEO_DRIVER Driver;
+
     };
 
     class VGACanvas

@@ -75,9 +75,9 @@ namespace HAL
                     
                     System::KernelIO::Terminal.Write("- ");
                     char vendorbuf[32];
-                    strhex32(vendor,vendorbuf);
+                    strhex(vendor,vendorbuf);
                     char vendoridbuf[32];
-                    strhex32(id,vendoridbuf);
+                    strhex(id,vendoridbuf);
                     
                     System::KernelIO::Terminal.Write("DEVICE: ", COL4_MAGENTA);
                     System::KernelIO::Terminal.Write("0x");
@@ -163,7 +163,33 @@ namespace HAL
                 case 0x061F: { return "Intel 80303 I/O Processor"; }
                 case 0x2415: { return "Intel 82801AA AC'97 Audio"; }
                 case 0x2668: { return "Intel 82801(ICH6 Family) HD Audio"; }
-                default: { return "Unrecognized Intel Device"; }
+                case 0x2770: { return "Intel 82945G Memory Controller Hub"; }
+                case 0x2771: { return "Intel 82945G PCI Express Root Port"; }
+                case 0x2772: { return "Intel 82945G Integrated Graphics"; }
+                case 0x2776: { return "Intel 82945G Integrated Graphics"; }
+                case 0x27D0: { return "Intel NM10/ICH7 PCI Express Port 1"; }
+                case 0x27D2: { return "Intel NM10/ICH7 PCI Express Port 2"; }
+                case 0x27C8: { return "Intel NM10/ICH7 USB UHCI Controller 1"; }
+                case 0x27C9: { return "Intel NM10/ICH7 USB UHCI Controller 2"; }
+                case 0x27CA: { return "Intel NM10/ICH7 USB UHCI Controller 3"; }
+                case 0x27CB: { return "Intel NM10/ICH7 USB UHCI Controller 4"; }
+                case 0x27CC: { return "Intel NM10/ICH7 USB2 EHCI Controller"; }
+                case 0x244E: { return "Intel 82801 PCI Bridge"; }
+                case 0x27DE: { return "Intel 82801G/ICH7 AC'97 Audio"; }
+                case 0x27B8: { return "Intel 82801GB/ICH7 LPC Interface Bridge"; }
+                case 0x27C0: { return "Intel NM10/ICH7 SATA Controller(IDE MODE)"; }
+                case 0x27DA: { return "Intel NM10/ICH7 SMBus Controller"; }
+                case 0x0F00: { return "Intel Atom Z36xxx/Z37xxx SoC Trans-Reg"; }
+                case 0x0F31: { return "Intel Atom Z36xxx/Z37xxx Series Graphics"; }
+                case 0x0F23: { return "Intel Atom E3800 Series SATA AHCI"; }
+                case 0x0F18: { return "Intel Atom Z36xxx/Z37xxx Trusted Exec."; }
+                case 0x0F04: { return "Intel Atom Z36xxx/Z37xxx HD Audio"; }
+                case 0x0F48: { return "Intel Atom E3800 Series PCI Express Port 1"; }
+                case 0x0F4A: { return "Intel Atom E3800 Series PCI Express Port 2"; }
+                case 0x0F34: { return "Intel Atom Z36xxx/Z37xxx USB EHCI"; }
+                case 0x0F1C: { return "Intel Atom Z36xxx/Z37xxx Series PCU"; }
+                case 0x0F12: { return "Intel Atom E3800 Series SMBus Controller"; }
+                default:     { return "Unrecognized Intel Device"; }
             }
         }
 
@@ -228,6 +254,7 @@ namespace HAL
             switch (id)
             {
                 case 0x2000: { return "AMD 79C970 Ethernet Controller"; }
+                default: { return "Unrecognized AMD Device"; }
             }
         }
 
@@ -237,6 +264,38 @@ namespace HAL
             switch (id)
             {
                 case 0x5000: { return "Ensoniq ES1370 [AudioPCI]"; }
+                default: { return "Unrecognized Ensoniq Device"; }
+            }
+        }
+
+        // broadcom
+        if (vendor == PCI_VENDOR_BROADCOM)
+        {
+            switch (id)
+            {
+                case 0x1677: { return "NetXtreme BCM5751 Ethernet PCI-E"; }
+                default: { return "Unrecognized Realtek Device"; }
+            }
+        }
+
+        // realtek
+        if (vendor == PCI_VENDOR_REALTEK)
+        {
+            switch (id)
+            {
+                case 0x5289: { return "Realtek RTL8411 PCI Express Card Reader"; }
+                case 0x8168: { return "Realtek RTL8111/8168/8411 Ethernet PCI-E"; }
+                default: { return "Unrecognized Realtek Device"; }
+            }
+        }
+
+        // atheros
+        if (vendor == PCI_VENDOR_ATHEROS)
+        {
+            switch (id)
+            {
+                case 0x0036: { return "Atheros AR9485 WiFi Adapter"; }
+                default: { "Unrecognized Atheros Device"; }
             }
         }
 

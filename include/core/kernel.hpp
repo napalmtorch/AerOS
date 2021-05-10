@@ -39,17 +39,32 @@ extern "C"
     // main namespace of the System library
     namespace System
     {
+        struct StartParameters
+        {
+            bool Debug;
+            bool Serial;
+            bool DisableFS;
+            bool VGA;
+            bool VESA; 
+        };
+
         namespace KernelIO
         {
             // kernel core
             class KernelBase
             {
                 public:
+                    // start parameters
+                    StartParameters Parameters;
+                    
                     // called as first function before kernel run
                     void Initialize();
 
                     // start graphics mode
-                    void InitializeGUI();
+                    void InitializeGUI(VIDEO_DRIVER driver);
+
+                    // parse start parameters
+                    void ParseStartParameters();
                     
                     // kernel core code, runs in a loop
                     void Run();
@@ -108,7 +123,7 @@ extern "C"
             extern System::ShellHost Shell;
 
             // window server
-            extern System::XServerHost XServer;
+            extern System::GUI::XServerHost XServer;
 
             // acpi
             extern HAL::ACPI ACPI;

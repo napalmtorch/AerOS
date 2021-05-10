@@ -69,26 +69,13 @@ extern "C"
 }
 
 // rgb color
-struct Color
+typedef struct
 {
-    private:
-        uint8_t A;
-        uint8_t R;
-        uint8_t G;
-        uint8_t B;
-    public:
-        Color(uint8_t a, uint8_t r, uint8_t g, uint8_t b) : A(a), R(r), G(g), B(b) { }
-        uint8_t GetAlpha() {return A; }
-        uint8_t GetRed() { return R; }
-        uint8_t GetGreen() { return G; }
-        uint8_t GetBlue() { return B; }
-        uint32_t ToPackedValue(COLOR_ORDER order)
-       {
-           return 0;
-            /* TODO: not yet implemented */
-            UNUSED(order);
-        }
-};
+    uint8_t A;
+    uint8_t R;
+    uint8_t G;
+    uint8_t B;
+} __attribute__((packed)) Color;
 
 namespace Graphics
 {
@@ -102,18 +89,53 @@ namespace Graphics
     // convert rgb value to packed color
     uint32_t RGBToPackedValue(uint8_t r, uint8_t g, uint8_t b);
 
+    Color PackedValueToRGB(uint32_t packed);
+
     // pre-defined rgb colors
     namespace Colors
     {
-        const Color Black           = { 0xFF, 0x00, 0x00, 0x00 };
-        const Color White           = { 0xFF, 0xFF, 0xFF, 0xFF };
-        const Color Red             = { 0xFF, 0xFF, 0x00, 0x00 };
-        const Color Green           = { 0xFF, 0x00, 0xFF, 0x00 };
-        const Color Blue            = { 0xFF, 0x00, 0x00, 0xFF };
-        const Color Yellow          = { 0xFF, 0xFF, 0xFF, 0x00 };
-        const Color Cyan            = { 0xFF, 0x00, 0xFF, 0xFF };
-        const Color Magenta         = { 0xFF, 0xFF, 0x00, 0xFF };
-        const Color Gray            = { 0xFF, 0x7F, 0x7F, 0x7F }; 
+        extern const Color AliceBlue;
+        extern const Color AntiqueWhite;
+        extern const Color Aqua;
+        extern const Color Aquamarine; 
+        extern const Color Azure;      
+        extern const Color Beige;      
+        extern const Color Bisque;     
+        extern const Color Black;      
+        extern const Color BlanchedAlmond;
+        extern const Color Blue;            
+        extern const Color BlueViolet;       
+        extern const Color Brown;
+        extern const Color BurlyWood;        
+        extern const Color CadetBlue;          
+        extern const Color Chartreuse;         
+        extern const Color Chocolate;          
+        extern const Color Coral;              
+        extern const Color CornflowerBlue;     
+        extern const Color Cornsilk;           
+        extern const Color Crimson;            
+        extern const Color Cyan;              
+        extern const Color DarkBlue;          
+        extern const Color DarkCyan;          
+        extern const Color DarkGoldenrod;     
+        extern const Color DarkGray;          
+        extern const Color DarkGreen;        
+        extern const Color DarkKhaki;        
+        extern const Color DarkMagenta;         
+        extern const Color DarkOliveGreen;      
+        extern const Color DarkOrange;          
+        extern const Color DarkOrchid;         
+        extern const Color DarkRed;         
+        extern const Color DarkSalmon;         
+        extern const Color DarkSeaGreen;        
+        extern const Color DarkSlateBlue;       
+        extern const Color DarkSlateGray;       
+
+        extern const Color White;               
+        extern const Color Red;                 
+        extern const Color Green;               
+        extern const Color Yellow;              
+        extern const Color Magenta;             
     }
     
     COL4 GetColorFromName(char* name);
