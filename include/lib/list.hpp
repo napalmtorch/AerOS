@@ -10,8 +10,8 @@ namespace System
     {
     private:
         Type** list = nullptr;
-        int Count = 0;
     public:
+        int Count = 0;
         void Add(Type element)
         {
             Type* e = new Type;
