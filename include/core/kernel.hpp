@@ -2,6 +2,7 @@
 #include "lib/types.h"
 #include "lib/string.hpp"
 #include "lib/vector.hpp"
+#include "lib/list.hpp"
 #include "core/debug.hpp"
 #include "hardware/acpi.hpp"
 #include "hardware/cpu.hpp"

@@ -131,11 +131,11 @@ namespace System
             // vesa mode
             else if (Parameters.VESA)
             {
-                KernelIO::VESA.SetMode(800, 600, 32);
+                KernelIO::VESA.SetMode(640, 480, 32);
                 HAL::CPU::DisableInterrupts();
                 SetDebugConsoleOutput(false);
                 ThrowOK("Initialized VESA driver");
-                ThrowOK("Set VESA mode to 800x600 double buffered");
+                ThrowOK("Set VESA mode to 640x480 double buffered");
             }
             // text mode
             else
