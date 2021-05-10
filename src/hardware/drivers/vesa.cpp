@@ -113,8 +113,8 @@ namespace HAL
                 return false;
         }
 
-        Width = mode_info->Height;
-        Height = mode_info->Width;
+        Width = mode_info->Width;
+        Height = mode_info->Height;
 
         // enable the mode with the acording interrupt
         regs.ax = 0x4F02;

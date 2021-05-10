@@ -253,7 +253,28 @@ namespace System
 
         void GFX(char* input)
         {
+            asm volatile("cli");
+
+            KernelIO::VESA.SetMode(800, 600, 32);
+            HAL::CPU::DisableInterrupts();
+            KernelIO::SetDebugConsoleOutput(false);
+            KernelIO::ThrowOK("Initialized VESA driver");
+            KernelIO::ThrowOK("Set VESA mode to 800x600 double buffered");
+
+            // initialize keyboard
+            KernelIO::Keyboard.Initialize();
+            KernelIO::Keyboard.BufferEnabled = false;
+            KernelIO::Keyboard.Event_OnEnterPressed = nullptr;
+
+            // initialize mouse
+            KernelIO::Mouse.Initialize();
+
+            // enable interrupts
+            asm volatile("cli");
+            HAL::CPU::EnableInterrupts();
+
             KernelIO::XServer.Start(VIDEO_DRIVER_VESA);
+
         }
     }
 }

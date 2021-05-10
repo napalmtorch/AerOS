@@ -117,8 +117,8 @@ namespace HAL
     {
         Bounds.X =  x;
         Bounds.Y = y;
-        Bounds.Width = w;
-        Bounds.Height = h;
+        Bounds.Width = w - 1;
+        Bounds.Height = h - 1;
     }
 
     // set position

@@ -15,6 +15,7 @@ namespace System
     void XServerHost::Start(VIDEO_DRIVER driver)
     {
         FullCanvas.SetDriver(driver);
+        KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
         Running = true;
     }
 
