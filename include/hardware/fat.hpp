@@ -1,192 +1,115 @@
 #pragma once
-#include <hardware/drivers/ata.hpp>
 
-extern "C"
-{
+#include <lib/types.h>
+extern "C" {
+struct bios_parameter_block {
+    uint16_t bytes_per_sector;          // IMPORTANT
+    uint8_t sectors_per_cluster;        // IMPORTANT
+    uint16_t reserved_sectors;          // IMPORTANT
+    uint8_t FAT_count;                  // IMPORTANT
+    uint16_t dir_entries;
+    uint16_t total_sectors;
+    uint8_t media_descriptor_type;
+    uint16_t count_sectors_per_FAT12_16; // FAT12/FAT16 only.
+    uint16_t count_sectors_per_track;
+    uint16_t count_heads_or_sizes_on_media;
+    uint32_t count_hidden_sectors;
+    uint32_t large_sectors_on_media;  // This is set instead of total_sectors if it's > 65535
 
-typedef enum
-{
-    FAT_TYPE_FAT12 = 12,
-    FAT_TYPE_FAT16 = 16,
-    FAT_TYPE_FAT32 = 32,
-    FAT_TYPE_EXFAT = 36,
-} FAT_TYPE;
+    // Extended Boot Record
+    uint32_t count_sectors_per_FAT32;   // IMPORTANT
+    uint16_t flags;
+    uint16_t FAT_version;
+    uint32_t cluster_number_root_dir;   // IMPORTANT
+    uint16_t sector_number_FSInfo;
+    uint16_t sector_number_backup_boot_sector;
+    uint8_t drive_number;
+    uint8_t windows_flags;
+    uint8_t signature;                  // IMPORTANT
+    uint32_t volume_id;
+    char volume_label[12];
+    char system_id[9];
+};
 
-#include <stdbool.h>
+#define READONLY  1
+#define HIDDEN    (1 << 1)
+#define SYSTEM    (1 << 2)
+#define VolumeID  (1 << 3)
+#define DIRECTORY (1 << 4)
+#define ARCHIVE   (1 << 5)
+#define LFN (READONLY | HIDDEN | SYSTEM | VolumeID)
 
-#define PACKED __attribute__((__packed__))
-#define SECTOR_SIZE 512
-
-// bios parameter block
-typedef struct
-{
-    uint8_t  JumpCode[3];
-    char     OEMIdentifier[8];
-    uint16_t BytesPerSector;
-    uint8_t  SectorsPerCluster;
-    uint16_t ReservedSectors;
-    uint8_t  FATCount;
-    uint16_t DirectoryCount;
-    uint16_t LogicalSectors;
-    uint8_t  MediaDescriptorType;
-    uint16_t SectorsPerFAT;
-    uint16_t SectorsPerTrack;
-    uint16_t HeadCount;
-    uint32_t HiddenSectors;
-    uint32_t LargeSectors;
-} __attribute__((packed)) FATBootRecord;
-
-// FAT 12/16 extended boot record
-typedef struct
-{
-    uint8_t  DriveNumber;
-    uint8_t  FlagsWindowsNT;
-    uint8_t  Signature;
-    uint32_t VolumeIDSerial;
-    char     VolumeLabel[11];
-    char     SystemIdentifier[8];
-    uint8_t  BootCode[448];
-    uint16_t BootSignature;
-} __attribute__((packed)) FAT16ExtendedBootRecord;
-    // FAT 32 extended boot record
-typedef struct
-{
-    uint32_t SectorsPerFAT;
-    uint16_t Flags;
-    uint16_t FATVerison;
-    uint32_t RootClusterNumber;
-    uint16_t FSInfoSector;
-    uint16_t BackupBootSector;
-    uint8_t  Reserved[12];
-    uint8_t  DriveNumber;
-    uint8_t  FlagsWindowsNT;
-    uint8_t  Signature;
-    uint32_t VolumeIDSerial;
-    char     VolumeLabel[11];
-    char     SystemIdentifier[8];
-    uint8_t  BootCode[420];
-    uint16_t BootSignature;
-} __attribute__((packed)) FAT32ExtendedBootRecord;
+struct dir_entry {
+    char *name;
+    uint8_t dir_attrs;
+    uint32_t first_cluster;
+    uint32_t file_size;
+};
+typedef struct FILE {
+    //struct dir_entry file_ent;
+    uint32_t curr_cluster;
+    uint32_t file_size; // total file size
+    uint32_t fptr; // index into the file
+    uint32_t buffptr; // index into currbuf
+    uint8_t currbuf[]; // flexible member for current cluster
+} FILE;
 
 
-// ------------------------------------------------------------------------------------------------
-typedef struct BiosParamBlock
-{
-    uint8_t jump[3];
-    uint8_t oem[8];
-    uint16_t bytesPerSector;
-    uint8_t sectorsPerCluster;
-    uint16_t reservedSectorCount;
-    uint8_t fatCount;
-    uint16_t rootEntryCount;
-    uint16_t sectorCount;
-    uint8_t mediaType;
-    uint16_t sectorsPerFat;
-    uint16_t sectorsPerTrack;
-    uint16_t headCount;
-    uint32_t hiddenSectorCount;
-    uint32_t largeSectorCount;
+FILE *fopen(const char *pathname, const char *mode);
+FILE *fdopen(int fd, const char *mode);
+FILE *freopen(const char *pathname, const char *mode, FILE *stream);
 
-    // Extended block
-    uint8_t driveNumber;
-    uint8_t flags;
-    uint8_t signature;
-    uint32_t volumeId;
-    uint8_t volumeLabel[11];
-    uint8_t fileSystem[8];
-} PACKED BiosParamBlock;
+int fclose(FILE *stream);
 
-// ------------------------------------------------------------------------------------------------
-typedef struct DirEntry
-{
-    // Following conventions of DOS 7.0
-    uint8_t name[8];
-    uint8_t ext[3];
-    uint8_t attribs;
-    uint8_t reserved;
-    uint8_t createTimeMs;
-    uint16_t createTime;
-    uint16_t createDate;
-    uint16_t accessDate;
-    uint16_t extendedAttribsIndex;
-    uint16_t mTime;
-    uint16_t mDate;
-    uint16_t clusterIndex;
-    uint32_t fileSize;
-} PACKED DirEntry;
+size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+struct directory {
+    uint32_t cluster;
+    struct dir_entry *entries;
+    uint32_t num_entries;
+};
 
-typedef struct fs_node {
-	char name[256];			// The filename.
-	uint32_t mask;			// The permissions mask.
-	uint32_t uid;			// The owning user.
-	uint32_t gid;			// The owning group.
-	uint32_t flags;			// Flags (node type, etc).
-	uint32_t inode;			// Inode number.
-	uint32_t length;		// Size of the file, in byte.
-	uint32_t impl;			// Used to keep track which fs it belongs to.
-	struct fs_node *ptr;	// Used by mountpoints and symlinks.
-	uint32_t offset;
-	int32_t shared_with;
-	uint32_t atime;
-	uint32_t mtime;
-	uint32_t ctime;
-} fs_node_t;
+// REFACTOR
+// I want to get rid of this from the header. This should be internal
+// implementation, but for now, it's too convenient for stdio.c impl.
 
-#define ENTRY_AVAILABLE 0x00
-#define ENTRY_ERASED 0xe5
+// EOC = End Of Chain
+#define EOC 0x0FFFFFF8
 
-// ------------------------------------------------------------------------------------------------
-uint FatGetTotalSectorCount(uint8_t *image);
-uint FatGetMetaSectorCount(uint8_t *image);
-uint FatGetClusterCount(uint8_t *image);
-uint FatGetImageSize(uint8_t *image);
+struct f32 {
+    //FILE *f;
+    uint32_t *FAT;
+    struct bios_parameter_block bpb;
+    uint32_t partition_begin_sector;
+    uint32_t fat_begin_sector;
+    uint32_t cluster_begin_sector;
+    uint32_t cluster_size;
+    uint32_t cluster_alloc_hint;
+};
 
-uint16_t *FatGetTable(uint8_t *image, uint fatIndex);
-uint16_t FatGetClusterValue(uint8_t *image, uint fatIndex, uint clusterIndex);
-void FatSetClusterValue(uint8_t *image, uint fatIndex, uint clusterIndex, uint16_t value);
-uint FatGetClusterOffset(uint8_t *image, uint clusterIndex);
-DirEntry *FatGetRootDirectory(uint8_t *image);
+typedef struct f32 f32;
 
-uint8_t *FatAllocImage(uint imageSize);
-bool FatInitImage(uint8_t *image, uint8_t *bootSector);
+void getCluster(f32 *fs, uint8_t *buff, uint32_t cluster_number);
+uint32_t get_next_cluster_id(f32 *fs, uint32_t cluster);
 
-void FatSplitPath(uint8_t dstName[8], uint8_t dstExt[3], const char *path);
-uint16_t FatFindFreeCluster(uint8_t *image);
-void FatUpdateCluster(uint8_t *image, uint clusterIndex, uint16_t value);
-DirEntry *FatFindFreeRootEntry(uint8_t *image);
-void FatUpdateDirEntry(DirEntry *entry, uint16_t clusterIndex, const uint8_t name[8], const uint8_t ext[3], uint fileSize);
-void FatRemoveDirEntry(DirEntry *entry);
-uint16_t FatAddData(uint8_t *image, const void *data, uint len);
-void FatRemoveData(uint8_t *image, uint rootClusterIndex);
-DirEntry *FatAddFile(uint8_t *image, const char *path, const void *data, uint len);
-void FatRemoveFile(uint8_t *image, DirEntry *entry);
-}
-namespace VFS
-{
-    class FAT16
-    {
-        public:
-            void TestFat();
-            void Initialize();
-            void PrintMBR();
-            void PrintEXT();
-            void PrintInfo();
-            bool DiskValid;
-            uint8_t BootSectorData[512];
-            uint8_t DataBuffer[512];
-            uint8_t FATTable[32 * 1024];
-            FATBootRecord* BIOSBlock;
-            FAT32ExtendedBootRecord* BootRecord32;
-            FAT16ExtendedBootRecord* BootRecord16;
-        // read bios parameter block data from disk
-            FAT_TYPE FATType;
-            uint32_t TotalSectors;
-            uint32_t FATSize;
-            uint32_t RootSectorCount;
-            uint32_t FirstDataSector;
-            uint32_t FirstFATSector;
-            uint32_t FirstRootSector;
-            uint32_t DataSectorCount;
-            uint32_t ClusterCount;
-    };
+// END REFACTOR
+
+f32 *makeFilesystem(char *fatSystem);
+void destroyFilesystem(f32 *fs);
+
+const struct bios_parameter_block *getBPB(f32 *fs);
+
+void populate_root_dir(f32 *fs, struct directory *dir);
+void populate_dir(f32 *fs, struct directory *dir, uint32_t cluster);
+void free_directory(f32 *fs, struct directory *dir);
+
+uint8_t *readFile(f32 *fs, struct dir_entry *dirent);
+void writeFile(f32 *fs, struct directory *dir, uint8_t *file, char *fname, uint32_t flen);
+void mkdir(f32 *fs, struct directory *dir, char *dirname);
+void delFile(f32 *fs, struct directory *dir, char *filename);
+
+void print_directory(f32 *fs, struct directory *dir);
+uint32_t count_free_clusters(f32 *fs);
+
+extern f32 *master_fs;
 }

@@ -105,7 +105,7 @@ extern "C"
             extern HAL::ATAController ATA;
 
             // fat file system
-            extern VFS::FAT16 FAT16;
+      //      extern VFS::FAT16 FAT16;
 
             // real time clock
             extern HAL::RTCManager RTC;
