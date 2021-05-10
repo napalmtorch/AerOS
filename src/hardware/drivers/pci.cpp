@@ -294,7 +294,7 @@ namespace HAL
         {
             switch (id)
             {
-                case 0x0037: { return "Atheros AR9485 WiFi Adapter"; }
+                case 0x0036: { return "Atheros AR9485 WiFi Adapter"; }
                 default: { "Unrecognized Atheros Device"; }
             }
         }
