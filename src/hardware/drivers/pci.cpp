@@ -179,8 +179,17 @@ namespace HAL
                 case 0x27B8: { return "Intel 82801GB/ICH7 LPC Interface Bridge"; }
                 case 0x27C0: { return "Intel NM10/ICH7 SATA Controller(IDE MODE)"; }
                 case 0x27DA: { return "Intel NM10/ICH7 SMBus Controller"; }
-                case 0x1677: { return "Intel"; }
-                default: { return "Unrecognized Intel Device"; }
+                case 0x0F00: { return "Intel Atom Z36xxx/Z37xxx SoC Trans-Reg"; }
+                case 0x0F31: { return "Intel Atom Z36xxx/Z37xxx Series Graphics"; }
+                case 0x0F23: { return "Intel Atm E3800 Series SATA AHCI"; }
+                case 0x0F18: { return "Intel Atom Z36xxx/Z37xxx Trusted Exec."; }
+                case 0x0F04: { return "Intel Atom Z36xxx/Z37xxx HD Audio"; }
+                case 0x0F48: { return "Intel Atom E3800 Series PCI Express Port 1"; }
+                case 0x0F4A: { return "Intel Atom E3800 Series PCI Express Port 2"; }
+                case 0x0F34: { return "Intel Atom Z36xxx/Z37xxx USB EHCI"; }
+                case 0x0F1C: { return "Intel Atom Z36xxx/Z37xxx Series PCU"; }
+                case 0x0F12: { return "Intel Atom E3800 Series SMBus Controller"; }
+                default:     { return "Unrecognized Intel Device"; }
             }
         }
 
@@ -245,6 +254,7 @@ namespace HAL
             switch (id)
             {
                 case 0x2000: { return "AMD 79C970 Ethernet Controller"; }
+                default: { return "Unrecognized AMD Device"; }
             }
         }
 
@@ -254,6 +264,7 @@ namespace HAL
             switch (id)
             {
                 case 0x5000: { return "Ensoniq ES1370 [AudioPCI]"; }
+                default: { return "Unrecognized Ensoniq Device"; }
             }
         }
 
@@ -263,6 +274,18 @@ namespace HAL
             switch (id)
             {
                 case 0x1677: { return "NetXtreme BCM5751 Ethernet PCI-E"; }
+                default: { return "Unrecognized Realtek Device"; }
+            }
+        }
+
+        // realtek
+        if (vendor == PCI_VENDOR_REALTEK)
+        {
+            switch (id)
+            {
+                case 0x5289: { return "Realtek RTL8411 PCI Express Card Reader"; }
+                case 0x8168: { return "Realtek RTL8111/8168/8411 Ethernet PCI-E"; }
+                default: { return "Unrecognized Realtek Device"; }
             }
         }
 
