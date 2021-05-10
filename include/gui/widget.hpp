@@ -61,6 +61,38 @@ namespace System
                 Widget Base;
         };
 
+        // title bar - derived from widget base
+        class TitleBar
+        {
+            public:
+                TitleBar();
+                TitleBar(Widget* parent);
+                void Update();
+                void Draw();
+
+                // base
+                Widget Base;
+                Widget* Parent;
+                Button CloseBtn;
+                Button MaxBtn;
+                Button MinBtn;
+        };
+
+        // window - derived from widget base
+        class Window
+        {
+            public:
+                Window();
+                Window(uint32_t x, uint32_t y, uint32_t w, uint32_t h, char* title);
+                void Update();
+                void Draw();
+                void SetTitle(char* title);
+
+                // base
+                Widget Base;
+                TitleBar TBar;
+        };
+
         // textbox - derived from widget base
         class TextBox
         {
@@ -76,6 +108,9 @@ namespace System
 
         // check default widget events
         void CheckWidgetEvents(Widget* widget);
+
+        // set widget text
+        void SetWidgetText(Widget* widget, char* text);
 
     }
 }

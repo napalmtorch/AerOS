@@ -39,7 +39,7 @@ namespace System
         HAL::ATAController ATA;
 
         // file system
-        VFS::FAT16 FAT16;
+        //VFS::FAT16 FAT16;
 
         // real time clock
         HAL::RTCManager RTC;
@@ -131,11 +131,11 @@ namespace System
             // vesa mode
             else if (Parameters.VESA)
             {
-                KernelIO::VESA.SetMode(800, 600, 32);
+                KernelIO::VESA.SetMode(640, 480, 32);
                 HAL::CPU::DisableInterrupts();
                 SetDebugConsoleOutput(false);
                 ThrowOK("Initialized VESA driver");
-                ThrowOK("Set VESA mode to 800x600 double buffered");
+                ThrowOK("Set VESA mode to 640x480 double buffered");
             }
             // text mode
             else
@@ -167,9 +167,40 @@ namespace System
                 // initialize ata controller driver
                 ATA.Initialize();
                 ThrowOK("Initialized ATA controller driver");
+                
+    master_fs = makeFilesystem("/");
+    if(master_fs == NULL) {
+        Terminal.WriteLine("Failed to create fat32 filesystem. Disk may be corrupt.\n");
 
+        return;
+    }
+
+    Terminal.WriteLine("Finding /test.txt.\n");
+
+    FILE *f = fopen("/test.txt", NULL);
+    if(f) {
+        #define BCOUNT 1000
+        uint8_t c[BCOUNT];
+        Terminal.WriteLine("READING:.................................\n");
+        int count, total;
+        while((count = fread(&c, BCOUNT, 1, f)), count > 0) {
+            for(int i = 0; i < count; i++) {
+                Terminal.WriteChar(c[i]);
+            }
+            total += count;
+        }
+        fclose(f);
+        char t[32];
+        strdec(total,t);
+        Terminal.Write("Read ");
+        Terminal.Write(t);
+        Terminal.WriteLine(" bytes");
+    }
+    else {
+        Terminal.WriteLine("File not found. Continuing.\n");
+    }
                 // initialize fat file system
-                FAT16.Initialize();
+           //     FAT16.Initialize();
                 ThrowOK("Initialized FAT file system");
             }
 

@@ -76,5 +76,10 @@ namespace System
 
         // default visual styles
         extern VisualStyle ButtonStyle;
+        extern VisualStyle WindowStyle;
+
+        // title bar icons
+        extern uint8_t TitleBarIcon_Exit[];
+        extern uint8_t TitleBarIcon_Max[];
     }
 }

@@ -24,7 +24,12 @@ uint32_t inl(uint16_t port)
     asm volatile ("inl %%dx, %%eax" : "=a" (rv) : "dN" (port));
     return rv;
 }
-
+void insw(unsigned short port, unsigned char * data, unsigned long size) {
+	asm volatile ("rep insw" : "+D" (data), "+c" (size) : "d" (port) : "memory");
+}
+void outsw(unsigned short port, unsigned char * data, unsigned long size) {
+	asm volatile ("rep outsw" : "+S" (data), "+c" (size) : "d" (port));
+}
 // port byte out
 void outb(uint16_t port, uint8_t data) { __asm__ __volatile__("out %%al, %%dx" : : "a" (data), "d" (port)); }
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "lib/types.h"
 #include "core/debug.hpp"
-
 // c++ header definition
 #ifdef __cplusplus
     extern "C"
@@ -15,6 +14,8 @@
         void outb(uint16_t port, uint8_t data);
         void outw(uint16_t port, uint16_t data);
         void outl(uint16_t port, uint32_t data);
+        void insw(unsigned short port, unsigned char * data, unsigned long size);
+        void outsw(unsigned short port, unsigned char * data, unsigned long size);
     }
 
     class IOPort

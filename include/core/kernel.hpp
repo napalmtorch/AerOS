@@ -2,6 +2,7 @@
 #include "lib/types.h"
 #include "lib/string.hpp"
 #include "lib/vector.hpp"
+#include "lib/list.hpp"
 #include "core/debug.hpp"
 #include "hardware/acpi.hpp"
 #include "hardware/cpu.hpp"
@@ -105,7 +106,7 @@ extern "C"
             extern HAL::ATAController ATA;
 
             // fat file system
-            extern VFS::FAT16 FAT16;
+      //      extern VFS::FAT16 FAT16;
 
             // real time clock
             extern HAL::RTCManager RTC;
