@@ -5,117 +5,104 @@ namespace System
 {
     namespace GUI
     {
-        void Widget::Create()
+        // update widget default events
+        void CheckWidgetEvents(Widget* widget)
         {
-            Bounds->X = 0;
-            Bounds->Y = 0;
-            Bounds->Width = 64;
-            Bounds->Height = 64;
-            ScreenPosition->X = 0;
-            ScreenPosition->Y = 0;
+            uint32_t mx = KernelIO::Mouse.GetX();
+            uint32_t my = KernelIO::Mouse.GetY();
 
-            Type = WIDGET_TYPE_CONTAINER;
-            Text = nullptr;
-
-            Visible = true;
-            Enabled = true;
-            Active = true;
-            
-            MSFlags = new MouseEventFlags();
-
-            Style = &ButtonStyle;
-        }
-
-        void Widget::Update()
-        {
-            // get mouse position
-            uint32_t mx = KernelIO::Mouse.GetX(), my = KernelIO::Mouse.GetY();
-
-            // mouse is inside object bounds
-            if (mx >= Bounds->X && my >= Bounds->Y && mx < Bounds->X + Bounds->Width && my < Bounds->Y + Bounds->Height)
+            // mouse hover
+            if (mx >= widget->Bounds.X && my >= widget->Bounds.Y && mx < widget->Bounds.X + widget->Bounds.Width && my < widget->Bounds.Y + widget->Bounds.Height)
             {
-                if (!MSFlags->Hover) { if (OnMouseEnter != nullptr) { OnMouseEnter(); } }
-                MSFlags->Hover = true;
-                if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed) 
+                widget->MSFlags.Hover = true;
+
+                // mouse click
+                if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
                 {
-                    MSFlags->Down = true; 
-                    if (OnMouseDown != nullptr) { OnMouseDown(); }
-                    if (!MSFlags->Clicked)
-                    {
-                        if (OnClick != nullptr) { OnClick(); }
-                        MSFlags->Clicked = true;
-                    }
+                    widget->MSFlags.Down = true;
                 }
-                else { MSFlags->Down = false; MSFlags->Clicked = false; }
+                else
+                {
+                    widget->MSFlags.Down = false;
+                }
             }
+            // mouse not hover
             else
             {
-                if (MSFlags->Hover) { if (OnMouseLeave != nullptr) { OnMouseLeave(); } }
-                MSFlags->Hover = false;
-                MSFlags->Down = false;
-                MSFlags->Clicked = false;
-                MSFlags->Up = true;
+                widget->MSFlags.Hover = false;
             }
         }
 
-        void Widget::Draw()
+        // button constructor - default
+        Button::Button()
         {
+
+        }
+
+        // button constructor - specified
+        Button::Button(uint32_t x, uint32_t y, char* text)
+        {
+            // default bounds
+            Base.Bounds.X = x;
+            Base.Bounds.Y = y;
+            Base.Bounds.Width = 92;
+            Base.Bounds.Height = 22;
+
+            // default screen position
+            Base.ScreenPosition.X = 0;
+            Base.ScreenPosition.Y = 0;
+
+            // flags
+            Base.Type = WIDGET_TYPE_BUTTON;
+            Base.Enabled = true;
+            Base.Visible = true;
+            Base.Active = true;
+            Base.MSFlags = { false, false, false, false };
             
+            // style
+            Base.Style = &GUI::ButtonStyle;
+
+            // text
+            Base.Text = nullptr;
+            SetText(text);
         }
 
-        bounds_t* Widget::GetBounds() { return Bounds; }
-        point_t* Widget::GetScreenPosition() { return ScreenPosition; }
-        WIDGET_TYPE Widget::GetType() { return Type; }
-        char* Widget::GetText() { return Text->ToCharArray(); }
-        bool Widget::IsVisible() { return Visible; }
-        bool Widget::IsEnabled() { return Enabled; }
-        bool Widget::IsActive() { return Active; }
-        MouseEventFlags* Widget::GetMouseFlags() { return MSFlags; }
-        VisualStyle* Widget::GetStyle() { return Style; }
-
-        void Button::Create()
-        {
-            Widget::Create();
-        }
-
-        void Button::Create(uint32_t x, uint32_t y, char* text)
-        {
-            Widget::Create();
-            Bounds->X = x;
-            Bounds->Y = y;
-            Bounds->Width = 92;
-            Bounds->Height = 22;
-            Text = new String(text);
-        }
-
+        // button - on update
         void Button::Update()
         {
-            // update base
-            Widget::Update();
+            // check events
+            CheckWidgetEvents(&Base);
         }
 
+        // button - on draw
+        char temp[8];
         void Button::Draw()
         {
-            // draw base
-            Widget::Draw();
-
             // draw background
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[0]);
-
+            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Base.Bounds, Base.Style->Colors[0]);
+        
             // draw border
-            if (MSFlags->Down)
-            { KernelIO::XServer.FullCanvas.DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[4], Style->Colors[3], Style->Colors[3]); }
-            else { KernelIO::XServer.FullCanvas.DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[2], Style->Colors[3], Style->Colors[4]); }
+            if (Base.MSFlags.Down) { KernelIO::XServer.FullCanvas.DrawRectangle3D(Base.Bounds.X, Base.Bounds.Y, Base.Bounds.Width, Base.Bounds.Height, Base.Style->Colors[4], Base.Style->Colors[2], Base.Style->Colors[2]); }
+            else { KernelIO::XServer.FullCanvas.DrawRectangle3D(Base.Bounds.X, Base.Bounds.Y, Base.Bounds.Width, Base.Bounds.Height, Base.Style->Colors[2], Base.Style->Colors[3], Base.Style->Colors[4]); }
 
             // draw text
-            if (Text != nullptr)
+            if (Base.Text != nullptr)
             {
-                uint32_t txt_w = Text->GetLength() * 8;
-                uint32_t dx = Bounds->X + (Bounds->Width / 2) - (txt_w / 2);
-                uint32_t dy = Bounds->Y + (Bounds->Height / 2) - 4;
-                if (MSFlags->Down) { dx += 1; dy += 1; }
-                KernelIO::XServer.FullCanvas.DrawString(dx, dy, Text->ToCharArray(), Style->Colors[1], Graphics::FONT_8x8);
+                uint32_t txt_w = strlen(Base.Text) * (Base.Style->Font->GetWidth() + Base.Style->Font->GetHorizontalSpacing());
+                uint32_t txt_h = Base.Style->Font->GetHeight() + Base.Style->Font->GetVerticalSpacing();
+                uint32_t dx = Base.Bounds.X + (Base.Bounds.Width / 2) - (txt_w / 2);
+                uint32_t dy = Base.Bounds.Y + (Base.Bounds.Height / 2) - (txt_h / 2);
+                if (Base.MSFlags.Down) { dx += 2; dy += 2; }
+                KernelIO::XServer.FullCanvas.DrawString(dx, dy, Base.Text, Base.Style->Colors[1], (*Base.Style->Font));
             }
+        }
+
+        void Button::SetText(char* text)
+        {
+            if (Base.Text != nullptr) { delete Base.Text; }
+            Base.Text = (char*)mem_alloc(strlen(text) + 1);
+            strcpy(text, Base.Text);
+            stradd(Base.Text, '\0');
         }
     }
 }

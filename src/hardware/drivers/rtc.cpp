@@ -42,22 +42,66 @@ namespace HAL
                 year    = (year & 0x0F) + (year / 16) * 10;
             }
 
-            // update time string
-            TimeString[0] = '\0';
-            char hr[4];
-            strdec(hour, hr);
-            if (hour < 10) { stradd(TimeString, '0'); }
-            strcat(TimeString, hr);
-            strcat(TimeString, ":");
-            char min[4];
-            strdec(minute, min);
-            if (minute < 10) { stradd(TimeString, '0');}
-            strcat(TimeString, min);
-            strcat(TimeString, ":");
-            char sec[4];
-            strdec(second, sec);
-            if (second < 10) { stradd(TimeString, '0'); }
-            strcat(TimeString, sec);
+            // 24 hour clock
+            if (MilitaryTime)
+            {
+                // update time string
+                TimeString[0] = '\0';
+                char hr[4];
+                // hour
+                strdec(hour, hr);
+                if (hour < 10) { stradd(TimeString, '0'); }
+                strcat(TimeString, hr);
+                strcat(TimeString, ":");
+                // minute
+                char min[4];
+                strdec(minute, min);
+                if (minute < 10) { stradd(TimeString, '0');}
+                strcat(TimeString, min);
+                // second
+                if (ShowSeconds)
+                {
+                    strcat(TimeString, ":");
+                    char sec[4];
+                    strdec(second, sec);
+                    if (second < 10) { stradd(TimeString, '0'); }
+                    strcat(TimeString, sec);
+                }
+            }
+            // 12 hour clock
+            else
+            {
+                // update time string
+                TimeString[0] = '\0';
+                // hour
+                char hr[4];
+                uint32_t hour12 = hour;
+                if (hour > 12) { hour12 = hour - 12; }
+                else if (hour > 0 && hour <= 12) { hour12 = hour; }
+                else if (hour == 0) { hour12 = hour; }
+                strdec(hour12, hr);
+                strcat(TimeString, hr);
+                strcat(TimeString, ":");
+                // minute
+                 // minute
+                char min[4];
+                strdec(minute, min);
+                if (minute < 10) { stradd(TimeString, '0');}
+                strcat(TimeString, min);
+                // second
+                if (ShowSeconds)
+                {
+                    strcat(TimeString, ":");
+                    char sec[4];
+                    strdec(second, sec);
+                    if (second < 10) { stradd(TimeString, '0'); }
+                    strcat(TimeString, sec);
+                }
+
+                if (hour < 12) { strcat(TimeString, " AM"); }
+                else { strcat(TimeString, " PM"); }
+            }
+
             last_time = time;
         }
     }
@@ -105,8 +149,10 @@ namespace HAL
     uint8_t RTCManager::GetYear() { return year; }
 
     // get time as string
-    char* RTCManager::GetTimeString() 
+    char* RTCManager::GetTimeString(bool military, bool seconds)
     {
+        MilitaryTime = military;
+        ShowSeconds = seconds;
         return TimeString; 
     }
 

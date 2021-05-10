@@ -34,7 +34,7 @@ namespace HAL
             uint8_t GetYear();
 
             // get time as string
-            char* GetTimeString();
+            char* GetTimeString(bool military, bool seconds);
 
             // get date as string
             char* GetDateString();
@@ -43,9 +43,11 @@ namespace HAL
             char* GetDateTimeString();
         private:
             // date and time value strings
-            char TimeString[12];
-            char DateString[12];
-            char DateTimeString[48];
+            char TimeString[32];
+            char DateString[32];
+            char DateTimeString[64];
+            bool MilitaryTime;
+            bool ShowSeconds;
             
             // time values
             uint8_t second  = 0;
