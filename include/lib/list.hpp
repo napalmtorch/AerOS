@@ -105,6 +105,23 @@ namespace System
             *e = data;
             list[index] = e;
         }
+        void Insert(uint32_t index, Type data)
+        {
+            if (list == nullptr) { debug_throw_message(MSG_TYPE_ERROR, "Given list was empty"); return; }
+            if (index < 0 || index > Count) { debug_throw_message(MSG_TYPE_ERROR, "Index outside the array's bounds"); return; }
+            
+            Type* e = new Type;
+            *e = data;
+            Type** temp = new Type*[Count + 1];
+            for (int i = 0; i < index; i++)
+                temp[i] = list[i];
+            temp[index] = e;
+            for (int i = index; i < Count; i++)
+                temp[i+1] = list[i];
+            ++Count;
+            delete list;
+            list = temp;
+        }
 
         ~List()
         {

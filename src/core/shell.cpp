@@ -281,11 +281,13 @@ namespace System
 
         void LIST_TEST(char*input)
         {
-            System::List<String> test = System::List<String>();
+            System::List<char*> test = System::List<char*>();
             test.Add("Penis");
             test.Add("World");
-            test.Remove("Penis");
-            KernelIO::Terminal.WriteLine((*test.Get(0)).ToCharArray());
+            test.Insert(1, "Hello");
+            KernelIO::Terminal.WriteLine((*test.Get(0)));
+            KernelIO::Terminal.WriteLine((*test.Get(1)));
+            KernelIO::Terminal.WriteLine((*test.Get(2)));
             test.~List();
         }
     }
