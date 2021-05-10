@@ -1,5 +1,6 @@
 #include <gui/widget.hpp>
 #include <core/kernel.hpp>
+#include <gui/winmgr.hpp>
 
 namespace System
 {
@@ -19,11 +20,13 @@ namespace System
                 // mouse click
                 if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
                 {
+                    if (!widget->MSFlags.Clicked) { widget->OnClick(); widget->MSFlags.Clicked = true; }
                     widget->MSFlags.Down = true;
                 }
                 // mouse not clicked
                 else
                 {
+                    widget->MSFlags.Clicked = false;
                     widget->MSFlags.Down = false;
                 }
             }
@@ -87,6 +90,13 @@ namespace System
         {
             TBar.Parent = &Base;
             TBar.Update();
+
+            // close button clicked
+            if (TBar.CloseBtn.Base.MSFlags.Down)
+            {
+                GUI::WindowManager::Close(this);
+                return;
+            }
         }
 
         void Window::Draw()

@@ -29,7 +29,7 @@ namespace System
                 // draw windows
                 for (size_t i = 0; i < Windows.Count; i++)
                 {
-                    (*Windows.Get(i))->Update();
+                    (*Windows.Get(i))->Draw();
                 }
             }
 

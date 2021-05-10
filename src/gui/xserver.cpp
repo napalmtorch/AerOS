@@ -69,6 +69,7 @@ namespace System
 
         // performance stats
         char fpsString[16];
+        char winCountStr[16];
 
         // start button
         Button StartBtn;
@@ -99,11 +100,11 @@ namespace System
             StartBtn.Base.Bounds.Width = 56;
             StartBtn.Base.Bounds.Height = 17;
 
-            //WindowManager::Initialize();
+            WindowManager::Initialize();
 
             // test window
-            //win = Window(128, 128, 320, 240, "Window");
-            //WindowManager::Start(&win);
+            win = Window(128, 128, 320, 240, "Window");
+            WindowManager::Start(&win);
 
             // running flag
             Running = true;
@@ -128,7 +129,7 @@ namespace System
 
             StartBtn.Update();
 
-            //WindowManager::Update();
+            WindowManager::Update();
 
             // get arrow key mouse movement when enabled
             if (KernelIO::Mouse.GetArrowKeyState()) { KernelIO::Mouse.UpdateArrowKeyMovement(); }
@@ -144,13 +145,18 @@ namespace System
             FullCanvas.DrawString(0, 0, "FPS: ", Graphics::Colors::White, Graphics::FONT_8x16);
             FullCanvas.DrawString(40, 0, fpsString, Graphics::Colors::White, Graphics::FONT_8x16);
 
+            // draw window count
+            strdec(WindowManager::Windows.Count, winCountStr);
+            FullCanvas.DrawString(0, 16, "WINS: ", Graphics::Colors::White, Graphics::FONT_8x16);
+            FullCanvas.DrawString(48, 16, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
+
             // draw taskbar
             Taskbar.Draw();
 
             StartBtn.Draw();
             FullCanvas.DrawString(StartBtn.Base.Bounds.X + 7, StartBtn.Base.Bounds.Y + 5, "Start", ButtonStyle.Colors[1], Graphics::FONT_8x8);
 
-            //WindowManager::Draw();
+            WindowManager::Draw();
 
             // draw font tests
             //FullCanvas.DrawString(128, 128, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_3x5);
