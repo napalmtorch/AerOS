@@ -20,6 +20,7 @@ namespace HAL
         this->Buttons = 0;
         this->LeftPressed = ButtonState::Released;
         this->RightPressed = ButtonState::Released;
+        this->ArrowKeys = true;
         
         // setup controller
         outb(0x64, 0xA8);
@@ -103,6 +104,11 @@ namespace HAL
         }
     }
 
+    void PS2Mouse::UpdateArrowKeyMovement()
+    {
+        /* not yet implemented */
+    }
+
     // get buttons flag
     uint8_t PS2Mouse::GetButtons() { return Buttons; }
 
@@ -140,4 +146,8 @@ namespace HAL
     uint8_t* PS2Mouse::GetCursor() { return (uint8_t*)CursorData; }
 
     uint32_t* PS2Mouse::GetCursor32() { return (uint32_t*)CursorData32; }
+
+    void PS2Mouse::ToggleArrowKeys(bool value) { ArrowKeys = value; }
+
+    bool PS2Mouse::GetArrowKeyState() { return ArrowKeys; }
 }

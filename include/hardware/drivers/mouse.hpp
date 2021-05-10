@@ -71,6 +71,8 @@ namespace HAL
             void OnMouseMove(int8_t x, int8_t y);
             // on interrupt
             void OnInterrupt();
+            // get arrow key movement
+            void UpdateArrowKeyMovement();
             // wait
             void Wait(uint8_t type);
             // write data
@@ -90,6 +92,8 @@ namespace HAL
             int32_t GetY();
             uint8_t* GetCursor();
             uint32_t* GetCursor32();
+            void ToggleArrowKeys(bool value);
+            bool GetArrowKeyState();
         private:
             bounds_t Bounds;
             point_t Position;
@@ -99,5 +103,6 @@ namespace HAL
             uint8_t Cycle;
             ButtonState LeftPressed;
             ButtonState RightPressed;
+            bool ArrowKeys;
     };
 }

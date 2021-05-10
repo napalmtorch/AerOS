@@ -26,17 +26,12 @@ namespace System
         // performance stats
         char fpsString[16];
 
-        // widgets
-        Button StartButton;
-
         // initialize xserver interface
         void XServerHost::Initialize()
         {
             Running = false;
             FPS = 0;
             time = 1;
-
-            StartButton.Create(4, 4, "Start");
         }
 
         // start
@@ -45,11 +40,6 @@ namespace System
             FullCanvas.SetDriver(driver);
             KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
             KernelIO::Mouse.SetPosition(KernelIO::VESA.GetWidth() / 2, KernelIO::VESA.GetHeight() / 2);
-
-            // setup start button
-            StartButton.GetBounds()->X = 4;
-            StartButton.GetBounds()->Y = KernelIO::VESA.GetHeight() - 25;
-            StartButton.GetBounds()->Width = 56;
 
             // running flag
             Running = true;
@@ -72,8 +62,8 @@ namespace System
             // update taskbar
             Taskbar.Update();
 
-            // update widgets
-            StartButton.Update();
+            // get arrow key mouse movement when enabled
+            if (KernelIO::Mouse.GetArrowKeyState()) { KernelIO::Mouse.UpdateArrowKeyMovement(); }
         }
 
         // draw
@@ -89,16 +79,13 @@ namespace System
             // draw taskbar
             Taskbar.Draw();
 
-            // draw button
-            StartButton.Draw();
-
             // draw font tests
-            FullCanvas.DrawString(128, 128, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_3x5);
-            FullCanvas.DrawString(128, 134, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8);
-            FullCanvas.DrawString(128, 142, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
-            FullCanvas.DrawString(128, 150, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8_PHEONIX);
-            FullCanvas.DrawString(128, 158, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x16);
-            FullCanvas.DrawString(128, 174, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x16_CONSOLAS);
+            //FullCanvas.DrawString(128, 128, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_3x5);
+            //FullCanvas.DrawString(128, 134, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8);
+            //FullCanvas.DrawString(128, 142, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
+            //FullCanvas.DrawString(128, 150, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8_PHEONIX);
+            //FullCanvas.DrawString(128, 158, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x16);
+            //FullCanvas.DrawString(128, 174, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x16_CONSOLAS);
 
             // draw mouse
             KernelIO::Mouse.Draw();

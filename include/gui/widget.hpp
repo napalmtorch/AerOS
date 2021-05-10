@@ -24,14 +24,9 @@ namespace System
     namespace GUI
     {
         // widget base class
-        class Widget
+        struct Widget
         {
             public:
-                virtual void Create() = 0;
-                // update
-                virtual void Update() = 0;
-                // draw
-                virtual void Draw() = 0;
                 // click event
                 void (*OnClick)(void);
                 // mouse events
@@ -39,23 +34,13 @@ namespace System
                 void (*OnMouseLeave)(void);
                 void (*OnMouseDown)(void);
                 void (*OnMouseUp)(void);
-
-                bounds_t* GetBounds();
-                point_t* GetScreenPosition();
-                WIDGET_TYPE GetType();
-                char* GetText();
-                bool IsVisible();
-                bool IsEnabled();
-                bool IsActive();
-                MouseEventFlags* GetMouseFlags();
-                VisualStyle* GetStyle();
-            protected:
+                void (*OnActivate)(void);
                 // dimensions
                 bounds_t* Bounds;
                 point_t* ScreenPosition;
                 // properties
                 WIDGET_TYPE Type;
-                String* Text;
+                char* Text;
                 // flags
                 bool Visible, Enabled, Active;
                 MouseEventFlags* MSFlags;
@@ -64,19 +49,27 @@ namespace System
         };
 
         // button - derived from widget base
-        class Button : public Widget
+        class Button
         {
             public:
-                // create button
-                void Create();
-                void Create(uint32_t x, uint32_t y, char* text);
-                // update override
+                Button();
+                Button(uint32_t x, uint32_t y, char* text);
                 void Update();
-                // draw override
                 void Draw();
+
+                Widget Base;
         };
 
         // textbox - derived from widget base
-        
+        class TextBox
+        {
+            public:
+                TextBox();
+                TextBox(uint32_t x, uint32_t y, char* text);
+                void Update();
+                void Draw();
+
+                Widget Base;
+        };
     }
 }
