@@ -169,12 +169,12 @@ namespace System
                 ThrowOK("Initialized ATA controller driver");
                 
     master_fs = makeFilesystem("/");
-    if(master_fs == NULL) {
-        Terminal.WriteLine("Failed to create fat32 filesystem. Disk may be corrupt.\n");
+    if(master_fs != NULL) {
 
-        return;
-    }
-
+  
+    struct directory dir;
+    populate_root_dir(master_fs, &dir);
+    print_directory(master_fs,&dir);
     Terminal.WriteLine("Finding /test.txt.\n");
 
     FILE *f = fopen("/test.txt", NULL);
@@ -198,6 +198,7 @@ namespace System
     }
     else {
         Terminal.WriteLine("File not found. Continuing.\n");
+    }
     }
                 // initialize fat file system
            //     FAT16.Initialize();
