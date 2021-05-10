@@ -3,6 +3,7 @@
 #include <lib/string.hpp>
 #include <hardware/ports.hpp>
 #include <graphics/canvas.hpp>
+#include <graphics/font.hpp>
 
 // border style
 typedef enum
@@ -43,6 +44,8 @@ namespace System
             // border
             BORDER_STYLE BorderStyle;
             uint32_t BorderSize;
+            // font
+            Graphics::Font* Font;
 
         } __attribute__((packed)) VisualStyle;
 

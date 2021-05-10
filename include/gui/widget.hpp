@@ -36,14 +36,14 @@ namespace System
                 void (*OnMouseUp)(void);
                 void (*OnActivate)(void);
                 // dimensions
-                bounds_t* Bounds;
-                point_t* ScreenPosition;
+                bounds_t Bounds;
+                point_t ScreenPosition;
                 // properties
                 WIDGET_TYPE Type;
                 char* Text;
                 // flags
                 bool Visible, Enabled, Active;
-                MouseEventFlags* MSFlags;
+                MouseEventFlags MSFlags;
                 // style
                 VisualStyle* Style;
         };
@@ -56,6 +56,7 @@ namespace System
                 Button(uint32_t x, uint32_t y, char* text);
                 void Update();
                 void Draw();
+                void SetText(char* text);
 
                 Widget Base;
         };
@@ -68,8 +69,13 @@ namespace System
                 TextBox(uint32_t x, uint32_t y, char* text);
                 void Update();
                 void Draw();
+                void SetText(char* text);
 
                 Widget Base;
         };
+
+        // check default widget events
+        void CheckWidgetEvents(Widget* widget);
+
     }
 }

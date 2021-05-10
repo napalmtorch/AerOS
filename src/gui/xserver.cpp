@@ -20,11 +20,14 @@ namespace System
                 { 255, 0,   0,   0,  },
                 { 255, 0,   0,   0,  },
             },
-            BORDER_STYLE_3D, 1
+            BORDER_STYLE_3D, 1,
+            &Graphics::FONT_8x8_SERIF,
         };
 
         // performance stats
         char fpsString[16];
+
+        Button btn, btn2;
 
         // initialize xserver interface
         void XServerHost::Initialize()
@@ -40,6 +43,9 @@ namespace System
             FullCanvas.SetDriver(driver);
             KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
             KernelIO::Mouse.SetPosition(KernelIO::VESA.GetWidth() / 2, KernelIO::VESA.GetHeight() / 2);
+
+            btn = Button(128, 129, "TEST");
+            btn2 = Button(128, 156, "Click me");
 
             // running flag
             Running = true;
@@ -62,6 +68,9 @@ namespace System
             // update taskbar
             Taskbar.Update();
 
+            btn.Update();
+            btn2.Update();
+
             // get arrow key mouse movement when enabled
             if (KernelIO::Mouse.GetArrowKeyState()) { KernelIO::Mouse.UpdateArrowKeyMovement(); }
         }
@@ -78,6 +87,9 @@ namespace System
 
             // draw taskbar
             Taskbar.Draw();
+
+            btn.Draw();
+            btn2.Draw();
 
             // draw font tests
             //FullCanvas.DrawString(128, 128, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_3x5);
