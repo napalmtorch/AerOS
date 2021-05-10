@@ -75,5 +75,8 @@ namespace System
                 // draw override
                 void Draw();
         };
+
+        // textbox - derived from widget base
+        
     }
 }

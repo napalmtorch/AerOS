@@ -91,7 +91,15 @@ namespace System
 
             // draw button
             StartButton.Draw();
-            
+
+            // draw font tests
+            FullCanvas.DrawString(128, 128, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_3x5);
+            FullCanvas.DrawString(128, 134, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8);
+            FullCanvas.DrawString(128, 142, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
+            FullCanvas.DrawString(128, 150, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8_PHEONIX);
+            FullCanvas.DrawString(128, 158, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x16);
+            FullCanvas.DrawString(128, 174, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x16_CONSOLAS);
+
             // draw mouse
             KernelIO::Mouse.Draw();
 
@@ -122,7 +130,7 @@ namespace System
             KernelIO::XServer.FullCanvas.DrawRectangle3D(KernelIO::VESA.GetWidth() - 100, KernelIO::VESA.GetHeight() - 24, 97, 21, ButtonStyle.Colors[3], ButtonStyle.Colors[2], ButtonStyle.Colors[2]);
 
             // draw time
-            KernelIO::XServer.FullCanvas.DrawString(KernelIO::VESA.GetWidth() - 72, KernelIO::VESA.GetHeight() - 18, KernelIO::RTC.GetTimeString(), ButtonStyle.Colors[1], Graphics::FONT_8x8);
+            KernelIO::XServer.FullCanvas.DrawString(KernelIO::VESA.GetWidth() - 72, KernelIO::VESA.GetHeight() - 18, KernelIO::RTC.GetTimeString(), ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
         }
     }
 }
