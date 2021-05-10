@@ -56,7 +56,7 @@ void strhex(uint32_t num, char text[])
     {
         stradd(text, hexVals[(uint8_t)((num & 0xF000) >> 12)]);
         stradd(text, hexVals[(uint8_t)((num & 0x0F00) >> 8)]);
-        stradd(text, hexVals[(uint8_t)((num & 0x0F00) >> 4)]);
+        stradd(text, hexVals[(uint8_t)((num & 0x00F0) >> 4)]);
         stradd(text, hexVals[(uint8_t)(num & 0x000F)]);
     }
     else if (bytes == 4)

@@ -55,6 +55,7 @@ namespace HAL
         PCI_VENDOR_REAKLTEK_ALT         = 0x0BDA,
         PCI_VENDOR_ENSONIQ              = 0x1274,
         PCI_VENDOR_BROADCOM             = 0x14E4,
+        PCI_VENDOR_ATHEROS              = 0x168C,
     } PCI_VENDOR;
 
     class PCIBusController

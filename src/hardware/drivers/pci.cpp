@@ -75,9 +75,9 @@ namespace HAL
                     
                     System::KernelIO::Terminal.Write("- ");
                     char vendorbuf[32];
-                    strhex32(vendor,vendorbuf);
+                    strhex(vendor,vendorbuf);
                     char vendoridbuf[32];
-                    strhex32(id,vendoridbuf);
+                    strhex(id,vendoridbuf);
                     
                     System::KernelIO::Terminal.Write("DEVICE: ", COL4_MAGENTA);
                     System::KernelIO::Terminal.Write("0x");
@@ -181,7 +181,7 @@ namespace HAL
                 case 0x27DA: { return "Intel NM10/ICH7 SMBus Controller"; }
                 case 0x0F00: { return "Intel Atom Z36xxx/Z37xxx SoC Trans-Reg"; }
                 case 0x0F31: { return "Intel Atom Z36xxx/Z37xxx Series Graphics"; }
-                case 0x0F23: { return "Intel Atm E3800 Series SATA AHCI"; }
+                case 0x0F23: { return "Intel Atom E3800 Series SATA AHCI"; }
                 case 0x0F18: { return "Intel Atom Z36xxx/Z37xxx Trusted Exec."; }
                 case 0x0F04: { return "Intel Atom Z36xxx/Z37xxx HD Audio"; }
                 case 0x0F48: { return "Intel Atom E3800 Series PCI Express Port 1"; }
@@ -286,6 +286,16 @@ namespace HAL
                 case 0x5289: { return "Realtek RTL8411 PCI Express Card Reader"; }
                 case 0x8168: { return "Realtek RTL8111/8168/8411 Ethernet PCI-E"; }
                 default: { return "Unrecognized Realtek Device"; }
+            }
+        }
+
+        // atheros
+        if (vendor == PCI_VENDOR_ATHEROS)
+        {
+            switch (id)
+            {
+                case 0x0037: { return "Atheros AR9485 WiFi Adapter"; }
+                default: { "Unrecognized Atheros Device"; }
             }
         }
 
