@@ -168,10 +168,9 @@ namespace System
                 ATA.Initialize();
                 ThrowOK("Initialized ATA controller driver");
                 
-    master_fs = makeFilesystem("/");
-    if(master_fs == NULL) {
-        Terminal.WriteLine("Failed to create fat32 filesystem. Disk may be corrupt.\n");
-
+                master_fs = makeFilesystem("/");
+                if(master_fs == NULL) {
+                    Terminal.WriteLine("Failed to create fat32 filesystem. Disk may be corrupt.\n");
         return;
     }
 
