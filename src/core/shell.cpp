@@ -47,6 +47,7 @@ namespace System
         CommandList[14] = ShellCommand("FATMBR",    "FAT master boot record", "",           Commands::FAT_MBR);
         CommandList[15] = ShellCommand("FATEXT",    "FAT extended boot record", "",         Commands::FAT_EXT);
         CommandList[16] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
+        CommandList[17] = ShellCommand("LIST_TEST", "Test vector list", "",                 Commands::LIST_TEST);
 
         // print caret to screen
         PrintCaret();
@@ -275,6 +276,29 @@ namespace System
 
             KernelIO::XServer.Start(VIDEO_DRIVER_VESA);
 
+        }
+
+        void LIST_TEST(char*input)
+        {
+            VectorList<uint32_t> nums = VectorList<uint32_t>();
+            nums.Push(1234);
+            nums.Push(69420);
+
+            for (size_t i = 0; i < nums.GetCount(); i++)
+            {
+                term_write_dec("", i);
+                term_write(": ");
+                term_writeln_dec("", nums.Get(i));
+            }
+
+            nums.Pop(0);
+
+            for (size_t i = 0; i < nums.GetCount(); i++)
+            {
+                term_write_dec("", i);
+                term_write(": ");
+                term_writeln_dec("", nums.Get(i));
+            }
         }
     }
 }

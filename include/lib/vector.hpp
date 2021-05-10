@@ -46,6 +46,7 @@ template <typename T> class VectorList
             Size += 1;
             CurrentIndex++;
             Count++;
+            delete temp;
         }
 
         void Push(T data, uint32_t index)
@@ -53,9 +54,36 @@ template <typename T> class VectorList
             
         }
 
-        void Pop()
+        void Pop(uint32_t index)
         {
-            
+            // check if index is valid
+            if (index >= GetCount()) { System::KernelIO::ThrowError("Vector list index out of bounds"); return; }
+            if (Data == nullptr) { System::KernelIO::ThrowError("Tried to pop item from null vector list"); return; }
+
+            // temporary list
+            uint32_t new_size = Size - 1;
+            uint32_t i = 0;
+            T* temp = new T[new_size];
+
+            // delete item
+            Data[index] = NULL;
+
+            // store data from old list
+            uint32_t new_i = 0;
+            for (i = 0; i < new_size; i++)
+            {
+                if (i != index) { temp[new_i] = Data[i]; new_i++; }
+            }
+
+            // create new list
+            if (Data != nullptr) { delete Data; }
+            Data = new T[new_size];
+
+            // copy data to new list
+            for (i = 0; i < new_size; i++) { Data[i] = temp[i]; }
+
+            // delete temporary data
+            delete temp;
         }
 
         T Get(uint32_t index) { return Data[index]; }
