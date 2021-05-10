@@ -90,7 +90,6 @@ namespace System
             // draw mouse
             KernelIO::Mouse.Draw();
 
-
             // swap buffer
             FullCanvas.Display();
         }
@@ -117,7 +116,8 @@ namespace System
             KernelIO::XServer.FullCanvas.DrawRectangle3D(KernelIO::VESA.GetWidth() - 100, KernelIO::VESA.GetHeight() - 24, 97, 21, ButtonStyle.Colors[3], ButtonStyle.Colors[2], ButtonStyle.Colors[2]);
 
             // draw time
-            KernelIO::XServer.FullCanvas.DrawString(KernelIO::VESA.GetWidth() - 72, KernelIO::VESA.GetHeight() - 18, KernelIO::RTC.GetTimeString(false, false), ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            char* time = KernelIO::RTC.GetTimeString(false, false);
+            KernelIO::XServer.FullCanvas.DrawString(KernelIO::VESA.GetWidth() - (strlen(time) * 8) - 4, KernelIO::VESA.GetHeight() - 18, time, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
         }
     }
 }
