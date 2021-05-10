@@ -1,5 +1,6 @@
 #include <core/shell.hpp>
 #include <core/kernel.hpp>
+#include <lib/list.hpp>
 
 namespace System
 {
@@ -249,6 +250,7 @@ namespace System
 
         void FAT_INFO(char* input)
         {
+            List<uint32_t> list = List<uint32_t>();
             KernelIO::FAT16.PrintInfo();
         }
 
@@ -280,25 +282,12 @@ namespace System
 
         void LIST_TEST(char*input)
         {
-            VectorList<uint32_t> nums = VectorList<uint32_t>();
-            nums.Push(1234);
-            nums.Push(69420);
-
-            for (size_t i = 0; i < nums.GetCount(); i++)
-            {
-                term_write_dec("", i);
-                term_write(": ");
-                term_writeln_dec("", nums.Get(i));
-            }
-
-            nums.Pop(0);
-
-            for (size_t i = 0; i < nums.GetCount(); i++)
-            {
-                term_write_dec("", i);
-                term_write(": ");
-                term_writeln_dec("", nums.Get(i));
-            }
+            System::List<String> test = System::List<String>();
+            test.Add("Penis");
+            test.Add("World");
+            test.Remove("Penis");
+            KernelIO::Terminal.WriteLine((*test.Get(0)).ToCharArray());
+            test.~List();
         }
     }
 }

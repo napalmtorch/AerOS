@@ -106,6 +106,10 @@ namespace System
             String & operator += (const char []);
             String & operator += (const String &);
             String & operator += (String &&);
+
+            // equals operators
+            bool operator == (char []);
+            bool operator == (String);
     };
 }
 #else
