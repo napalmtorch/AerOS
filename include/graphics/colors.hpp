@@ -89,18 +89,53 @@ namespace Graphics
     // convert rgb value to packed color
     uint32_t RGBToPackedValue(uint8_t r, uint8_t g, uint8_t b);
 
+    Color PackedValueToRGB(uint32_t packed);
+
     // pre-defined rgb colors
     namespace Colors
     {
-        extern const Color Black;
-        extern const Color White;
-        extern const Color Red;
-        extern const Color Green;
-        extern const Color Blue;
-        extern const Color Yellow;
-        extern const Color Cyan;
-        extern const Color Magenta;
-        extern const Color Gray;
+        extern const Color AliceBlue;
+        extern const Color AntiqueWhite;
+        extern const Color Aqua;
+        extern const Color Aquamarine; 
+        extern const Color Azure;      
+        extern const Color Beige;      
+        extern const Color Bisque;     
+        extern const Color Black;      
+        extern const Color BlanchedAlmond;
+        extern const Color Blue;            
+        extern const Color BlueViolet;       
+        extern const Color Brown;
+        extern const Color BurlyWood;        
+        extern const Color CadetBlue;          
+        extern const Color Chartreuse;         
+        extern const Color Chocolate;          
+        extern const Color Coral;              
+        extern const Color CornflowerBlue;     
+        extern const Color Cornsilk;           
+        extern const Color Crimson;            
+        extern const Color Cyan;              
+        extern const Color DarkBlue;          
+        extern const Color DarkCyan;          
+        extern const Color DarkGoldenrod;     
+        extern const Color DarkGray;          
+        extern const Color DarkGreen;        
+        extern const Color DarkKhaki;        
+        extern const Color DarkMagenta;         
+        extern const Color DarkOliveGreen;      
+        extern const Color DarkOrange;          
+        extern const Color DarkOrchid;         
+        extern const Color DarkRed;         
+        extern const Color DarkSalmon;         
+        extern const Color DarkSeaGreen;        
+        extern const Color DarkSlateBlue;       
+        extern const Color DarkSlateGray;       
+
+        extern const Color White;               
+        extern const Color Red;                 
+        extern const Color Green;               
+        extern const Color Yellow;              
+        extern const Color Magenta;             
     }
     
     COL4 GetColorFromName(char* name);

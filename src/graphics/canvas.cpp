@@ -78,6 +78,16 @@ namespace Graphics
     // draw rectangle outline
     void Canvas::DrawRectangle(bounds_t bounds, uint16_t thickness, Color color) { DrawRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height, thickness, color); }
 
+    void Canvas::DrawRectangle3D(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color tl, Color b_inner, Color b_outer)
+    {
+        DrawFilledRectangle(x, y, w, 1, tl);
+        DrawFilledRectangle(x, y, 1, h, tl);
+        DrawFilledRectangle(x + 1, y + h - 2, w - 2, 1, b_inner);
+        DrawFilledRectangle(x + w - 2, y + 1, 1, h - 2, b_inner);
+        DrawFilledRectangle(x, y + h - 1, w, 1, b_outer);
+        DrawFilledRectangle(x + w - 1, y, 1, h, b_outer);
+    }
+
     // draw character
     void Canvas::DrawChar(uint16_t x, uint16_t y, char c, Color fg, Font font)
     {

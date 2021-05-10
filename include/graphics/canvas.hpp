@@ -61,6 +61,8 @@ namespace Graphics
             void DrawRectangle(point_t pos, point_t size, uint16_t thickness, Color color);
             void DrawRectangle(bounds_t bounds, uint16_t thickness, Color color);
 
+            void DrawRectangle3D(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color tl, Color b_inner, Color b_outer);
+
             // draw character
             void DrawChar(uint16_t x, uint16_t y, char c, Color fg, Font font);
             void DrawChar(point_t pos, char c, Color fg, Font font);

@@ -9,6 +9,7 @@ namespace HAL
     {
         PortCMD = IOPort(0x70);
         PortData = IOPort(0x71);
+        strcat(TimeString, "12:00:00");
     }
 
     // read clock data from CMOS
