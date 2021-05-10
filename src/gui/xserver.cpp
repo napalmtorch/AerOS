@@ -1,6 +1,7 @@
 #include "gui/xserver.hpp"
 #include <core/kernel.hpp>
 #include <gui/widget.hpp>
+#include <gui/winmgr.hpp>
 
 namespace System
 {
@@ -98,8 +99,11 @@ namespace System
             StartBtn.Base.Bounds.Width = 56;
             StartBtn.Base.Bounds.Height = 17;
 
+            //WindowManager::Initialize();
+
             // test window
-            win = Window(128, 128, 320, 240, "Window");
+            //win = Window(128, 128, 320, 240, "Window");
+            //WindowManager::Start(&win);
 
             // running flag
             Running = true;
@@ -124,7 +128,7 @@ namespace System
 
             StartBtn.Update();
 
-            win.Update();
+            //WindowManager::Update();
 
             // get arrow key mouse movement when enabled
             if (KernelIO::Mouse.GetArrowKeyState()) { KernelIO::Mouse.UpdateArrowKeyMovement(); }
@@ -146,7 +150,7 @@ namespace System
             StartBtn.Draw();
             FullCanvas.DrawString(StartBtn.Base.Bounds.X + 7, StartBtn.Base.Bounds.Y + 5, "Start", ButtonStyle.Colors[1], Graphics::FONT_8x8);
 
-            win.Draw();
+            //WindowManager::Draw();
 
             // draw font tests
             //FullCanvas.DrawString(128, 128, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_3x5);
@@ -187,26 +191,6 @@ namespace System
             // draw time
             char* time = KernelIO::RTC.GetTimeString(false, false);
             KernelIO::XServer.FullCanvas.DrawString(KernelIO::VESA.GetWidth() - (strlen(time) * 8) - 4, KernelIO::VESA.GetHeight() - 16, time, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
-        }
-
-        namespace WindowManager
-        {
-            void Initialize()
-            {
-                // initialize window list
-                Windows = List<Window*>();
-            }
-
-            void Update()
-            {
-                // update windows
-                //for (size_t i = 0; i < Windows.)
-            }
-
-            void Draw()
-            {
-
-            }
         }
     }
 }
