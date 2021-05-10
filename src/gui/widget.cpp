@@ -122,12 +122,18 @@ namespace System
             MaxBtn = Button(CloseBtn.Base.Bounds.X - 16, CloseBtn.Base.Bounds.Y, "");
             MaxBtn.Base.Bounds.Width = 14;
             MaxBtn.Base.Bounds.Height = 12;
+
+            // minimize button
+            MinBtn = Button(MaxBtn.Base.Bounds.X - 16, CloseBtn.Base.Bounds.Y, "");
+            MinBtn.Base.Bounds.Width = 14;
+            MinBtn.Base.Bounds.Height = 12;
         }
 
         void TitleBar::Update()
         {
             CloseBtn.Update();
             MaxBtn.Update();
+            MinBtn.Update();
         }
 
         void TitleBar::Draw()
@@ -135,10 +141,17 @@ namespace System
             // draw background
             KernelIO::XServer.FullCanvas.DrawFilledRectangle(Parent->Bounds.X + 1, Parent->Bounds.Y + 1, Parent->Bounds.Width - 3, 16, Parent->Style->Colors[5]);
 
+            // draw window title
+            if (Parent->Text != nullptr)
+            {
+                KernelIO::XServer.FullCanvas.DrawString(Parent->Bounds.X + 4, Parent->Bounds.Y + 5, Parent->Text, Parent->Style->Colors[6], Graphics::FONT_8x8);
+            }
+
             CloseBtn.Draw();
             MaxBtn.Draw();
+            MinBtn.Draw();
             
-            // draw icons
+            // draw close and maximize icon
             for (size_t yy = 0; yy < 7; yy++)
             {
                 for (size_t xx = 0; xx < 8; xx++)
@@ -152,6 +165,9 @@ namespace System
                     { KernelIO::XServer.FullCanvas.DrawPixel(MaxBtn.Base.Bounds.X + xx + 3, MaxBtn.Base.Bounds.Y + yy + 2, Parent->Style->Colors[1]); }
                 }
             }
+
+            // draw minimize icon
+            KernelIO::XServer.FullCanvas.DrawFilledRectangle(MinBtn.Base.Bounds.X + 3, MinBtn.Base.Bounds.Y + 7, MinBtn.Base.Bounds.Width - 7, 2, Parent->Style->Colors[1]);
         }
 
         // -------------------------------------------------- BUTTON -------------------------------------------------- // 

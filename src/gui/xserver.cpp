@@ -69,7 +69,10 @@ namespace System
         // performance stats
         char fpsString[16];
 
-        Button btn, btn2;
+        // start button
+        Button StartBtn;
+
+        // test window
         Window win;
 
         // initialize xserver interface
@@ -83,13 +86,19 @@ namespace System
         // start
         void XServerHost::Start(VIDEO_DRIVER driver)
         {
+            // set driver
             FullCanvas.SetDriver(driver);
+            
+            // setup mouse
             KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
             KernelIO::Mouse.SetPosition(KernelIO::VESA.GetWidth() / 2, KernelIO::VESA.GetHeight() / 2);
 
-            btn = Button(128, 129, "TEST");
-            btn2 = Button(128, 156, "Click me");
+            // start button
+            StartBtn = Button(3, KernelIO::VESA.GetHeight() - 20, "");
+            StartBtn.Base.Bounds.Width = 56;
+            StartBtn.Base.Bounds.Height = 17;
 
+            // test window
             win = Window(128, 128, 320, 240, "Window");
 
             // running flag
@@ -113,8 +122,7 @@ namespace System
             // update taskbar
             Taskbar.Update();
 
-            btn.Update();
-            btn2.Update();
+            StartBtn.Update();
 
             win.Update();
 
@@ -135,8 +143,8 @@ namespace System
             // draw taskbar
             Taskbar.Draw();
 
-            btn.Draw();
-            btn2.Draw();
+            StartBtn.Draw();
+            FullCanvas.DrawString(StartBtn.Base.Bounds.X + 7, StartBtn.Base.Bounds.Y + 5, "Start", ButtonStyle.Colors[1], Graphics::FONT_8x8);
 
             win.Draw();
 
