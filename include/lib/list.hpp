@@ -4,6 +4,7 @@
 
 namespace System
 {
+
     // C++, your mom is a bitch
     template<class Type> class List
     {
@@ -94,7 +95,7 @@ namespace System
             
             return list[index];
         }
-        void Insert(uint32_t index, Type data)
+        void Set(uint32_t index, Type data)
         {
             if (list == nullptr) { debug_throw_message(MSG_TYPE_ERROR, "Given list was empty"); return; }
             if (index < 0 || index > Count) { debug_throw_message(MSG_TYPE_ERROR, "Index outside the array's bounds"); return; }
