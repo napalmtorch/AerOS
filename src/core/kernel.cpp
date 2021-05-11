@@ -167,35 +167,12 @@ namespace System
                 ATA.Initialize();
                 ThrowOK("Initialized ATA controller driver");
                 
-                master_fs = makeFilesystem("/");
+                master_fs = makeFilesystem("");
                 if(master_fs != NULL) 
                 {
                     struct directory dir;
                     populate_root_dir(master_fs, &dir);
-                    print_directory(master_fs,&dir);
-                    Terminal.WriteLine("Finding /test.txt.\n");
-                    DirByName(master_fs,&dir,"wallpapers");
-                    FILE *f = fopen("/test.txt", NULL);
-                    if(f) 
-                    {
-                        #define BCOUNT 1000
-                        uint8_t c[BCOUNT];
-                        Terminal.WriteLine("READING:.................................\n");
-                        int count, total;
-                        while((count = fread(&c, BCOUNT, 1, f)), count > 0) 
-                        {
-                            for(int i = 0; i < count; i++) { Terminal.WriteChar(c[i]); }
-                            total += count;
-                        }
-
-                        fclose(f);
-                        char t[32];
-                        strdec(total,t);
-                        Terminal.Write("Read ");
-                        Terminal.Write(t);
-                        Terminal.WriteLine(" bytes");
-                    }
-                    else { Terminal.WriteLine("File not found. Continuing.\n"); }
+                    cat_file(master_fs,&dir,"/test.txt");
                 }
                 // initialize fat file system
                 // FAT16.Initialize();

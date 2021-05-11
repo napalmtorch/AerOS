@@ -52,5 +52,8 @@ namespace System
         void FAT_INFO(char* input);
         void GFX(char* input);
         void LIST_TEST(char*input);
+        void LS(char*input);
+        void CAT(char*input);
+        void MKDIR(char*input);
     }
 }
