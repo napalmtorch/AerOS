@@ -298,11 +298,11 @@ namespace System
         {
             asm volatile("cli");
 
-            KernelIO::VESA.SetMode(800, 600, 32);
+            KernelIO::VESA.SetMode(640, 480, 32);
             HAL::CPU::DisableInterrupts();
             KernelIO::SetDebugConsoleOutput(false);
             KernelIO::ThrowOK("Initialized VESA driver");
-            KernelIO::ThrowOK("Set VESA mode to 800x600 double buffered");
+            KernelIO::ThrowOK("Set VESA mode to 640x480 double buffered");
 
             // initialize keyboard
             KernelIO::Keyboard.Initialize();

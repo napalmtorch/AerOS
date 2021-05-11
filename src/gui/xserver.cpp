@@ -84,6 +84,7 @@ namespace System
             Running = false;
             FPS = 0;
             time = 1;
+            BackColor = Graphics::Colors::CornflowerBlue;
         }
 
         // start
@@ -140,7 +141,7 @@ namespace System
         void XServerHost::Draw()
         {
             // clear the screen
-            FullCanvas.Clear({ 255, 58, 110, 165 });
+            FullCanvas.Clear(BackColor);
 
             // draw fps
             FullCanvas.DrawString(0, 0, "FPS: ", Graphics::Colors::White, Graphics::FONT_8x16);
@@ -151,6 +152,20 @@ namespace System
             FullCanvas.DrawString(0, 16, "WINS: ", Graphics::Colors::White, Graphics::FONT_8x16);
             FullCanvas.DrawString(48, 16, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
 
+            // draw mouse position
+            strdec(KernelIO::Mouse.GetX(), winCountStr);
+            FullCanvas.DrawString(0, 32, "MS: X=       Y=", Graphics::Colors::White, Graphics::FONT_8x16);
+            FullCanvas.DrawString(48, 32, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
+            strdec(KernelIO::Mouse.GetY(), winCountStr);
+            FullCanvas.DrawString(128, 32, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
+
+            // draw raw mouse data
+            strdec(KernelIO::Mouse.Buffer[0], winCountStr);
+            FullCanvas.DrawString(0, 48, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
+            strdec(KernelIO::Mouse.Buffer[1], winCountStr);
+            FullCanvas.DrawString(0, 64, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
+            strdec(KernelIO::Mouse.Buffer[2], winCountStr);
+            FullCanvas.DrawString(0, 80, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
             // draw taskbar
             Taskbar.Draw();
 
