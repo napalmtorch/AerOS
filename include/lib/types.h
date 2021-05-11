@@ -47,3 +47,5 @@ typedef uint64_t                 uintptr_t;
 
 // unused
 #define UNUSED(x) (void)(x)
+
+static inline bool bounds_contains(bounds_t* bounds, int32_t x, int32_t y) { return (x >= bounds->X && y >= bounds->Y && x < bounds->X + bounds->Width && y < bounds->Y + bounds->Height); }

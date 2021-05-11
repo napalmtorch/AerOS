@@ -90,6 +90,10 @@ namespace System
                 void (*ChildUpdate)(void);
                 void (*ChildDraw)(void);
 
+                // flags
+                bool Moving;
+                bool Resizing;
+
                 // base
                 Widget Base;
                 TitleBar TBar;

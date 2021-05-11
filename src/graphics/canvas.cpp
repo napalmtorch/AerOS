@@ -33,14 +33,16 @@ namespace Graphics
         if (Driver == VIDEO_DRIVER_VESA) { System::KernelIO::VESA.Render(); }
     }
 
-    void Canvas::DrawPixel(uint16_t x, uint16_t y, uint32_t color)
+    void Canvas::DrawPixel(int32_t x, int32_t y, uint32_t color)
     {
+        if (x < 0 || y < 0) { return; }
         System::KernelIO::VESA.SetPixel(x, y, color);
     }
 
     // draw pixel
-    void Canvas::DrawPixel(uint16_t x, uint16_t y, Color color)
+    void Canvas::DrawPixel(int32_t x, int32_t y, Color color)
     {
+        if (x < 0 || y < 0) { return; }
         if (Driver == VIDEO_DRIVER_VESA)
         { System::KernelIO::VESA.SetPixel(x, y, Graphics::RGBToPackedValue(color.R, color.G, color.B)); }
     }
@@ -49,7 +51,7 @@ namespace Graphics
     void Canvas::DrawPixel(point_t pos, Color color) { DrawPixel(pos.X, pos.Y, color); }
 
     // draw filled rectangle
-    void Canvas::DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color color)
+    void Canvas::DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, Color color)
     {
         for (size_t i = 0; i < w * h; i++)
         {
@@ -64,7 +66,7 @@ namespace Graphics
     void Canvas::DrawFilledRectangle(bounds_t bounds, Color color) { DrawFilledRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height, color); }
 
     // draw rectangle outline
-    void Canvas::DrawRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t thickness, Color color)
+    void Canvas::DrawRectangle(int32_t x, int32_t y, int32_t w, int32_t h, int32_t thickness, Color color)
     {
         DrawFilledRectangle(x, y, w, thickness, color);
         DrawFilledRectangle(x, y + h - thickness, w, thickness, color);
@@ -73,12 +75,12 @@ namespace Graphics
     }
 
     // draw rectangle outline
-    void Canvas::DrawRectangle(point_t pos, point_t size, uint16_t thickness, Color color) { DrawRectangle(pos.X, pos.Y, size.X, size.Y, thickness, color); }
+    void Canvas::DrawRectangle(point_t pos, point_t size, int32_t thickness, Color color) { DrawRectangle(pos.X, pos.Y, size.X, size.Y, thickness, color); }
 
     // draw rectangle outline
-    void Canvas::DrawRectangle(bounds_t bounds, uint16_t thickness, Color color) { DrawRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height, thickness, color); }
+    void Canvas::DrawRectangle(bounds_t bounds, int32_t thickness, Color color) { DrawRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height, thickness, color); }
 
-    void Canvas::DrawRectangle3D(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color tl, Color b_inner, Color b_outer)
+    void Canvas::DrawRectangle3D(int32_t x, int32_t y, int32_t w, int32_t h, Color tl, Color b_inner, Color b_outer)
     {
         DrawFilledRectangle(x, y, w, 1, tl);
         DrawFilledRectangle(x, y, 1, h, tl);
@@ -89,7 +91,7 @@ namespace Graphics
     }
 
     // draw character
-    void Canvas::DrawChar(uint16_t x, uint16_t y, char c, Color fg, Font font)
+    void Canvas::DrawChar(int32_t x, int32_t y, char c, Color fg, Font font)
     {
         if (c == (char)0x20) { return; }
         uint32_t p = font.GetHeight() * c;
@@ -107,7 +109,7 @@ namespace Graphics
     void Canvas::DrawChar(point_t pos, char c, Color fg, Font font) { DrawChar(pos.X, pos.Y, c, fg, font); }
 
     // draw character with background color
-    void Canvas::DrawChar(uint16_t x, uint16_t y, char c, Color fg, Color bg, Font font)
+    void Canvas::DrawChar(int32_t x, int32_t y, char c, Color fg, Color bg, Font font)
     {
         if (c == (char)0x20) { return; }
         uint32_t p = font.GetHeight() * c;
@@ -126,9 +128,9 @@ namespace Graphics
     void Canvas::DrawChar(point_t pos, char c, Color fg, Color bg, Font font) { DrawChar(pos.X, pos.Y, c, fg, bg, font); }
 
     // draw string
-    void Canvas::DrawString(uint16_t x, uint16_t y, char* text, Color fg, Font font)
+    void Canvas::DrawString(int32_t x, int32_t y, char* text, Color fg, Font font)
     {
-        uint16_t dx = x, dy = y;
+        int32_t dx = x, dy = y;
         for (size_t i = 0; i < strlen(text); i++)
         {
             if (text[i] == '\n') { dx = x; dy += font.GetHeight() + font.GetVerticalSpacing(); }
@@ -144,9 +146,9 @@ namespace Graphics
     void Canvas::DrawString(point_t pos, char* text, Color fg, Font font) { DrawString(pos.X, pos.Y, text, fg, font); }
 
     // draw string with background color
-    void Canvas::DrawString(uint16_t x, uint16_t y, char* text, Color fg, Color bg, Font font)
+    void Canvas::DrawString(int32_t x, int32_t y, char* text, Color fg, Color bg, Font font)
     {
-        uint16_t dx = x, dy = y;
+        int32_t dx = x, dy = y;
         for (size_t i = 0; i < strlen(text); i++)
         {
             if (text[i] == '\n') { dx = x; dy += font.GetHeight() + font.GetVerticalSpacing(); }
@@ -173,13 +175,13 @@ namespace Graphics
     void VGACanvas::Display() { System::KernelIO::VGA.Swap(); }
         
     // draw pixel
-    void VGACanvas::DrawPixel(uint16_t x, uint16_t y, COL8 color) { System::KernelIO::VGA.SetPixel(x, y, color); }
+    void VGACanvas::DrawPixel(int32_t x, int32_t y, COL8 color) { System::KernelIO::VGA.SetPixel(x, y, color); }
 
     // draw pixel with point
     void VGACanvas::DrawPixel(point_t pos, COL8 color) { System::KernelIO::VGA.SetPixel(pos.X, pos.Y, color);  }
 
     // draw filled rectangle
-    void VGACanvas::DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, COL8 color)
+    void VGACanvas::DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, COL8 color)
     {
         for (size_t i = 0; i < w * h; i++)
         {
@@ -192,7 +194,7 @@ namespace Graphics
     void VGACanvas::DrawFilledRectangle(bounds_t bounds, COL8 color) { DrawFilledRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height, color); }
 
     // draw rectangle outline
-    void VGACanvas::DrawRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t thickness, COL8 color)
+    void VGACanvas::DrawRectangle(int32_t x, int32_t y, int32_t w, int32_t h, int32_t thickness, COL8 color)
     {
         DrawFilledRectangle(x, y, w, thickness, color);
         DrawFilledRectangle(x, y + h - thickness, w, thickness, color);
@@ -200,12 +202,12 @@ namespace Graphics
         DrawFilledRectangle(x + w - thickness, y + thickness, thickness, h - (thickness * 2), color);
     }
 
-    void VGACanvas::DrawRectangle(point_t pos, point_t size, uint16_t thickness, COL8 color) { DrawRectangle(pos.X, pos.Y, size.X, size.Y, thickness, color); }
+    void VGACanvas::DrawRectangle(point_t pos, point_t size, int32_t thickness, COL8 color) { DrawRectangle(pos.X, pos.Y, size.X, size.Y, thickness, color); }
 
-    void VGACanvas::DrawRectangle(bounds_t bounds, uint16_t thickness, COL8 color) { DrawRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height, thickness, color); }
+    void VGACanvas::DrawRectangle(bounds_t bounds, int32_t thickness, COL8 color) { DrawRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height, thickness, color); }
 
     // draw character
-    void VGACanvas::DrawChar(uint16_t x, uint16_t y, char c, COL8 fg, Font font)
+    void VGACanvas::DrawChar(int32_t x, int32_t y, char c, COL8 fg, Font font)
     {
         if (c == (char)0x20) { return; }
         uint32_t p = font.GetHeight() * c;
@@ -221,7 +223,7 @@ namespace Graphics
 
     void VGACanvas::DrawChar(point_t pos, char c, COL8 fg, Font font) { DrawChar(pos.X, pos.Y, c, fg, font); }
 
-    void VGACanvas::DrawChar(uint16_t x, uint16_t y, char c, COL8 fg, COL8 bg, Font font)
+    void VGACanvas::DrawChar(int32_t x, int32_t y, char c, COL8 fg, COL8 bg, Font font)
     {
         if (c == (char)0x20) { return; }
         uint32_t p = font.GetHeight() * c;
@@ -238,9 +240,9 @@ namespace Graphics
 
     void VGACanvas::DrawChar(point_t pos, char c, COL8 fg, COL8 bg, Font font) { DrawChar(pos.X, pos.Y, c, fg, bg, font); }
     // draw string
-    void VGACanvas::DrawString(uint16_t x, uint16_t y, char* text, COL8 fg, Font font)
+    void VGACanvas::DrawString(int32_t x, int32_t y, char* text, COL8 fg, Font font)
     {
-        uint16_t dx = x, dy = y;
+        int32_t dx = x, dy = y;
         for (size_t i = 0; i < strlen(text); i++)
         {
             if (text[i] == '\n') { dx = x; dy += font.GetHeight() + font.GetVerticalSpacing(); }
@@ -254,9 +256,9 @@ namespace Graphics
 
     void VGACanvas::DrawString(point_t pos, char* text, COL8 fg, Font font) { DrawString(pos.X, pos.Y, text, fg, font); }
 
-    void VGACanvas::DrawString(uint16_t x, uint16_t y, char* text, COL8 fg, COL8 bg, Font font)
+    void VGACanvas::DrawString(int32_t x, int32_t y, char* text, COL8 fg, COL8 bg, Font font)
     {
-        uint16_t dx = x, dy = y;
+        int32_t dx = x, dy = y;
         for (size_t i = 0; i < strlen(text); i++)
         {
             if (text[i] == '\n') { dx = x; dy += font.GetHeight() + font.GetVerticalSpacing(); }
