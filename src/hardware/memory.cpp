@@ -160,7 +160,7 @@ extern "C"
     {
         // check if enough memory is available
         if (free_pos + size >= max_pos) { debug_throw_message(MSG_TYPE_ERROR, "System out of memory"); return nullptr; }
-        //used_mem += size;
+        used_mem += size;
 
         // request first free entry
         entry_t* entry = get_free_entry((void*)start, size);
@@ -193,7 +193,6 @@ int memcmp(const void* a, const void* b, size_t len) {
     void mem_free(void* ptr)
     {
         if (ptr == nullptr) { debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr"); return; }
-        //used_mem -= size(ptr);
 
         System::KernelIO::Write("FREE at ");
         char s[6];
@@ -206,6 +205,7 @@ int memcmp(const void* a, const void* b, size_t len) {
             debug_throw_message(MSG_TYPE_ERROR, "Tried to free non-entry pointer");
             return;
         }
+        else { used_mem -= size(ptr); }
         entry->used = false;
     }
 
