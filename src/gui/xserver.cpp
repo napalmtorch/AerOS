@@ -152,7 +152,7 @@ namespace System
 
             // status panel - fps
             FullCanvas.DrawString(spx + 5, spy + 5, "FPS: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
-            FullCanvas.DrawString(spx + 54, spy + 5, fpsString, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            FullCanvas.DrawString(spx + 93, spy + 5, fpsString, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
 
             // status panel - used mem
             strdec(mem_get_used() / 1024, str);
@@ -160,11 +160,11 @@ namespace System
             FullCanvas.DrawString(spx + 93, spy + 16, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             uint32_t sw = strlen(str) * 8;
             FullCanvas.DrawString(spx + 93 + sw, spy + 16, " KB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
-            strdec(mem_get_total_usable() / 1024, str);
+            strdec(mem_get_total_usable() / 1024 / 1024, str);
             FullCanvas.DrawString(spx + 5, spy + 27, "RAM TOTAL: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             FullCanvas.DrawString(spx + 93, spy + 27, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             sw = strlen(str) * 8;
-            FullCanvas.DrawString(spx + 93 + sw, spy + 27, " KB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            FullCanvas.DrawString(spx + 93 + sw, spy + 27, " MB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             
             // draw taskbar
             Taskbar.Draw();

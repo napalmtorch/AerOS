@@ -147,15 +147,22 @@ namespace System
 
         void Window::Draw()
         {
-            // draw background
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Base.Bounds, Base.Style->Colors[0]);
+            if (!Moving)
+            {
+                // draw background
+                KernelIO::XServer.FullCanvas.DrawFilledRectangle(Base.Bounds, Base.Style->Colors[0]);
 
-            // draw border
-            KernelIO::XServer.FullCanvas.DrawRectangle3D(Base.Bounds.X, Base.Bounds.Y, Base.Bounds.Width, Base.Bounds.Height, Base.Style->Colors[2], Base.Style->Colors[3], Base.Style->Colors[4]);
+                // draw border
+                KernelIO::XServer.FullCanvas.DrawRectangle3D(Base.Bounds.X, Base.Bounds.Y, Base.Bounds.Width, Base.Bounds.Height, Base.Style->Colors[2], Base.Style->Colors[3], Base.Style->Colors[4]);
 
-            TBar.Draw();
+                TBar.Draw();
 
-            if (ChildDraw != nullptr) { ChildDraw(); }
+                if (ChildDraw != nullptr) { ChildDraw(); }
+            }
+            else
+            {
+                KernelIO::XServer.FullCanvas.DrawRectangle(Base.Bounds, 2, Base.Style->Colors[4]);
+            }
         }
 
         void Window::SetTitle(char* title) { SetWidgetText(&Base, title); }

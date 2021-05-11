@@ -1,4 +1,5 @@
 #include "core/kernel.hpp"
+#include <gui/widget.hpp>
 
 static void pit_callback(registers_t regs)
 {

@@ -11,7 +11,6 @@ namespace System
             Window* Windows[512];
             uint32_t WindowCount = 0;
             uint32_t WindowIndex = 0;
-
             
             void Initialize()
             {
@@ -64,6 +63,7 @@ namespace System
                     {
                         delete Windows[i];
                         Windows[i] = nullptr;
+                        WindowCount--;
                         break;
                     }
                 }
