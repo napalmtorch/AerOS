@@ -44,14 +44,11 @@ namespace System
         CommandList[10] = ShellCommand("REBOOT",    "Reboot the Computer", "",              Commands::REBOOT);
         CommandList[11] = ShellCommand("TEST",      "Call a test systemcall", "",           Commands::TEST);
         CommandList[12] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
-        CommandList[13] = ShellCommand("FAT",       "FAT information", "",                  Commands::FAT_INFO);
-        CommandList[14] = ShellCommand("FATMBR",    "FAT master boot record", "",           Commands::FAT_MBR);
-        CommandList[15] = ShellCommand("FATEXT",    "FAT extended boot record", "",         Commands::FAT_EXT);
-        CommandList[16] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
-        CommandList[17] = ShellCommand("LIST_TEST", "Test vector list", "",                 Commands::LIST_TEST);
-        CommandList[18] = ShellCommand("LS", "List Directory Contents", "",                 Commands::LS);
-        CommandList[19] = ShellCommand("CAT", "Display File Contents", "",                 Commands::CAT);
-        CommandList[20] = ShellCommand("MKDIR", "Create a Directory", "",                 Commands::MKDIR);
+        CommandList[13] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
+        CommandList[14] = ShellCommand("LIST_TEST", "Test vector list", "",                 Commands::LIST_TEST);
+        CommandList[15] = ShellCommand("LS", "List Directory Contents", "",                 Commands::LS);
+        CommandList[16] = ShellCommand("CAT", "Display File Contents", "",                 Commands::CAT);
+        CommandList[17] = ShellCommand("MKDIR", "Create a Directory", "",                 Commands::MKDIR);
 
         // print caret to screen
         PrintCaret();
@@ -277,21 +274,6 @@ namespace System
             char* err = strsub(input, 6, strlen(input));
             if (err == nullptr) { debug_throw_panic("Nothing actually crashed, I'm just a cunt."); return; }
             debug_throw_panic(err);
-        }
-
-        void FAT_MBR(char* input)
-        {
-            //KernelIO::FAT16.PrintMBR();
-        }
-
-        void FAT_EXT(char* input)
-        {
-            //KernelIO::FAT16.PrintEXT();
-        }
-
-        void FAT_INFO(char* input)
-        {
-            List<uint32_t> list = List<uint32_t>();
         }
 
         void GFX(char* input)

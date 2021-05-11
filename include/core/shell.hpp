@@ -47,9 +47,6 @@ namespace System
         void REBOOT(char* input);
         void TEST(char* input);
         void PANIC(char* input);
-        void FAT_MBR(char* input);
-        void FAT_EXT(char* input);
-        void FAT_INFO(char* input);
         void GFX(char* input);
         void LIST_TEST(char*input);
         void LS(char*input);

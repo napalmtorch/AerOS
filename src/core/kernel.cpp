@@ -38,9 +38,6 @@ namespace System
         // ata controller driver
         HAL::ATAController ATA;
 
-        // file system
-        //VFS::FAT16 FAT16;
-
         // real time clock
         HAL::RTCManager RTC;
 
@@ -172,11 +169,12 @@ namespace System
                 {
                     struct directory dir;
                     populate_root_dir(master_fs, &dir);
-                    cat_file(master_fs,&dir,"/test.txt");
+                    ThrowOK("Initialized FAT32 Filesystem");
                 }
-                // initialize fat file system
-                // FAT16.Initialize();
-                ThrowOK("Initialized FAT file system");
+                else
+                {
+                    ThrowError("Error initializing Filesystem. Disk not FAT32?");
+                }
             }
 
             // initialize keyboard
