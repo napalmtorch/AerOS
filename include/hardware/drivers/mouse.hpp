@@ -94,10 +94,10 @@ namespace HAL
             uint32_t* GetCursor32();
             void ToggleArrowKeys(bool value);
             bool GetArrowKeyState();
+            uint8_t Buffer[3];
         private:
             bounds_t Bounds;
             point_t Position;
-            uint8_t Buffer[3];
             uint8_t Offset;
             uint8_t Buttons;
             uint8_t Cycle;

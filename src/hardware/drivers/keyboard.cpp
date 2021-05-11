@@ -187,13 +187,13 @@ namespace HAL
     // check if key is down
     bool PS2Keyboard::IsKeyDown(Keys key)
     {
-        if (PressedKeys[(int)key] == 1) { return true; } else { return false; }
+        return PressedKeys[(int)key];
     }
 
     // check if key is up
     bool PS2Keyboard::IsKeyUp(Keys key)
     {
-        if (PressedKeys[(int)key] == 0) { return true; } else { return false; }
+        return !PressedKeys[(int)key];
     }
 
     // check if any key is down

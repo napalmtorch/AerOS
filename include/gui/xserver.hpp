@@ -4,6 +4,7 @@
 #include <hardware/ports.hpp>
 #include <graphics/canvas.hpp>
 #include <graphics/font.hpp>
+#include <graphics/colors.hpp>
 
 // border style
 typedef enum
@@ -61,6 +62,7 @@ namespace System
         class XServerHost
         {
             public:
+                Color BackColor;
                 Graphics::VGACanvas Canvas;
                 Graphics::Canvas FullCanvas;
                 void Initialize();
