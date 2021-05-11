@@ -44,11 +44,11 @@ namespace System
         CommandList[10] = ShellCommand("REBOOT",    "Reboot the Computer", "",              Commands::REBOOT);
         CommandList[11] = ShellCommand("TEST",      "Call a test systemcall", "",           Commands::TEST);
         CommandList[12] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
-        CommandList[13] = ShellCommand("FAT",       "FAT information", "",                  Commands::FAT_INFO);
-        CommandList[14] = ShellCommand("FATMBR",    "FAT master boot record", "",           Commands::FAT_MBR);
-        CommandList[15] = ShellCommand("FATEXT",    "FAT extended boot record", "",         Commands::FAT_EXT);
-        CommandList[16] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
-        CommandList[17] = ShellCommand("LIST_TEST", "Test vector list", "",                 Commands::LIST_TEST);
+        CommandList[13] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
+        CommandList[14] = ShellCommand("LIST_TEST", "Test vector list", "",                 Commands::LIST_TEST);
+        CommandList[15] = ShellCommand("LS", "List Directory Contents", "",                 Commands::LS);
+        CommandList[16] = ShellCommand("CAT", "Display File Contents", "",                 Commands::CAT);
+        CommandList[17] = ShellCommand("MKDIR", "Create a Directory", "",                 Commands::MKDIR);
 
         // print caret to screen
         PrintCaret();
@@ -230,27 +230,50 @@ namespace System
             // call syscall
             asm volatile("int $0x80");
         }
-
+        void MKDIR(char* input)
+        {
+                 struct directory dir;
+        populate_root_dir(master_fs, &dir);
+        char* dirname = strsplit_index(input, 1, ' ');
+        if(dirname == nullptr)
+        {
+            System::KernelIO::Terminal.WriteLine("Provide a directory name to be created");
+        }
+        else
+        {
+        mkdir(master_fs,&dir,dirname);
+        }   
+        }
+        void LS(char* input)
+        {
+        struct directory dir;
+        populate_root_dir(master_fs, &dir);
+        char* listdir = strsplit_index(input, 1, ' ');
+        if(listdir == nullptr)
+        {
+            //show root
+            KernelIO::Terminal.WriteLine("Showing Root");
+            print_directory(master_fs,&dir);
+        }
+        else
+        {
+            KernelIO::Terminal.Write("Showing: ");
+            KernelIO::Terminal.WriteLine(listdir);
+            DirByName(master_fs,&dir,listdir);
+        }
+        }
+        void CAT(char* input)
+        {
+        struct directory dir;
+        populate_root_dir(master_fs, &dir);
+        char* file = strsplit_index(input, 1, ' ');
+        cat_file(master_fs,&dir,file);
+        }
         void PANIC(char* input)
         {
             char* err = strsub(input, 6, strlen(input));
             if (err == nullptr) { debug_throw_panic("Nothing actually crashed, I'm just a cunt."); return; }
             debug_throw_panic(err);
-        }
-
-        void FAT_MBR(char* input)
-        {
-            //KernelIO::FAT16.PrintMBR();
-        }
-
-        void FAT_EXT(char* input)
-        {
-            //KernelIO::FAT16.PrintEXT();
-        }
-
-        void FAT_INFO(char* input)
-        {
-            List<uint32_t> list = List<uint32_t>();
         }
 
         void GFX(char* input)

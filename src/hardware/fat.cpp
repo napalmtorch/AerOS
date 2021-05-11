@@ -736,6 +736,11 @@ static void mkdir_subdirs(f32 *fs, struct directory *dir, uint32_t parentcluster
 }
 
 void mkdir(f32 *fs, struct directory *dir, char *dirname) {
+        uint32_t i;
+    uint32_t max_name;
+    for(i = 0; i < dir->num_entries; i++) {
+    if(!streql(dir->entries[i].name,dirname))
+    {
     writeFile_impl(fs, dir, NULL, dirname, 0, DIRECTORY, 0);
 
     // We need to add the subdirectories '.' and '..'
@@ -751,6 +756,12 @@ void mkdir(f32 *fs, struct directory *dir, char *dirname) {
         }
     }
     free_directory(fs, &subdir);
+    }
+    else
+    {
+       term_writeln_ext("File or Directory already exists",COL4_RED); 
+    }
+}
 }
 void DirByName(f32 *fs,struct directory *dir,char* name)
 {
@@ -770,6 +781,31 @@ void DirByName(f32 *fs,struct directory *dir,char* name)
     }
     }
 
+}
+void cat_file(f32 *fs,struct directory *dir,char* name)
+{
+     uint32_t i;
+    uint32_t max_name;
+                    FILE *f = fopen(name, NULL);
+                    if(f) 
+                    {
+                        #define BCOUNT 1000
+                        uint8_t c[BCOUNT];
+                        int count, total;
+                        while((count = fread(&c, BCOUNT, 1, f)), count > 0) 
+                        {
+                            for(int i = 0; i < count; i++) { term_write_char(c[i]); }
+                            total += count;
+                        }
+
+                        fclose(f);
+                    }
+                    else
+                    {
+                        term_writeln_ext("File not found, if you are sure it exists make sure to add a / to the filename.",COL4_RED);
+                        term_writeln_ext("For example: 'cat /yourfile.txt' ",COL4_RED);
+
+                    }
 }
 void print_directory(f32 *fs, struct directory *dir) {
             term_writeln_ext("Listing Directory",COL4_CYAN);
