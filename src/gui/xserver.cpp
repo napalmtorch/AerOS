@@ -138,49 +138,42 @@ namespace System
         }
 
         // draw
+        char str[32];
         void XServerHost::Draw()
         {
             // clear the screen
             FullCanvas.Clear(BackColor);
 
-            // draw fps
-            FullCanvas.DrawString(0, 0, "FPS: ", Graphics::Colors::White, Graphics::FONT_8x16);
-            FullCanvas.DrawString(40, 0, fpsString, Graphics::Colors::White, Graphics::FONT_8x16);
+            // draw status panel
+            uint32_t spx = KernelIO::VESA.GetWidth() - 208;
+            uint32_t spy = 8;
+            FullCanvas.DrawFilledRectangle(spx, spy, 200, 64, ButtonStyle.Colors[0]);
+            FullCanvas.DrawRectangle3D(spx, spy, 200, 64, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]);
 
-            // draw window count
-            strdec(WindowManager::WindowCount, winCountStr);
-            FullCanvas.DrawString(0, 16, "WINS: ", Graphics::Colors::White, Graphics::FONT_8x16);
-            FullCanvas.DrawString(48, 16, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
+            // status panel - fps
+            FullCanvas.DrawString(spx + 5, spy + 5, "FPS: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            FullCanvas.DrawString(spx + 93, spy + 5, fpsString, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
 
-            // draw mouse position
-            strdec(KernelIO::Mouse.GetX(), winCountStr);
-            FullCanvas.DrawString(0, 32, "MS: X=       Y=", Graphics::Colors::White, Graphics::FONT_8x16);
-            FullCanvas.DrawString(48, 32, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
-            strdec(KernelIO::Mouse.GetY(), winCountStr);
-            FullCanvas.DrawString(128, 32, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
-
-            // draw raw mouse data
-            strdec(KernelIO::Mouse.Buffer[0], winCountStr);
-            FullCanvas.DrawString(0, 48, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
-            strdec(KernelIO::Mouse.Buffer[1], winCountStr);
-            FullCanvas.DrawString(0, 64, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
-            strdec(KernelIO::Mouse.Buffer[2], winCountStr);
-            FullCanvas.DrawString(0, 80, winCountStr, Graphics::Colors::White, Graphics::FONT_8x16);
+            // status panel - used mem
+            strdec(mem_get_used() / 1024, str);
+            FullCanvas.DrawString(spx + 5, spy + 16, "RAM USED: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            FullCanvas.DrawString(spx + 93, spy + 16, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            uint32_t sw = strlen(str) * 8;
+            FullCanvas.DrawString(spx + 93 + sw, spy + 16, " KB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            strdec(mem_get_total_usable() / 1024 / 1024, str);
+            FullCanvas.DrawString(spx + 5, spy + 27, "RAM TOTAL: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            FullCanvas.DrawString(spx + 93, spy + 27, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            sw = strlen(str) * 8;
+            FullCanvas.DrawString(spx + 93 + sw, spy + 27, " MB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            
             // draw taskbar
             Taskbar.Draw();
 
+            // draw start button
             StartBtn.Draw();
             FullCanvas.DrawString(StartBtn.Base.Bounds.X + 7, StartBtn.Base.Bounds.Y + 5, "Start", ButtonStyle.Colors[1], Graphics::FONT_8x8);
 
             WindowManager::Draw();
-
-            // draw font tests
-            //FullCanvas.DrawString(128, 128, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_3x5);
-            //FullCanvas.DrawString(128, 134, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8);
-            //FullCanvas.DrawString(128, 142, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
-            //FullCanvas.DrawString(128, 150, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x8_PHEONIX);
-            //FullCanvas.DrawString(128, 158, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x16);
-            //FullCanvas.DrawString(128, 174, "Hello World 1234567890", Graphics::Colors::White, Graphics::FONT_8x16_CONSOLAS);
 
             // draw mouse
             KernelIO::Mouse.Draw();

@@ -13,7 +13,7 @@ namespace System
             uint32_t my = KernelIO::Mouse.GetY();
 
             // mouse hover
-            if (mx >= widget->Bounds.X && my >= widget->Bounds.Y && mx < widget->Bounds.X + widget->Bounds.Width && my < widget->Bounds.Y + widget->Bounds.Height)
+            if (bounds_contains(&widget->Bounds, mx, my))
             {
                 widget->MSFlags.Hover = true;
 
@@ -86,8 +86,11 @@ namespace System
             TBar = TitleBar(&Base);
         }
 
+        bool move_click = false;
+        int32_t mx_start, my_start;
         void Window::Update()
         {
+            // update title bar
             TBar.Parent = &Base;
             TBar.Update();
 
@@ -98,20 +101,68 @@ namespace System
                 return;
             }
 
+            // get mouse position
+            int32_t mx = KernelIO::Mouse.GetX();
+            int32_t my = KernelIO::Mouse.GetY();
+
+            // window movement
+            if (bounds_contains(&TBar.Base.Bounds, mx, my) && !TBar.CloseBtn.Base.MSFlags.Down)
+            {
+                if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
+                {
+                    if (!move_click)
+                    {
+                        mx_start = mx - Base.Bounds.X;
+                        my_start = my - Base.Bounds.Y;
+                        move_click = true;
+                    }
+                    Moving = true;
+                }
+            }
+
+            int32_t new_x = Base.Bounds.X;
+            int32_t new_y = Base.Bounds.Y;
+            if (Moving)
+            {
+                new_x = mx - mx_start;
+                new_y = my - my_start;
+                Base.Bounds.X = new_x;
+                Base.Bounds.Y = new_y;
+            }
+
+            // limit window position
+            //if (Base.Bounds.X >= KernelIO::VESA.GetWidth() - 2) { Base.Bounds.X = KernelIO::VESA.GetWidth() - 2; }
+           // if (Base.Bounds.Y >= KernelIO::VESA.GetHeight() - 26) { Base.Bounds.Y = KernelIO::VESA.GetHeight() - 26; }
+
+            // mouse release
+            if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Released)
+            {
+                Moving = false;
+                move_click = false;
+            }
+
+            // update child
             if (ChildUpdate != nullptr) { ChildUpdate(); }
         }
 
         void Window::Draw()
         {
-            // draw background
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Base.Bounds, Base.Style->Colors[0]);
+            if (!Moving)
+            {
+                // draw background
+                KernelIO::XServer.FullCanvas.DrawFilledRectangle(Base.Bounds, Base.Style->Colors[0]);
 
-            // draw border
-            KernelIO::XServer.FullCanvas.DrawRectangle3D(Base.Bounds.X, Base.Bounds.Y, Base.Bounds.Width, Base.Bounds.Height, Base.Style->Colors[2], Base.Style->Colors[3], Base.Style->Colors[4]);
+                // draw border
+                KernelIO::XServer.FullCanvas.DrawRectangle3D(Base.Bounds.X, Base.Bounds.Y, Base.Bounds.Width, Base.Bounds.Height, Base.Style->Colors[2], Base.Style->Colors[3], Base.Style->Colors[4]);
 
-            TBar.Draw();
+                TBar.Draw();
 
-            if (ChildDraw != nullptr) { ChildDraw(); }
+                if (ChildDraw != nullptr) { ChildDraw(); }
+            }
+            else
+            {
+                KernelIO::XServer.FullCanvas.DrawRectangle(Base.Bounds, 2, Base.Style->Colors[4]);
+            }
         }
 
         void Window::SetTitle(char* title) { SetWidgetText(&Base, title); }
@@ -145,6 +196,18 @@ namespace System
 
         void TitleBar::Update()
         {
+            Base.Bounds.X = Parent->Bounds.X + 1;
+            Base.Bounds.Y = Parent->Bounds.Y + 1;
+            Base.Bounds.Width = Parent->Bounds.Width - 3;
+            Base.Bounds.Height = 16;
+
+            CloseBtn.Base.Bounds.X = Parent->Bounds.X + Parent->Bounds.Width - 18;
+            CloseBtn.Base.Bounds.Y = Parent->Bounds.Y + 3;
+            MaxBtn.Base.Bounds.X = CloseBtn.Base.Bounds.X - 16;
+            MaxBtn.Base.Bounds.Y = CloseBtn.Base.Bounds.Y;
+            MinBtn.Base.Bounds.X = MaxBtn.Base.Bounds.X - 16;
+            MinBtn.Base.Bounds.Y = CloseBtn.Base.Bounds.Y;
+
             CloseBtn.Update();
             MaxBtn.Update();
             MinBtn.Update();
@@ -153,7 +216,7 @@ namespace System
         void TitleBar::Draw()
         {
             // draw background
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Parent->Bounds.X + 1, Parent->Bounds.Y + 1, Parent->Bounds.Width - 3, 16, Parent->Style->Colors[5]);
+            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Base.Bounds, Parent->Style->Colors[5]);
 
             // draw window title
             if (Parent->Text != nullptr)

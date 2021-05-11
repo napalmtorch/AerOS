@@ -47,32 +47,32 @@ namespace Graphics
             void Display();
 
             // draw pixel
-            void DrawPixel(uint16_t x, uint16_t y, uint32_t color);
-            void DrawPixel(uint16_t x, uint16_t y, Color color);
+            void DrawPixel(int32_t x, int32_t y, uint32_t color);
+            void DrawPixel(int32_t x, int32_t y, Color color);
             void DrawPixel(point_t pos, Color color);
 
             // draw filled rectangle
-            void DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color color);
+            void DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, Color color);
             void DrawFilledRectangle(point_t pos, point_t size, Color color);
             void DrawFilledRectangle(bounds_t bounds, Color color);
 
             // draw rectangle outline
-            void DrawRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t thickness, Color color);
-            void DrawRectangle(point_t pos, point_t size, uint16_t thickness, Color color);
-            void DrawRectangle(bounds_t bounds, uint16_t thickness, Color color);
+            void DrawRectangle(int32_t x, int32_t y, int32_t w, int32_t h, int32_t thickness, Color color);
+            void DrawRectangle(point_t pos, point_t size, int32_t thickness, Color color);
+            void DrawRectangle(bounds_t bounds, int32_t thickness, Color color);
 
-            void DrawRectangle3D(uint16_t x, uint16_t y, uint16_t w, uint16_t h, Color tl, Color b_inner, Color b_outer);
+            void DrawRectangle3D(int32_t x, int32_t y, int32_t w, int32_t h, Color tl, Color b_inner, Color b_outer);
 
             // draw character
-            void DrawChar(uint16_t x, uint16_t y, char c, Color fg, Font font);
+            void DrawChar(int32_t x, int32_t y, char c, Color fg, Font font);
             void DrawChar(point_t pos, char c, Color fg, Font font);
-            void DrawChar(uint16_t x, uint16_t y, char c, Color fg, Color bg, Font font);
+            void DrawChar(int32_t x, int32_t y, char c, Color fg, Color bg, Font font);
             void DrawChar(point_t pos, char c, Color fg, Color bg, Font font);
 
             // draw string
-            void DrawString(uint16_t x, uint16_t y, char* text, Color fg, Font font);
+            void DrawString(int32_t x, int32_t y, char* text, Color fg, Font font);
             void DrawString(point_t pos, char* text, Color fg, Font font);
-            void DrawString(uint16_t x, uint16_t y, char* text, Color fg, Color bg, Font font);
+            void DrawString(int32_t x, int32_t y, char* text, Color fg, Color bg, Font font);
             void DrawString(point_t pos, char* text, Color fg, Color bg, Font font);
         private:
             VIDEO_DRIVER Driver;
@@ -89,29 +89,29 @@ namespace Graphics
             void Display();
 
             // draw pixel
-            void DrawPixel(uint16_t x, uint16_t y, COL8 color);
+            void DrawPixel(int32_t x, int32_t y, COL8 color);
             void DrawPixel(point_t pos, COL8 color);
 
             // draw filled rectangle
-            void DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, COL8 color);
+            void DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, COL8 color);
             void DrawFilledRectangle(point_t pos, point_t size, COL8 color);
             void DrawFilledRectangle(bounds_t bounds, COL8 color);
 
             // draw rectangle outline
-            void DrawRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t thickness, COL8 color);
-            void DrawRectangle(point_t pos, point_t size, uint16_t thickness, COL8 color);
-            void DrawRectangle(bounds_t bounds, uint16_t thickness, COL8 color);
+            void DrawRectangle(int32_t x, int32_t y, int32_t w, int32_t h, int32_t thickness, COL8 color);
+            void DrawRectangle(point_t pos, point_t size, int32_t thickness, COL8 color);
+            void DrawRectangle(bounds_t bounds, int32_t thickness, COL8 color);
 
             // draw character
-            void DrawChar(uint16_t x, uint16_t y, char c, COL8 fg, Font font);
+            void DrawChar(int32_t x, int32_t y, char c, COL8 fg, Font font);
             void DrawChar(point_t pos, char c, COL8 fg, Font font);
-            void DrawChar(uint16_t x, uint16_t y, char c, COL8 fg, COL8 bg, Font font);
+            void DrawChar(int32_t x, int32_t y, char c, COL8 fg, COL8 bg, Font font);
             void DrawChar(point_t pos, char c, COL8 fg, COL8 bg, Font font);
 
             // draw string
-            void DrawString(uint16_t x, uint16_t y, char* text, COL8 fg, Font font);
+            void DrawString(int32_t x, int32_t y, char* text, COL8 fg, Font font);
             void DrawString(point_t pos, char* text, COL8 fg, Font font);
-            void DrawString(uint16_t x, uint16_t y, char* text, COL8 fg, COL8 bg, Font font);
+            void DrawString(int32_t x, int32_t y, char* text, COL8 fg, COL8 bg, Font font);
             void DrawString(point_t pos, char* text, COL8 fg, COL8 bg, Font font);
     };
 }

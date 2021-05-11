@@ -21,6 +21,8 @@ extern "C"
     uint32_t free_pos;
     uint32_t max_pos;
     uint32_t start;
+    uint32_t used_mem;
+    uint32_t total_usable_mem;
 
     void mem_init()
     {
@@ -32,6 +34,7 @@ extern "C"
 
         // maximum size is installed memory minus 12 megabytes
         max_pos = (mem_get_total_mb() - 12) * 1024 * 1024;
+        total_usable_mem = max_pos - free_pos;
     }
 
     void* last = (void*)-1;
@@ -157,7 +160,8 @@ extern "C"
     {
         // check if enough memory is available
         if (free_pos + size >= max_pos) { debug_throw_message(MSG_TYPE_ERROR, "System out of memory"); return nullptr; }
-        
+        used_mem += size;
+
         // request first free entry
         entry_t* entry = get_free_entry((void*)start, size);
         
@@ -201,8 +205,13 @@ int memcmp(const void* a, const void* b, size_t len) {
             debug_throw_message(MSG_TYPE_ERROR, "Tried to free non-entry pointer");
             return;
         }
+        else { used_mem -= size(ptr); }
         entry->used = false;
     }
+
+    uint32_t mem_get_used() { return used_mem; }
+
+    uint32_t mem_get_total_usable() { return max_pos - start; }
 
     // get amount of installed memory in megabytes
     uint32_t mem_get_total_mb()

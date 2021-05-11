@@ -1,5 +1,5 @@
 #include "core/kernel.hpp"
-#include <hardware/elf.hpp>
+#include <gui/widget.hpp>
 extern "C" {
 extern uint32_t start;
 extern uint32_t kernel_end;
@@ -68,7 +68,6 @@ namespace System
 
         // window server
         System::GUI::XServerHost XServer;
-                    ELF::Loader elf;
         // called as first function before kernel run
         void KernelBase::Initialize()
         {

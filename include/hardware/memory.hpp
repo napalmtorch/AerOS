@@ -13,6 +13,8 @@ extern "C"
 
     uint32_t mem_get_total_mb();
     uint32_t mem_get_total();
+    uint32_t mem_get_used();
+    uint32_t mem_get_total_usable();
 
     void mem_copy(uint8_t* src, uint8_t* dest, uint32_t len);
     void mem_swap(uint8_t* src, uint8_t* dest, uint32_t len);
