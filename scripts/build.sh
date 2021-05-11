@@ -5,6 +5,8 @@ mkdir -p 'bin/objs'
 fi
 # bootloader
 as --32 'src/boot/boot.asm' -o 'bin/objs/boot.o'
+as --32 'src/boot/paging2.asm' -o 'bin/objs/paging2.o'
+as --32 'src/boot/paging.asm' -o 'bin/objs/paging.o'
 nasm -felf32 'src/boot/realmode.asm' -o 'bin/objs/rm.o'
 nasm -felf32 'src/boot/gdt.asm' -o 'bin/objs/gdt.o'
 nasm -felf32 'include/hardware/interrupt/irqs.asm' -o 'bin/objs/irqs.o'

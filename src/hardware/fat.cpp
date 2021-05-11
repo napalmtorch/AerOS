@@ -752,7 +752,25 @@ void mkdir(f32 *fs, struct directory *dir, char *dirname) {
     }
     free_directory(fs, &subdir);
 }
+void DirByName(f32 *fs,struct directory *dir,char* name)
+{
+    uint32_t i;
+    uint32_t max_name;
+    for(i = 0; i < dir->num_entries; i++) {
+    if(streql(dir->entries[i].name,name))
+    {
+        term_writeln_dec("Entry Found: ",i);
+        term_writeln(dir->entries[i].name);
+        uint32_t cluster = dir->entries[i].first_cluster;
+            if(cluster == 0) cluster = 2;
+            free_directory(fs, dir);
+            populate_dir(fs, dir, cluster);
+            print_directory(fs, dir);
+        break;
+    }
+    }
 
+}
 void print_directory(f32 *fs, struct directory *dir) {
             term_writeln_ext("Listing Directory",COL4_CYAN);
     uint32_t i;

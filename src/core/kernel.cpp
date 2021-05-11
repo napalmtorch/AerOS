@@ -73,7 +73,6 @@ namespace System
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
             MemoryManager.Initialize();
-
             // read multiboot
             Multiboot.Read();
 
@@ -175,7 +174,7 @@ namespace System
                     populate_root_dir(master_fs, &dir);
                     print_directory(master_fs,&dir);
                     Terminal.WriteLine("Finding /test.txt.\n");
-
+                    DirByName(master_fs,&dir,"wallpapers");
                     FILE *f = fopen("/test.txt", NULL);
                     if(f) 
                     {
