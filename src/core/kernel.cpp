@@ -73,7 +73,9 @@ namespace System
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
             MemoryManager.Initialize();
-
+            SetUpPages();
+            FillPages();
+            InitPaging();
             // read multiboot
             Multiboot.Read();
 

@@ -13,6 +13,7 @@
 #include "hardware/interrupt/isr.hpp"
 #include "hardware/cpu.hpp"
 #include "hardware/vmm.hpp"
+#include "hardware/paging.hpp"
 #include "hardware/drivers/serial.hpp"
 #include "hardware/drivers/ata.hpp"
 #include "hardware/drivers/rtc.hpp"
