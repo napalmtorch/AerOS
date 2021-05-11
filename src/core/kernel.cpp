@@ -1,5 +1,9 @@
 #include "core/kernel.hpp"
-
+#include <hardware/elf.hpp>
+extern "C" {
+extern uint32_t start;
+extern uint32_t kernel_end;
+}
 static void pit_callback(registers_t regs)
 {
     System::KernelIO::Kernel.OnInterrupt();
@@ -11,7 +15,7 @@ static void enter_pressed(char* input)
     System::KernelIO::Kernel.OnEnterPressed(input);
 }
 
-extern "C" int endKernel;
+
 
 namespace System
 {
@@ -64,7 +68,7 @@ namespace System
 
         // window server
         System::GUI::XServerHost XServer;
-
+                    ELF::Loader elf;
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -169,7 +173,10 @@ namespace System
                 {
                     struct directory dir;
                     populate_root_dir(master_fs, &dir);
-                    ThrowOK("Initialized FAT32 Filesystem");
+                    System::KernelIO::Terminal.WriteLine("Initialized FAT32 Filesystem");
+                    term_writeln_dec("Kernel Start:", (uint32_t)&start);
+                    term_writeln_dec("Kernel End:", (uint32_t)&kernel_end);
+                    term_writeln_dec("Kernel Size:", (&kernel_end - &start));
                 }
                 else
                 {
@@ -182,8 +189,8 @@ namespace System
             Keyboard.BufferEnabled = true;
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
-            Mouse.Initialize();
 
+            Mouse.Initialize();
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
 
@@ -191,8 +198,6 @@ namespace System
             asm volatile("cli");
             HAL::CPU::EnableInterrupts();
 
-            // print kernel end
-            WriteLineDecimal("KERNEL_END: ",kernel_end);
 
             // initialize x server
             XServer.Initialize();
