@@ -108,6 +108,7 @@ void writeFile(f32 *fs, struct directory *dir, uint8_t *file, char *fname, uint3
 void mkdir(f32 *fs, struct directory *dir, char *dirname);
 void delFile(f32 *fs, struct directory *dir, char *filename);
 void DirByName(f32 *fs,struct directory *dir,char* name);
+uint32_t FileSize(f32 *fs,struct directory *dir,char* name);
 void cat_file(f32 *fs,struct directory *dir,char* name);
 void print_directory(f32 *fs, struct directory *dir);
 uint32_t count_free_clusters(f32 *fs);
