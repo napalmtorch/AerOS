@@ -294,7 +294,13 @@ namespace System
             Widget::Draw();
 
             // draw background
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle((*Bounds), Graphics::Colors::Blue);
+            KernelIO::XServer.FullCanvas.DrawFilledRectangle((*Bounds), Parent->Style->Colors[5]);
+
+            // draw text
+            if (Parent->Title != nullptr)
+            {
+                KernelIO::XServer.FullCanvas.DrawString(Bounds->X + 3, Bounds->Y + 4, Parent->Title, Parent->Style->Colors[6], Graphics::FONT_8x8);
+            }
 
             // draw buttons
             BtnClose->Draw();

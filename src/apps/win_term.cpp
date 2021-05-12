@@ -23,7 +23,7 @@ namespace System
 
             // initialize buffer
             BufferWidth = (Bounds->Width - 3) / 8;
-            BufferHeight = (Bounds->Height - 19) / 8;
+            BufferHeight = (Bounds->Height - 19) / 16;
             Buffer = new uint8_t[BufferWidth * BufferHeight * 2];
 
             BackColor = COL4_BLACK;
@@ -74,7 +74,7 @@ namespace System
                         uint32_t c = (x + (y * BufferWidth)) * 2;
                         uint8_t bg = ((Buffer[c + 1] & 0xF0) >> 4);
                         uint8_t fg = (Buffer[c + 1] & 0x0F);
-                        KernelIO::XServer.FullCanvas.DrawChar(ClientBounds->X + (x * 8), ClientBounds->Y + (y * 8), Buffer[c], ConvertColor(fg), ConvertColor(bg), Graphics::FONT_8x8);
+                        KernelIO::XServer.FullCanvas.DrawChar(ClientBounds->X + (x * 8), ClientBounds->Y + (y * 16), Buffer[c], ConvertColor(fg), ConvertColor(bg), Graphics::FONT_8x16);
                     }
                 }
 
@@ -82,7 +82,7 @@ namespace System
                 if (cursor_flash)
                 {
                     uint32_t cx = ClientBounds->X + (CursorX * 8);
-                    uint32_t cy = ClientBounds->Y + (CursorY * 8);
+                    uint32_t cy = ClientBounds->Y + (CursorY * 16);
                     KernelIO::XServer.FullCanvas.DrawFilledRectangle(cx, cy + 6, 8, 2, ConvertColor(ForeColor));
                 }
             }
