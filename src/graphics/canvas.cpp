@@ -93,7 +93,6 @@ namespace Graphics
     // draw character
     void Canvas::DrawChar(int32_t x, int32_t y, char c, Color fg, Font font)
     {
-        if (c == (char)0x20) { return; }
         uint32_t p = font.GetHeight() * c;
         for (size_t cy = 0; cy < font.GetHeight(); cy++)
         {
@@ -111,7 +110,6 @@ namespace Graphics
     // draw character with background color
     void Canvas::DrawChar(int32_t x, int32_t y, char c, Color fg, Color bg, Font font)
     {
-        if (c == (char)0x20) { return; }
         uint32_t p = font.GetHeight() * c;
         for (size_t cy = 0; cy < font.GetHeight(); cy++)
         {

@@ -1,5 +1,6 @@
 #include <gui/winmgr.hpp>
 #include <core/kernel.hpp>
+#include <apps/win_term.hpp>
 
 namespace System
 {
@@ -8,7 +9,7 @@ namespace System
 
         void WindowManager::Initialize()
         {
-            TestApp* win = new TestApp(128, 128);
+            Applications::WinTerminal* win = new Applications::WinTerminal(128, 128);
             Open(win);
         }
 

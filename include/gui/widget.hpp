@@ -72,6 +72,7 @@ namespace System
             bool Moving;
             bool Resizing;
             bool Running;
+            bool CanDraw;
         } __attribute__((packed)) WindowFlags;
 
         typedef struct

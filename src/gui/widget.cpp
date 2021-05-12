@@ -208,6 +208,7 @@ namespace System
             // create flags
             Flags = new WindowFlags();
             Flags->Visible = true;
+            Flags->CanDraw = true;
 
             // set visual style
             Style = &WindowStyle;
@@ -270,18 +271,29 @@ namespace System
                 Flags->Moving = false;
                 move_click = false;
             }
+
+            // check if able to draw
+            if (Flags->Moving || Flags->Resizing || Flags->Minimized) { Flags->CanDraw = false; } else { Flags->CanDraw = true; }
         }
 
         void Window::Draw()
         {
-            // draw background
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle((*Bounds), Style->Colors[0]);
+            if (!Flags->Moving)
+            {
+                // draw background
+                KernelIO::XServer.FullCanvas.DrawFilledRectangle((*Bounds), Style->Colors[0]);
 
-            // draw border
-            KernelIO::XServer.FullCanvas.DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[2], Style->Colors[3], Style->Colors[4]);
+                // draw border
+                KernelIO::XServer.FullCanvas.DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[2], Style->Colors[3], Style->Colors[4]);
 
-            // draw title bar
-            TBar->Draw();
+                // draw title bar
+                TBar->Draw();
+            }
+            else
+            {
+                // draw border
+                KernelIO::XServer.FullCanvas.DrawRectangle((*Bounds), 2, Style->Colors[4]);
+            }
         }
 
         // -------------------------------------------------- TEST APP -------------------------------------------------- //
