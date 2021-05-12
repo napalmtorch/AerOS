@@ -187,7 +187,7 @@ namespace System
                 {
                     KernelIO::Terminal.Write("- ");
                     KernelIO::Terminal.Write(KernelIO::Shell.GetCommand(i).Name);
-                    KernelIO::Terminal.SetCursorX(30);
+                    KernelIO::Terminal.Write("      ");
                     KernelIO::Terminal.WriteLine(KernelIO::Shell.GetCommand(i).Help, COL4_GRAY);
                 }
             }

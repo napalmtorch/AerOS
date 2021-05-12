@@ -30,6 +30,8 @@
 
 // Kernel IO API by napalmtorch and Nik300
 
+void enter_pressed(char* input);
+
 #ifdef __cplusplus
     // main namespace of the System library
     namespace System

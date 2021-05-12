@@ -26,7 +26,8 @@ namespace System
             ForeColor = COL4_WHITE;
 
             Clear();
-            WriteLine("Hello penis");
+            WriteLine("AerOS Terminal");
+            KernelIO::Shell.PrintCaret();
         }
 
         WinTerminal::WinTerminal(int32_t x, int32_t y, char* args) : GUI::Window(x, y, 400, 259, "Terminal")
@@ -42,15 +43,14 @@ namespace System
             if (Flags->Active)
             {
                 KernelIO::Terminal.Window = this;
+                KernelIO::Keyboard.BufferEnabled = true;
+                KernelIO::Keyboard.Event_OnEnterPressed = enter_pressed;
             }
 
             time = KernelIO::RTC.GetSecond();
             if (time != last_time)
             {
                 cursor_flash = !cursor_flash;
-                char temp[2];
-                strdec(time, temp);
-                KernelIO::Terminal.WriteLine(temp);
                 last_time = time;
             }
         }
@@ -91,6 +91,8 @@ namespace System
                 Buffer[i] = 0x20; 
                 Buffer[i + 1] = term_pack_colors(ForeColor, BackColor);
             }
+            CursorX = 0;
+            CursorY = 0;
         }
 
         void WinTerminal::NewLine()
@@ -158,7 +160,7 @@ namespace System
         }
 
         // set cursor position
-        void WinTerminal::SetCursorPos(uint16_t x, uint16_t y) { CursorX = x; CursorY = y;}
+        void WinTerminal::SetCursorPos(uint16_t x, uint16_t y) { CursorX = x; CursorY = y; }
         void WinTerminal::SetCursorX(uint16_t x) { CursorX = x; }
         void WinTerminal::SetCursorY(uint16_t y) { CursorY = y; }
 

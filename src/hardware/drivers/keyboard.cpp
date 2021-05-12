@@ -94,7 +94,7 @@ namespace HAL
             if (strlen(Buffer) > 0)
             {
                 strdel(Buffer);
-                term_delete();
+                System::KernelIO::Terminal.Delete();
             }
         }
         // handle shift
@@ -105,7 +105,7 @@ namespace HAL
         // handle enter
         else if (ScanCode == (uint8_t)HAL::Keys::ENTER)
         {
-            term_write_char('\n');
+            System::KernelIO::Terminal.WriteChar('\n');
             if (Event_OnEnterPressed != 0) { Event_OnEnterPressed(Buffer); }
             Buffer[0] = '\0';
         }
@@ -173,7 +173,7 @@ namespace HAL
             if (letter > 0)
             {
                 stradd(Buffer, letter);
-                term_write_char(letter);
+                System::KernelIO::Terminal.WriteChar(letter);
             }
         }
     }

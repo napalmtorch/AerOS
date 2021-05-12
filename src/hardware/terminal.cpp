@@ -425,7 +425,7 @@ namespace HAL
     void TerminalManager::SetCursorPos(uint16_t x, uint16_t y) 
     { 
         if (Window == nullptr) { term_set_cursor(x, y); }
-        else { ((System::Applications::WinTerminal*)Window)->SetCursorPos(x, y); }
+        else { ((System::Applications::WinTerminal*)Window)->SetCursorPos(x, y); cursor_x = x; cursor_y = y; }
     }
     void TerminalManager::SetCursorX(uint16_t x) { SetCursorPos(x, cursor_y); }
     void TerminalManager::SetCursorY(uint16_t y) { SetCursorPos(cursor_x, y); }

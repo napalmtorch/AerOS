@@ -10,7 +10,7 @@ static void pit_callback(registers_t regs)
     UNUSED(regs);
 }
 
-static void enter_pressed(char* input)
+void enter_pressed(char* input)
 {
     System::KernelIO::Kernel.OnEnterPressed(input);
 }
@@ -202,12 +202,9 @@ namespace System
             XServer.Initialize();
 
             // ready shell
+            Shell.Initialize();
             if (Parameters.VGA) { XServer.Start(VIDEO_DRIVER_VGA); }
             else if (Parameters.VESA) { XServer.Start(VIDEO_DRIVER_VESA); }
-            else { Shell.Initialize(); }
-
-            void* end = &kernel_end;
-            debug_write_dec("KERNEL_END: ", (uint32_t)end);
         }
 
 
