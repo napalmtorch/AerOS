@@ -826,6 +826,7 @@ void cat_file(f32 *fs,struct directory *dir,char* name)
 }
 void print_directory(f32 *fs, struct directory *dir) {
             System::KernelIO::Terminal.WriteLine("Listing Directory",COL4_CYAN);
+            System::KernelIO::Terminal.NewLine();
     uint32_t i;
     uint32_t max_name = 0;
     for(i = 0; i < dir->num_entries; i++) {
@@ -853,7 +854,7 @@ void print_directory(f32 *fs, struct directory *dir) {
         }
 
 
-            if(dir->entries[i].dir_attrs == DIRECTORY) { System::KernelIO::Terminal.WriteLine(namebuff,COL4_BLUE); term_writeln(" (dir)"); } else { System::KernelIO::Terminal.WriteLine(namebuff,COL4_YELLOW); term_write(" "); term_write_dec(" Size: " ,dir->entries[i].file_size); term_writeln(" Bytes"); }
+            if(dir->entries[i].dir_attrs == DIRECTORY) { System::KernelIO::Terminal.WriteLine(namebuff,COL4_GREEN); term_writeln(" (dir)"); } else { System::KernelIO::Terminal.WriteLine(namebuff,COL4_YELLOW); term_write(" "); term_write_dec(" Size: " ,dir->entries[i].file_size); term_writeln(" Bytes"); }
 
         uint32_t cluster = dir->entries[i].first_cluster;
         uint32_t cluster_count = 1;
