@@ -30,7 +30,26 @@ namespace System
             ForeColor = COL4_WHITE;
 
             Clear();
+            if(master_fs != nullptr)
+            {
+                char* motd = "/etc/motd";
+                
+                FILE *f = fopen(motd, NULL);
+                if(f)
+                {
+                 struct directory dir;
+                populate_root_dir(master_fs, &dir);
+                cat_file(master_fs,&dir,motd);
+                }
+                else
+                {
+                    WriteLine("AerOS Terminal");
+                }
+            }
+            else
+            {
             WriteLine("AerOS Terminal");
+            }
             KernelIO::Shell.PrintCaret();
         }
 

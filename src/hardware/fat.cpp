@@ -819,13 +819,14 @@ void cat_file(f32 *fs,struct directory *dir,char* name)
                     }
                     else
                     {
-                        term_writeln_ext("File not found, if you are sure it exists make sure to add a / to the filename.",COL4_RED);
-                        term_writeln_ext("For example: 'cat /yourfile.txt' ",COL4_RED);
+                        System::KernelIO::Terminal.WriteLine("File not found, if you are sure it exists make sure to add a / to the filename.",COL4_RED);
+                        System::KernelIO::Terminal.WriteLine("For example: 'cat /yourfile.txt' ",COL4_RED);
 
                     }
 }
 void print_directory(f32 *fs, struct directory *dir) {
-            term_writeln_ext("Listing Directory",COL4_CYAN);
+            System::KernelIO::Terminal.WriteLine("Listing Directory",COL4_CYAN);
+            System::KernelIO::Terminal.NewLine();
     uint32_t i;
     uint32_t max_name = 0;
     for(i = 0; i < dir->num_entries; i++) {
@@ -853,7 +854,7 @@ void print_directory(f32 *fs, struct directory *dir) {
         }
 
 
-            if(dir->entries[i].dir_attrs == DIRECTORY) { System::KernelIO::Terminal.WriteLine(namebuff,COL4_BLUE); term_writeln(" (dir)"); } else { System::KernelIO::Terminal.WriteLine(namebuff,COL4_YELLOW); term_write(" "); term_write_dec(" Size: " ,dir->entries[i].file_size); term_writeln(" Bytes"); }
+            if(dir->entries[i].dir_attrs == DIRECTORY) { System::KernelIO::Terminal.WriteLine(namebuff,COL4_GREEN); term_writeln(" (dir)"); } else { System::KernelIO::Terminal.WriteLine(namebuff,COL4_YELLOW); term_write(" "); term_write_dec(" Size: " ,dir->entries[i].file_size); term_writeln(" Bytes"); }
 
         uint32_t cluster = dir->entries[i].first_cluster;
         uint32_t cluster_count = 1;
