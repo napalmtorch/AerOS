@@ -819,13 +819,13 @@ void cat_file(f32 *fs,struct directory *dir,char* name)
                     }
                     else
                     {
-                        term_writeln_ext("File not found, if you are sure it exists make sure to add a / to the filename.",COL4_RED);
-                        term_writeln_ext("For example: 'cat /yourfile.txt' ",COL4_RED);
+                        System::KernelIO::Terminal.WriteLine("File not found, if you are sure it exists make sure to add a / to the filename.",COL4_RED);
+                        System::KernelIO::Terminal.WriteLine("For example: 'cat /yourfile.txt' ",COL4_RED);
 
                     }
 }
 void print_directory(f32 *fs, struct directory *dir) {
-            term_writeln_ext("Listing Directory",COL4_CYAN);
+            System::KernelIO::Terminal.WriteLine("Listing Directory",COL4_CYAN);
     uint32_t i;
     uint32_t max_name = 0;
     for(i = 0; i < dir->num_entries; i++) {
