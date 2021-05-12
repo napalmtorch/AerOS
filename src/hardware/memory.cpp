@@ -172,6 +172,9 @@ extern "C"
         strdec((uint32_t)(uint32_t)entry + sizeof(struct entry), s);
         System::KernelIO::WriteLine(s);
 
+        for (int i = 0; i < size; i++)
+             ((uint8_t*)((uint32_t)entry + sizeof(struct entry)))[i] = 0;
+
         //return alloc result
         return (void*)((uint32_t)entry + sizeof(struct entry));
     }
@@ -193,6 +196,8 @@ int memcmp(const void* a, const void* b, size_t len) {
     void mem_free(void* ptr)
     {
         if (ptr == nullptr) { debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr"); return; }
+
+        if ((uint32_t)ptr < start) return;
 
         System::KernelIO::Write("FREE at ");
         char s[6];
