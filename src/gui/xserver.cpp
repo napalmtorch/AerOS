@@ -2,7 +2,6 @@
 #include <core/kernel.hpp>
 #include <gui/widget.hpp>
 #include <gui/winmgr.hpp>
-#include <apps/osinfo.hpp>
 
 namespace System
 {
@@ -72,12 +71,6 @@ namespace System
         char fpsString[16];
         char winCountStr[16];
 
-        // start button
-        Button StartBtn;
-
-        // test window
-        Window* win;
-
         // initialize xserver interface
         void XServerHost::Initialize()
         {
@@ -97,15 +90,8 @@ namespace System
             KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
             KernelIO::Mouse.SetPosition(KernelIO::VESA.GetWidth() / 2, KernelIO::VESA.GetHeight() / 2);
 
-            // start button
-            StartBtn = Button(3, KernelIO::VESA.GetHeight() - 20, "");
-            StartBtn.Base.Bounds.Width = 56;
-            StartBtn.Base.Bounds.Height = 17;
-
-            WindowManager::Initialize();
-
             // test window
-            Applications::OSInfo::Start();
+            //Applications::OSInfo::Start();
             
 
             // running flag
@@ -128,10 +114,6 @@ namespace System
 
             // update taskbar
             Taskbar.Update();
-
-            StartBtn.Update();
-
-            WindowManager::Update();
 
             // get arrow key mouse movement when enabled
             if (KernelIO::Mouse.GetArrowKeyState()) { KernelIO::Mouse.UpdateArrowKeyMovement(); }
@@ -168,12 +150,6 @@ namespace System
             
             // draw taskbar
             Taskbar.Draw();
-
-            // draw start button
-            StartBtn.Draw();
-            FullCanvas.DrawString(StartBtn.Base.Bounds.X + 7, StartBtn.Base.Bounds.Y + 5, "Start", ButtonStyle.Colors[1], Graphics::FONT_8x8);
-
-            WindowManager::Draw();
 
             // draw mouse
             KernelIO::Mouse.Draw();

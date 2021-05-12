@@ -12,14 +12,7 @@ namespace System
         // window manager
         namespace WindowManager
         {
-            extern Window* Windows[];
-            extern uint32_t WindowCount;
-
-            void Initialize();
-            void Update();
-            void Draw();
-            void Start(System::GUI::Window* win);
-            void Close(System::GUI::Window* win);
+           
         }
     }
 }
