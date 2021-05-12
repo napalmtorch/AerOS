@@ -811,7 +811,7 @@ void cat_file(f32 *fs,struct directory *dir,char* name)
                         int count, total;
                         while((count = fread(&c, BCOUNT, 1, f)), count > 0) 
                         {
-                            for(int i = 0; i < count; i++) { term_write_char(c[i]); }
+                            for(int i = 0; i < count; i++) { System::KernelIO::Terminal.WriteChar(c[i]); }
                             total += count;
                         }
 
