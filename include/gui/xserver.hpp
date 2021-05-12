@@ -12,12 +12,20 @@ namespace System
 {
     namespace GUI
     {
+        struct XServerTaskbarItem
+        {
+            char Name[24];
+            bool Hover, Down;
+            Window* Window;
+        };
+
         // taskbar class
         class XServerTaskbar
         {
             public:
                 void Update();
                 void Draw();
+                XServerTaskbarItem* Items[32];
         };
 
         // xserver base class
