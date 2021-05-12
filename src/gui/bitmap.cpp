@@ -2,11 +2,16 @@
 #include <gui/bitmap.hpp>
 #include <hardware/memory.hpp>
 #include <hardware/fat.hpp>
-extern "C" {
-bitmap_t * bitmap_create(char * filename) {
+
+extern "C"
+{
+    
+bitmap_t * bitmap_create(char * filename) 
+{
     bitmap_t * ret = (bitmap_t*)mem_alloc(sizeof(bitmap_t));
     FILE * file = fopen(filename, 0);
-    if(!file) {
+    if(!file) 
+    {
         return NULL;
     }
     struct directory dir;
@@ -33,7 +38,8 @@ bitmap_t * bitmap_create(char * filename) {
 
 
 
-void bitmap_display(bitmap_t * bmp) {
+void bitmap_display(bitmap_t * bmp) 
+{
     if(!bmp) return;
     uint8_t * image = (uint8_t*)bmp->image_bytes;
     uint32_t * screen = (uint32_t*)0xfd000000;
@@ -52,6 +58,7 @@ void bitmap_display(bitmap_t * bmp) {
         }
     }
 }
+
 void bitmap_to_framebuffer(bitmap_t * bmp, uint32_t * frame_buffer) {
     if(!bmp) return;
     uint8_t * image = (uint8_t*)bmp->image_bytes;

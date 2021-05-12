@@ -13,13 +13,16 @@ SECTIONS
 	{
 		*(.rodata)
 	}
-	.data BLOCK(4K) : ALIGN(4K){
+	.data BLOCK(4K) : ALIGN(4K)
+	{
 		*(.data)
 	}
-	.bss BLOCK(4K) : ALIGN(4K){
+	.bss BLOCK(4K) : ALIGN(4K)
+	{
 		*(COMMON)
 		*(.bss)
 		*(.bootstrap_stack)
 	}
-  kernel_end =.;
+
+  	kernel_end = ALIGN(4K);
 }

@@ -78,12 +78,11 @@ namespace HAL
                 uint32_t hour12 = hour;
                 if (hour > 12) { hour12 = hour - 12; }
                 else if (hour > 0 && hour <= 12) { hour12 = hour; }
-                else if (hour == 0) { hour12 = hour; }
+                else if (hour == 0) { hour12 = 12; }
                 strdec(hour12, hr);
                 strcat(TimeString, hr);
                 strcat(TimeString, ":");
                 // minute
-                 // minute
                 char min[4];
                 strdec(minute, min);
                 if (minute < 10) { stradd(TimeString, '0');}

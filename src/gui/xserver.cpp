@@ -1,7 +1,6 @@
 #include "gui/xserver.hpp"
 #include <core/kernel.hpp>
 #include <gui/widget.hpp>
-#include <gui/winmgr.hpp>
 
 namespace System
 {
@@ -93,6 +92,8 @@ namespace System
             // test window
             //Applications::OSInfo::Start();
             
+            // initialize window manager
+            WindowMgr.Initialize();                       
 
             // running flag
             Running = true;
@@ -117,6 +118,8 @@ namespace System
 
             // get arrow key mouse movement when enabled
             if (KernelIO::Mouse.GetArrowKeyState()) { KernelIO::Mouse.UpdateArrowKeyMovement(); }
+
+            WindowMgr.Update();
         }
 
         // draw
@@ -148,6 +151,8 @@ namespace System
             sw = strlen(str) * 8;
             FullCanvas.DrawString(spx + 93 + sw, spy + 27, " MB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             
+            WindowMgr.Draw();
+
             // draw taskbar
             Taskbar.Draw();
 

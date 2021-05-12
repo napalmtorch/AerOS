@@ -205,6 +205,9 @@ namespace System
             if (Parameters.VGA) { XServer.Start(VIDEO_DRIVER_VGA); }
             else if (Parameters.VESA) { XServer.Start(VIDEO_DRIVER_VESA); }
             else { Shell.Initialize(); }
+
+            void* end = &kernel_end;
+            debug_write_dec("KERNEL_END: ", (uint32_t)end);
         }
 
 

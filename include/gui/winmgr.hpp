@@ -3,16 +3,23 @@
 #include <lib/string.hpp>
 #include <lib/list.hpp>
 #include <gui/widget.hpp>
-#include <gui/xserver.hpp>
 
 namespace System
 {
     namespace GUI
     {
-        // window manager
-        namespace WindowManager
+        class WindowManager
         {
-           
-        }
+            public:
+                void Initialize();
+                void Update();
+                void Draw();
+                void Open(Window* win);
+                void Close(Window* win);
+            private:
+                Window* Windows[4096];
+                uint32_t Index;
+                uint32_t Count;
+        };
     }
 }
