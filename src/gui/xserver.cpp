@@ -76,7 +76,7 @@ namespace System
             Running = false;
             FPS = 0;
             time = 1;
-            BackColor = Graphics::Colors::CornflowerBlue;
+            BackColor = Graphics::Colors::DarkCyan;
         }
 
         // start
