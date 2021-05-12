@@ -96,6 +96,8 @@ namespace HAL
     class TerminalManager
     {
         public:
+            void* Window;
+
             // initialize terminal interface
             void Initialize();
 

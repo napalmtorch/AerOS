@@ -15,6 +15,8 @@ namespace System
 
         WinTerminal::WinTerminal(int32_t x, int32_t y) : GUI::Window(x, y, 404, 259, "Terminal")
         {
+            KernelIO::Terminal.Window = this;
+
             // initialize buffer
             BufferWidth = (Bounds->Width - 3) / 8;
             BufferHeight = (Bounds->Height - 19) / 8;
@@ -36,10 +38,19 @@ namespace System
         {
             GUI::Window::Update();
 
+            // set terminal
+            if (Flags->Active)
+            {
+                KernelIO::Terminal.Window = this;
+            }
+
             time = KernelIO::RTC.GetSecond();
             if (time != last_time)
             {
                 cursor_flash = !cursor_flash;
+                char temp[2];
+                strdec(time, temp);
+                KernelIO::Terminal.WriteLine(temp);
                 last_time = time;
             }
         }
@@ -82,31 +93,81 @@ namespace System
             }
         }
 
-        void WinTerminal::WriteChar(char c)
+        void WinTerminal::NewLine()
+        {
+            CursorX = 0; CursorY++;
+            if (CursorY >= BufferHeight) { Scroll(); CursorY--; }
+        }
+
+        void WinTerminal::Scroll()
+        {
+            // move buffer up 1 line
+            mem_copy((uint8_t*)(Buffer + (BufferWidth * 2)), Buffer, (BufferWidth * BufferHeight * 2) - (BufferWidth * 2));
+            // clear bottom line
+            for (size_t j = (BufferWidth * BufferHeight * 2) - (BufferWidth * 2); j < (BufferWidth * BufferHeight * 2); j += 2)
+            {
+                Buffer[j] = 0x20;
+                Buffer[j + 1] = term_pack_colors(COL4_WHITE, BackColor);
+            }
+        }
+
+        // put character at position on screen
+        void WinTerminal::PutChar(uint16_t x, uint16_t y, char c, COL4 fg, COL4 bg)
+        {
+            if (x >= BufferWidth || y >= BufferHeight) { return; }
+            uint32_t offset = (x + (y * BufferWidth)) * 2;
+            Buffer[offset] = c;
+            Buffer[offset + 1] = term_pack_colors(fg, bg);
+        }
+
+        // write character to next position
+        void WinTerminal::WriteChar(char c) { WriteChar(c, ForeColor, BackColor); }
+        void WinTerminal::WriteChar(char c, COL4 fg) { WriteChar(c, fg, BackColor); }
+        void WinTerminal::WriteChar(char c, COL4 fg, COL4 bg)
         {
             uint32_t offset = (CursorX + (CursorY * BufferWidth)) * 2;
-            if (c == '\n') { CursorY++; CursorX = 0; }
+            if (c == '\n') { NewLine(); }
             else
             {
                 Buffer[offset] = c;
-                Buffer[offset + 1] = term_pack_colors(ForeColor, BackColor);
+                Buffer[offset + 1] = term_pack_colors(fg, bg);
                 CursorX++;
-                if (CursorX >= BufferWidth) { CursorY++; CursorX = 0; }
+                if (CursorX >= BufferWidth) { NewLine(); }
             }
         }
 
-        void WinTerminal::Write(char* text)
+
+        // write string to next position     
+        void WinTerminal::Write(char* text) { Write(text, ForeColor, BackColor); }
+        void WinTerminal::Write(char* text, COL4 fg) { Write(text, fg, BackColor); }
+        void WinTerminal::Write(char* text, COL4 fg, COL4 bg)
         {
             for (size_t i = 0; i < strlen(text); i++)
             {
-                WriteChar(text[i]);
+                WriteChar(text[i], fg, bg);
             }
         }
 
-        void WinTerminal::WriteLine(char* text)
+        // write line to next position
+        void WinTerminal::WriteLine(char* text) { WriteLine(text, ForeColor, BackColor); }
+        void WinTerminal::WriteLine(char* text, COL4 fg) { WriteLine(text, fg, BackColor); }
+        void WinTerminal::WriteLine(char* text, COL4 fg, COL4 bg)
         {
-            Write(text);
+            Write(text, fg, bg);
             WriteChar('\n');
+        }
+
+        // set cursor position
+        void WinTerminal::SetCursorPos(uint16_t x, uint16_t y) { CursorX = x; CursorY = y;}
+        void WinTerminal::SetCursorX(uint16_t x) { CursorX = x; }
+        void WinTerminal::SetCursorY(uint16_t y) { CursorY = y; }
+
+        void WinTerminal::DeleteLast()
+        {
+            CursorX--;
+            uint32_t offset = (CursorX + (CursorY * BufferWidth)) * 2;
+            Buffer[offset] = 0x20;
+            Buffer[offset + 1] = term_pack_colors(ForeColor, BackColor);
         }
 
         Color WinTerminal::ConvertColor(uint8_t color)

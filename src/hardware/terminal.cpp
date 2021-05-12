@@ -1,4 +1,6 @@
 #include "hardware/terminal.hpp"
+#include <gui/widget.hpp>
+#include <apps/win_term.hpp>
 
 extern "C"
 {
@@ -261,30 +263,58 @@ namespace HAL
     void TerminalManager::Initialize() { term_init(); }
 
     // clear the terminal
-    void TerminalManager::Clear() { term_clear(back_color); }
-    void TerminalManager::Clear(COL4 color) { term_clear(color); }
+    void TerminalManager::Clear() 
+    {
+        if (Window == nullptr) { term_clear(back_color); }
+        else { ((System::Applications::WinTerminal*)Window)->Clear(); }
+    }
+
+    void TerminalManager::Clear(COL4 color) 
+    { 
+        if (Window == nullptr) { term_clear(color); }
+        else { ((System::Applications::WinTerminal*)Window)->BackColor = color; ((System::Applications::WinTerminal*)Window)->Clear(); }
+    }
 
     // new line
-    void TerminalManager::NewLine() { term_newline(); }
+    void TerminalManager::NewLine() 
+    { 
+        if (Window == nullptr) { term_newline(); }
+        else { ((System::Applications::WinTerminal*)Window)->NewLine(); }
+    }
 
     // scroll
-    void TerminalManager::Scroll() { term_scroll(1); }
-    void TerminalManager::Scroll(uint32_t amount) { term_scroll(amount); }
+    void TerminalManager::Scroll() { Scroll(1); }
+    void TerminalManager::Scroll(uint32_t amount) 
+    { 
+        if (Window == nullptr) { term_scroll(amount); }
+        else
+        {
+            for (size_t i = 0; i < amount; i++) { ((System::Applications::WinTerminal*)Window)->Scroll(); }
+        }
+    }
 
     // delete
-    void TerminalManager::Delete() { term_delete(); }
+    void TerminalManager::Delete()
+    { 
+        if (Window == nullptr) { term_delete(); }
+        else { ((System::Applications::WinTerminal*)Window)->DeleteLast(); }
+    }
 
     // delete amount
     void TerminalManager::Delete(uint32_t amount)
     {
-        for (size_t i = 0; i < amount; i++) { term_delete(); }
+        for (size_t i = 0; i < amount; i++) { Delete(); }
     }
 
     // put character at position on screen
-    void TerminalManager::PutChar(uint16_t x, uint16_t y, char c, COL4 fg, COL4 bg) { term_put_char(x, y, c, fg, bg); }
+    void TerminalManager::PutChar(uint16_t x, uint16_t y, char c, COL4 fg, COL4 bg)
+    { 
+        if (Window == nullptr) { term_put_char(x, y, c, fg, bg); }
+        else { ((System::Applications::WinTerminal*)Window)->PutChar(x, y, c, fg, bg); }
+    }
 
     // write character to next position
-    void TerminalManager::WriteChar(char c) { term_write_char(c); }
+    void TerminalManager::WriteChar(char c) { WriteChar(c, fore_color, back_color); }
 
     // write character to next position with foreground color
     void TerminalManager::WriteChar(char c, COL4 fg) { WriteChar(c, fg, back_color); }
@@ -294,9 +324,13 @@ namespace HAL
     {
         COL4 fg_old = fore_color;
         COL4 bg_old = back_color;
-        term_set_colors(fg, bg);
-        term_write_char(c);
-        term_set_colors(fg_old, bg_old);
+        if (Window == nullptr)
+        {
+            term_set_colors(fg, bg);
+            term_write_char(c);
+            term_set_colors(fg_old, bg_old);
+        }
+        else { ((System::Applications::WinTerminal*)Window)->WriteChar(c, fg, bg); }
     }
 
     // write aligned char to position
@@ -306,28 +340,45 @@ namespace HAL
 
     void TerminalManager::WriteChar(char c, int y, TEXT_ALIGN align, COL4 fg, COL4 bg)
     {
-        uint8_t old_x = cursor_x, old_y = cursor_y;
-        if (align == TEXT_ALIGN_LEFT) { cursor_x = 0; }
-        else if (align == TEXT_ALIGN_CENTER) { cursor_x = (buffer_width / 2) - 4; }
-        else if (align == TEXT_ALIGN_RIGHT) { cursor_x = buffer_width - 1; }
-        PutChar(cursor_x, y, c, fg, bg);
-        term_set_cursor(old_x, old_y);
+        if (Window == nullptr)
+        {
+            uint8_t old_x = cursor_x, old_y = cursor_y;
+            if (align == TEXT_ALIGN_LEFT) { cursor_x = 0; }
+            else if (align == TEXT_ALIGN_CENTER) { cursor_x = (buffer_width / 2) - 4; }
+            else if (align == TEXT_ALIGN_RIGHT) { cursor_x = buffer_width - 1; }
+            PutChar(cursor_x, y, c, fg, bg);
+            term_set_cursor(old_x, old_y);
+        }
+        else
+        {
+            uint8_t old_x = ((System::Applications::WinTerminal*)Window)->CursorX, old_y = ((System::Applications::WinTerminal*)Window)->CursorY;
+            if (align == TEXT_ALIGN_LEFT) { ((System::Applications::WinTerminal*)Window)->CursorX = 0; }
+            else if (align == TEXT_ALIGN_CENTER) { ((System::Applications::WinTerminal*)Window)->CursorX = (((System::Applications::WinTerminal*)Window)->BufferWidth / 2) - 4; }
+            else if (align == TEXT_ALIGN_RIGHT) { ((System::Applications::WinTerminal*)Window)->CursorX = ((System::Applications::WinTerminal*)Window)->BufferWidth - 1; }
+            PutChar(((System::Applications::WinTerminal*)Window)->CursorX, y, c, fg, bg);
+            ((System::Applications::WinTerminal*)Window)->CursorX = old_x;
+            ((System::Applications::WinTerminal*)Window)->CursorY = old_y;
+        }
     }
 
     // write string to next position
-    void TerminalManager::Write(char* text) { term_write(text); }
+    void TerminalManager::Write(char* text) { Write(text, fore_color, back_color); }
 
     // write string to next position with foreground color
-    void TerminalManager::Write(char* text, COL4 fg) { term_write_ext(text, fg); }
+    void TerminalManager::Write(char* text, COL4 fg) { Write(text, fg, back_color); }
 
     // write string to next position with foreground and background color
     void TerminalManager::Write(char* text, COL4 fg, COL4 bg)
     {
-        COL4 fg_old = fore_color;
-        COL4 bg_old = back_color;
-        term_set_colors(fg, bg);
-        term_write(text);
-        term_set_colors(fg_old, bg_old);
+        if (Window == nullptr)
+        {
+            COL4 fg_old = fore_color;
+            COL4 bg_old = back_color;
+            term_set_colors(fg, bg);
+            term_write(text);
+            term_set_colors(fg_old, bg_old);
+        }
+        else { ((System::Applications::WinTerminal*)Window)->Write(text, fg, bg); }
     }
 
     // write aligned string to position
@@ -337,36 +388,47 @@ namespace HAL
 
     void TerminalManager::Write(char* text, int y, TEXT_ALIGN align, COL4 fg, COL4 bg)
     {
-        uint8_t old_x = cursor_x, old_y = cursor_y;
-        uint32_t xx;
-        if (align == TEXT_ALIGN_LEFT) { xx = 0; }
-        else if (align == TEXT_ALIGN_CENTER) { xx = (buffer_width / 2) - (strlen(text) / 2); }
-        else if (align == TEXT_ALIGN_RIGHT) { xx = buffer_width - 1; }
-        term_set_cursor(xx, y);
-        for (size_t i = 0; i < strlen(text); i++) { WriteChar(text[i], fg, bg); }
-        term_set_cursor(old_x, old_y);
+        if (Window == nullptr)
+        {
+            uint8_t old_x = cursor_x, old_y = cursor_y;
+            uint32_t xx;
+            if (align == TEXT_ALIGN_LEFT) { xx = 0; }
+            else if (align == TEXT_ALIGN_CENTER) { xx = (buffer_width / 2) - (strlen(text) / 2); }
+            else if (align == TEXT_ALIGN_RIGHT) { xx = buffer_width - 1; }
+            term_set_cursor(xx, y);
+            for (size_t i = 0; i < strlen(text); i++) { WriteChar(text[i], fg, bg); }
+            term_set_cursor(old_x, old_y);
+        }
     }
 
     // write line to next position
-    void TerminalManager::WriteLine(char* text) { term_writeln(text); }
+    void TerminalManager::WriteLine(char* text) { WriteLine(text, fore_color, back_color); }
 
     // write line to next position with foreground color
-    void TerminalManager::WriteLine(char* text, COL4 fg) { term_writeln_ext(text, fg); }
+    void TerminalManager::WriteLine(char* text, COL4 fg) { WriteLine(text, fg, back_color); }
 
     // write line to next position with foreground and background color
     void TerminalManager::WriteLine(char* text, COL4 fg, COL4 bg)
     {
-        COL4 fg_old = fore_color;
-        COL4 bg_old = back_color;
-        term_set_colors(fg, bg);
-        term_writeln(text);
-        term_set_colors(fg_old, bg_old);
+        if (Window == nullptr)
+        {
+            COL4 fg_old = fore_color;
+            COL4 bg_old = back_color;
+            term_set_colors(fg, bg);
+            term_writeln(text);
+            term_set_colors(fg_old, bg_old);
+        }
+        else { ((System::Applications::WinTerminal*)Window)->WriteLine(text, fg, bg); }
     }
 
     // set cursor position
-    void TerminalManager::SetCursorPos(uint16_t x, uint16_t y) { term_set_cursor(x, y); }
-    void TerminalManager::SetCursorX(uint16_t x) { term_set_cursor_x(x); }
-    void TerminalManager::SetCursorY(uint16_t y) { term_set_cursor_y(y); }
+    void TerminalManager::SetCursorPos(uint16_t x, uint16_t y) 
+    { 
+        if (Window == nullptr) { term_set_cursor(x, y); }
+        else { ((System::Applications::WinTerminal*)Window)->SetCursorPos(x, y); }
+    }
+    void TerminalManager::SetCursorX(uint16_t x) { SetCursorPos(x, cursor_y); }
+    void TerminalManager::SetCursorY(uint16_t y) { SetCursorPos(cursor_x, y); }
 
     // get cursor position
     uint16_t TerminalManager::GetCursorX() { return cursor_x; }
@@ -379,10 +441,18 @@ namespace HAL
     void TerminalManager::DisableCursor() { term_cursor_disable(); }
 
     // set colors
-    void TerminalManager::SetColors(COL4 fg, COL4 bg) { term_set_colors(fg, bg); }
+    void TerminalManager::SetColors(COL4 fg, COL4 bg) 
+    { 
+        if (Window == nullptr) { term_set_colors(fg, bg); }
+        else
+        {
+            ((System::Applications::WinTerminal*)Window)->ForeColor = fg;
+            ((System::Applications::WinTerminal*)Window)->BackColor = bg;
+        }
+    }
     void TerminalManager::SetColors(uint8_t packed_value) { /* not yet implemented */ }
-    void TerminalManager::SetForeColor(COL4 color) { term_set_fg(color); }
-    void TerminalManager::SetBackColor(COL4 color) { term_set_bg(color); }
+    void TerminalManager::SetForeColor(COL4 color) { SetColors(color, back_color); }
+    void TerminalManager::SetBackColor(COL4 color) { SetColors(fore_color, color); }
 
     // get colors
     COL4 TerminalManager::GetForeColor() { return fore_color; }

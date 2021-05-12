@@ -159,15 +159,6 @@ namespace System
                 TitleBar* TBar;
         };
 
-        class TestApp : public Window
-        {
-            public:
-                TestApp();
-                TestApp(int32_t x, int32_t y);
-                void Update() override;
-                void Draw() override;
-        };
-
         // check widget default events
         void CheckWidgetEvents(Widget* widget);
 

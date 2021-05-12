@@ -295,33 +295,5 @@ namespace System
                 KernelIO::XServer.FullCanvas.DrawRectangle((*Bounds), 2, Style->Colors[4]);
             }
         }
-
-        // -------------------------------------------------- TEST APP -------------------------------------------------- //
-
-        TestApp::TestApp()
-        {
-
-        }
-
-        Button* btn;
-        TestApp::TestApp(int32_t x, int32_t y) : Window(x, y, 320, 240, "Testing")
-        {
-            btn = new Button(ClientBounds->X + 4, ClientBounds->Y + 4, "BTN");
-        }
-
-        void TestApp::Update()
-        {
-            Window::Update();
-            
-            btn->Update();
-            btn->SetPosition(ClientBounds->X + 4, ClientBounds->Y + 4);
-        }
-
-        void TestApp::Draw()
-        {   
-            Window::Draw();
-
-            btn->Draw();
-        }
     }
 }
