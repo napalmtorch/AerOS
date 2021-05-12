@@ -16,7 +16,7 @@ namespace System
         {
             char Name[24];
             bool Hover, Down;
-            Window* Window;
+            void* Window;
         };
 
         // taskbar class
