@@ -14,18 +14,22 @@ namespace System
     {
         struct XServerTaskbarItem
         {
-            char Name[24];
+            char* Name;
+            bounds_t Bounds;
             bool Hover, Down;
             void* Window;
+            XServerTaskbarItem();
+            XServerTaskbarItem(char* text);
         };
 
         // taskbar class
         class XServerTaskbar
         {
             public:
+                void Initialize();
                 void Update();
                 void Draw();
-                XServerTaskbarItem* Items[32];
+                XServerTaskbarItem Items[32];
         };
 
         // xserver base class

@@ -139,7 +139,7 @@ namespace Graphics
         for (size_t i = 0; i < strlen(text); i++)
         {
             if (text[i] == '\n') { dx = x; dy += font.GetHeight() + font.GetVerticalSpacing(); }
-            else
+            else if (text[i] >= 32 && text[i] <= 126)
             {
                 DrawChar(dx, dy, text[i], fg, font);
                 dx += font.GetWidth() + font.GetHorizontalSpacing();
@@ -157,7 +157,7 @@ namespace Graphics
         for (size_t i = 0; i < strlen(text); i++)
         {
             if (text[i] == '\n') { dx = x; dy += font.GetHeight() + font.GetVerticalSpacing(); }
-            else
+            else if (text[i] >= 32 && text[i] <= 126)
             {
                 DrawChar(dx, dy, text[i], fg, bg, font);
                 dx += font.GetWidth() + font.GetHorizontalSpacing();

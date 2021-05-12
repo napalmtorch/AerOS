@@ -77,6 +77,7 @@ namespace System
             FPS = 0;
             time = 1;
             BackColor = Graphics::Colors::DarkCyan;
+            Taskbar.Initialize();
         }
 
         // start
@@ -171,11 +172,75 @@ namespace System
         // check if xserver is running
         bool XServerHost::IsRunning() { return Running; }
 
-        // update taskbar
-        void XServerTaskbar::Update()
+        XServerTaskbarItem::XServerTaskbarItem() { }
+
+        XServerTaskbarItem::XServerTaskbarItem(char* text)
+        {
+            Bounds = bounds_t();
+            Bounds.X = 0;
+            Bounds.Y = KernelIO::VESA.GetHeight() - 21;
+            Bounds.Width = 100;
+            Bounds.Height = 18;
+
+            Name = text;
+        }
+
+        // initialize taskbar
+        void XServerTaskbar::Initialize()
         {
 
         }
+
+        // update taskbar
+        void XServerTaskbar::Update()
+        {
+            // update taskbar items
+            uint32_t xx = 64;
+            uint32_t yy = KernelIO::VESA.GetHeight() - 21;
+
+            // populate list - max allowed windows
+            for (size_t i = 0; i < 32; i++)
+            {
+                Items[i] = NULL;
+            }
+
+            for (size_t i = 0; i < 4; i++)
+            {
+                if (KernelIO::XServer.WindowMgr.Windows[i] != nullptr)
+                {
+                    Items[i] = XServerTaskbarItem(KernelIO::XServer.WindowMgr.Windows[i]->Title);
+                    Items[i].Window = KernelIO::XServer.WindowMgr.Windows[i];
+                }
+            }
+
+            // update list
+            for (size_t i = 0; i < 32; i++)
+            {
+                if (&Items[i] != nullptr && Items[i].Name != nullptr && strlen(Items[i].Name) > 0 && !streql(Items[i].Name, "\0"))
+                {
+                    Items[i].Bounds.X = xx;
+                    Items[i].Bounds.Y = yy;
+                    xx += Items[i].Bounds.Width + 4;
+
+                    if (bounds_contains(&Items[i].Bounds, KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY()))
+                    {
+                        if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
+                        {
+                            Items[i].Down = true;
+                            for (size_t j = 0; j < KernelIO::XServer.WindowMgr.Index + 1; j++)
+                            {
+                                if (KernelIO::XServer.WindowMgr.Windows[j] == (Window*)Items[i].Window)
+                                {
+                                    KernelIO::XServer.WindowMgr.ActiveWindow = (Window*)Items[i].Window;
+                                    break;
+                                }
+                            }
+                        }
+                        else { Items[i].Down = false; }
+                    }
+                }
+            }
+        }   
 
         // draw taskbar
         void XServerTaskbar::Draw()
@@ -192,6 +257,21 @@ namespace System
             // draw time
             char* time = KernelIO::RTC.GetTimeString(false, false);
             KernelIO::XServer.FullCanvas.DrawString(KernelIO::VESA.GetWidth() - (strlen(time) * 8) - 4, KernelIO::VESA.GetHeight() - 16, time, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+
+            // draw items
+            for (size_t i = 0; i < 4; i++)
+            {
+                if (&Items[i] != nullptr && Items[i].Name != nullptr && strlen(Items[i].Name) > 0 && !streql(Items[i].Name, "\0"))
+                {
+                    // draw border
+                    if (KernelIO::XServer.WindowMgr.ActiveWindow == (Window*)Items[i].Window) 
+                    { KernelIO::XServer.FullCanvas.DrawRectangle3D(Items[i].Bounds.X, Items[i].Bounds.Y, Items[i].Bounds.Width, Items[i].Bounds.Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }
+                    else { KernelIO::XServer.FullCanvas.DrawRectangle3D(Items[i].Bounds.X, Items[i].Bounds.Y, Items[i].Bounds.Width, Items[i].Bounds.Height, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]); }
+
+                    // draw name
+                    KernelIO::XServer.FullCanvas.DrawString(Items[i].Bounds.X + 3, Items[i].Bounds.Y + 4, Items[i].Name, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+                }
+            }
         }
     }
 }
