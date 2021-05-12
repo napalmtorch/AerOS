@@ -135,7 +135,9 @@ namespace Graphics
         extern const Color Red;                 
         extern const Color Green;               
         extern const Color Yellow;              
-        extern const Color Magenta;             
+        extern const Color Magenta;           
+
+        extern const Color Transparent;  
     }
     
     COL4 GetColorFromName(char* name);

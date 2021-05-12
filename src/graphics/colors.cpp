@@ -114,5 +114,7 @@ namespace Graphics
         const Color Green                       = { 0xFF, 0x00, 0xFF, 0x00 };
         const Color Yellow                      = { 0xFF, 0xFF, 0xFF, 0x00 };
         const Color Magenta                     = { 0xFF, 0xFF, 0x00, 0xFF };
+
+        const Color Transparent                 = { 0x00, 0x00, 0x00, 0x00 };
     }
 }

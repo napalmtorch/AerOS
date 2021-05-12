@@ -61,7 +61,7 @@ namespace System
             // font
             Graphics::Font* Font;
 
-        } __attribute__((packed)) VisualStyle;
+        } VisualStyle;
 
         typedef struct
         {
@@ -158,6 +158,8 @@ namespace System
                 VisualStyle* Style;
                 TitleBar* TBar;
         };
+
+        VisualStyle* CopyStyle(VisualStyle* src);
 
         // check widget default events
         void CheckWidgetEvents(Widget* widget);

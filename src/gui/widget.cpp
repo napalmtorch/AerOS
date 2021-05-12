@@ -6,6 +6,24 @@ namespace System
 {
     namespace GUI
     {
+        VisualStyle* CopyStyle(VisualStyle* src)
+        {
+            VisualStyle* style = (VisualStyle*)mem_alloc(sizeof(VisualStyle));
+
+            // name
+            strcpy(src->Name, style->Name);
+
+            // flags
+            style->BorderSize = src->BorderSize;
+            style->BorderStyle = src->BorderStyle;
+            style->Font = src->Font;
+
+            // colors
+            for (size_t i = 0; i < 8; i++) { style->Colors[i] = src->Colors[i]; }
+
+            return style;
+        }
+
         // check widget default events
         void CheckWidgetEvents(Widget* widget)
         {

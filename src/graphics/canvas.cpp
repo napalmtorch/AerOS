@@ -42,6 +42,7 @@ namespace Graphics
     // draw pixel
     void Canvas::DrawPixel(int32_t x, int32_t y, Color color)
     {
+        if (color.A == 0) { return; }
         if (x < 0 || y < 0) { return; }
         if (Driver == VIDEO_DRIVER_VESA)
         { System::KernelIO::VESA.SetPixel(x, y, Graphics::RGBToPackedValue(color.R, color.G, color.B)); }
@@ -53,6 +54,7 @@ namespace Graphics
     // draw filled rectangle
     void Canvas::DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, Color color)
     {
+        if (color.A == 0) { return; }
         for (size_t i = 0; i < w * h; i++)
         {
             DrawPixel(x + (i % w), y + (i / w), color);
@@ -68,6 +70,7 @@ namespace Graphics
     // draw rectangle outline
     void Canvas::DrawRectangle(int32_t x, int32_t y, int32_t w, int32_t h, int32_t thickness, Color color)
     {
+        if (color.A == 0) { return; }
         DrawFilledRectangle(x, y, w, thickness, color);
         DrawFilledRectangle(x, y + h - thickness, w, thickness, color);
         DrawFilledRectangle(x, y + thickness, thickness, h - (thickness * 2), color);
@@ -93,6 +96,7 @@ namespace Graphics
     // draw character
     void Canvas::DrawChar(int32_t x, int32_t y, char c, Color fg, Font font)
     {
+        if (fg.A == 0) { return; }
         uint32_t p = font.GetHeight() * c;
         for (size_t cy = 0; cy < font.GetHeight(); cy++)
         {

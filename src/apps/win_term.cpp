@@ -17,6 +17,10 @@ namespace System
         {
             KernelIO::Terminal.Window = this;
 
+            // set style
+            Style = GUI::CopyStyle(&GUI::WindowStyle);
+            Style->Colors[0] = Graphics::Colors::Transparent;
+
             // initialize buffer
             BufferWidth = (Bounds->Width - 3) / 8;
             BufferHeight = (Bounds->Height - 19) / 8;
@@ -61,6 +65,7 @@ namespace System
             
             if (Flags->CanDraw)
             {
+                
                 // draw buffer
                 for (size_t y = 0; y < BufferHeight; y++)
                 {
