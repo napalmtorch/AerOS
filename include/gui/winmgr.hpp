@@ -13,13 +13,22 @@ namespace System
             public:
                 void Initialize();
                 void Update();
+                void UpdateCounters();
                 void Draw();
                 void Open(Window* win);
                 void Close(Window* win);
-            private:
+                void PushToTop(Window* win);
+            
+            public:
                 Window* Windows[4096];
+                Window* ActiveWindow;
                 uint32_t Index;
                 uint32_t Count;
+                int32_t MovingCount;
+                int32_t HoverCount;
+                int32_t ResizeCount;
+                int32_t FullscreenIndex;
+                
         };
     }
 }

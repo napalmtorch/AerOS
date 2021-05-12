@@ -62,7 +62,11 @@ namespace System
     void ShellHost::HandleInput(char* input)
     {
         ParseCommand(input);
-        PrintCaret();
+        
+        char* cmd = strsplit_index(input, 0 ,' ');
+        strupper(cmd);
+        if (!streql(cmd, "GFX")) { PrintCaret(); }
+        delete cmd;
     }
 
     void ShellHost::ParseCommand(char* input)
@@ -278,6 +282,7 @@ namespace System
 
         void GFX(char* input)
         {
+            if (KernelIO::Terminal.Window != nullptr) { KernelIO::Terminal.WriteLine("Graphics mode already running", COL4_RED); return; }
             asm volatile("cli");
 
             KernelIO::VESA.SetMode(640, 480, 32);
@@ -288,8 +293,6 @@ namespace System
 
             // initialize keyboard
             KernelIO::Keyboard.Initialize();
-            KernelIO::Keyboard.BufferEnabled = false;
-            KernelIO::Keyboard.Event_OnEnterPressed = nullptr;
 
             // initialize mouse
             KernelIO::Mouse.Initialize();

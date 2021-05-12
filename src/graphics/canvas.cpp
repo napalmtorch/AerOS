@@ -97,6 +97,8 @@ namespace Graphics
     void Canvas::DrawChar(int32_t x, int32_t y, char c, Color fg, Font font)
     {
         if (fg.A == 0) { return; }
+        if (c == 0) { return; }
+        if (c == '\0') { return; }
         uint32_t p = font.GetHeight() * c;
         for (size_t cy = 0; cy < font.GetHeight(); cy++)
         {
@@ -132,6 +134,7 @@ namespace Graphics
     // draw string
     void Canvas::DrawString(int32_t x, int32_t y, char* text, Color fg, Font font)
     {
+        if (strlen(text) == 0 || text[0] == '\0') { return; }
         int32_t dx = x, dy = y;
         for (size_t i = 0; i < strlen(text); i++)
         {
@@ -164,6 +167,18 @@ namespace Graphics
 
     // draw string with background color
     void Canvas::DrawString(point_t pos, char* text, Color fg, Color bg, Font font) { DrawString(pos.X, pos.Y, text, fg, bg, font); }
+
+    // draw array of zeros and ones
+    void Canvas::DrawFlatArray(int32_t x, int32_t y, int32_t w, int32_t h, uint8_t* data, Color color)
+    {
+        for (size_t yy = 0; yy < h; yy++)
+        {
+            for (size_t xx = 0; xx < w; xx++)
+            {
+                if (data[xx + (yy * w)] > 0) { DrawPixel(x + xx, y + yy, color); }
+            }
+        }
+    }
 
     // ---------------------------------------- VGA CANVAS
 

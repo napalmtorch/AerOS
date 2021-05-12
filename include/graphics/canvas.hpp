@@ -74,6 +74,8 @@ namespace Graphics
             void DrawString(point_t pos, char* text, Color fg, Font font);
             void DrawString(int32_t x, int32_t y, char* text, Color fg, Color bg, Font font);
             void DrawString(point_t pos, char* text, Color fg, Color bg, Font font);
+
+            void DrawFlatArray(int32_t x, int32_t y, int32_t w, int32_t h, uint8_t* data, Color color);
         private:
             VIDEO_DRIVER Driver;
 

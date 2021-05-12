@@ -150,6 +150,11 @@ namespace System
             FullCanvas.DrawString(spx + 93, spy + 27, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             sw = strlen(str) * 8;
             FullCanvas.DrawString(spx + 93 + sw, spy + 27, " MB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+
+            // status panel - active window
+            strdec((uint32_t)WindowMgr.ActiveWindow, str);
+            FullCanvas.DrawString(spx + 5, spy + 38, "ACTIVE WIN: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            FullCanvas.DrawString(spx + 93, spy + 38, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             
             WindowMgr.Draw();
 

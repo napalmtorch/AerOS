@@ -32,8 +32,8 @@ namespace System
                 void Update();
                 void Draw();
                 bool IsRunning();
-            private:
                 WindowManager WindowMgr;
+            private:
                 XServerTaskbar Taskbar;
                 bool Running;
                 uint32_t FPS, frames, time, last_time;

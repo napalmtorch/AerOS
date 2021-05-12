@@ -83,6 +83,10 @@ namespace System
             bool Toggled;
         } __attribute((packed)) WidgetFlags;
         
+        extern uint8_t TITLEBAR_ICON_CLOSE[];
+        extern uint8_t TITLEBAR_ICON_MAX[];
+        extern uint8_t TITLEBAR_ICON_MIN[];
+
         class Widget
         {
             // functions
@@ -138,6 +142,9 @@ namespace System
                 void Update() override;
                 void Draw() override;
                 Window* Parent;
+                Button* BtnClose;
+                Button* BtnMax;
+                Button* BtnMin;
         };
 
         class Window
