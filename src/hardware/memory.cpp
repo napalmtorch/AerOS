@@ -22,6 +22,9 @@ extern "C"
     uint32_t reserved_start;
     uint32_t reserved_size;
     uint32_t reserved_pos;
+
+    // properties
+    uint32_t mem_used;
     bool dynamic_mode;
 
     // initialize memory management system
@@ -63,8 +66,18 @@ extern "C"
         {
             // get available offset
             uint32_t offset = reserved_start + reserved_pos;
+            
+            // increment reserved memory position
+            reserved_pos += size + 1;
+            // increment memory used
+            mem_used += size + 1;
 
-            reserved_pos += size;
+            // allocation message
+            debug_write("ALLOCATION: ");
+            debug_write_hex("offset = ", offset);
+            debug_writeln_dec("      size = ", size + 1);
+
+            // return offset
             return (void*)offset;
         }
     }
@@ -94,9 +107,9 @@ extern "C"
     }
 
     // get amount of memory used
-    uint32_t mem_get_used() { return 0; }
+    uint32_t mem_get_used() { return mem_used; }
 
-    uint32_t mem_get_total_usable() { return 0; }
+    uint32_t mem_get_total_usable() { return reserved_size; }
 
     // get amount of installed memory in megabytes
     uint32_t mem_get_total_mb()
