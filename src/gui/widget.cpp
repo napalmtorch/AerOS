@@ -36,7 +36,7 @@ namespace System
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 0,
         };
 
         uint8_t TITLEBAR_ICON_RES[8 * 7] = 
@@ -253,6 +253,7 @@ namespace System
             if (Text != nullptr && strlen(Text) > 0 && !streql(Text, "\0"))
             {
                 uint32_t str_w = strlen(Text) * (Style->Font->GetWidth() + Style->Font->GetHorizontalSpacing());
+                if (str_w <= 1) { return; }
                 uint32_t sx = Bounds->X + (Bounds->Width / 2) - (str_w / 2);
                 uint32_t sy = Bounds->Y + (Bounds->Height / 2) - ((Style->Font->GetHeight() + Style->Font->GetVerticalSpacing()) / 2);
                 if (MouseFlags->Down) { sx += 2; sy += 2; }

@@ -81,7 +81,6 @@ namespace System
             FPS = 0;
             time = 1;
             BackColor = Graphics::Colors::DarkCyan;
-            Taskbar.Initialize();
         }
 
         // start
@@ -94,17 +93,14 @@ namespace System
             KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
             KernelIO::Mouse.SetPosition(KernelIO::VESA.GetWidth() / 2, KernelIO::VESA.GetHeight() / 2);
 
-            MenuBtn = Button(4, KernelIO::VESA.GetHeight() - 21, "AerOS");
-            MenuBtn.SetSize(56, 18);
-
             // initialize taskbar and menu
             Taskbar.Initialize();
             Menu.Initialize();
             Menu.Visible = false;
             Menu.SelectedIndex = -1;
 
-            // test window
-            //Applications::OSInfo::Start();
+            MenuBtn = Button(4, KernelIO::VESA.GetHeight() - 21, "");
+            MenuBtn.SetSize(56, 18);
             
             // initialize window manager
             WindowMgr.Initialize();                       
@@ -203,7 +199,8 @@ namespace System
             MenuBtn.Draw();
             Menu.Draw();
 
-            // draw menu visible button border
+            // draw menu visible button stuff
+            FullCanvas.DrawString(MenuBtn.Bounds->X + 7, MenuBtn.Bounds->Y + 5, "AerOS", ButtonStyle.Colors[1], Graphics::FONT_8x8_PHEONIX);
             if (Menu.Visible) { FullCanvas.DrawRectangle3D(MenuBtn.Bounds->X, MenuBtn.Bounds->Y, MenuBtn.Bounds->Width, MenuBtn.Bounds->Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }
 
             // draw mouse

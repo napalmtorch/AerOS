@@ -13,6 +13,7 @@ namespace System
                 char* Document;
                 WinTextViewer();
                 WinTextViewer(int32_t x, int32_t y);
+                WinTextViewer(int32_t x, int32_t y, char* text);
                 void Update() override;
                 void Draw() override;
         };

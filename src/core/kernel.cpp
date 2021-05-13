@@ -131,7 +131,6 @@ namespace System
             else if (Parameters.VESA)
             {
                 KernelIO::VESA.SetMode(640, 480, 32);
-                HAL::CPU::DisableInterrupts();
                 SetDebugConsoleOutput(false);
                 ThrowOK("Initialized VESA driver");
                 ThrowOK("Set VESA mode to 640x480 double buffered");
@@ -196,7 +195,6 @@ namespace System
             // enable interrupts
             asm volatile("cli");
             HAL::CPU::EnableInterrupts();
-
 
             // initialize x server
             XServer.Initialize();
