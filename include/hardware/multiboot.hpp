@@ -4,7 +4,7 @@
 extern "C"
 {
     // multiboot pointer
-    extern uint32_t mbootdat;
+  //  extern uint32_t mbootdat;
 
     // structure to manage multiboot data
     typedef struct 

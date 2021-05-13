@@ -5,7 +5,8 @@ namespace HAL
     // read info from memory
     void MultibootHeader::Read()
     {
-        this->Header = (multiboot_t*)mbootdat;
+        multiboot_t* mbootdat;
+        this->Header = mbootdat;
         this->Flags = Header->flags;
         this->MemoryUpper = Header->mem_upper;
         this->MemoryLower = Header->mem_lower;

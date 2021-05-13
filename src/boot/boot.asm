@@ -1,75 +1,37 @@
-.intel_syntax noprefix
-
-/*Aligns boot modules on 4KB boundries*/
-.set ALIGN, 1<<0
-
-/*Requires memory data in the multiboot structure*/
-.set MEMINFO, 1 << 1
-
-/*Requires video mode info be available to the kernel*/
-.set VIDEOINFO, 1<<2
-
-/*
-.set VIDEOMODE, 1
-.set VIDEOWIDTH, 200
-.set VIDEOHEIGHT, 30
-.set VIDEODEPTH, 0
-*/
-
-.set MAGIC, 0x1BADB002
-.set FLAGS, ALIGN | MEMINFO /*| VIDEOINFO*/
-.set CHECKSUM, -(MAGIC + FLAGS)
-
-
-.section .multiboot
-  .align 4
-  .long MAGIC
-  .long FLAGS
-  .long CHECKSUM
-  .skip 20
-  /*
-  .long VIDEOMODE
-  .long VIDEOWIDTH
-  .long VIDEOHEIGHT
-  .long VIDEODEPTH
-  */
-
-/*
-a and w are both attributes, a means allocatable and w means writable
-@nobits means that the section does not contain data and only occupies space
-*/
-.section .bootstrap_stack, "aw", @nobits
-.align 16
-  stack_bottom:
-  .skip 32768
-  stack_top:
-
-.section .text
-  .global _start
-  .extern kernel_main
-  .global outb
-  .global mbootdat
-  mbootdat:
-    .section .multiboot
-  .type _start, @function
-  .type kernel_main, @function
-  _start:
+global loader                           ; making entry point visible to linker
+ 
+extern kernel_main
+; setting up the Multiboot header - see GRUB docs for details
+MODULEALIGN equ  1<<0                   ; align loaded modules on page boundaries
+MEMINFO     equ  1<<1                   ; provide memory map
+FLAGS       equ  MODULEALIGN | MEMINFO  ; this is the Multiboot 'flag' field
+MAGIC       equ    0x1BADB002           ; 'magic number' lets bootloader find the header
+CHECKSUM    equ -(MAGIC + FLAGS)        ; checksum required
+ 
+section .text
+section .multiboot  
+align 4
+    dd MAGIC
+    dd FLAGS
+    dd CHECKSUM
+ 
+; reserve initial kernel stack space
+STACKSIZE equ 0x8000                    ; that's 32k.
+ 
+loader:
+    mov  esp, stack + STACKSIZE         ; set up the stack
+    push eax                            ; Multiboot magic number
+    push ebx                            ; Multiboot info structure
+ 
+    call kernel_main                          ; call kernel proper
+ 
     cli
-
-    /*Grab addresses of the stack*/
-    lea edx, stack_top
-    lea ecx, stack_bottom
-
-    /*Setup stack*/
-    mov esp, edx
-
-    /*Some parameters*/
-    push eax
-    mov mbootdat,ebx
-    push ecx
-    push edx
-
-    /*Our main C function*/
-  	call gdt_enable
-    hlt
-    .size _start, . - _start
+.hang:
+    hlt                                 ; halt machine should kernel return
+    jmp  .hang
+ 
+section .bss
+ 
+align 4
+stack:
+    resb STACKSIZE                      ; reserve 32k stack on a doubleword boundary

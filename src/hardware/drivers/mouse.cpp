@@ -1,7 +1,7 @@
 #include "hardware/drivers/mouse.hpp"
 #include "core/kernel.hpp"
 
-void ms_callback(registers_t regs)
+void ms_callback(RegistersType regs)
 {
     System::KernelIO::Mouse.OnInterrupt();
     UNUSED(regs);
@@ -33,7 +33,7 @@ namespace HAL
         inb(0x60);
 
         // register interrupt
-        CPU::RegisterIRQ(IRQ12, (isr_t)ms_callback);
+        CPU::RegisterIRQ(12, (ISRType)ms_callback);
     }
 
     // draw mouse to screen

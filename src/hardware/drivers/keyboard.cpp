@@ -29,7 +29,7 @@ const char US_ASCIILower_US[58] =
 
 // 
 
-void kb_callback(registers_t regs)
+void kb_callback(RegistersType regs)
 {
     // get scancode
     System::KernelIO::Keyboard.ReadScanCode();
@@ -79,7 +79,7 @@ namespace HAL
         Port = IOPort(0x60);
 
         // register interrupt request
-        HAL::CPU::RegisterIRQ(IRQ1, (isr_t)kb_callback);
+        HAL::CPU::RegisterIRQ(1, (ISRType)kb_callback);
 
         KeyboardLayoutUS = { KB_LAYOUT_US, "United States", "??!@#$%^&*()_+??QWERTYUIOP{}??ASDFGHJKL:\"~?|ZXCVBNM<>???? ", "" };
         KeyboardLayoutDE = { KB_LAYOUT_DE, "German",        "??!\"§$%&/()=?`??QWERTZUIOP?*??ASDFGHJKL??'?>YXCVBNM;:???? ", "" }; 

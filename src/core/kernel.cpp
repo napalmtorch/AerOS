@@ -6,7 +6,7 @@ extern "C"
     uint32_t kernel_end_real = (uint32_t)&kernel_end;
 }
 
-static void pit_callback(registers_t regs)
+static void pit_callback(RegistersType regs)
 {
     System::KernelIO::Kernel.OnInterrupt();
     UNUSED(regs);

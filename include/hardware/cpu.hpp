@@ -23,10 +23,10 @@ namespace HAL
         void InitializeISRs();
 
         // register interrupt handler
-        void RegisterIRQ(uint8_t irq, isr_t handler);
+        void RegisterIRQ(uint8_t irq, ISRType handler);
 
         // initialize pit
-        void InitializePIT(uint32_t freq, void (*callback)(registers_t));
+        void InitializePIT(uint32_t freq, void (*callback)(RegistersType));
 
         // get current pit frequency
         uint32_t GetPITFrequency();

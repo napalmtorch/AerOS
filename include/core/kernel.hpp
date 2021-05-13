@@ -4,6 +4,7 @@
 #include "lib/vector.hpp"
 #include "lib/list.hpp"
 #include "core/debug.hpp"
+#include "hardware/mm/descriptor_tables.hpp"
 #include "hardware/acpi.hpp"
 #include "hardware/cpu.hpp"
 #include "hardware/ports.hpp"

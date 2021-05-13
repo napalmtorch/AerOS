@@ -87,19 +87,19 @@ namespace HAL
         void DisableInterrupts() { __asm__ __volatile__("cli"); }
 
         // initialize interrupt service routines
-        void InitializeISRs() { isr_init(); }
+        void InitializeISRs() {  }
 
         // register interrupt handler
-        void RegisterIRQ(uint8_t irq, isr_t handler) { isr_register(irq, handler); }
+        void RegisterIRQ(uint8_t irq, ISRType handler) { RegisterInterruptHandler(irq, handler); }
 
         // initialize pit
-        void InitializePIT(uint32_t freq, void (*callback)(registers_t))
+        void InitializePIT(uint32_t freq, ISRType callback)
         {
             // set frequency value
             pit_freq = freq;
             
             // register interrupt
-            RegisterIRQ(IRQ0, (isr_t)callback);
+            RegisterIRQ(0, callback);
 
             // send frequency to pit
             uint32_t divisor = 1193180 / freq;
