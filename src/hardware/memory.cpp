@@ -50,6 +50,7 @@ extern "C"
         }
         else
         {
+            // set reserved memory to maximum possibel and never look back
             reserved_start = kernel_end_real + (1 * 1024 * 1024);
             reserved_size = (mem_get_total() - reserved_start);
         }
@@ -58,10 +59,12 @@ extern "C"
     // allocate region of memory
     void* mem_alloc(size_t size)
     {
+        // dynamic allocation mode
         if (dynamic_mode)
         {
             return 0;
         }
+        // 'never look back' mode
         else
         {
             // get available offset
