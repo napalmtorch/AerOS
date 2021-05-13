@@ -4,6 +4,7 @@
 #include <apps/win_term.hpp>
 #include <apps/win_tview.hpp>
 #include <apps/win_raycast.hpp>
+#include <apps/win_bmp.hpp>
 
 namespace System
 {
@@ -142,16 +143,17 @@ namespace System
             // menu items clicked
             if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed && !item_down)
             {
+                if (Menu.SelectedIndex == 0) { WindowMgr.Open(new Applications::WinBitmapViewer(64, 64)); Menu.Visible = false; }
                 // text viewer
-                if (Menu.SelectedIndex == 0) { WindowMgr.Open(new Applications::WinTextViewer(64, 64)); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 1) { WindowMgr.Open(new Applications::WinTextViewer(64, 64)); Menu.Visible = false; }
                 // raycaster
-                if (Menu.SelectedIndex == 1) { WindowMgr.Open(new Applications::WinRaycaster(64, 64)); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 2) { WindowMgr.Open(new Applications::WinRaycaster(64, 64)); Menu.Visible = false; }
                 // terminal
-                if (Menu.SelectedIndex == 2) { WindowMgr.Open(new Applications::WinTerminal(64, 64)); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 3) { WindowMgr.Open(new Applications::WinTerminal(64, 64)); Menu.Visible = false; }
                 // reboot
-                if (Menu.SelectedIndex == 3) { KernelIO::Shell.ParseCommand("POWEROFF"); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 4) { KernelIO::Shell.ParseCommand("POWEROFF"); Menu.Visible = false; }
                 // shutdown
-                if (Menu.SelectedIndex == 4) { KernelIO::Shell.ParseCommand("REBOOT"); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 5) { KernelIO::Shell.ParseCommand("REBOOT"); Menu.Visible = false; }
                 item_down = true;
             }
 
@@ -320,7 +322,7 @@ namespace System
         void XServerMenu::Initialize()
         {
             for (size_t i = 0; i < 16; i++) { Items[i] = NULL; }
-            
+            Items[Count++] = XServerTaskbarItem("Bitmap Viewer");
             Items[Count++] = XServerTaskbarItem("Text Viewer");
             Items[Count++] = XServerTaskbarItem("Raycaster");
             Items[Count++] = XServerTaskbarItem("Terminal");
