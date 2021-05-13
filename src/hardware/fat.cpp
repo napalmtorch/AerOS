@@ -3,6 +3,8 @@
 #include <hardware/memory.hpp>
 #include <hardware/drivers/ata_pio.hpp>
 #include <core/kernel.hpp>
+#include <apps/win_term.hpp>
+
 extern "C"
 {
 f32 *master_fs;
@@ -821,6 +823,7 @@ void cat_file(f32 *fs, struct directory *dir, char* name)
 
     }
 }
+char print_temp[16];
 void print_directory(f32 *fs, struct directory *dir) {
             System::KernelIO::Terminal.WriteLine("Listing Directory",COL4_CYAN);
             System::KernelIO::Terminal.NewLine();
@@ -849,13 +852,24 @@ void print_directory(f32 *fs, struct directory *dir) {
         for(j = 0; j < strlen(dir->entries[i].name); j++) {
             namebuff[j] = dir->entries[i].name[j];
         }
-
-
-            if(dir->entries[i].dir_attrs == DIRECTORY) { System::KernelIO::Terminal.WriteLine(namebuff,COL4_GREEN); term_writeln(" (dir)"); } else { System::KernelIO::Terminal.WriteLine(namebuff,COL4_YELLOW); term_write(" "); term_write_dec(" Size: " ,dir->entries[i].file_size); term_writeln(" Bytes"); }
+            if(dir->entries[i].dir_attrs == DIRECTORY) 
+            { 
+                System::KernelIO::Terminal.Write("-- ");
+                System::KernelIO::Terminal.WriteLine(namebuff, COL4_GREEN);
+            } 
+            else 
+            { 
+                System::KernelIO::Terminal.Write(namebuff, COL4_YELLOW); 
+                System::KernelIO::Terminal.Write("        ");
+                strdec(dir->entries[i].file_size, print_temp);
+                System::KernelIO::Terminal.Write(print_temp);
+                System::KernelIO::Terminal.WriteLine(" bytes");
+            }
 
         uint32_t cluster = dir->entries[i].first_cluster;
         uint32_t cluster_count = 1;
-        while(1) {
+        while(1) 
+        {
             cluster = fs->FAT[cluster];
             if(cluster >= EOC) break;
             if(cluster == 0) {

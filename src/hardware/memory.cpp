@@ -3,10 +3,14 @@
 
 extern "C"
 {
+    // ram allocation table entry structure
     struct table_entry
     {
+        // offset of the region of memory
         uint32_t offset;
+        // size of the region of memory
         uint32_t size;
+        // status flag of region of memory
         uint8_t state;
     };
 
