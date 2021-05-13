@@ -290,6 +290,7 @@ namespace System
             KernelIO::ThrowOK("Initialized VESA driver");
             KernelIO::ThrowOK("Set VESA mode to 640x480 double buffered");
 
+            
             // initialize keyboard
             KernelIO::Keyboard.BufferEnabled = false;
             KernelIO::Keyboard.Event_OnEnterPressed = nullptr;
@@ -307,13 +308,15 @@ namespace System
             // enable interrupts
             asm volatile("cli");
             HAL::CPU::EnableInterrupts();
-
+/*
             KernelIO::XServer.Initialize();
             KernelIO::XServer.Start(VIDEO_DRIVER_VESA);
+            */
         }
 
         void LIST_TEST(char*input)
         {
+            /*
             System::List<char*> test = System::List<char*>();
             test.Add("Penis");
             test.Add("World");
@@ -322,6 +325,7 @@ namespace System
             KernelIO::Terminal.WriteLine((*test.Get(1)));
             KernelIO::Terminal.WriteLine((*test.Get(2)));
             test.~List();
+            */
         }
     }
 }

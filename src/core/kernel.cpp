@@ -1,9 +1,11 @@
 #include "core/kernel.hpp"
 #include <gui/widget.hpp>
-extern "C" {
-extern uint32_t start;
-extern uint32_t kernel_end;
+
+extern "C"
+{
+    uint32_t kernel_end_real = (uint32_t)&kernel_end;
 }
+
 static void pit_callback(registers_t regs)
 {
     System::KernelIO::Kernel.OnInterrupt();
@@ -72,7 +74,13 @@ namespace System
         void KernelBase::Initialize()
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
-            MemoryManager.Initialize();
+            MemoryManager.Initialize(false);
+            SerialPort.SetPort(SERIAL_PORT_COM1);
+            serial_write("KERNEL_END: ");
+            char temp[16];
+            strdec(kernel_end_real, temp);
+            serial_writeln(temp);
+
             // read multiboot
             Multiboot.Read();
 
@@ -172,9 +180,9 @@ namespace System
                     struct directory dir;
                     populate_root_dir(master_fs, &dir);
                     System::KernelIO::Terminal.WriteLine("Initialized FAT32 Filesystem");
-                    term_writeln_dec("Kernel Start:", (uint32_t)&start);
+                    //term_writeln_dec("Kernel Start:", (uint32_t)&start);
                     term_writeln_dec("Kernel End:", (uint32_t)&kernel_end);
-                    term_writeln_dec("Kernel Size:", (&kernel_end - &start));
+                    //term_writeln_dec("Kernel Size:", (&kernel_end - &start));
                 }
                 else
                 {
@@ -189,6 +197,7 @@ namespace System
             ThrowOK("Initialized PS/2 keyboard driver");
 
             Mouse.Initialize();
+            
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
 

@@ -150,6 +150,7 @@ namespace System
                 if (Menu.SelectedIndex == 4) { KernelIO::Shell.ParseCommand("POWEROFF"); Menu.Visible = false; }
                 // shutdown
                 if (Menu.SelectedIndex == 5) { KernelIO::Shell.ParseCommand("REBOOT"); Menu.Visible = false; }
+                
                 item_down = true;
             }
 

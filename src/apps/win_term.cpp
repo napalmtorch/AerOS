@@ -14,7 +14,7 @@ namespace System
 
         }
 
-        WinTerminal::WinTerminal(int32_t x, int32_t y) : GUI::Window(x, y, 404, 259, "Terminal")
+        WinTerminal::WinTerminal(int32_t x, int32_t y) : GUI::Window(x, y, 404, 259, "Terminal\0")
         {
             KernelIO::Terminal.Window = this;
 
@@ -51,7 +51,7 @@ namespace System
             KernelIO::Shell.PrintCaret();
         }
 
-        WinTerminal::WinTerminal(int32_t x, int32_t y, char* args) : GUI::Window(x, y, 400, 259, "Terminal")
+        WinTerminal::WinTerminal(int32_t x, int32_t y, char* args) : GUI::Window(x, y, 400, 259, "Terminal\0")
         {
 
         }

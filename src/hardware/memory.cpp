@@ -1,222 +1,102 @@
 #include "hardware/memory.hpp"
+#include <core/kernel.hpp>
 
 extern "C"
 {
-    // entry of a memory region
-    typedef struct entry
+    struct table_entry
     {
-        // this allows us to know that the address is an entry
-        uint8_t offset;
+        uint32_t offset;
+        uint32_t size;
+        uint8_t state;
+    };
 
-        // last known entry (if none it is -1)
-        void* prev;
-
-        // if the entry was used or not
-        bool used;
-        
-        // next known entry (if none it is set -1)
-        void* next;
-    } entry_t;
+    // private declarations
+    table_entry* mem_create_entry(uint32_t offset, uint32_t size, uint8_t state);
     
-    uint32_t free_pos;
-    uint32_t max_pos;
-    uint32_t start;
-    uint32_t used_mem;
-    uint32_t total_usable_mem;
+    // ram allocation table properties
+    uint32_t table_start;
+    uint32_t table_size;
+    uint32_t table_pos;
 
-    void mem_init()
+    // reserved memory properties
+    uint32_t reserved_start;
+    uint32_t reserved_size;
+    uint32_t reserved_pos;
+    bool dynamic_mode;
+
+    // initialize memory management system
+    void mem_init(bool dynamic)
     {
-        // safely start 10 megabytes into memory
-        free_pos = 10 * 1024 * 1024;
+        // set dynamic mode
+        dynamic_mode = dynamic;
 
-        // set the start pointer to 10 megabytes
-        start = 10 * 1024 * 1024;
-
-        // maximum size is installed memory minus 12 megabytes
-        max_pos = (mem_get_total_mb() - 12) * 1024 * 1024;
-        total_usable_mem = max_pos - free_pos;
-    }
-
-    void* last = (void*)-1;
-
-    // calculate the size of the memory region, knowing the entry
-    size_t size_of_region(entry_t* entry)
-    {
-        return (uint32_t)entry->next - (uint32_t)entry - sizeof(struct entry);
-    }
-
-    // setup a new entry in a not known position
-    entry_t* create_entry(void* at, size_t size)
-    {
-        entry_t* entry = (entry_t*)at;
-        entry->offset = 0xFF;
-        entry->next = (entry_t*)(at + sizeof(struct entry) + size);
-        entry->prev = last;
-        entry->used = false;
-        last = (entry_t*)entry;
-        return entry;
-    }
-
-    // allocate entry
-    entry_t* alloc_entry(entry_t* current, size_t size)
-    {
-        size_t esize = size_of_region(current);
-
-        // easiest possibility: the entry is the same size as the requested allocation
-        if (size == esize)
+        if (dynamic_mode)
         {
-            return current;
+            // setup table
+            table_start = kernel_end_real + (1 * 1024 * 1024);
+            table_size = 0x20000;
+            table_pos = 0;
+
+            // setup reserved memory
+            reserved_start = table_start + table_size;
+            reserved_size = (mem_get_total_mb() * 1024 * 1024) - reserved_start;
+            reserved_pos = 0;
+
+            // map entire reserved memory region as a free chunk
+            mem_create_entry(reserved_start, reserved_size, 0);
         }
-        // the requested size is bigger than the entry
-        else if (size > esize)
+        else
         {
-            // if so, we try to merge entries until we match the requested size, or we find a used entry
-            while (size > esize)
-            {
-                // gather the next region entry
-                entry_t* next = (entry_t*)current->next;
-                // check if it is an actual entry
-                if (next->offset != 0xFF)
-                {
-                    // if it is not, setup the entry
-                    next = create_entry((void*)next, size-esize);
-                    // merge it
-                    current->next = next->next;
-                    esize = size_of_region(current);
-                    // and break the loop
-                    break;
-                }
-                // if the region is used, we just break the loop and return null
-                else if (next->used)
-                    break;
-                // otherwise we merge it
-                current->next = next->next;
-                // check the new size
-                esize = size_of_region(current);
-                // and continue the loop
-            }
-            if (esize >= size)
-                return alloc_entry(current, size);
-            else
-                return nullptr;
-        }
-        // third scenario: the entry size is bigger than requested
-        else if (esize > size)
-        {
-            // in this case we just shrink the entry
-            void* next = ((entry_t*)current->next)->next;
-            current->next = (void*)((uint32_t)current->next - (esize - size));
-            ((entry_t*)current->next)->offset = 0xFF;
-            ((entry_t*)current->next)->next = next;
-            ((entry_t*)current->next)->prev = (void*)current;
-            ((entry_t*)current->next)->used = false;
+            reserved_start = kernel_end_real + (1 * 1024 * 1024);
+            reserved_size = (mem_get_total() - reserved_start);
         }
     }
 
-    // search next free entry
-    entry_t* get_free_entry(void* from, size_t size)
-    {
-        // check if we reached free_pos
-        if ((uint32_t)from >= free_pos)
-        {
-            // if so allocate the memory section here
-
-            // increase the free position by the size of the allocated memory region
-            free_pos = (uint32_t)(from + sizeof(struct entry) + size);
-            return create_entry(from, size);
-        }
-        // current entry we're working with
-        entry_t* current = (entry_t*)from;
-
-        // loop repeated every time the entry is used
-        while (current->used)
-        {
-            // switch to new entry
-            current = (entry_t*)current->next;
-            // if this isn't an address, it probably means we reached the end of the entry chain
-            if (current->offset != 0xFF)
-            {
-                // so we just allocate a new one here
-                return create_entry((void*)current, size);
-            }
-        }
-        
-        // if we still alive, we just call the alloc_entry, where all the magic happens
-        entry_t* e = alloc_entry(current, size);
-        if (e == nullptr)
-        {
-            return get_free_entry(current->next, size);
-        }
-        return e;
-    }
-
-    size_t size(void* data)
-    {
-        // retrun the size from the entry
-        return size_of_region(((entry_t*)((uint32_t)data - sizeof(struct entry))));
-    }
-
+    // allocate region of memory
     void* mem_alloc(size_t size)
     {
-        // check if enough memory is available
-        if (free_pos + size >= max_pos) { debug_throw_message(MSG_TYPE_ERROR, "System out of memory"); return nullptr; }
-        used_mem += size;
+        if (dynamic_mode)
+        {
+            return 0;
+        }
+        else
+        {
+            // get available offset
+            uint32_t offset = reserved_start + reserved_pos;
 
-        // request first free entry
-        entry_t* entry = get_free_entry((void*)start, size);
-        
-        entry->used = true;
-
-        System::KernelIO::Write("ALLOCATION at ");
-        char s[6];
-        strdec((uint32_t)(uint32_t)entry + sizeof(struct entry), s);
-        System::KernelIO::WriteLine(s);
-
-        for (int i = 0; i < size; i++)
-             ((uint8_t*)((uint32_t)entry + sizeof(struct entry)))[i] = 0;
-
-        //return alloc result
-        return (void*)((uint32_t)entry + sizeof(struct entry));
+            reserved_pos += size;
+            return (void*)offset;
+        }
     }
 
-int memcmp(const void* a, const void* b, size_t len) {
-    int r = 0;
-    const unsigned char *x = (const unsigned char*)a;
-    const unsigned char *y = (const unsigned char*)b;
-
-    while (len--) {
-        r = *x - *y;
-        if (r)
-            return r;
-        x++, y++;
-    }
-    return 0;
-}
     // free region of memory
     void mem_free(void* ptr)
     {
-        if (ptr == nullptr) { /*debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr");*/ return; }
-
-        if ((uint32_t)ptr < start) return;
-
-        System::KernelIO::Write("FREE at ");
-        char s[6];
-        strdec((uint32_t)ptr, s);
-        System::KernelIO::WriteLine(s);
-
-        entry_t* entry = (entry_t*)((uint32_t)ptr - sizeof(struct entry));
-        if (entry->offset != 0xFF)
-        {
-           // debug_throw_message(MSG_TYPE_ERROR, "Tried to free non-entry pointer");
-            return;
-        }
-        else { used_mem -= size(ptr); }
-        entry->used = false;
+        if (!dynamic_mode) { return; }
     }
 
-    uint32_t mem_get_used() { return used_mem; }
+    // create ram allocation table entry
+    table_entry* mem_create_entry(uint32_t offset, uint32_t size, uint8_t state)
+    {
+        // create new item at next position
+        table_entry* entry = (table_entry*)(table_start + table_pos);
+        
+        // set entry properties
+        entry->offset = offset;
+        entry->size = size;
+        entry->state = state;
 
-    uint32_t mem_get_total_usable() { return max_pos - start; }
+        // increment table position
+        table_pos += sizeof(table_entry);
+
+        // return allocation table entry pointer
+        return entry;
+    }
+
+    // get amount of memory used
+    uint32_t mem_get_used() { return 0; }
+
+    uint32_t mem_get_total_usable() { return 0; }
 
     // get amount of installed memory in megabytes
     uint32_t mem_get_total_mb()
@@ -308,6 +188,21 @@ int memcmp(const void* a, const void* b, size_t len) {
         *(bottom - 1) = saved;
     }
 
+    int memcmp(const void* a, const void* b, size_t len) 
+    {
+        int r = 0;
+        const unsigned char *x = (const unsigned char*)a;
+        const unsigned char *y = (const unsigned char*)b;
+
+        while (len--) {
+            r = *x - *y;
+            if (r)
+                return r;
+            x++, y++;
+        }
+        return 0;
+    }
+
     // write 8-bit value to memory
     void mem_write8(uint8_t* dest, uint8_t data) { *(dest) = data; }
 
@@ -338,7 +233,7 @@ void operator delete[](void *p, size_t size) { mem_free(p); UNUSED(size); }
 namespace HAL
 {
     // initialize memory manager
-    void MemoryManager::Initialize() { mem_init(); }
+    void MemoryManager::Initialize(bool dynamic) { mem_init(dynamic); }
 
     // allocate region of memory
     void* MemoryManager::Allocate(size_t size) { return mem_alloc(size); }

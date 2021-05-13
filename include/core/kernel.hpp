@@ -28,9 +28,16 @@
 #include "gui/xserver.hpp"
 #include "hardware/drivers/vesa.hpp"
 
+extern "C" 
+{
+    extern uint32_t kernel_end;
+    extern uint32_t kernel_end_real;
+}
+
 // Kernel IO API by napalmtorch and Nik300
 
 void enter_pressed(char* input);
+
 
 #ifdef __cplusplus
     // main namespace of the System library
