@@ -12,6 +12,7 @@ namespace System
 
         WinTextViewer::WinTextViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Text Viewer")
         {
+            Document = (char*)new uint8_t[1000];
             // load message of the day
             if(master_fs != nullptr)
             {
@@ -25,7 +26,6 @@ namespace System
                 { 
                     uint8_t c[1000];
                     int count;
-                    Document = (char*)new uint8_t[1000];
                     while((count = fread(&c, 1000, 1, f)), count > 0) 
                     {
                         for(int i = 0; i < count; i++) { stradd(Document, c[i]); }
