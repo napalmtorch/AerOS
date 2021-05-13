@@ -12,7 +12,6 @@ namespace System
 
         void WindowManager::Initialize()
         {
-            Open(new Applications::WinTextViewer(64, 64, "/config.cfg"));
             Open(new Applications::WinTextViewer(128, 128, "/etc/motd"));
         }
 
