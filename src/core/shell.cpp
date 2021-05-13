@@ -286,23 +286,30 @@ namespace System
             asm volatile("cli");
 
             KernelIO::VESA.SetMode(640, 480, 32);
-            HAL::CPU::DisableInterrupts();
             KernelIO::SetDebugConsoleOutput(false);
             KernelIO::ThrowOK("Initialized VESA driver");
             KernelIO::ThrowOK("Set VESA mode to 640x480 double buffered");
 
             // initialize keyboard
-            KernelIO::Keyboard.Initialize();
+            KernelIO::Keyboard.BufferEnabled = false;
+            KernelIO::Keyboard.Event_OnEnterPressed = nullptr;
 
             // initialize mouse
-            KernelIO::Mouse.Initialize();
-
+            outb(0x64, 0xA8);
+            outb(0x64, 0x20);
+            uint8_t status = inb(0x60) | 2;
+            outb(0x64, 0x60);
+            outb(0x60, status);
+            outb(0x64, 0xD4);
+            outb(0x60, 0xF4);
+            inb(0x60);
+            
             // enable interrupts
             asm volatile("cli");
             HAL::CPU::EnableInterrupts();
 
+            KernelIO::XServer.Initialize();
             KernelIO::XServer.Start(VIDEO_DRIVER_VESA);
-
         }
 
         void LIST_TEST(char*input)

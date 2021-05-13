@@ -12,7 +12,7 @@ namespace System
 
         void WindowManager::Initialize()
         {
-            Open(new Applications::WinTextViewer(128, 128, "/etc/motd"));
+            
         }
 
         bool clicked = false;

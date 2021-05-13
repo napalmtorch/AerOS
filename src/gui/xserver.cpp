@@ -80,7 +80,6 @@ namespace System
             FPS = 0;
             time = 1;
             BackColor = Graphics::Colors::DarkCyan;
-            Taskbar.Initialize();
         }
 
         // start
@@ -93,17 +92,14 @@ namespace System
             KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
             KernelIO::Mouse.SetPosition(KernelIO::VESA.GetWidth() / 2, KernelIO::VESA.GetHeight() / 2);
 
-            MenuBtn = Button(4, KernelIO::VESA.GetHeight() - 21, "");
-            MenuBtn.SetSize(56, 18);
-
             // initialize taskbar and menu
             Taskbar.Initialize();
             Menu.Initialize();
             Menu.Visible = false;
             Menu.SelectedIndex = -1;
 
-            // test window
-            //Applications::OSInfo::Start();
+            MenuBtn = Button(4, KernelIO::VESA.GetHeight() - 21, "");
+            MenuBtn.SetSize(56, 18);
             
             // initialize window manager
             WindowMgr.Initialize();                       
