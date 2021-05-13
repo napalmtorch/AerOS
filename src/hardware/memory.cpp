@@ -167,10 +167,10 @@ extern "C"
         
         entry->used = true;
 
-        System::KernelIO::Write("ALLOCATION at ");
+     /*   System::KernelIO::Write("ALLOCATION at ");
         char s[6];
         strdec((uint32_t)(uint32_t)entry + sizeof(struct entry), s);
-        System::KernelIO::WriteLine(s);
+        System::KernelIO::WriteLine(s);*/
 
         for (int i = 0; i < size; i++)
              ((uint8_t*)((uint32_t)entry + sizeof(struct entry)))[i] = 0;
@@ -195,19 +195,19 @@ int memcmp(const void* a, const void* b, size_t len) {
     // free region of memory
     void mem_free(void* ptr)
     {
-        if (ptr == nullptr) { debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr"); return; }
+        if (ptr == nullptr) { /*debug_throw_message(MSG_TYPE_ERROR, "Tried to free nullptr");*/ return; }
 
         if ((uint32_t)ptr < start) return;
 
-        System::KernelIO::Write("FREE at ");
+      /*  System::KernelIO::Write("FREE at ");
         char s[6];
         strdec((uint32_t)ptr, s);
-        System::KernelIO::WriteLine(s);
+        System::KernelIO::WriteLine(s);*/
 
         entry_t* entry = (entry_t*)((uint32_t)ptr - sizeof(struct entry));
         if (entry->offset != 0xFF)
         {
-            debug_throw_message(MSG_TYPE_ERROR, "Tried to free non-entry pointer");
+           // debug_throw_message(MSG_TYPE_ERROR, "Tried to free non-entry pointer");
             return;
         }
         else { used_mem -= size(ptr); }
