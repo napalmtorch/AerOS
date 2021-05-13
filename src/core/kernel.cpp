@@ -195,7 +195,14 @@ namespace System
             Keyboard.BufferEnabled = true;
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
-
+            /*BitMap *bitmap;
+            bitmap = read_bmp("/test/test2.bmp");
+            debug_writeln_dec("Bitmap Height:",bitmap->height);
+            debug_writeln_dec("Bitmap Width:",bitmap->width);
+            debug_writeln_dec("Bitmap R:",(*bitmap->bitmap)->r);
+            debug_writeln_dec("Bitmap G:",(*bitmap->bitmap)->g);
+            debug_writeln_dec("Bitmap B:",(*bitmap->bitmap)->b);
+            */
             Mouse.Initialize();
             
             // initialize pit
