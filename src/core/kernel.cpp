@@ -75,11 +75,6 @@ namespace System
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
             MemoryManager.Initialize(false);
-            SerialPort.SetPort(SERIAL_PORT_COM1);
-            serial_write("KERNEL_END: ");
-            char temp[16];
-            strdec(kernel_end_real, temp);
-            serial_writeln(temp);
 
             // read multiboot
             Multiboot.Read();
