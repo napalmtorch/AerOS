@@ -167,10 +167,10 @@ extern "C"
         
         entry->used = true;
 
-     /*   System::KernelIO::Write("ALLOCATION at ");
+        System::KernelIO::Write("ALLOCATION at ");
         char s[6];
         strdec((uint32_t)(uint32_t)entry + sizeof(struct entry), s);
-        System::KernelIO::WriteLine(s);*/
+        System::KernelIO::WriteLine(s);
 
         for (int i = 0; i < size; i++)
              ((uint8_t*)((uint32_t)entry + sizeof(struct entry)))[i] = 0;
@@ -199,10 +199,10 @@ int memcmp(const void* a, const void* b, size_t len) {
 
         if ((uint32_t)ptr < start) return;
 
-      /*  System::KernelIO::Write("FREE at ");
+        System::KernelIO::Write("FREE at ");
         char s[6];
         strdec((uint32_t)ptr, s);
-        System::KernelIO::WriteLine(s);*/
+        System::KernelIO::WriteLine(s);
 
         entry_t* entry = (entry_t*)((uint32_t)ptr - sizeof(struct entry));
         if (entry->offset != 0xFF)

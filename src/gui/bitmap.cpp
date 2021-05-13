@@ -10,15 +10,14 @@ bitmap_t * bitmap_create(char * filename)
 {
     bitmap_t * ret = (bitmap_t*)mem_alloc(sizeof(bitmap_t));
     FILE * file = fopen(filename, 0);
-    if(!file) 
-    {
+    if(!file) {
         return NULL;
     }
     struct directory dir;
     populate_root_dir(master_fs, &dir);
     uint32_t size = FileSize(master_fs,&dir,filename);
     void * buf = mem_alloc(size);
-    fread(file, 0, size, (FILE*)buf);
+    fread(buf, size, 1, (FILE*)file);
 
 
     bmp_fileheader_t * h = (bmp_fileheader_t*)buf;
@@ -58,7 +57,6 @@ void bitmap_display(bitmap_t * bmp)
         }
     }
 }
-
 void bitmap_to_framebuffer(bitmap_t * bmp, uint32_t * frame_buffer) {
     if(!bmp) return;
     uint8_t * image = (uint8_t*)bmp->image_bytes;

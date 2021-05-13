@@ -786,15 +786,12 @@ void DirByName(f32 *fs,struct directory *dir,char* name)
 uint32_t FileSize(f32 *fs,struct directory *dir,char* name)
 {
     uint32_t i;
-    for(i = 0; i < dir->num_entries; i++) {
-    if(StringContains(dir->entries[i].name,name))
+    for(i = 0; i < dir->num_entries; i++)
     {
-        return dir->entries[i].file_size;
-    }
-    else
-    {
-        return 0;
-    }
+        if(streql(dir->entries[i].name, name))
+        {      
+            return dir->entries[i].file_size;
+        }
     }
     return 0;
 }
