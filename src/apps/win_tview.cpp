@@ -25,14 +25,37 @@ namespace System
                 { 
                     uint8_t c[1000];
                     int count;
-                    Document = (char*)new uint8_t[1000];
-                    while((count = fread(&c, 1000, 1, f)), count > 0) 
-                    {
-                        for(int i = 0; i < count; i++) { stradd(Document, c[i]); }
-                    }
+                    Document = (char*)mem_alloc(1000);
+                    while((count = fread(&c, 1000, 1, f)), count > 0);
+                    strcpy((char*)c, Document);
+                    //fclose(f);
                 }
+            }
 
-                fclose(f);
+            Style = GUI::CopyStyle(&GUI::WindowStyle);
+            Style->Colors[0] = Graphics::Colors::White;
+        }
+
+        WinTextViewer::WinTextViewer(int32_t x, int32_t y, char* text)
+        {
+            // load message of the day
+            if(master_fs != nullptr)
+            {
+                // directory
+                char* motd = text;
+                
+                // open file
+                FILE *f = fopen(motd, NULL);
+
+                if(f)
+                { 
+                    uint8_t c[1000];
+                    int count;
+                    Document = (char*)mem_alloc(1000);
+                    while((count = fread(&c, 1000, 1, f)), count > 0);
+                    strcpy((char*)c, Document);
+                    //fclose(f);
+                }
             }
 
             Style = GUI::CopyStyle(&GUI::WindowStyle);
