@@ -39,6 +39,17 @@ namespace System
             1, 1, 1, 1, 1, 1, 1, 1,
         };
 
+        uint8_t TITLEBAR_ICON_RES[8 * 7] = 
+        {
+            0, 0, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 1, 1, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 0, 1,
+            0, 1, 1, 1, 1, 1, 0, 1,
+            0, 1, 0, 0, 0, 1, 0, 1,
+            0, 1, 0, 0, 0, 1, 1, 1,
+            0, 1, 1, 1, 1, 1, 0, 0,
+        };
+
         VisualStyle* CopyStyle(VisualStyle* src)
         {
             VisualStyle* style = (VisualStyle*)mem_alloc(sizeof(VisualStyle));
@@ -309,7 +320,8 @@ namespace System
 
             // draw button icons
             KernelIO::XServer.FullCanvas.DrawFlatArray(BtnClose->Bounds->X + 3, BtnClose->Bounds->Y + 2, 8, 7, TITLEBAR_ICON_CLOSE, BtnClose->Style->Colors[1]);
-            KernelIO::XServer.FullCanvas.DrawFlatArray(BtnMax->Bounds->X + 3,   BtnMax->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_MAX, BtnMax->Style->Colors[1]);
+            if (!Parent->Flags->Maximized) { KernelIO::XServer.FullCanvas.DrawFlatArray(BtnMax->Bounds->X + 3,   BtnMax->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_MAX, BtnMax->Style->Colors[1]); }
+            else { KernelIO::XServer.FullCanvas.DrawFlatArray(BtnMax->Bounds->X + 3,   BtnMax->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_RES, BtnMax->Style->Colors[1]); }
             KernelIO::XServer.FullCanvas.DrawFlatArray(BtnMin->Bounds->X + 3,   BtnMin->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_MIN, BtnMin->Style->Colors[1]);
         }
 
@@ -325,6 +337,9 @@ namespace System
             Bounds->Y = y;
             Bounds->Width = w;
             Bounds->Height = h;
+
+            // old bounds
+            OldBounds = new bounds_t();
 
             // create client bounds
             ClientBounds = new bounds_t();
@@ -371,6 +386,35 @@ namespace System
                 return;
                 TBar->BtnClose->MouseFlags->Clicked = true;
             }
+
+            // maximize button clicked
+            if (TBar->BtnMax->MouseFlags->Down && !TBar->BtnMax->MouseFlags->Clicked)
+            {
+                Flags->Maximized = !Flags->Maximized;
+
+                if (Flags->Maximized)
+                {
+                    OldBounds->X = Bounds->X;
+                    OldBounds->Y = Bounds->Y;
+                    OldBounds->Width = Bounds->Width;
+                    OldBounds->Height = Bounds->Height;
+                    Bounds->Width = KernelIO::VESA.GetWidth();
+                    Bounds->Height = KernelIO::VESA.GetHeight() - 24;
+                    Bounds->X = 0;
+                    Bounds->Y = 0;
+                }
+                else
+                {
+                    Bounds->X = OldBounds->X;
+                    Bounds->Y = OldBounds->Y;
+                    Bounds->Width = OldBounds->Width;
+                    Bounds->Height = OldBounds->Height;
+                }
+
+                TBar->BtnMax->MouseFlags->Clicked = true;
+            }
+
+            // maximize button clicked
 
             // get mouse position
             int32_t mx = KernelIO::Mouse.GetX();
@@ -432,7 +476,8 @@ namespace System
             else
             {
                 // draw border
-                KernelIO::XServer.FullCanvas.DrawRectangle((*Bounds), 2, Style->Colors[4]);
+                KernelIO::XServer.FullCanvas.DrawRectangle((*Bounds), 3, Style->Colors[4]);
+                KernelIO::XServer.FullCanvas.DrawRectangle((*Bounds), 1, Style->Colors[2]);
             }
         }
     }

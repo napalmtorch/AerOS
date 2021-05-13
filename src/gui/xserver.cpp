@@ -1,6 +1,9 @@
 #include "gui/xserver.hpp"
 #include <core/kernel.hpp>
 #include <gui/widget.hpp>
+#include <apps/win_term.hpp>
+#include <apps/win_tview.hpp>
+#include <apps/win_raycast.hpp>
 
 namespace System
 {
@@ -90,6 +93,15 @@ namespace System
             KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
             KernelIO::Mouse.SetPosition(KernelIO::VESA.GetWidth() / 2, KernelIO::VESA.GetHeight() / 2);
 
+            MenuBtn = Button(4, KernelIO::VESA.GetHeight() - 21, "AerOS");
+            MenuBtn.SetSize(56, 18);
+
+            // initialize taskbar and menu
+            Taskbar.Initialize();
+            Menu.Initialize();
+            Menu.Visible = false;
+            Menu.SelectedIndex = -1;
+
             // test window
             //Applications::OSInfo::Start();
             
@@ -101,6 +113,7 @@ namespace System
         }
 
         // update
+        bool item_down = false;
         void XServerHost::Update()
         {
             // calculate framerate
@@ -114,11 +127,35 @@ namespace System
                 last_time = time;
             }
 
-            // update taskbar
+            // update taskbar and menu
             Taskbar.Update();
+            MenuBtn.Update();
+            Menu.Update();
 
-            // get arrow key mouse movement when enabled
-            if (KernelIO::Mouse.GetArrowKeyState()) { KernelIO::Mouse.UpdateArrowKeyMovement(); }
+            // start button clicked
+            if (MenuBtn.MouseFlags->Down && !MenuBtn.MouseFlags->Clicked)
+            {
+                Menu.Visible = !Menu.Visible;
+                MenuBtn.MouseFlags->Clicked = true;
+            }
+
+            // menu items clicked
+            if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed && !item_down)
+            {
+                // text viewer
+                if (Menu.SelectedIndex == 0) { WindowMgr.Open(new Applications::WinTextViewer(64, 64)); Menu.Visible = false; }
+                // raycaster
+                if (Menu.SelectedIndex == 1) { WindowMgr.Open(new Applications::WinRaycaster(64, 64)); Menu.Visible = false; }
+                // terminal
+                if (Menu.SelectedIndex == 2) { WindowMgr.Open(new Applications::WinTerminal(64, 64)); Menu.Visible = false; }
+                // reboot
+                if (Menu.SelectedIndex == 3) { KernelIO::Shell.ParseCommand("POWEROFF"); Menu.Visible = false; }
+                // shutdown
+                if (Menu.SelectedIndex == 4) { KernelIO::Shell.ParseCommand("REBOOT"); Menu.Visible = false; }
+                item_down = true;
+            }
+
+            if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Released) { item_down = false; }
 
             WindowMgr.Update();
         }
@@ -159,8 +196,13 @@ namespace System
             
             WindowMgr.Draw();
 
-            // draw taskbar
+            // draw taskbar and menu
             Taskbar.Draw();
+            MenuBtn.Draw();
+            Menu.Draw();
+
+            // draw menu visible button border
+            if (Menu.Visible) { FullCanvas.DrawRectangle3D(MenuBtn.Bounds->X, MenuBtn.Bounds->Y, MenuBtn.Bounds->Width, MenuBtn.Bounds->Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }
 
             // draw mouse
             KernelIO::Mouse.Draw();
@@ -270,6 +312,84 @@ namespace System
 
                     // draw name
                     KernelIO::XServer.FullCanvas.DrawString(Items[i].Bounds.X + 3, Items[i].Bounds.Y + 4, Items[i].Name, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+                }
+            }
+        }
+
+        // initialize menu
+        void XServerMenu::Initialize()
+        {
+            for (size_t i = 0; i < 16; i++) { Items[i] = NULL; }
+            
+            Items[Count++] = XServerTaskbarItem("Text Viewer");
+            Items[Count++] = XServerTaskbarItem("Raycaster");
+            Items[Count++] = XServerTaskbarItem("Terminal");
+            Items[Count++] = XServerTaskbarItem("Reboot");
+            Items[Count++] = XServerTaskbarItem("Shutdown");
+        }
+
+        // update menu
+        void XServerMenu::Update()
+        {
+            if (Count == 0) { return; }
+
+            // update bounds
+            Bounds.X = 0;
+            Bounds.Y = KernelIO::VESA.GetHeight() - 24 - ((Count * 20) + 3);
+            Bounds.Width = 128;
+            Bounds.Height = (Count * 20) + 3;
+
+            // update items
+            uint32_t xx = Bounds.X + 1, yy = Bounds.Y + 1;
+            int32_t sel = -1;
+            for (size_t i = 0; i < 16; i++)
+            {
+                if (&Items[i] != nullptr)
+                {
+                    Items[i].Bounds.X = xx;
+                    Items[i].Bounds.Y = yy;
+                    Items[i].Bounds.Width = Bounds.Width - 3;
+                    Items[i].Bounds.Height = 20;
+                    if (bounds_contains(&Items[i].Bounds, KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY()))
+                    {
+                        sel = i;
+                        Items[i].Hover = true;
+                        if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed) { Items[i].Down = true; }
+                        else { Items[i].Down = false; }
+                    }
+                    else { Items[i].Hover = false; }
+
+                    yy += 20;
+                }
+            }
+
+            SelectedIndex = sel;
+        }
+
+        // drwa menu
+        void XServerMenu::Draw()
+        {
+            if (Count == 0) { return; }
+            if (!Visible) { return; }
+
+            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Bounds, ButtonStyle.Colors[0]);
+
+            KernelIO::XServer.FullCanvas.DrawRectangle3D(Bounds.X, Bounds.Y, Bounds.Width, Bounds.Height, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]);
+
+            for (size_t i = 0; i < 16; i++)
+            {
+                if (&Items[i] != nullptr)
+                {
+                    if (Items[i].Name != nullptr && strlen(Items[i].Name) > 0 && !streql(Items[i].Name, "\0"))
+                    {
+                        if (Items[i].Hover)
+                        {
+                            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Items[i].Bounds, WindowStyle.Colors[5]);
+                            KernelIO::XServer.FullCanvas.DrawString(Items[i].Bounds.X + 5, Items[i].Bounds.Y + 6, Items[i].Name, WindowStyle.Colors[6], Graphics::FONT_8x8_SERIF);
+                        }
+                        else
+                        { KernelIO::XServer.FullCanvas.DrawString(Items[i].Bounds.X + 5, Items[i].Bounds.Y + 6, Items[i].Name, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF); }
+                    }
                 }
             }
         }

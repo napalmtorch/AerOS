@@ -799,30 +799,30 @@ uint32_t FileSize(f32 *fs,struct directory *dir,char* name)
     return 0;
 }
 
-void cat_file(f32 *fs,struct directory *dir,char* name)
+void cat_file(f32 *fs, struct directory *dir, char* name)
 {
-     uint32_t i;
+    uint32_t i;
     uint32_t max_name;
-                    FILE *f = fopen(name, NULL);
-                    if(f) 
-                    {
-                        #define BCOUNT 1000
-                        uint8_t c[BCOUNT];
-                        int count, total;
-                        while((count = fread(&c, BCOUNT, 1, f)), count > 0) 
-                        {
-                            for(int i = 0; i < count; i++) { System::KernelIO::Terminal.WriteChar(c[i]); }
-                            total += count;
-                        }
+    FILE *f = fopen(name, NULL);
+    if(f) 
+    {
+        #define BCOUNT 1000
+        uint8_t c[BCOUNT];
+        int count, total;
+        while((count = fread(&c, BCOUNT, 1, f)), count > 0) 
+        {
+            for(int i = 0; i < count; i++) { System::KernelIO::Terminal.WriteChar(c[i]); }
+            total += count;
+        }
 
-                        fclose(f);
-                    }
-                    else
-                    {
-                        System::KernelIO::Terminal.WriteLine("File not found, if you are sure it exists make sure to add a / to the filename.",COL4_RED);
-                        System::KernelIO::Terminal.WriteLine("For example: 'cat /yourfile.txt' ",COL4_RED);
+        fclose(f);
+    }
+    else
+    {
+        System::KernelIO::Terminal.WriteLine("File not found, if you are sure it exists make sure to add a / to the filename.",COL4_RED);
+        System::KernelIO::Terminal.WriteLine("For example: 'cat /yourfile.txt' ",COL4_RED);
 
-                    }
+    }
 }
 void print_directory(f32 *fs, struct directory *dir) {
             System::KernelIO::Terminal.WriteLine("Listing Directory",COL4_CYAN);

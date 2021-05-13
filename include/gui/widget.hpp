@@ -85,6 +85,7 @@ namespace System
         
         extern uint8_t TITLEBAR_ICON_CLOSE[];
         extern uint8_t TITLEBAR_ICON_MAX[];
+        extern uint8_t TITLEBAR_ICON_RES[];
         extern uint8_t TITLEBAR_ICON_MIN[];
 
         class Widget
@@ -161,6 +162,7 @@ namespace System
                 char* Title;
                 bounds_t* Bounds;
                 bounds_t* ClientBounds;
+                bounds_t* OldBounds;
                 WindowFlags* Flags;
                 VisualStyle* Style;
                 TitleBar* TBar;

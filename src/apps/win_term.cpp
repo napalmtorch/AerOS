@@ -7,6 +7,7 @@ namespace System
     {
         bool cursor_flash;
         uint32_t time, last_time;
+        uint32_t old_w, old_h;
 
         WinTerminal::WinTerminal()
         {
@@ -17,39 +18,36 @@ namespace System
         {
             KernelIO::Terminal.Window = this;
 
-            // set style
-            Style = GUI::CopyStyle(&GUI::WindowStyle);
-            Style->Colors[0] = Graphics::Colors::Transparent;
-
             // initialize buffer
             BufferWidth = (Bounds->Width - 3) / 8;
             BufferHeight = (Bounds->Height - 19) / 16;
+            old_w = BufferWidth; old_h = BufferHeight;
             Buffer = new uint8_t[BufferWidth * BufferHeight * 2];
 
+            // default colors
             BackColor = COL4_BLACK;
             ForeColor = COL4_WHITE;
 
             Clear();
+
+            // load message of the day
             if(master_fs != nullptr)
             {
+                // directory
                 char* motd = "/etc/motd";
                 
+                // open file
                 FILE *f = fopen(motd, NULL);
+
                 if(f)
                 {
-                 struct directory dir;
-                populate_root_dir(master_fs, &dir);
-                cat_file(master_fs,&dir,motd);
+                    struct directory dir;
+                    populate_root_dir(master_fs, &dir);
+                    cat_file(master_fs,&dir,motd);
                 }
-                else
-                {
-                    WriteLine("AerOS Terminal");
-                }
+                else { WriteLine("AerOS Terminal"); }
             }
-            else
-            {
-            WriteLine("AerOS Terminal");
-            }
+            else { WriteLine("AerOS Terminal"); }
             KernelIO::Shell.PrintCaret();
         }
 
@@ -76,6 +74,20 @@ namespace System
                 cursor_flash = !cursor_flash;
                 last_time = time;
             }
+
+            if (old_w != Bounds->Width || old_h != Bounds->Height)
+            {
+                if (Buffer != nullptr) { delete Buffer; }
+                // initialize buffer
+                BufferWidth = (Bounds->Width - 3) / 8;
+                BufferHeight = (Bounds->Height - 19) / 16;
+                Buffer = new uint8_t[BufferWidth * BufferHeight * 2];                
+                Clear();
+                KernelIO::Shell.PrintCaret();
+
+                old_w = Bounds->Width;
+                old_h = Bounds->Height;
+            }
         }
 
         void WinTerminal::Draw()
@@ -84,6 +96,7 @@ namespace System
             
             if (Flags->CanDraw)
             {
+                KernelIO::XServer.FullCanvas.DrawFilledRectangle((*ClientBounds), Graphics::Colors::Black);
                 
                 // draw buffer
                 for (size_t y = 0; y < BufferHeight; y++)
@@ -102,7 +115,7 @@ namespace System
                 {
                     uint32_t cx = ClientBounds->X + (CursorX * 8);
                     uint32_t cy = ClientBounds->Y + (CursorY * 16);
-                    KernelIO::XServer.FullCanvas.DrawFilledRectangle(cx, cy + 6, 8, 2, ConvertColor(ForeColor));
+                    KernelIO::XServer.FullCanvas.DrawFilledRectangle(cx, cy + 13, 8, 2, ConvertColor(ForeColor));
                 }
             }
         }

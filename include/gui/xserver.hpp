@@ -32,6 +32,20 @@ namespace System
                 XServerTaskbarItem Items[32];
         };
 
+        // start menu class
+        class XServerMenu
+        {
+            public:
+                void Initialize();
+                void Update();
+                void Draw();
+                bool Visible;
+                bounds_t Bounds;
+                XServerTaskbarItem Items[16];
+                uint32_t Count = 0;
+                int32_t SelectedIndex = 0;
+        };
+
         // xserver base class
         class XServerHost
         {
@@ -47,6 +61,8 @@ namespace System
                 WindowManager WindowMgr;
             private:
                 XServerTaskbar Taskbar;
+                Button MenuBtn;
+                XServerMenu Menu;
                 bool Running;
                 uint32_t FPS, frames, time, last_time;
         };

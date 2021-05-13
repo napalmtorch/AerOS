@@ -174,7 +174,7 @@ namespace System
             bool oldSerial = debug_serial_enabled;
             KernelIO::SetDebugConsoleOutput(true);
             KernelIO::SetDebugSerialOutput(false);
-            KernelIO::DumpMemory((uint8_t*)offset, length, 12, true);
+            KernelIO::DumpMemoryTerminal((uint8_t*)offset, length, 12, true);
             KernelIO::SetDebugConsoleOutput(oldConsole);
             KernelIO::SetDebugSerialOutput(oldSerial);
 

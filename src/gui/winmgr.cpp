@@ -2,6 +2,8 @@
 #include <core/kernel.hpp>
 #include <apps/win_empty.hpp>
 #include <apps/win_term.hpp>
+#include <apps/win_raycast.hpp>
+#include <apps/win_tview.hpp>
 
 namespace System
 {
@@ -10,10 +12,7 @@ namespace System
 
         void WindowManager::Initialize()
         {
-            Applications::WinTerminal* win = new Applications::WinTerminal(128, 128);
-            Applications::WinEmpty* win2 = new Applications::WinEmpty(256, 60);
-            Open(win);
-            Open(win2);
+            
         }
 
         bool clicked = false;
