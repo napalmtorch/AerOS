@@ -19,7 +19,7 @@ namespace Graphics
     }
 
     // constructor - load from disk
-    Bitmap::Bitmap(char* fullname, char* fname)
+    Bitmap::Bitmap(char* fullname)
     {
         if(fat_master_fs != nullptr)
         {
@@ -36,7 +36,7 @@ namespace Graphics
 
                 struct directory dir;
                 fat_populate_root_dir(fat_master_fs, &dir);
-                uint32_t size = fat_get_file_size(fat_master_fs, &dir, fname);
+                uint32_t size = fat_get_file_size(fat_master_fs, &dir, fullname);
 
                 // read data from disk
                 void* buf = mem_alloc(size);

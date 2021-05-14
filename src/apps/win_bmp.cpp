@@ -15,7 +15,7 @@ namespace System
 
         WinBitmapViewer::WinBitmapViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Bitmap Viewer")
         {
-            bmp = new Graphics::Bitmap("/test2.bmp", "test2.bmp");
+            bmp = new Graphics::Bitmap("/test/smiley.bmp");
         }
 
         void WinBitmapViewer::Update()

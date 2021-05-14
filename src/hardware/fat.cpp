@@ -778,18 +778,112 @@ extern "C"
         }
 
     }
+        char *strdup(const char *s) 
+    {
+        char *news = (char*)mem_alloc(strlen_c(s) + 1);
+        char *temp = news;
+        while(*temp++ = *s++);
+        return news;
+    }
+
+    const char *strchr_c(const char *s, int c) 
+    {
+        while(*s) {
+            if(*s == c) return s;
+            s++;
+        }
+        return NULL;
+    }
+
+    char *strchr(char *s, int c) 
+    {
+        while(*s) {
+            if(*s == c) return s;
+            s++;
+        }
+        return NULL;
+    }
+
+    char *strtok_r(char *str, const char *delim, char **saveptr) 
+    {
+        char *begin;
+        if(str) { begin = str; }
+        else if (*saveptr) { begin = *saveptr; }
+        else { return NULL; }
+
+        while(strchr_c(delim, begin[0])) { begin++; }
+
+        char *next = NULL;
+        for(int i = 0; i < strlen_c(delim); i++) 
+        {
+            char *temp = strchr(begin, delim[i]);
+            if(temp < next || next == NULL) { next = temp; }
+        }
+
+        if(!next) 
+        {
+            *saveptr = NULL;
+            return begin;
+        }
+        *next = 0;
+        *saveptr=next+1;
+        return begin;
+    }
+       static inline int entry_for_path(const char *path, struct dir_entry_t *entry) 
+    {
+        struct directory dir;
+        fat_populate_root_dir(fat_master_fs, &dir);
+        int found_file = 0;
+        if(path[0] != '/') { return found_file; }
+
+        char *cutpath = strdup(path);
+        char *tokstate = NULL;
+        char *next_dir = strtok_r(cutpath, "/", &tokstate);
+        struct dir_entry_t *currentry = NULL;
+        entry->name = NULL;
+        while (next_dir) 
+        {
+            int found = 0;
+            for(int entryi = 0; entryi < dir.num_entries; entryi++) 
+            {
+                currentry = &dir.entries[entryi];
+                if(strcmp(currentry->name, next_dir) == 0) 
+                {
+                    if(entry->name) mem_free(entry->name);
+                    *entry = *currentry;
+                    // TODO: Make sure this doesn't leak. Very dangerous:
+                    entry->name = strdup(currentry->name);
+
+                    uint32_t cluster = currentry->first_cluster;
+                    fat_free_dir(fat_master_fs, &dir);
+                    fat_populate_dir(fat_master_fs, &dir, cluster);
+                    found = 1;
+                    break;
+
+                }
+            }
+            if(!found) 
+            {
+                mem_free(cutpath);
+                fat_free_dir(fat_master_fs, &dir);
+                return 0;
+            }
+            next_dir = strtok_r(NULL, "/", &tokstate);
+        }
+        fat_free_dir(fat_master_fs, &dir);
+        mem_free(cutpath);
+        return 1;
+    }
+
     uint32_t fat_get_file_size(f32 *fs,struct directory *dir,char* name)
     {
-        uint32_t i;
-        for(i = 0; i < dir->num_entries; i++)
+        struct dir_entry_t entry;
+        if(entry_for_path(name, &entry))
         {
-            debug_writeln_ext(dir->entries[i].name, COL4_CYAN);
-            if(StringContains(dir->entries[i].name, name))
-            {
-                debug_writeln_ext("FOUND file_t", COL4_GREEN);
-                return dir->entries[i].file_size;
-            }
+            debug_writeln_ext("FOUND file_t", COL4_GREEN);
+            return entry.file_size;
         }
+        debug_writeln_ext((char*)dir,COL4_RED);
         debug_writeln_ext("UNABLE TO FIND file_t", COL4_RED);
         return 0;
     }
@@ -884,104 +978,9 @@ extern "C"
         }
         return count;
     }
-    char *strdup(const char *s) 
-    {
-        char *news = (char*)mem_alloc(strlen_c(s) + 1);
-        char *temp = news;
-        while(*temp++ = *s++);
-        return news;
-    }
 
-    const char *strchr_c(const char *s, int c) 
-    {
-        while(*s) {
-            if(*s == c) return s;
-            s++;
-        }
-        return NULL;
-    }
 
-    char *strchr(char *s, int c) 
-    {
-        while(*s) {
-            if(*s == c) return s;
-            s++;
-        }
-        return NULL;
-    }
-
-    char *strtok_r(char *str, const char *delim, char **saveptr) 
-    {
-        char *begin;
-        if(str) { begin = str; }
-        else if (*saveptr) { begin = *saveptr; }
-        else { return NULL; }
-
-        while(strchr_c(delim, begin[0])) { begin++; }
-
-        char *next = NULL;
-        for(int i = 0; i < strlen_c(delim); i++) 
-        {
-            char *temp = strchr(begin, delim[i]);
-            if(temp < next || next == NULL) { next = temp; }
-        }
-
-        if(!next) 
-        {
-            *saveptr = NULL;
-            return begin;
-        }
-        *next = 0;
-        *saveptr=next+1;
-        return begin;
-    }
-
-    static inline int entry_for_path(const char *path, struct dir_entry_t *entry) 
-    {
-        struct directory dir;
-        fat_populate_root_dir(fat_master_fs, &dir);
-        int found_file = 0;
-        if(path[0] != '/') { return found_file; }
-
-        char *cutpath = strdup(path);
-        char *tokstate = NULL;
-        char *next_dir = strtok_r(cutpath, "/", &tokstate);
-        struct dir_entry_t *currentry = NULL;
-        entry->name = NULL;
-        while (next_dir) 
-        {
-            int found = 0;
-            for(int entryi = 0; entryi < dir.num_entries; entryi++) 
-            {
-                currentry = &dir.entries[entryi];
-                if(strcmp(currentry->name, next_dir) == 0) 
-                {
-                    if(entry->name) mem_free(entry->name);
-                    *entry = *currentry;
-                    // TODO: Make sure this doesn't leak. Very dangerous:
-                    entry->name = strdup(currentry->name);
-
-                    uint32_t cluster = currentry->first_cluster;
-                    fat_free_dir(fat_master_fs, &dir);
-                    fat_populate_dir(fat_master_fs, &dir, cluster);
-                    found = 1;
-                    break;
-
-                }
-            }
-            if(!found) 
-            {
-                mem_free(cutpath);
-                fat_free_dir(fat_master_fs, &dir);
-                return 0;
-            }
-            next_dir = strtok_r(NULL, "/", &tokstate);
-        }
-        fat_free_dir(fat_master_fs, &dir);
-        mem_free(cutpath);
-        return 1;
-    }
-
+ 
     file_t *fopen(const char *pathname, const char *mode) 
     {
         struct dir_entry_t entry;

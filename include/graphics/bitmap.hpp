@@ -48,6 +48,6 @@ namespace Graphics
             Bitmap(int32_t w, int32_t h, COLOR_DEPTH depth);
 
             // constructor - load image
-            Bitmap(char* fullname, char* fname);
+            Bitmap(char* fullname);
     };
 }
