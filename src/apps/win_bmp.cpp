@@ -15,7 +15,7 @@ namespace System
 
         WinBitmapViewer::WinBitmapViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Bitmap Viewer")
         {
-            bmp = new Graphics::Bitmap("/test/smiley.bmp");
+            bmp = new Graphics::Bitmap("/test/test.bmp");
         }
 
         void WinBitmapViewer::Update()
@@ -38,7 +38,7 @@ namespace System
                             if (bmp->Depth == COLOR_DEPTH_24)
                             {
                                 uint32_t offset = (3 * (xx + (yy * bmp->Width)));
-                                uint32_t color = Graphics::RGBToPackedValue(bmp->ImageData[offset + 1], bmp->ImageData[offset + 2], bmp->ImageData[offset + 3]);
+                                uint32_t color = Graphics::RGBToPackedValue(bmp->ImageData[offset + 2], bmp->ImageData[offset + 1], bmp->ImageData[offset]);
                                 Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, color);
                             }
                             else if (bmp->Depth == COLOR_DEPTH_32)

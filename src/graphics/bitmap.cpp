@@ -55,9 +55,12 @@ namespace Graphics
                 Buffer = (uint8_t*)buf;
                 TotalSize = size;
                 Depth = (COLOR_DEPTH)info->biBitCount;
+                
 
                 debug_writeln_dec("BMP WIDTH:  ", Width);
                 debug_writeln_dec("BMP HEIGHT: ", Height);
+                debug_writeln_dec("BMP DEPTH:  ", (uint32_t)Depth);
+                debug_writeln_dec("BMP SIZE:   ", TotalSize);
             }
             // unable to locate file
             else
