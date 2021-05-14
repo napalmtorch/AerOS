@@ -875,7 +875,17 @@ extern "C"
         return 1;
     }
 
-    uint32_t fat_get_file_size(f32 *fs,char* name)
+    bool fat_file_exists(char* name)
+    {
+        struct dir_entry_t entry;
+        if(entry_for_path(name, &entry))
+        {
+            return true;
+        }
+        return false; 
+    }
+
+    uint32_t fat_get_file_size(char* name)
     {
         struct dir_entry_t entry;
         if(entry_for_path(name, &entry))
