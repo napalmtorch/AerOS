@@ -875,7 +875,7 @@ extern "C"
         return 1;
     }
 
-    uint32_t fat_get_file_size(f32 *fs,struct directory *dir,char* name)
+    uint32_t fat_get_file_size(f32 *fs,char* name)
     {
         struct dir_entry_t entry;
         if(entry_for_path(name, &entry))
@@ -883,7 +883,6 @@ extern "C"
             debug_writeln_ext("FOUND file_t", COL4_GREEN);
             return entry.file_size;
         }
-        debug_writeln_ext((char*)dir,COL4_RED);
         debug_writeln_ext("UNABLE TO FIND file_t", COL4_RED);
         return 0;
     }
