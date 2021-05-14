@@ -31,19 +31,19 @@ namespace System
             Clear();
 
             // load message of the day
-            if(master_fs != nullptr)
+            if(fat_master_fs != nullptr)
             {
                 // directory
                 char* motd = "/etc/motd";
                 
                 // open file
-                FILE *f = fopen(motd, NULL);
+                file_t *f = fopen(motd, NULL);
 
                 if(f)
                 {
                     struct directory dir;
-                    populate_root_dir(master_fs, &dir);
-                    cat_file(master_fs,&dir,motd);
+                    fat_populate_root_dir(fat_master_fs, &dir);
+                    fat_cat_file(fat_master_fs,&dir,motd);
                 }
                 else { WriteLine("AerOS Terminal"); }
             }
@@ -96,7 +96,7 @@ namespace System
             
             if (Flags->CanDraw)
             {
-                KernelIO::XServer.FullCanvas.DrawFilledRectangle((*ClientBounds), Graphics::Colors::Black);
+                Graphics::Canvas::DrawFilledRectangle((*ClientBounds), Graphics::Colors::Black);
                 
                 // draw buffer
                 for (size_t y = 0; y < BufferHeight; y++)
@@ -106,7 +106,7 @@ namespace System
                         uint32_t c = (x + (y * BufferWidth)) * 2;
                         uint8_t bg = ((Buffer[c + 1] & 0xF0) >> 4);
                         uint8_t fg = (Buffer[c + 1] & 0x0F);
-                        KernelIO::XServer.FullCanvas.DrawChar(ClientBounds->X + (x * 8), ClientBounds->Y + (y * 16), Buffer[c], ConvertColor(fg), ConvertColor(bg), Graphics::FONT_8x16);
+                        Graphics::Canvas::DrawChar(ClientBounds->X + (x * 8), ClientBounds->Y + (y * 16), Buffer[c], ConvertColor(fg), ConvertColor(bg), Graphics::FONT_8x16);
                     }
                 }
 
@@ -115,7 +115,7 @@ namespace System
                 {
                     uint32_t cx = ClientBounds->X + (CursorX * 8);
                     uint32_t cy = ClientBounds->Y + (CursorY * 16);
-                    KernelIO::XServer.FullCanvas.DrawFilledRectangle(cx, cy + 13, 8, 2, ConvertColor(ForeColor));
+                    Graphics::Canvas::DrawFilledRectangle(cx, cy + 13, 8, 2, ConvertColor(ForeColor));
                 }
             }
         }

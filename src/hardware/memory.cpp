@@ -40,7 +40,7 @@ extern "C"
         if (dynamic_mode)
         {
             // setup table
-            table_start = kernel_end_real + (1 * 1024 * 1024);
+            table_start = kernel_end_real + (4 * 1024 * 1024);
             table_size = 0x20000;
             table_pos = 0;
 
@@ -55,7 +55,7 @@ extern "C"
         else
         {
             // set reserved memory to maximum possibel and never look back
-            reserved_start = kernel_end_real + (1 * 1024 * 1024);
+            reserved_start = kernel_end_real + (4 * 1024 * 1024);
             reserved_size = (mem_get_total() - reserved_start);
         }
     }
@@ -80,9 +80,9 @@ extern "C"
             mem_used += size + 1;
 
             // allocation message
-            debug_write("ALLOCATION: ");
-            debug_write_hex("offset = ", offset);
-            debug_writeln_dec("      size = ", size + 1);
+            //debug_write("ALLOCATION: ");
+            //debug_write_hex("offset = ", offset);
+            //debug_writeln_dec("      size = ", size + 1);
 
             // return offset
             return (void*)offset;

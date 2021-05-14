@@ -15,13 +15,13 @@ namespace System
             Document = (char*)new uint8_t[1000];
 
             // load message of the day
-            if(master_fs != nullptr)
+            if(fat_master_fs != nullptr)
             {
                 // directory
                 char* motd = "/etc/motd";
                 
                 // open file
-                FILE *f = fopen(motd, NULL);
+                file_t *f = fopen(motd, NULL);
 
                 if(f)
                 { 
@@ -43,13 +43,13 @@ namespace System
             Document = (char*)new uint8_t[1000];
             
             // load message of the day
-            if(master_fs != nullptr)
+            if(fat_master_fs != nullptr)
             {
                 // directory
                 char* motd = text;
                 
                 // open file
-                FILE *f = fopen(motd, NULL);
+                file_t *f = fopen(motd, NULL);
 
                 if(f)
                 { 
@@ -75,7 +75,7 @@ namespace System
         {
             GUI::Window::Draw();
 
-            if (Flags->CanDraw) { KernelIO::XServer.FullCanvas.DrawString(ClientBounds->X, ClientBounds->Y, Document, Graphics::Colors::Black, Graphics::FONT_8x16_CONSOLAS); }
+            if (Flags->CanDraw) { Graphics::Canvas::DrawString(ClientBounds->X, ClientBounds->Y, Document, Graphics::Colors::Black, Graphics::FONT_8x16_CONSOLAS); }
         }
     }
 }

@@ -9,15 +9,15 @@ extern "C"
 bitmap_t * bitmap_create(char * filename) 
 {
     bitmap_t * ret = (bitmap_t*)mem_alloc(sizeof(bitmap_t));
-    FILE * file = fopen(filename, 0);
+    file_t * file = fopen(filename, 0);
     if(!file) {
         return NULL;
     }
     struct directory dir;
-    populate_root_dir(master_fs, &dir);
-    uint32_t size = FileSize(master_fs,&dir,filename);
+    fat_populate_root_dir(fat_master_fs, &dir);
+    uint32_t size = fat_get_file_size(fat_master_fs,&dir,filename);
     void * buf = mem_alloc(size);
-    fread(buf, size, 1, (FILE*)file);
+    fread(buf, size, 1, (file_t*)file);
 
 
     bmp_fileheader_t * h = (bmp_fileheader_t*)buf;

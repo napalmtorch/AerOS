@@ -4,7 +4,7 @@
     echo "Please run with sudo or as root"
     exit
     else
-    mkdir /mnt/tmp
+    fat_create_dir /mnt/tmp
     mount disks/fat32.img /mnt/tmp/
     cp -Rfv base/* /mnt/tmp/
     umount /mnt/tmp/

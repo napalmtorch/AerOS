@@ -39,26 +39,12 @@ namespace HAL
     // draw mouse to screen
     void PS2Mouse::Draw()
     {
-        if (System::KernelIO::XServer.FullCanvas.GetDriver() == VIDEO_DRIVER_VGA)
+        for (uint8_t y = 0; y < 20; y++)
         {
-            for (uint8_t y = 0; y < 10; y++)
+            for (uint8_t x = 0; x < 12; x++)
             {
-                for (uint8_t x = 0; x < 6; x++)
-                {
-                    if (CursorData[x + (y * 6)] != 159)
-                    { System::KernelIO::XServer.Canvas.DrawPixel(Position.X + x, Position.Y + y, (COL8)CursorData[x + (y * 6)]); }
-                }
-            }
-        }
-        else if (System::KernelIO::XServer.FullCanvas.GetDriver() == VIDEO_DRIVER_VESA)
-        {
-            for (uint8_t y = 0; y < 20; y++)
-            {
-                for (uint8_t x = 0; x < 12; x++)
-                {
-                    if (CursorData32[x + (y * 12)] != 0xFFFF00FF)
-                    { System::KernelIO::XServer.FullCanvas.DrawPixel(Position.X + x, Position.Y + y, CursorData32[x + (y * 12)]); }
-                }
+                if (CursorData32[x + (y * 12)] != 0xFFFF00FF)
+                { Graphics::Canvas::DrawPixel(Position.X + x, Position.Y + y, CursorData32[x + (y * 12)]); }
             }
         }
     }

@@ -169,11 +169,11 @@ namespace System
                 ATA.Initialize();
                 ThrowOK("Initialized ATA controller driver");
                 
-                master_fs = makeFilesystem("");
-                if(master_fs != NULL) 
+                fat_master_fs = fs_create("");
+                if(fat_master_fs != NULL) 
                 {
                     struct directory dir;
-                    populate_root_dir(master_fs, &dir);
+                    fat_populate_root_dir(fat_master_fs, &dir);
                     System::KernelIO::Terminal.WriteLine("Initialized FAT32 Filesystem");
                     //term_writeln_dec("Kernel Start:", (uint32_t)&start);
                     term_writeln_dec("Kernel End:", (uint32_t)&kernel_end);
@@ -199,21 +199,27 @@ namespace System
             debug_writeln_dec("Bitmap B:",(*bitmap->bitmap)->b);
             */
             Mouse.Initialize();
-            
+            ThrowOK("Initialized PS/2 mouse driver");
+
             // initialize pit
             HAL::CPU::InitializePIT(60, pit_callback);
+            ThrowOK("Initialized PIT controller at 60 Hz");
 
             // enable interrupts
             asm volatile("cli");
             HAL::CPU::EnableInterrupts();
+            ThrowOK("Re-enabled interrupts");
 
             // initialize x server
             XServer.Initialize();
+            ThrowOK("Starting XServer...");
 
             // ready shell
             Shell.Initialize();
-            if (Parameters.VGA) { XServer.Start(VIDEO_DRIVER_VGA); }
-            else if (Parameters.VESA) { XServer.Start(VIDEO_DRIVER_VESA); }
+            if (Parameters.VGA) { XServer.Start(); }
+            else if (Parameters.VESA) { XServer.Start(); }
+            ThrowOK("Successfully started XServer");
+            WriteLineDecimal("RUNNING: ", (uint8_t)XServer.Running);
         }
 
 
@@ -260,11 +266,17 @@ namespace System
         // kernel core code, runs in a loop
         void KernelBase::Run()
         {
+            
             if (XServer.IsRunning())
             {
                 XServer.Update();
                 XServer.Draw();
             }
+            
+
+           //VESA.Clear(0xFFFF0000);
+           //for (size_t i = 0; i < 640; i++) { VESA.SetPixel(i, 64, 0xFFFFFFFF); }
+           //VESA.Render();
         }
         
         // triggered when a kernel panic is injected

@@ -41,7 +41,7 @@ int Loader::parse_ELF(char *exeFileData, uint64_t exeFileLength,
     {
         struct Exe_Segment *segment = &exeFormat->segmentList[i];
         segment->offsetInFile = phdr[i].offset;
-        segment->lengthInFile = phdr[i].fileSize;
+        segment->lengthInFile = phdr[i].fat_get_file_size;
         segment->sizeInMemory = phdr[i].memSize;
         segment->vaddr = phdr[i].paddr;
         if (segment->lengthInFile > segment->sizeInMemory)

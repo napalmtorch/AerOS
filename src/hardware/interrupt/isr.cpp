@@ -133,6 +133,7 @@ extern "C"
     void isr_handler(registers_t regs)
     {
         if (regs.int_no == 0) { debug_throw_message(MSG_TYPE_WARNING, "Attempt to divide by zero"); return; }
+        debug_writeln_dec("INT: ", regs.error_code);
         debug_throw_panic(exception_messages[regs.int_no]);
     }
 

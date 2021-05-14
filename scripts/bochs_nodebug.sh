@@ -1,5 +1,5 @@
 #!/bin/bash
-FILE=serial.out
+file_t=serial.out
 DISK=disks/disk.img
 DISK_LOCK_FILE=disk.img.lock 
 if ! command -v bochs &> /dev/null
@@ -29,7 +29,7 @@ fi
 if [ ! -e "$DISK" ]; then
 dd if=/dev/zero of=disk.img bs=1M count=32
 fi
-if [ -f "$FILE" ]; then
+if [ -f "$file_t" ]; then
     rm serial.out
     touch serial.out
 else
