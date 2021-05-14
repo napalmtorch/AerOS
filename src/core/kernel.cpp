@@ -77,7 +77,7 @@ namespace System
                         // read multiboot
            // Multiboot.Read();
             // initialize memory manager - we need memory first to parse start parameters effectively
-            MemoryManager.Initialize(false);
+            MemoryManager.Initialize(1);
 
 
             // initialize terminal interface

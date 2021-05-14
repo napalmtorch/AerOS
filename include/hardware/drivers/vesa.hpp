@@ -49,8 +49,8 @@ namespace HAL
 		bool InfoBlockSet = false;
 		bool Enabled = false;
         void* Buffer;
-		void PopulateInfoBlock();
     public:
+		void PopulateInfoBlock();
         void Initialize();
 		void Disable();
         bool SetMode(int16_t width, int16_t height, uint8_t depth);

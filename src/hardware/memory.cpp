@@ -30,15 +30,15 @@ extern "C"
 
     // properties
     uint32_t mem_used;
-    bool dynamic_mode = false;
+    uint32_t dynamic_mode;
 
     // initialize memory management system
-    void mem_init(bool dynamic)
+    void mem_init(uint32_t dynamic)
     {
         // set dynamic mode
         dynamic_mode = dynamic;
 
-        if (dynamic_mode)
+        if (dynamic_mode == 0)
         {
             // setup table
             table_start = kernel_end_real + (1 * 1024 * 1024);
@@ -53,12 +53,16 @@ extern "C"
             // map entire reserved memory region as a free chunk
             mem_create_entry(reserved_start, reserved_size, 0);
         }
-        else
+        else if(dynamic_mode == 1)
         {
+        // set reserved memory to maximum possibel and never look back
+           reserved_start = kernel_end_real + (1 * 1024 * 1024);
+           reserved_size = (mem_get_total() - reserved_start);
+        }
+        else if(dynamic_mode == 2)
+        {
+            InitialisePaging();
             HeapInit();
-            // set reserved memory to maximum possibel and never look back
-         //   reserved_start = kernel_end_real + (1 * 1024 * 1024);
-          //  reserved_size = (mem_get_total() - reserved_start);
         }
     }
 
@@ -66,14 +70,13 @@ extern "C"
     void* mem_alloc(size_t size)
     {
         // dynamic allocation mode
-        if (dynamic_mode)
+        if (dynamic_mode == 0)
         {
             return 0;
         }
-        // 'never look back' mode
-        else
+        else if(dynamic_mode == 1)
         {
-            /*
+                        
             // get available offset
             uint32_t offset = reserved_start + reserved_pos;
             
@@ -88,15 +91,19 @@ extern "C"
             debug_writeln_dec("      size = ", size + 1);
 
             // return offset
-            return (void*)offset;*/
-            KmallocAligned(size);
+            return (void*)offset;
+        }
+        // 'never look back' mode
+        else
+        {
+           return (void*)KmallocAligned(size);
         }
     }
 
     // free region of memory
     void mem_free(void* ptr)
     {
-        if (dynamic_mode) { KFree(ptr); }
+        if (dynamic_mode==2) { KFree(ptr); }
     }
 
     // create ram allocation table entry
@@ -259,7 +266,7 @@ void operator delete[](void *p, size_t size) { mem_free(p); UNUSED(size); }
 namespace HAL
 {
     // initialize memory manager
-    void MemoryManager::Initialize(bool dynamic) { mem_init(dynamic); }
+    void MemoryManager::Initialize(uint32_t dynamic) { mem_init(dynamic); }
 
     // allocate region of memory
     void* MemoryManager::Allocate(size_t size) { return mem_alloc(size); }

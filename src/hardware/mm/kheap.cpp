@@ -6,7 +6,7 @@
 #define NULL 0
 
 extern uint32_t kernel_end;
-uint32_t PlacementAddress = (uint32_t)&kernel_end + (1 * 1024 * 1024);
+uint32_t PlacementAddress = (uint32_t)&kernel_end;
 
 bool HeapInited = false;
 

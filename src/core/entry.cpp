@@ -19,11 +19,14 @@ extern "C" void syscall_event(uint32_t* regs)
 }
 extern "C" void kernel_main(multiboot_header_t* mbootdat)
 { 
+  //  serial_set_port(SERIAL_PORT_COM1);
     InitDescriptorTables();
     // initialize ACPI
-    System::KernelIO::ACPI.ACPIInit();
+  //  System::KernelIO::VESA.PopulateInfoBlock();
+    //System::KernelIO::VESA.SetMode(640, 480, 32);
+    //System::KernelIO::ACPI.ACPIInit();
     System::KernelIO::Multiboot.Read((multiboot_t*)mbootdat);
-    InitialisePaging();
+    
     System::KernelIO::Kernel.Initialize();
     while (true) { System::KernelIO::Kernel.Run(); }
 }

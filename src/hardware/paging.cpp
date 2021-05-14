@@ -143,7 +143,11 @@ PageType* GetPage(uint32_t Address,int32_t Make,PageDirectoryType* Directory)
 		return &Directory->Tables[TableIndex]->Pages[Address%1024];
 	} else return 0;
 }
-
+uint32_t virt2phys(uint32_t addr)
+{
+	uint32_t physaddr = addr - 0xC000000;
+	return physaddr; 
+}
 void PageFault(RegistersType Registers)
 {
 	uint32_t FaultingAddress;
@@ -153,14 +157,15 @@ void PageFault(RegistersType Registers)
 	int User = Registers.ErrorCode & 0x4;
 	int Reserved = Registers.ErrorCode & 0x8;
 	int ID = Registers.ErrorCode & 10;
-	debug_writeln_hex("Page Fault: ( ",FaultingAddress);
+	debug_write_hex("Page Fault: ( 0x",FaultingAddress);
+	debug_writeln(" )");
 	if ( Present ) debug_writeln("Present ");
 	if ( ReadWrite ) debug_writeln_hex("Read-only ",FaultingAddress);
 	if ( User ) debug_writeln("User");
 	if ( Reserved ) debug_writeln_dec("Reserved",FaultingAddress);
 	PageType* Page = GetPage(FaultingAddress,1,KernelDirectory);
 	AllocFrame(Page,1,1);
-    debug_bochs_break();
+    debug_bochs_break(); 
 //debug_throw_panic("Page Fault");
 return;
 }

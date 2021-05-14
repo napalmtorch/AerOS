@@ -4,7 +4,7 @@
 
 extern "C"
 {
-    void mem_init(bool dynamic);
+    void mem_init(uint32_t dynamic);
 
     size_t size(void* data);
 
@@ -46,7 +46,7 @@ namespace HAL
     class MemoryManager
     {
         public:
-            void Initialize(bool dynamic);
+            void Initialize(uint32_t dynamic);
             void* Allocate(size_t size);
             void Free(void* ptr);
     };
