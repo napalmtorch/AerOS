@@ -3,6 +3,7 @@
 
 void ms_callback(RegistersType regs)
 {
+   // debug_writeln("Mouse Trigger");
     System::KernelIO::Mouse.OnInterrupt();
     UNUSED(regs);
 }
@@ -44,7 +45,9 @@ namespace HAL
             for (uint8_t x = 0; x < 12; x++)
             {
                 if (CursorData32[x + (y * 12)] != 0xFFFF00FF)
-                { Graphics::Canvas::DrawPixel(Position.X + x, Position.Y + y, CursorData32[x + (y * 12)]); }
+                { 
+                    Graphics::Canvas::DrawPixel(Position.X + x, Position.Y + y, CursorData32[x + (y * 12)]); 
+                }
             }
         }
     }
@@ -52,11 +55,9 @@ namespace HAL
     // handle mouse movement offsets
     void PS2Mouse::OnMouseMove(int8_t x, int8_t y)
     {
-        //debug_writeln("Mouse trigger");
         // increment pos
         Position.X += x;
         Position.Y += y;
-
         // clamp inside bounds
         if (Position.X < Bounds.X) { Position.X = 0; }
         if (Position.Y < Bounds.Y) { Position.Y = 0; }

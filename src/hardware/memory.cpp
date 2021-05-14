@@ -1,5 +1,6 @@
 #include "hardware/memory.hpp"
 #include "hardware/mm/kheap.hpp"
+#include "hardware/mm/heap.hpp"
 #include <core/kernel.hpp>
 
 extern "C"
@@ -40,6 +41,7 @@ extern "C"
 
         if (dynamic_mode == 0)
         {
+            debug_writeln("Memory starting in dynamic mode");
             // setup table
             table_start = kernel_end_real + (4 * 1024 * 1024);
             table_size = 0x20000;
@@ -55,6 +57,7 @@ extern "C"
         }
         else if(dynamic_mode == 1)
         {
+            debug_writeln("Memory starting in yolo mode");
         // set reserved memory to maximum possibel and never look back
            reserved_start = kernel_end_real + (1 * 1024 * 1024);
            reserved_size = (mem_get_total() - reserved_start);
@@ -94,7 +97,7 @@ extern "C"
             return (void*)offset;
         }
         // 'never look back' mode
-        else
+        else if(dynamic_mode == 2)
         {
            return (void*)KmallocAligned(size);
         }
@@ -103,7 +106,8 @@ extern "C"
     // free region of memory
     void mem_free(void* ptr)
     {
-        if (dynamic_mode==2) { /*KFree(ptr);*/ }
+        debug_writeln("mem_free called");
+        if (dynamic_mode==2) { KFree(ptr); } else if(dynamic_mode == 1) {free_memory(ptr);} else { return; }
     }
 
     // create ram allocation table entry
@@ -189,8 +193,16 @@ extern "C"
     // copy range of memory
     void mem_copy(uint8_t* src, uint8_t* dest, uint32_t len)
     {
-        
+        if(dynamic_mode == 2)
+        {
+             const uint8_t *sp = (const uint8_t *)src;
+             uint8_t *dp = (uint8_t *)dest;
+             for(; len != 0; len--) *dp++ = *sp++;
+        }
+        else
+        {
         for (size_t i = 0; i < len; i++) { *(dest + i) = *(src + i); }
+        }
     }
 
     // swap range of memory

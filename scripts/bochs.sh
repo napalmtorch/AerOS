@@ -1,7 +1,7 @@
 #!/bin/bash
 file_t=serial.out
-DISK=disks/disk.img
-DISK_LOCK_FILE=disks/disk.img.lock 
+DISK=disks/fat32.img
+DISK_LOCK_FILE=disks/fat32.img.lock 
 if ! command -v bochs &> /dev/null
 then
     echo "bochs could not be found, installing...."
@@ -38,11 +38,11 @@ fi
 if [[ -f "$DISK_LOCK_FILE" ]]; 
 then
 echo "Found Lock File"
-rm -f disks/disk.img.lock
+rm -f $DISK_LOCK_FILE
 fi
 if [ "$1" == "--gnome-terminal" ]; then
 gnome-terminal -- bochs -q -f ./configs/bochsrc.txt &
 else
-xterm -e bochs -q -f ./configs/bochsrc.txt 
+gnome-terminal -- bochs -q -f ./configs/bochsrc.txt 
 fi
 fi

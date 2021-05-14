@@ -1,9 +1,15 @@
 global loader                           ; making entry point visible to linker
 global mbootdat 
 extern kernel_main
+
 ; setting up the Multiboot header - see GRUB docs for details
 MODULEALIGN equ  1<<0                   ; align loaded modules on page boundaries
 MEMINFO     equ  1<<1                   ; provide memory map
+VIDEOINFO equ 1<<2
+VIDEOMODE equ 1
+VIDEOWIDTH equ 2320
+VIDEOHEIGHT equ 240
+VIDEODEPTH equ 32
 FLAGS       equ  MODULEALIGN | MEMINFO  ; this is the Multiboot 'flag' field
 MAGIC       equ    0x1BADB002           ; 'magic number' lets bootloader find the header
 CHECKSUM    equ -(MAGIC + FLAGS)        ; checksum required
@@ -14,6 +20,10 @@ align 4
     dd MAGIC
     dd FLAGS
     dd CHECKSUM
+    dd VIDEOMODE
+    dd VIDEOWIDTH
+    dd VIDEOHEIGHT
+    dd VIDEODEPTH
  
 ; reserve initial kernel stack space
 STACKSIZE equ 0x8000                    ; that's 32k.

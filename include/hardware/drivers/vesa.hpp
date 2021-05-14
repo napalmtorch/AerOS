@@ -43,6 +43,7 @@ namespace HAL
     class VESA
     {
     private:
+		void PopulateInfoBlock();
         VBEInfoBlock InfoBlock;
         VBEModeInfoBlock ModeInfoBlock;
 		uint32_t Width, Height;
@@ -50,7 +51,6 @@ namespace HAL
 		bool Enabled = false;
         void* Buffer;
     public:
-		void PopulateInfoBlock();
         void Initialize();
 		void Disable();
         bool SetMode(int16_t width, int16_t height, uint8_t depth);

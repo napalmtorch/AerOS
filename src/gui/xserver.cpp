@@ -170,6 +170,7 @@ namespace System
 
         // draw
         char str[32];
+        int i = 0;
         void XServerHost::Draw()
         {
             // clear the screen
@@ -220,7 +221,7 @@ namespace System
             KernelIO::VESA.Render();
 
             // swap buffer
-            //Canvas::Display();
+           // Graphics::Canvas::Display();
         }
 
         // check if xserver is running

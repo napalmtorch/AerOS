@@ -6,7 +6,7 @@
 ENTRY(loader)
 SECTIONS
 {
-
+    . = 0xC010000;
     .text 0x100000 :
     {
         code = .; _code = .; __code = .;

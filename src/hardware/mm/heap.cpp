@@ -7,6 +7,8 @@
 
 #include <hardware/mm/heap.hpp>
 #include <hardware/mm/heap_ifce.hpp>
+#include <hardware/paging.hpp>
+#include <core/debug.hpp>
 
 static void*	start;		/* Start of first page */
 static void*	end;		/* End of last page */
@@ -99,7 +101,8 @@ oom_get_free_pages(int how_many)
 		void* ret = NULL;
 		while( NULL == ret ){ /* No free pages yet */
 			no_mem_handler();
-			ret = get_free_pages(how_many);
+			ret = GetFreePages(how_many);
+			debug_writeln_hex("Free Page: ", (uint32_t)ret);
 		} /* WE GOT FREE PAGES!!!! */
 		return ret;
 	}

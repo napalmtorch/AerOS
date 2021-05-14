@@ -1,7 +1,6 @@
 #include <hardware/drivers/vesa.hpp>
 #include <boot/realmode.hpp>
 #include <core/debug.hpp>
-#include <hardware/paging.hpp>
 
 #define LNG_PTR(seg, off) ((seg << 4) | off)
 #define REAL_PTR(arr) LNG_PTR(arr[1], arr[0])

@@ -143,11 +143,15 @@ PageType* GetPage(uint32_t Address,int32_t Make,PageDirectoryType* Directory)
 		return &Directory->Tables[TableIndex]->Pages[Address%1024];
 	} else return 0;
 }
-uint32_t virt2phys(uint32_t addr)
+void* virt2phys(uint32_t addr)
 {
 	uint32_t physaddr = addr - 0xC000000;
-	return physaddr; 
+	return (void*)physaddr; 
 }
+static uint32_t* page_directory = 0;
+static uint32_t page_dir_loc = 0;
+static uint32_t* last_page = 0;
+
 void PageFault(RegistersType Registers)
 {
 	uint32_t FaultingAddress;
@@ -165,7 +169,7 @@ void PageFault(RegistersType Registers)
 	if ( Reserved ) debug_writeln_dec("Reserved",FaultingAddress);
 	PageType* Page = GetPage(FaultingAddress,1,KernelDirectory);
 	AllocFrame(Page,1,1);
-    debug_bochs_break(); 
+   // debug_bochs_break(); 
 //debug_throw_panic("Page Fault");
 return;
 }
@@ -181,7 +185,11 @@ FindFreePages(uint32_t HowMany)
 {
 	UnusedPageType* ret = UnusedPages;
 	while(ret->HowMany<HowMany&&ret->Next!=NULL)
+	{
 		ret = ret->Next;
+	}
+	debug_writeln_hex("Free Page: ",(uint32_t)ret->Next);
+	debug_writeln_hex("Free Page: ",(uint32_t)ret->HowMany);
 	return ret;
 }
 
@@ -189,18 +197,21 @@ void*
 GetFreePages(uint32_t HowMany)
 {
 	UnusedPageType* ret;
-	if ((ret = (UnusedPageType*)FindFreePages(HowMany))!=NULL)
+	if ((ret = (UnusedPageType*)FindFreePages(HowMany))!=0)
 	{
 		/* Delete From Unused Page List */
 		/* Find Previous One */
 		UnusedPageType* Previous = (UnusedPageType*)FreePage;
 		while(Previous->Next!=ret)
+		{
 			Previous = Previous->Next;
+		}
 		Previous->Next = ret->Next;
+		debug_writeln_hex("Return:",(uint32_t)ret->Next);
 		return ret;
 	}
 	ret = (UnusedPageType*)FreePage;
-	FreePage += HowMany*0x1000;
+	FreePage += HowMany*4096;
     debug_writeln_hex("Ret:",(uint32_t)ret);
 	return ret;
 }

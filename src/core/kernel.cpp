@@ -74,12 +74,6 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
-                        // read multiboot
-           // Multiboot.Read();
-            // initialize memory manager - we need memory first to parse start parameters effectively
-            MemoryManager.Initialize(1);
-
-
             // initialize terminal interface
             Terminal.Initialize();
 
@@ -87,6 +81,11 @@ namespace System
             Terminal.Clear(COL4_BLACK);
             Terminal.DisableCursor();
             Terminal.EnableCursor();
+                        // read multiboot
+           // Multiboot.Read();
+            // initialize memory manager - we need memory first to parse start parameters effectively
+            MemoryManager.Initialize(2);
+
 
             // initialize fonts
             Graphics::InitializeFonts();
@@ -135,10 +134,13 @@ namespace System
             // vesa mode
             else if (Parameters.VESA)
             {
-                KernelIO::VESA.SetMode(640, 480, 32);
+                VESA.SetMode(640, 480, 32);
                 SetDebugConsoleOutput(false);
                 ThrowOK("Initialized VESA driver");
                 ThrowOK("Set VESA mode to 640x480 double buffered");
+                // initialize x server
+                XServer.Initialize();
+                ThrowOK("Starting XServer...");
             }
             // text mode
             else
@@ -187,7 +189,7 @@ namespace System
             }
 
             // initialize keyboard
-            Keyboard.Initialize();
+           // Keyboard.Initialize();
             Keyboard.BufferEnabled = true;
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
@@ -199,7 +201,7 @@ namespace System
             debug_writeln_dec("Bitmap G:",(*bitmap->bitmap)->g);
             debug_writeln_dec("Bitmap B:",(*bitmap->bitmap)->b);
             */
-            Mouse.Initialize();
+          //  Mouse.Initialize();
             ThrowOK("Initialized PS/2 mouse driver");
 
             // initialize pit
@@ -210,10 +212,6 @@ namespace System
             asm volatile("cli");
             HAL::CPU::EnableInterrupts();
             ThrowOK("Re-enabled interrupts");
-
-            // initialize x server
-            XServer.Initialize();
-            ThrowOK("Starting XServer...");
 
             // ready shell
             Shell.Initialize();

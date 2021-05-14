@@ -32,7 +32,7 @@ void PageFault(RegistersType Registers);
 void MapPage(uint32_t Address);
 void* GetFreePages(uint32_t HowMany);
 void ReturnPages(void* Address,uint32_t HowMany);
-uint32_t virt2phys(uint32_t addr);
+void* virt2phys(uint32_t addr);
 
 }
 	
