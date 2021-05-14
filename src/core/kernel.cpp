@@ -8,6 +8,7 @@ extern "C"
 
 static void pit_callback(RegistersType regs)
 {
+    debug_writeln("Pit trigger");
     System::KernelIO::Kernel.OnInterrupt();
     UNUSED(regs);
 }
@@ -73,11 +74,11 @@ namespace System
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
+                        // read multiboot
+           // Multiboot.Read();
             // initialize memory manager - we need memory first to parse start parameters effectively
             MemoryManager.Initialize(false);
 
-            // read multiboot
-            Multiboot.Read();
 
             // initialize terminal interface
             Terminal.Initialize();
@@ -121,7 +122,8 @@ namespace System
 
             // boot message
             Terminal.WriteLine("Starting AerOS...", COL4_GRAY);
-
+            Terminal.WriteLine("Bootloader: ");
+            Terminal.WriteLine(Multiboot.GetName());
             // vga mode
             if (Parameters.VGA)
             {
@@ -150,14 +152,13 @@ namespace System
             // initialize interrupt service routines
             HAL::CPU::InitializeISRs();
             
-            // initialize ACPI
-            ACPI.ACPIInit();
+
             ThrowOK("ACPI Initialised");
             
-            VMM.Initialize();
+           // VMM.Initialize();
 
             // initialize pci bus
-            PCIBus.Initialize();
+       //     PCIBus.Initialize();
 
             // initialize real time clock
             RTC.Initialize();

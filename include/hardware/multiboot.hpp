@@ -1,10 +1,9 @@
 #pragma once
 #include "lib/types.h"
-
+#include <boot/mboot.hpp>
 extern "C"
 {
     // multiboot pointer
-  //  extern uint32_t mbootdat;
 
     // structure to manage multiboot data
     typedef struct 
@@ -60,7 +59,7 @@ extern "C"
             {
                 public:
                     // update info
-                    void Read();
+                    void Read(multiboot_t* var);
                     // print to screen
                     void Print();
                     // get flags

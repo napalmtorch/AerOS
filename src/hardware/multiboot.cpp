@@ -1,12 +1,12 @@
 #include "hardware/multiboot.hpp"
-
+#include "core/kernel.hpp"
+#include "boot/mboot.hpp"
 namespace HAL
 {
     // read info from memory
-    void MultibootHeader::Read()
+    void MultibootHeader::Read(multiboot_t* mbootdats)
     {
-        multiboot_t* mbootdat;
-        this->Header = mbootdat;
+        this->Header = mbootdats;
         this->Flags = Header->flags;
         this->MemoryUpper = Header->mem_upper;
         this->MemoryLower = Header->mem_lower;

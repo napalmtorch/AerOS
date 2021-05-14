@@ -1,4 +1,5 @@
 #include "hardware/memory.hpp"
+#include "hardware/mm/kheap.hpp"
 #include <core/kernel.hpp>
 
 extern "C"
@@ -29,7 +30,7 @@ extern "C"
 
     // properties
     uint32_t mem_used;
-    bool dynamic_mode;
+    bool dynamic_mode = false;
 
     // initialize memory management system
     void mem_init(bool dynamic)
@@ -54,9 +55,10 @@ extern "C"
         }
         else
         {
+            HeapInit();
             // set reserved memory to maximum possibel and never look back
-            reserved_start = kernel_end_real + (1 * 1024 * 1024);
-            reserved_size = (mem_get_total() - reserved_start);
+         //   reserved_start = kernel_end_real + (1 * 1024 * 1024);
+          //  reserved_size = (mem_get_total() - reserved_start);
         }
     }
 
@@ -71,6 +73,7 @@ extern "C"
         // 'never look back' mode
         else
         {
+            /*
             // get available offset
             uint32_t offset = reserved_start + reserved_pos;
             
@@ -85,14 +88,15 @@ extern "C"
             debug_writeln_dec("      size = ", size + 1);
 
             // return offset
-            return (void*)offset;
+            return (void*)offset;*/
+            KmallocAligned(size);
         }
     }
 
     // free region of memory
     void mem_free(void* ptr)
     {
-        if (!dynamic_mode) { return; }
+        if (dynamic_mode) { KFree(ptr); }
     }
 
     // create ram allocation table entry
@@ -178,6 +182,7 @@ extern "C"
     // copy range of memory
     void mem_copy(uint8_t* src, uint8_t* dest, uint32_t len)
     {
+        
         for (size_t i = 0; i < len; i++) { *(dest + i) = *(src + i); }
     }
 
@@ -193,6 +198,7 @@ extern "C"
     // fill range of memory
     void mem_fill(uint8_t* dest, uint8_t val, uint32_t len)
     {
+        
         for (size_t i = 0; i < len; i++) { *(dest + i) = val; }
     }
     

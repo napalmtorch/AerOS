@@ -1,5 +1,5 @@
 global loader                           ; making entry point visible to linker
- 
+global mbootdat 
 extern kernel_main
 ; setting up the Multiboot header - see GRUB docs for details
 MODULEALIGN equ  1<<0                   ; align loaded modules on page boundaries
@@ -17,11 +17,11 @@ align 4
  
 ; reserve initial kernel stack space
 STACKSIZE equ 0x8000                    ; that's 32k.
- 
+
 loader:
     mov  esp, stack + STACKSIZE         ; set up the stack
     push eax                            ; Multiboot magic number
-    push ebx                            ; Multiboot info structure
+    push ebx                           ; Multiboot info structure
  
     call kernel_main                          ; call kernel proper
  

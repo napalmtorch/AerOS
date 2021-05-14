@@ -41,7 +41,7 @@ echo "Found Lock File"
 rm -f disks/disk.img.lock
 fi
 if [ "$1" == "--gnome-terminal" ]; then
-gnome-terminal -- bochs -q -f ../configs/bochsrc.txt &
+gnome-terminal -- bochs -q -f ./configs/bochsrc.txt &
 else
 xterm -e bochs -q -f ./configs/bochsrc.txt 
 fi

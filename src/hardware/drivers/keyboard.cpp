@@ -79,7 +79,7 @@ namespace HAL
         Port = IOPort(0x60);
 
         // register interrupt request
-        HAL::CPU::RegisterIRQ(1, (ISRType)kb_callback);
+        HAL::CPU::RegisterIRQ(33, (ISRType)kb_callback);
 
         KeyboardLayoutUS = { KB_LAYOUT_US, "United States", "??!@#$%^&*()_+??QWERTYUIOP{}??ASDFGHJKL:\"~?|ZXCVBNM<>???? ", "" };
         KeyboardLayoutDE = { KB_LAYOUT_DE, "German",        "??!\"§$%&/()=?`??QWERTZUIOP?*??ASDFGHJKL??'?>YXCVBNM;:???? ", "" }; 
