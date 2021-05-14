@@ -103,7 +103,7 @@ extern "C"
     // free region of memory
     void mem_free(void* ptr)
     {
-        if (dynamic_mode==2) { KFree(ptr); }
+        if (dynamic_mode==3) { KFree(ptr); }
     }
 
     // create ram allocation table entry

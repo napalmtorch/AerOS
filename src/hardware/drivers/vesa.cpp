@@ -1,6 +1,7 @@
 #include <hardware/drivers/vesa.hpp>
 #include <boot/realmode.hpp>
 #include <core/debug.hpp>
+#include <hardware/paging.hpp>
 
 #define LNG_PTR(seg, off) ((seg << 4) | off)
 #define REAL_PTR(arr) LNG_PTR(arr[1], arr[0])
@@ -31,7 +32,7 @@ namespace HAL
         System::KernelIO::ThrowMessage(MSG_TYPE_SYSTEM, "VESA: Gathering available VESA modes from BIOS...");
         
         // set the locvib location
-        VBEInfoBlock* info = (VBEInfoBlock*)0x80000;
+        VBEInfoBlock* info = (VBEInfoBlock*)virt2phys(0x80000);
 
         // call the bios interrupt
         regs16_t regs;
