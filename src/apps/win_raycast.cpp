@@ -174,7 +174,7 @@ namespace System
                 for (size_t xx = 0; xx < BufferWidth; xx++)
                 {
                     uint32_t offset = xx + (yy * BufferWidth);
-                    KernelIO::XServer.FullCanvas.DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, ConvertColor(Buffer[offset]));   
+                    Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, ConvertColor(Buffer[offset]));   
                 }
             }
         }

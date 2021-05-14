@@ -32,8 +32,8 @@ namespace Graphics
     // convert rgb value to packed color
     uint32_t RGBToPackedValue(uint8_t r, uint8_t g, uint8_t b)
     {
+        if (r == 0 && g == 0 && b == 0) { return 0xFF000000; }
         return (uint32_t)((0xFF << 24) | (r << 16) | (g << 8) | b);
-        return 0;
     }
     
     Color PackedValueToRGB(uint32_t packed)

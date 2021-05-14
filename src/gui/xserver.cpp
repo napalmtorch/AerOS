@@ -5,6 +5,8 @@
 #include <apps/win_tview.hpp>
 #include <apps/win_raycast.hpp>
 #include <apps/win_bmp.hpp>
+#include <graphics/colors.hpp>
+#include <graphics/canvas.hpp>
 
 namespace System
 {
@@ -77,33 +79,40 @@ namespace System
         // initialize xserver interface
         void XServerHost::Initialize()
         {
-            Running = false;
+            Running = true;
             FPS = 0;
             time = 1;
+            fpsString[0] = '0';
+            fpsString[1] = '\0';
             BackColor = Graphics::Colors::DarkCyan;
         }
 
         // start
-        void XServerHost::Start(VIDEO_DRIVER driver)
+        void XServerHost::Start()
         {
+            Initialize();
+
             // set driver
-            FullCanvas.SetDriver(driver);
+            KernelIO::ThrowOK("Set graphics driver to VESA");
             
             // setup mouse
             KernelIO::Mouse.SetBounds(0, 0, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight());
             KernelIO::Mouse.SetPosition(KernelIO::VESA.GetWidth() / 2, KernelIO::VESA.GetHeight() / 2);
+            KernelIO::ThrowOK("Set mouse bounds");
 
             // initialize taskbar and menu
             Taskbar.Initialize();
             Menu.Initialize();
             Menu.Visible = false;
             Menu.SelectedIndex = -1;
+            KernelIO::ThrowOK("Initialized desktop");;
 
             MenuBtn = Button(4, KernelIO::VESA.GetHeight() - 21, "");
             MenuBtn.SetSize(56, 18);
             
             // initialize window manager
-            WindowMgr.Initialize();                       
+            WindowMgr.Initialize();        
+            KernelIO::ThrowOK("Initialized window manager");               
 
             // running flag
             Running = true;
@@ -164,51 +173,54 @@ namespace System
         void XServerHost::Draw()
         {
             // clear the screen
-            FullCanvas.Clear(BackColor);
-
+            Graphics::Canvas::Clear(BackColor);
+            
             // draw status panel
             uint32_t spx = KernelIO::VESA.GetWidth() - 208;
             uint32_t spy = 8;
-            FullCanvas.DrawFilledRectangle(spx, spy, 200, 64, ButtonStyle.Colors[0]);
-            FullCanvas.DrawRectangle3D(spx, spy, 200, 64, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]);
+            Graphics::Canvas::DrawFilledRectangle(spx, spy, 200, 64, ButtonStyle.Colors[0]);
+            Graphics::Canvas::DrawRectangle3D(spx, spy, 200, 64, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]);
 
             // status panel - fps
-            FullCanvas.DrawString(spx + 5, spy + 5, "FPS: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
-            FullCanvas.DrawString(spx + 93, spy + 5, fpsString, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 5, spy + 5, "FPS: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 93, spy + 5, fpsString, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
 
             // status panel - used mem
             strdec(mem_get_used() / 1024, str);
-            FullCanvas.DrawString(spx + 5, spy + 16, "RAM USED: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
-            FullCanvas.DrawString(spx + 93, spy + 16, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 5, spy + 16, "RAM USED: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 93, spy + 16, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             uint32_t sw = strlen(str) * 8;
-            FullCanvas.DrawString(spx + 93 + sw, spy + 16, " KB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 93 + sw, spy + 16, " KB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             strdec(mem_get_total_usable() / 1024 / 1024, str);
-            FullCanvas.DrawString(spx + 5, spy + 27, "RAM TOTAL: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
-            FullCanvas.DrawString(spx + 93, spy + 27, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 5, spy + 27, "RAM TOTAL: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 93, spy + 27, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             sw = strlen(str) * 8;
-            FullCanvas.DrawString(spx + 93 + sw, spy + 27, " MB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 93 + sw, spy + 27, " MB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
 
             // status panel - active window
             strdec((uint32_t)WindowMgr.ActiveWindow, str);
-            FullCanvas.DrawString(spx + 5, spy + 38, "ACTIVE WIN: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
-            FullCanvas.DrawString(spx + 93, spy + 38, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 5, spy + 38, "ACTIVE WIN: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 93, spy + 38, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             
             WindowMgr.Draw();
-
+            
             // draw taskbar and menu
             Taskbar.Draw();
             MenuBtn.Draw();
             Menu.Draw();
 
             // draw menu visible button stuff
-            FullCanvas.DrawString(MenuBtn.Bounds->X + 7, MenuBtn.Bounds->Y + 5, "AerOS", ButtonStyle.Colors[1], Graphics::FONT_8x8_PHEONIX);
-            if (Menu.Visible) { FullCanvas.DrawRectangle3D(MenuBtn.Bounds->X, MenuBtn.Bounds->Y, MenuBtn.Bounds->Width, MenuBtn.Bounds->Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }
+            Graphics::Canvas::DrawString(MenuBtn.Bounds->X + 7, MenuBtn.Bounds->Y + 5, "AerOS", ButtonStyle.Colors[1], Graphics::FONT_8x8_PHEONIX);
+            if (Menu.Visible) { Graphics::Canvas::DrawRectangle3D(MenuBtn.Bounds->X, MenuBtn.Bounds->Y, MenuBtn.Bounds->Width, MenuBtn.Bounds->Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }
+
+            
 
             // draw mouse
             KernelIO::Mouse.Draw();
+            KernelIO::VESA.Render();
 
             // swap buffer
-            FullCanvas.Display();
+            //Canvas::Display();
         }
 
         // check if xserver is running
@@ -288,17 +300,17 @@ namespace System
         void XServerTaskbar::Draw()
         {
             // draw background
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle(0, KernelIO::VESA.GetHeight() - 24, KernelIO::VESA.GetWidth(), 24, ButtonStyle.Colors[0]);
+            Graphics::Canvas::DrawFilledRectangle(0, KernelIO::VESA.GetHeight() - 24, KernelIO::VESA.GetWidth(), 24, ButtonStyle.Colors[0]);
 
             // draw border
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle(0, KernelIO::VESA.GetHeight() - 23, KernelIO::VESA.GetWidth(), 1, ButtonStyle.Colors[2]);
+            Graphics::Canvas::DrawFilledRectangle(0, KernelIO::VESA.GetHeight() - 23, KernelIO::VESA.GetWidth(), 1, ButtonStyle.Colors[2]);
 
             // draw tray
-            KernelIO::XServer.FullCanvas.DrawRectangle3D(KernelIO::VESA.GetWidth() - 100, KernelIO::VESA.GetHeight() - 21, 97, 18, ButtonStyle.Colors[3], ButtonStyle.Colors[2], ButtonStyle.Colors[2]);
+            Graphics::Canvas::DrawRectangle3D(KernelIO::VESA.GetWidth() - 100, KernelIO::VESA.GetHeight() - 21, 97, 18, ButtonStyle.Colors[3], ButtonStyle.Colors[2], ButtonStyle.Colors[2]);
 
             // draw time
             char* time = KernelIO::RTC.GetTimeString(false, false);
-            KernelIO::XServer.FullCanvas.DrawString(KernelIO::VESA.GetWidth() - (strlen(time) * 8) - 4, KernelIO::VESA.GetHeight() - 16, time, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(KernelIO::VESA.GetWidth() - (strlen(time) * 8) - 4, KernelIO::VESA.GetHeight() - 16, time, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
 
             // draw items
             for (size_t i = 0; i < 4; i++)
@@ -307,11 +319,11 @@ namespace System
                 {
                     // draw border
                     if (KernelIO::XServer.WindowMgr.ActiveWindow == (Window*)Items[i].Window) 
-                    { KernelIO::XServer.FullCanvas.DrawRectangle3D(Items[i].Bounds.X, Items[i].Bounds.Y, Items[i].Bounds.Width, Items[i].Bounds.Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }
-                    else { KernelIO::XServer.FullCanvas.DrawRectangle3D(Items[i].Bounds.X, Items[i].Bounds.Y, Items[i].Bounds.Width, Items[i].Bounds.Height, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]); }
+                    { Graphics::Canvas::DrawRectangle3D(Items[i].Bounds.X, Items[i].Bounds.Y, Items[i].Bounds.Width, Items[i].Bounds.Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }
+                    else { Graphics::Canvas::DrawRectangle3D(Items[i].Bounds.X, Items[i].Bounds.Y, Items[i].Bounds.Width, Items[i].Bounds.Height, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]); }
 
                     // draw name
-                    KernelIO::XServer.FullCanvas.DrawString(Items[i].Bounds.X + 3, Items[i].Bounds.Y + 4, Items[i].Name, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+                    Graphics::Canvas::DrawString(Items[i].Bounds.X + 3, Items[i].Bounds.Y + 4, Items[i].Name, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
                 }
             }
         }
@@ -372,9 +384,9 @@ namespace System
             if (Count == 0) { return; }
             if (!Visible) { return; }
 
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Bounds, ButtonStyle.Colors[0]);
+            Graphics::Canvas::DrawFilledRectangle(Bounds, ButtonStyle.Colors[0]);
 
-            KernelIO::XServer.FullCanvas.DrawRectangle3D(Bounds.X, Bounds.Y, Bounds.Width, Bounds.Height, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]);
+            Graphics::Canvas::DrawRectangle3D(Bounds.X, Bounds.Y, Bounds.Width, Bounds.Height, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]);
 
             for (size_t i = 0; i < 16; i++)
             {
@@ -384,11 +396,11 @@ namespace System
                     {
                         if (Items[i].Hover)
                         {
-                            KernelIO::XServer.FullCanvas.DrawFilledRectangle(Items[i].Bounds, WindowStyle.Colors[5]);
-                            KernelIO::XServer.FullCanvas.DrawString(Items[i].Bounds.X + 5, Items[i].Bounds.Y + 6, Items[i].Name, WindowStyle.Colors[6], Graphics::FONT_8x8_SERIF);
+                            Graphics::Canvas::DrawFilledRectangle(Items[i].Bounds, WindowStyle.Colors[5]);
+                            Graphics::Canvas::DrawString(Items[i].Bounds.X + 5, Items[i].Bounds.Y + 6, Items[i].Name, WindowStyle.Colors[6], Graphics::FONT_8x8_SERIF);
                         }
                         else
-                        { KernelIO::XServer.FullCanvas.DrawString(Items[i].Bounds.X + 5, Items[i].Bounds.Y + 6, Items[i].Name, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF); }
+                        { Graphics::Canvas::DrawString(Items[i].Bounds.X + 5, Items[i].Bounds.Y + 6, Items[i].Name, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF); }
                     }
                 }
             }

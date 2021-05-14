@@ -237,17 +237,17 @@ namespace System
             Widget::Draw();
 
             // draw background
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle((*Bounds), Style->Colors[0]);
+            Graphics::Canvas::DrawFilledRectangle((*Bounds), Style->Colors[0]);
 
             // draw 3d border
             if (Style->BorderStyle == BORDER_STYLE_3D)
             { 
-                if (MouseFlags->Down) { KernelIO::XServer.FullCanvas.DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[4], Style->Colors[2], Style->Colors[2]); }
-                else { KernelIO::XServer.FullCanvas.DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[2], Style->Colors[3], Style->Colors[4]); }
+                if (MouseFlags->Down) { Graphics::Canvas::DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[4], Style->Colors[2], Style->Colors[2]); }
+                else { Graphics::Canvas::DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[2], Style->Colors[3], Style->Colors[4]); }
             }
             // draw fixed border
             else if (Style->BorderStyle == BORDER_STYLE_FIXED)
-            { KernelIO::XServer.FullCanvas.DrawRectangle((*Bounds), 1, Style->Colors[4]); }
+            { Graphics::Canvas::DrawRectangle((*Bounds), 1, Style->Colors[4]); }
 
             // draw text
             if (Text != nullptr && strlen(Text) > 0 && !streql(Text, "\0"))
@@ -257,7 +257,7 @@ namespace System
                 uint32_t sx = Bounds->X + (Bounds->Width / 2) - (str_w / 2);
                 uint32_t sy = Bounds->Y + (Bounds->Height / 2) - ((Style->Font->GetHeight() + Style->Font->GetVerticalSpacing()) / 2);
                 if (MouseFlags->Down) { sx += 2; sy += 2; }
-                KernelIO::XServer.FullCanvas.DrawString(sx, sy, Text, Style->Colors[1], Graphics::FONT_8x8_SERIF);
+                Graphics::Canvas::DrawString(sx, sy, Text, Style->Colors[1], Graphics::FONT_8x8_SERIF);
             }
         }
 
@@ -306,12 +306,12 @@ namespace System
             Widget::Draw();
 
             // draw background
-            KernelIO::XServer.FullCanvas.DrawFilledRectangle((*Bounds), Parent->Style->Colors[5]);
+            Graphics::Canvas::DrawFilledRectangle((*Bounds), Parent->Style->Colors[5]);
 
             // draw text
             if (Parent->Title != nullptr)
             {
-                KernelIO::XServer.FullCanvas.DrawString(Bounds->X + 3, Bounds->Y + 4, Parent->Title, Parent->Style->Colors[6], Graphics::FONT_8x8);
+                Graphics::Canvas::DrawString(Bounds->X + 3, Bounds->Y + 4, Parent->Title, Parent->Style->Colors[6], Graphics::FONT_8x8);
             }
 
             // draw buttons
@@ -320,10 +320,10 @@ namespace System
             BtnMin->Draw();
 
             // draw button icons
-            KernelIO::XServer.FullCanvas.DrawFlatArray(BtnClose->Bounds->X + 3, BtnClose->Bounds->Y + 2, 8, 7, TITLEBAR_ICON_CLOSE, BtnClose->Style->Colors[1]);
-            if (!Parent->Flags->Maximized) { KernelIO::XServer.FullCanvas.DrawFlatArray(BtnMax->Bounds->X + 3,   BtnMax->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_MAX, BtnMax->Style->Colors[1]); }
-            else { KernelIO::XServer.FullCanvas.DrawFlatArray(BtnMax->Bounds->X + 3,   BtnMax->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_RES, BtnMax->Style->Colors[1]); }
-            KernelIO::XServer.FullCanvas.DrawFlatArray(BtnMin->Bounds->X + 3,   BtnMin->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_MIN, BtnMin->Style->Colors[1]);
+            Graphics::Canvas::DrawFlatArray(BtnClose->Bounds->X + 3, BtnClose->Bounds->Y + 2, 8, 7, TITLEBAR_ICON_CLOSE, BtnClose->Style->Colors[1]);
+            if (!Parent->Flags->Maximized) { Graphics::Canvas::DrawFlatArray(BtnMax->Bounds->X + 3,   BtnMax->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_MAX, BtnMax->Style->Colors[1]); }
+            else { Graphics::Canvas::DrawFlatArray(BtnMax->Bounds->X + 3,   BtnMax->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_RES, BtnMax->Style->Colors[1]); }
+            Graphics::Canvas::DrawFlatArray(BtnMin->Bounds->X + 3,   BtnMin->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_MIN, BtnMin->Style->Colors[1]);
         }
 
         // -------------------------------------------------- WINDOW BASE -------------------------------------------------- //
@@ -466,10 +466,10 @@ namespace System
             if (!Flags->Moving)
             {
                 // draw background
-                KernelIO::XServer.FullCanvas.DrawFilledRectangle((*ClientBounds), Style->Colors[0]);
+                Graphics::Canvas::DrawFilledRectangle((*ClientBounds), Style->Colors[0]);
 
                 // draw border
-                KernelIO::XServer.FullCanvas.DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[2], Style->Colors[3], Style->Colors[4]);
+                Graphics::Canvas::DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[2], Style->Colors[3], Style->Colors[4]);
 
                 // draw title bar
                 TBar->Draw();
@@ -477,8 +477,8 @@ namespace System
             else
             {
                 // draw border
-                KernelIO::XServer.FullCanvas.DrawRectangle((*Bounds), 3, Style->Colors[4]);
-                KernelIO::XServer.FullCanvas.DrawRectangle((*Bounds), 1, Style->Colors[2]);
+                Graphics::Canvas::DrawRectangle((*Bounds), 3, Style->Colors[4]);
+                Graphics::Canvas::DrawRectangle((*Bounds), 1, Style->Colors[2]);
             }
         }
     }

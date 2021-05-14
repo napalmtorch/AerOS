@@ -5,6 +5,7 @@ ISRType InterruptHandlers[256];
 
 void RegisterInterruptHandler(uint8_t n,ISRType Handler)
 {
+    debug_writeln_dec("Registering:",n);
 	InterruptHandlers[n] = Handler ;
 }
 

@@ -48,7 +48,7 @@ namespace System
         CommandList[14] = ShellCommand("LIST_TEST", "Test vector list", "",                 Commands::LIST_TEST);
         CommandList[15] = ShellCommand("LS", "List Directory Contents", "",                 Commands::LS);
         CommandList[16] = ShellCommand("CAT", "Display File Contents", "",                 Commands::CAT);
-        CommandList[17] = ShellCommand("MKDIR", "Create a Directory", "",                 Commands::MKDIR);
+        CommandList[17] = ShellCommand("fat_create_dir", "Create a Directory", "",                 Commands::fat_create_dir);
 
         // print caret to screen
         PrintCaret();
@@ -234,10 +234,10 @@ namespace System
             // call syscall
             asm volatile("int $0x80");
         }
-        void MKDIR(char* input)
+        void fat_create_dir(char* input)
         {
                  struct directory dir;
-        populate_root_dir(master_fs, &dir);
+        fat_populate_root_dir(fat_master_fs, &dir);
         char* dirname = strsplit_index(input, 1, ' ');
         if(dirname == nullptr)
         {
@@ -245,33 +245,33 @@ namespace System
         }
         else
         {
-        mkdir(master_fs,&dir,dirname);
+        fat_create_dir(fat_master_fs,&dir,dirname);
         }   
         }
         void LS(char* input)
         {
         struct directory dir;
-        populate_root_dir(master_fs, &dir);
+        fat_populate_root_dir(fat_master_fs, &dir);
         char* listdir = strsplit_index(input, 1, ' ');
         if(listdir == nullptr)
         {
             //show root
             KernelIO::Terminal.WriteLine("Showing Root");
-            print_directory(master_fs,&dir);
+            fat_print_directory(fat_master_fs,&dir);
         }
         else
         {
             KernelIO::Terminal.Write("Showing: ");
             KernelIO::Terminal.WriteLine(listdir);
-            DirByName(master_fs,&dir,listdir);
+            fat_dir_by_name(fat_master_fs,&dir,listdir);
         }
         }
         void CAT(char* input)
         {
         struct directory dir;
-        populate_root_dir(master_fs, &dir);
+        fat_populate_root_dir(fat_master_fs, &dir);
         char* file = strsplit_index(input, 1, ' ');
-        cat_file(master_fs,&dir,file);
+        fat_cat_file(fat_master_fs,&dir,file);
         }
         void PANIC(char* input)
         {
@@ -283,7 +283,6 @@ namespace System
         void GFX(char* input)
         {
             if (KernelIO::Terminal.Window != nullptr) { KernelIO::Terminal.WriteLine("Graphics mode already running", COL4_RED); return; }
-            asm volatile("cli");
 
             KernelIO::VESA.SetMode(640, 480, 32);
             KernelIO::SetDebugConsoleOutput(false);
@@ -308,10 +307,10 @@ namespace System
             // enable interrupts
             asm volatile("cli");
             HAL::CPU::EnableInterrupts();
-/*
+
             KernelIO::XServer.Initialize();
-            KernelIO::XServer.Start(VIDEO_DRIVER_VESA);
-            */
+            KernelIO::XServer.Start();
+            
         }
 
         void LIST_TEST(char*input)

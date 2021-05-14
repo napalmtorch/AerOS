@@ -51,19 +51,17 @@ namespace System
         {
             public:
                 Color BackColor;
-                Graphics::VGACanvas Canvas;
-                Graphics::Canvas FullCanvas;
                 void Initialize();
-                void Start(VIDEO_DRIVER driver);
+                void Start();
                 void Update();
                 void Draw();
                 bool IsRunning();
                 WindowManager WindowMgr;
+                bool Running;
             private:
                 XServerTaskbar Taskbar;
                 Button MenuBtn;
                 XServerMenu Menu;
-                bool Running;
                 uint32_t FPS, frames, time, last_time;
         };
 

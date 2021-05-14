@@ -33,7 +33,7 @@ typedef struct
  unsigned int offset;
  unsigned long vaddr;
  unsigned long paddr;
- unsigned long fileSize;
+ unsigned long fat_get_file_size;
  unsigned long memSize;
  unsigned long flags;
  unsigned long alignment;
@@ -48,7 +48,7 @@ typedef struct
     uint64_t offset;
     uint64_t vaddr;
     uint64_t paddr;
-    uint64_t fileSize;
+    uint64_t fat_get_file_size;
     uint64_t memSize;
     uint64_t alignment;
 }__attribute__((packed)) programHeader;

@@ -33,32 +33,18 @@ namespace HAL
         inb(0x60);
 
         // register interrupt
-        CPU::RegisterIRQ(12, (ISRType)ms_callback);
+        CPU::RegisterIRQ(44, (ISRType)ms_callback);
     }
 
     // draw mouse to screen
     void PS2Mouse::Draw()
     {
-        if (System::KernelIO::XServer.FullCanvas.GetDriver() == VIDEO_DRIVER_VGA)
+        for (uint8_t y = 0; y < 20; y++)
         {
-            for (uint8_t y = 0; y < 10; y++)
+            for (uint8_t x = 0; x < 12; x++)
             {
-                for (uint8_t x = 0; x < 6; x++)
-                {
-                    if (CursorData[x + (y * 6)] != 159)
-                    { System::KernelIO::XServer.Canvas.DrawPixel(Position.X + x, Position.Y + y, (COL8)CursorData[x + (y * 6)]); }
-                }
-            }
-        }
-        else if (System::KernelIO::XServer.FullCanvas.GetDriver() == VIDEO_DRIVER_VESA)
-        {
-            for (uint8_t y = 0; y < 20; y++)
-            {
-                for (uint8_t x = 0; x < 12; x++)
-                {
-                    if (CursorData32[x + (y * 12)] != 0xFFFF00FF)
-                    { System::KernelIO::XServer.FullCanvas.DrawPixel(Position.X + x, Position.Y + y, CursorData32[x + (y * 12)]); }
-                }
+                if (CursorData32[x + (y * 12)] != 0xFFFF00FF)
+                { Graphics::Canvas::DrawPixel(Position.X + x, Position.Y + y, CursorData32[x + (y * 12)]); }
             }
         }
     }
@@ -66,6 +52,7 @@ namespace HAL
     // handle mouse movement offsets
     void PS2Mouse::OnMouseMove(int8_t x, int8_t y)
     {
+        //debug_writeln("Mouse trigger");
         // increment pos
         Position.X += x;
         Position.Y += y;

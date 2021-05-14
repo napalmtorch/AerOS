@@ -41,7 +41,7 @@ extern "C"
         if (dynamic_mode == 0)
         {
             // setup table
-            table_start = kernel_end_real + (1 * 1024 * 1024);
+            table_start = kernel_end_real + (4 * 1024 * 1024);
             table_size = 0x20000;
             table_pos = 0;
 
@@ -103,7 +103,7 @@ extern "C"
     // free region of memory
     void mem_free(void* ptr)
     {
-        if (dynamic_mode==3) { KFree(ptr); }
+        if (dynamic_mode==2) { /*KFree(ptr);*/ }
     }
 
     // create ram allocation table entry

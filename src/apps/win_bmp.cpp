@@ -1,12 +1,12 @@
 #include "apps/win_bmp.hpp"
 #include <core/kernel.hpp>
-#include <gui/bitmap.hpp>
+#include <graphics/bitmap.hpp>
 
 namespace System
 {
     namespace Applications
     {
-        uint32_t* img;
+        Graphics::Bitmap* bmp;
 
         WinBitmapViewer::WinBitmapViewer()
         {
@@ -15,33 +15,7 @@ namespace System
 
         WinBitmapViewer::WinBitmapViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Bitmap Viewer")
         {
-            /*
-             // load message of the day
-            if(master_fs != nullptr)
-            {
-                // directory
-                char* fname = "/lol.pic";
-                
-                // open file
-                FILE *f = fopen(fname, NULL);
-
-                if(f)
-                { 
-                    struct directory dir;
-                    populate_root_dir(master_fs, &dir);
-                    uint32_t size = FileSize(master_fs, &dir, "lol.pic");
-                    debug_writeln_dec("SIZE: ", size);
-                    img = new uint[size];
-
-                    int count;
-                    fread(img, size, 1, (FILE*)f);
-                }
-            }
-            */
-
-            bitmap_t *bitmap; 
-            bitmap = bitmap_create("/test/test2.bmp");
-            debug_writeln_dec("Bitmap Height:",bitmap->height);
+            bmp = new Graphics::Bitmap("/test/parrot.bmp");
         }
 
         void WinBitmapViewer::Update()
@@ -55,14 +29,27 @@ namespace System
 
             if (Flags->CanDraw) 
             { 
-                for (size_t yy = 0; yy < 4; yy++)
+                if (bmp != nullptr)
                 {
-                    for (size_t xx = 0; xx < 4; xx++)
+                    for (size_t yy = 0; yy < bmp->Height; yy++)
                     {
-                        KernelIO::XServer.FullCanvas.DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, ((uint32_t*)img)[(xx + (yy * 4))]);
-                    }
+                        for (size_t xx = 0; xx < bmp->Width; xx++)
+                        {
+                            if (bmp->Depth == COLOR_DEPTH_24)
+                            {
+                                uint32_t offset = (3 * (xx + (yy * bmp->Width)));
+                                uint32_t color = Graphics::RGBToPackedValue(bmp->ImageData[offset + 1], bmp->ImageData[offset + 2], bmp->ImageData[offset + 3]);
+                                Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, color);
+                            }
+                            else if (bmp->Depth == COLOR_DEPTH_32)
+                            {
+                                uint32_t offset = (4 * (xx + (yy * bmp->Width)));
+                                uint32_t color = Graphics::RGBToPackedValue(bmp->ImageData[offset + 1], bmp->ImageData[offset + 2], bmp->ImageData[offset + 3]);
+                                Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, color);
+                            }
+                        }
+                    }  
                 }
-                
             }
         }
     }

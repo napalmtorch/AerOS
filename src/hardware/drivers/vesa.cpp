@@ -32,7 +32,7 @@ namespace HAL
         System::KernelIO::ThrowMessage(MSG_TYPE_SYSTEM, "VESA: Gathering available VESA modes from BIOS...");
         
         // set the locvib location
-        VBEInfoBlock* info = (VBEInfoBlock*)virt2phys(0x80000);
+        VBEInfoBlock* info = (VBEInfoBlock*)0x80000;
 
         // call the bios interrupt
         regs16_t regs;
