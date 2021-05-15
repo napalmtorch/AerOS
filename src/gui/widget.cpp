@@ -361,6 +361,9 @@ namespace System
             Title = (char*)mem_alloc(strlen(title));
             strcpy(title, Title);
 
+            Name = (char*)mem_alloc(strlen(title));
+            strcpy(title, Name);
+
             // create title bar
             TBar = new TitleBar(this);
             TBar->Parent = this;
@@ -491,6 +494,14 @@ namespace System
                 Graphics::Canvas::DrawRectangle((*Bounds), 3, Style->Colors[4]);
                 Graphics::Canvas::DrawRectangle((*Bounds), 1, Style->Colors[2]);
             }
+        }
+
+        void Window::SetName(char* text)
+        {
+            if (Name != nullptr) { delete Name; }
+            Name = (char*)mem_alloc(strlen(text) + 1);
+            for (size_t i = 0; i < strlen(text); i++) { Name[i] = text[i]; }
+            Name[strlen(text)] = '\0';
         }
     }
 }

@@ -55,10 +55,12 @@ namespace System
         void TEST(char* input);
         void PANIC(char* input);
         void GFX(char* input);
-        void LIST_TEST(char*input);
-        void LS(char*input);
-        void CAT(char*input);
-        void MKDIR(char*input);
+        void LIST_TEST(char* input);
+        void CD(char* input); 
+        void LS(char* input);
+        void CAT(char* input);
+        void MKDIR(char* input);
         void TEXTVIEW(char* input);
+        void RUN(char* input);
     }
 }

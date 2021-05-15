@@ -1063,4 +1063,14 @@ extern "C"
     }
 
     size_t fwrite(const void *ptr, size_t size, size_t nmemb, file_t *stream);
+
+    char* fat_change_dir(char* dir)
+    {
+        struct dir_entry_t entry;
+        if(entry_for_path(dir, &entry))
+        {
+            return entry.name;
+        }
+        return "/";
+    }
 }
