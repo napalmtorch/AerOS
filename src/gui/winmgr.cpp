@@ -14,7 +14,7 @@ namespace System
         void WindowManager::Initialize()
         {
             Open(new Applications::WinTextViewer(120,120));
-            Open(new Applications::WinWelcome(80,80));
+            //Open(new Applications::WinWelcome(80,80));
         }
 
         bool clicked = false;

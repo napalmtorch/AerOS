@@ -11,13 +11,13 @@ namespace System
 
         WinWelcome::WinWelcome()
         {
-
+              
         }
 
-        WinWelcome::WinWelcome(int32_t x, int32_t y) : GUI::Window(x, y, 320, 200, "Welcome to AerOS")
-        {
-        System::KernelIO::Shell.RegisterCommand("WELCOME","Display the Welcome Screen","",OpenMe);   
-        Document = (char*)new uint8_t[1000];
+        WinWelcome::WinWelcome(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Welcome to AerOS")
+        { 
+            System::KernelIO::Shell.RegisterCommand("WELCOME","Display the Welcome Screen","",OpenMe);
+            Document = (char*)new uint8_t[1000];
 
             // load message of the day
             if(fat_master_fs != nullptr)
@@ -58,6 +58,8 @@ namespace System
         void WinWelcome::Draw()
         {
             GUI::Window::Draw();
+
+            if (Flags->CanDraw) { Graphics::Canvas::DrawString(ClientBounds->X, ClientBounds->Y, Document, Graphics::Colors::Black, Graphics::FONT_8x16_CONSOLAS); }
         }
 
     }

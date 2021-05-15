@@ -758,27 +758,6 @@ extern "C"
             else { term_writeln_ext("File or directory already exists",COL4_RED); }
         }
     }
-
-    void fat_dir_by_name(f32 *fs,struct directory *dir,char* name)
-    {
-        uint32_t i;
-        uint32_t max_name;
-        for(i = 0; i < dir->num_entries; i++) 
-        {
-            if(streql(dir->entries[i].name, name))
-            {
-                term_writeln_dec("Entry Found: ",i);
-                term_writeln(dir->entries[i].name);
-                uint32_t cluster = dir->entries[i].first_cluster;
-                if(cluster == 0) { cluster = 2; }
-                fat_free_dir(fs, dir);
-                fat_populate_dir(fs, dir, cluster);
-                fat_print_directory(fs, dir);
-                break;
-            }
-        }
-
-    }
         char *strdup(const char *s) 
     {
         char *news = (char*)mem_alloc(strlen_c(s) + 1);
@@ -887,7 +866,28 @@ extern "C"
         }
         return false; 
     }
+    void fat_dir_by_name(f32 *fs,struct directory *dir,char* name)
+    {
+        uint32_t i;
+        uint32_t max_name;
+        struct dir_entry_t entry;
+        if(entry_for_path(name, &entry))
+        {
+ 
+            for(i = 0; i < dir->num_entries; i++) 
+            {
 
+                term_writeln_dec("Entry Found: ",i);
+                term_writeln(dir->entries[i].name);
+                uint32_t cluster = dir->entries[i].first_cluster;
+                if(cluster == 0) { cluster = 2; }
+                fat_free_dir(fs, dir);
+                fat_populate_dir(fs, dir, cluster);
+                fat_print_directory(fs, dir);
+                break;
+            }
+        }
+    }
     uint32_t fat_get_file_size(char* name)
     {
         struct dir_entry_t entry;

@@ -56,7 +56,7 @@ namespace System
         PrintCaret();
 
         CurrentPath[0] = '\0';
-        if (fat_master_fs != nullptr) { strcat(CurrentPath, "users/aeros/"); }
+        if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
     }
 
     void ShellHost::PrintCaret()
