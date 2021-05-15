@@ -4,6 +4,7 @@
 #include <apps/win_term.hpp>
 #include <apps/win_raycast.hpp>
 #include <apps/win_tview.hpp>
+#include <apps/win_welcome.hpp>
 
 namespace System
 {
@@ -13,6 +14,7 @@ namespace System
         void WindowManager::Initialize()
         {
             Open(new Applications::WinTextViewer(120,120));
+            //Open(new Applications::WinWelcome(80,80));
         }
 
         bool clicked = false;

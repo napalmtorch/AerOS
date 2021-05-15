@@ -56,7 +56,7 @@ namespace System
         PrintCaret();
 
         CurrentPath[0] = '\0';
-        if (fat_master_fs != nullptr) { strcat(CurrentPath, "users/aeros/"); }
+        if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
     }
 
     void ShellHost::PrintCaret()
@@ -341,7 +341,7 @@ namespace System
                 debug_writeln(file);
                 if(fat_file_exists(file))
                 {
-                    if(StringContains(strlower(input),".txt") || StringContains(strlower(input),".cfg")) 
+                    if(StringContains(strlower(input),".txt") || StringContains(strlower(input),".cfg") || streql("/etc/motd",file)) 
                     { 
                         KernelIO::XServer.WindowMgr.Open(new System::Applications::WinTextViewer(120, 120, file));
                     }
