@@ -333,7 +333,7 @@ namespace System
                 debug_writeln(file);
                 if(fat_file_exists(file))
                 {
-                    if(StringContains(strlower(input),".txt") || StringContains(strlower(input),".cfg")) 
+                    if(StringContains(strlower(input),".txt") || StringContains(strlower(input),".cfg") || streql("/etc/motd",file)) 
                     { 
                         KernelIO::XServer.WindowMgr.Open(new System::Applications::WinTextViewer(120, 120, file));
                     }
