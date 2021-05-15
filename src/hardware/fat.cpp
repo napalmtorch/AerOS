@@ -865,6 +865,15 @@ extern "C"
             return true;
         }
         return false; 
+    } 
+    char* fat_change_dir(char* dir)
+    {
+        struct dir_entry_t entry;
+        if(entry_for_path(dir, &entry))
+        {
+            return entry.name;
+        }
+        return "/";
     }
     void fat_dir_by_name(f32 *fs,struct directory *dir,char* name)
     {
