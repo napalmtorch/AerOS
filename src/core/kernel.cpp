@@ -278,6 +278,10 @@ namespace System
         // triggered when a kernel panic is injected
         void KernelBase::OnPanic(char* msg)
         {
+            if(fat_master_fs != NULL)
+            {
+            fs_destroy(fat_master_fs);
+            }
             uint8_t yy = 0; 
             // messages 
             char panic_string[] = "====PANIC====";

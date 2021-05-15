@@ -139,12 +139,13 @@ void strupper(char text[])
 }
 
 // convert string to all lower case
-void strlower(char text[])
+char* strlower(char text[])
 {
     for (size_t i = 0; i < strlen(text); i++)
     {
         if (text[i] >= 65 && text[i] <= 90) { text[i] += 32; }
     }
+    return text;
 }
 //check if string is empty or not
 bool IsEmpty(char* text)
