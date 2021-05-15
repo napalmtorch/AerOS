@@ -270,9 +270,6 @@ namespace HAL
             Window = win;
             buffer_width = ((System::Applications::WinTerminal*)Window)->BufferWidth;
             buffer_height = ((System::Applications::WinTerminal*)Window)->BufferHeight;
-            cursor_x = 0;
-            cursor_y = 0;
-            Clear();
         }
     }
 
