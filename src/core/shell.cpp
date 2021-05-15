@@ -281,7 +281,7 @@ namespace System
 
         void GFX(char* input)
         {
-            if (KernelIO::Terminal.Window != nullptr) { KernelIO::Terminal.WriteLine("Graphics mode already running", COL4_RED); return; }
+            if (KernelIO::Terminal.Window != nullptr || KernelIO::XServer.Running) { KernelIO::Terminal.WriteLine("Graphics mode already running", COL4_RED); return; }
 
             KernelIO::VESA.SetMode(640, 480, 32);
             KernelIO::SetDebugConsoleOutput(false);

@@ -74,6 +74,7 @@ namespace System
         void KernelBase::Initialize()
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
+            //SerialPort.SetPort(SERIAL_PORT_COM1);
             MemoryManager.Initialize(false);
 
             // read multiboot
@@ -212,7 +213,6 @@ namespace System
 
             // initialize x server
             XServer.Initialize();
-            ThrowOK("Starting XServer...");
 
             // ready shell
             Shell.Initialize();

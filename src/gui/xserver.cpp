@@ -82,7 +82,7 @@ namespace System
         // initialize xserver interface
         void XServerHost::Initialize()
         {
-            Running = true;
+            Running = false;
             FPS = 0;
             time = 1;
             fpsString[0] = '0';
