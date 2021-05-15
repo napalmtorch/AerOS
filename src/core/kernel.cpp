@@ -78,7 +78,6 @@ namespace System
         void KernelBase::Initialize()
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
-            //SerialPort.SetPort(SERIAL_PORT_COM1);
             MemoryManager.Initialize(false);
 
             // read multiboot
@@ -220,9 +219,8 @@ namespace System
 
             // ready shell
             Shell.Initialize();
-            if (Parameters.VGA) { XServer.Start(); }
-            else if (Parameters.VESA) { XServer.Start(); }
-            ThrowOK("Successfully started XServer");
+            if (Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
+            else if (Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
             WriteLineDecimal("RUNNING: ", (uint8_t)XServer.Running);
         }
 
@@ -269,24 +267,18 @@ namespace System
 
         // kernel core code, runs in a loop
         void KernelBase::Run()
-        {
-            
+        {      
             if (XServer.IsRunning())
             {
                 XServer.Update();
                 XServer.Draw();
             }
-            
-
-           //VESA.Clear(0xFFFF0000);
-           //for (size_t i = 0; i < 640; i++) { VESA.SetPixel(i, 64, 0xFFFFFFFF); }
-           //VESA.Render();
         }
         
         // triggered when a kernel panic is injected
         void KernelBase::OnPanic(char* msg)
         {
-            uint8_t yy = 50; 
+            uint8_t yy = 0; 
             // messages 
             char panic_string[] = "====PANIC====";
             char expl[] ="AerOS encountered a serious problem!";
@@ -298,8 +290,6 @@ namespace System
             strcat(temp,msg);
             if(XServer.Running)
             {
-            Graphics::Bitmap* bitmap;
-            bitmap = new Graphics::Bitmap("/test/panic.bmp");
             uint32_t panic_width = strlen(panic_string) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
             uint32_t panic_center = (VESA.GetWidth() / 2) - (panic_width / 2);
             uint32_t expl_width = strlen(expl) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
@@ -311,8 +301,7 @@ namespace System
             uint32_t disc_width = strlen(disclaimer) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
             uint32_t disc_center = (VESA.GetWidth() / 2) - (disc_width / 2);
             Graphics::Canvas::Clear(Graphics::Colors::DarkBlue);
-            Graphics::Canvas::DrawBitmap(panic_center,0,bitmap);
-            yy +=80;
+            yy +=64;
             Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
             yy +=32;
             Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
@@ -329,23 +318,21 @@ namespace System
                 
             }
             else
-            {
-
-            
-            Terminal.Clear(COL4_DARK_BLUE);
-            Terminal.SetForeColor(COL4_WHITE);
-            Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER, COL4_WHITE);
-            yy += 2;
-            Terminal.Write(expl, yy++, TEXT_ALIGN_CENTER);
-            yy += 2;
-            Terminal.Write(err, yy++, TEXT_ALIGN_CENTER);
-            Terminal.Write(msg, yy++, TEXT_ALIGN_CENTER, COL4_RED);
-            yy += 2;
-            Terminal.Write(halt, yy++, TEXT_ALIGN_CENTER, COL4_RED);
-            Terminal.NewLine();
-            Terminal.NewLine();
-            Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER);
-            Terminal.DisableCursor();
+            {          
+                Terminal.Clear(COL4_DARK_BLUE);
+                Terminal.SetForeColor(COL4_WHITE);
+                Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER, COL4_WHITE);
+                yy += 2;
+                Terminal.Write(expl, yy++, TEXT_ALIGN_CENTER);
+                yy += 2;
+                Terminal.Write(err, yy++, TEXT_ALIGN_CENTER);
+                Terminal.Write(msg, yy++, TEXT_ALIGN_CENTER, COL4_RED);
+                yy += 2;
+                Terminal.Write(halt, yy++, TEXT_ALIGN_CENTER, COL4_RED);
+                Terminal.NewLine();
+                Terminal.NewLine();
+                Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER);
+                Terminal.DisableCursor();
             }
         }
 

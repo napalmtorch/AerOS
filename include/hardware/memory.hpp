@@ -4,6 +4,9 @@
 
 extern "C"
 {
+    #define MEM_STATE_FREE 0
+    #define MEM_STATE_USED 1
+
     // ram allocation table entry structure
     typedef struct
     {
