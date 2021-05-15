@@ -220,7 +220,6 @@ namespace Graphics
                     uint32_t offset = (4 * (xx + (yy * bitmap->Width)));
                     uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
                     DrawFilledRectangle(x + xxs, y + yys, scale, scale, color);
-                    //Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, color);
                 }
             }  
         }
