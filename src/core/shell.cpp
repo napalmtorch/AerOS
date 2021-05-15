@@ -50,7 +50,7 @@ namespace System
         RegisterCommand("LS",         "List directory contents", "",          Commands::LS);
         RegisterCommand("CAT",        "Display file contents", "",            Commands::CAT);
         RegisterCommand("MKDIR",      "Create a new directory", "",           Commands::MKDIR);
-        RegisterCommand("TEXTVIEW",      "Open File in Textviewer", "",           Commands::TextView);
+        RegisterCommand("TEXTVIEW",      "Open File in Textviewer", "",       Commands::TEXTVIEW);
 
         // print caret to screen
         PrintCaret();
@@ -323,39 +323,40 @@ namespace System
             KernelIO::XServer.Start();
             
         }
-          void TextView(char* input)
-            {
-                System::GUI::WindowManager wmgr;
-            if (KernelIO::Terminal.Window != nullptr || KernelIO::XServer.Running) { 
+
+        void TEXTVIEW(char* input)
+        {
+            System::GUI::WindowManager wmgr;
+            if (KernelIO::Terminal.Window != nullptr || KernelIO::XServer.Running) 
+            { 
                 char* file = strsplit_index(input, 1, ' ');
                 debug_write("Opening: ");
                 debug_writeln(file);
                 if(fat_file_exists(file))
                 {
-                   if(StringContains(strlower(input),".txt") || StringContains(strlower(input),".cfg")) 
-                   { 
+                    if(StringContains(strlower(input),".txt") || StringContains(strlower(input),".cfg")) 
+                    { 
                         wmgr.Open(new System::Applications::WinTextViewer(120,120,file));
-                   }
-                   else
-                   {
+                    }
+                    else
+                    {
                         KernelIO::Terminal.Write("File: ", COL4_RED);
                         KernelIO::Terminal.Write(input, COL4_RED);
                         KernelIO::Terminal.WriteLine(" is not a text file, TextViewer cannot display it!", COL4_RED); return;
-                   }
+                    }
                 }
                 else
                 {
-                        KernelIO::Terminal.Write("Could not find File: ", COL4_RED);
-                        KernelIO::Terminal.WriteLine(input, COL4_RED); return;
-
+                    KernelIO::Terminal.Write("Could not find File: ", COL4_RED);
+                    KernelIO::Terminal.WriteLine(input, COL4_RED); return;
                 }
-
-             }
-             else
-             {
-                 KernelIO::Terminal.WriteLine("Cannot open Application in Text Mode!", COL4_RED); return;
-             }
+            }
+            else
+            {
+                KernelIO::Terminal.WriteLine("Cannot open Application in Text Mode!", COL4_RED); return;
+            }
         }
+
         void LIST_TEST(char*input)
         {
             /*
