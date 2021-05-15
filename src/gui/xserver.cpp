@@ -178,8 +178,7 @@ namespace System
         void XServerHost::Draw()
         {
             // clear the screen
-            //Graphics::Canvas::Clear(BackColor);
-            Graphics::Canvas::DrawBitmap(0, 0, 2, Wallpaper);
+            Graphics::Canvas::Clear(BackColor);
             
             // draw status panel
             uint32_t spx = KernelIO::VESA.GetWidth() - 208;

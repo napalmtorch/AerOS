@@ -41,6 +41,9 @@ namespace System
         double dirX = -1, dirY = 0; //initial direction vector
         double planeX = 0, planeY = 0.66; //the 2d raycaster version of camera plane
 
+        uint32_t oldw, oldh;
+        
+
         WinRaycaster::WinRaycaster()
         {
 
@@ -51,6 +54,8 @@ namespace System
             BufferWidth = ClientBounds->Width;
             BufferHeight = ClientBounds->Height;
             Buffer = new uint8_t[BufferWidth * BufferHeight];
+            oldw = BufferWidth;
+            oldh = BufferHeight;
 
             Style = GUI::CopyStyle(&GUI::WindowStyle);
             Style->Colors[0] = Graphics::Colors::Transparent;
@@ -61,8 +66,52 @@ namespace System
             // update base
             GUI::Window::Update();
 
+            double moveSpeed = 0.05;
+            double rotSpeed = 0.05;
+
+            // move forward
+            if (KernelIO::Keyboard.IsKeyDown(HAL::Keys::W))
+            {
+                if(map[int(posX + dirX * moveSpeed)][int(posY)] == false) posX += dirX * moveSpeed;
+                if(map[int(posX)][int(posY + dirY * moveSpeed)] == false) posY += dirY * moveSpeed;
+            }
+
+            // move backward
+            if (KernelIO::Keyboard.IsKeyDown(HAL::Keys::S))
+            {
+                if(map[int(posX - dirX * moveSpeed)][int(posY)] == false) posX -= dirX * moveSpeed;
+                if(map[int(posX)][int(posY - dirY * moveSpeed)] == false) posY -= dirY * moveSpeed;
+            }
+
+            // turn left
+            if (KernelIO::Keyboard.IsKeyDown(HAL::Keys::A))
+            {
+               
+            }
+
+            // turn right
+            if (KernelIO::Keyboard.IsKeyDown(HAL::Keys::D))
+            {
+               
+            }
+
+            if (oldw != Bounds->Width || oldh != Bounds->Height)
+            {
+                if (Buffer != nullptr) { delete Buffer; }
+
+                // initialize buffer
+                BufferWidth = ClientBounds->Width;
+                BufferHeight = ClientBounds->Height;
+                Buffer = new uint8_t[BufferWidth * BufferHeight];
+
+                oldw = Bounds->Width;
+                oldh = Bounds->Height;
+            }
+
+            // clear buffer
             for (size_t i = 0; i < BufferWidth * BufferHeight; i++) { Buffer[i] = 0; }
 
+            // raycast
             for(int x = 0; x < BufferWidth; x++)
             {
                 //calculate ray position and direction
@@ -153,7 +202,7 @@ namespace System
                 }
 
                 //give x and y sides different brightness
-                if(side == 1) {color = color / 2;}
+                if(side == 1) {color = color -= 8;}
 
                 //draw the pixels of the stripe as a vertical line
                 for (size_t i = drawStart; i < drawEnd; i++)
@@ -169,12 +218,15 @@ namespace System
             // draw base
             GUI::Window::Draw();
 
-            for (size_t yy = 0; yy < BufferHeight; yy++)
+            if (Flags->CanDraw)
             {
-                for (size_t xx = 0; xx < BufferWidth; xx++)
+                for (size_t yy = 0; yy < BufferHeight; yy++)
                 {
-                    uint32_t offset = xx + (yy * BufferWidth);
-                    Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, ConvertColor(Buffer[offset]));   
+                    for (size_t xx = 0; xx < BufferWidth; xx++)
+                    {
+                        uint32_t offset = xx + (yy * BufferWidth);
+                        Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, ConvertColor(Buffer[offset]));   
+                    }
                 }
             }
         }

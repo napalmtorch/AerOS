@@ -374,12 +374,6 @@ namespace System
             TBar->Parent = this;
             TBar->Update();
 
-            // update client bounds
-            ClientBounds->X = Bounds->X + 1;
-            ClientBounds->Y = Bounds->Y + 17;
-            ClientBounds->Width = Bounds->Width - 3;
-            ClientBounds->Height = Bounds->Height - 19;
-
             // close button clicked
             if (TBar->BtnClose->MouseFlags->Down && !TBar->BtnClose->MouseFlags->Clicked)
             {
@@ -414,8 +408,6 @@ namespace System
 
                 TBar->BtnMax->MouseFlags->Clicked = true;
             }
-
-            // maximize button clicked
 
             // get mouse position
             int32_t mx = KernelIO::Mouse.GetX();
@@ -459,6 +451,12 @@ namespace System
 
             // check if able to draw
             if (Flags->Moving || Flags->Resizing || Flags->Minimized) { Flags->CanDraw = false; } else { Flags->CanDraw = true; }
+
+            // update client bounds
+            ClientBounds->X = Bounds->X + 1;
+            ClientBounds->Y = Bounds->Y + 17;
+            ClientBounds->Width = Bounds->Width - 3;
+            ClientBounds->Height = Bounds->Height - 19;
         }
 
         void Window::Draw()
