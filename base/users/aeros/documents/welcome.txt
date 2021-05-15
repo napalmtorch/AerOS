@@ -1,5 +1,6 @@
 Hello and Welcome to AerOS!
-This Operating System is the labour of 3 overly enthusiastic nerds,
+This Operating System is the labour of 3
+overly enthusiastic nerds,
 currently it is still being developed
 (and probably always will be xD)
 But feel free to explore and report 
