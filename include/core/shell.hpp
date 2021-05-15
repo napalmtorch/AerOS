@@ -59,6 +59,6 @@ namespace System
         void LS(char*input);
         void CAT(char*input);
         void MKDIR(char*input);
-        void TextView(char* input);
+        void TEXTVIEW(char* input);
     }
 }

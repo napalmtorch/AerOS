@@ -38,7 +38,7 @@ namespace System
             Style->Colors[0] = Graphics::Colors::White;
         }
 
-        WinTextViewer::WinTextViewer(int32_t x, int32_t y, char* text)
+        WinTextViewer::WinTextViewer(int32_t x, int32_t y, char* text) : GUI::Window(x, y, 400, 300, "Text Viewer")
         {
             Document = (char*)new uint8_t[1000];
             

@@ -26,6 +26,7 @@ namespace Graphics
     extern Font FONT_8x8;
     extern Font FONT_8x16;
     extern Font FONT_8x8_SERIF;
+    extern Font FONT_8x8_CONSOLAS;
     extern Font FONT_8x8_PHEONIX;
     extern Font FONT_8x16_CONSOLAS;
 

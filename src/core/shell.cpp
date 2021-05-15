@@ -326,7 +326,6 @@ namespace System
 
         void TEXTVIEW(char* input)
         {
-            System::GUI::WindowManager wmgr;
             if (KernelIO::Terminal.Window != nullptr || KernelIO::XServer.Running) 
             { 
                 char* file = strsplit_index(input, 1, ' ');
@@ -336,7 +335,7 @@ namespace System
                 {
                     if(StringContains(strlower(input),".txt") || StringContains(strlower(input),".cfg")) 
                     { 
-                        wmgr.Open(new System::Applications::WinTextViewer(120,120,file));
+                        KernelIO::XServer.WindowMgr.Open(new System::Applications::WinTextViewer(120, 120, file));
                     }
                     else
                     {
