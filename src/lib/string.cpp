@@ -1,5 +1,6 @@
 #include "lib/string.hpp"
 #include "core/kernel.hpp"
+#include "lib/list.hpp"
 
 // get length of string
 size_t strlen(char text[])
@@ -87,7 +88,7 @@ void strhex32(uint32_t num, char text[])
 }
 
 // reverse string
-void strrev(char text[]) 
+char* strrev(char text[]) 
 {
     int c, i, j;
     for (i = 0, j = strlen(text)-1; i < j; i++, j--) 
@@ -96,6 +97,7 @@ void strrev(char text[])
         text[i] = text[j];
         text[j] = c;
     }
+    return text;
 }
 
 // add character to string
@@ -173,7 +175,9 @@ int strindexof(char text[], char character)
     for (int i = 0; text[i] != 0; i++)
     {
         if (text[i] == character)
+        {
             return i;
+        }
     }
     return -1;
 }
@@ -184,13 +188,13 @@ char* strsplit_index(char text[], int index, char separator)
     size_t len = strlen(text);
     //man no this has to start from 0
     int last = -1;
-    for (int i = 0, ind = 0; i < len; i += strindexof(text+i, ' ') + 1, ind++)
+    for (int i = 0, ind = 0; i < len; i += strindexof(text+i, separator) + 1, ind++)
     {
         if (i == last)
             break;
         if (index == ind)
         {
-            int len = strindexof(text+i, ' ');
+            int len = strindexof(text+i, separator);
             if (len < 0)
                 len = strlen(text+i);
             char* str = new char[len + 1];
@@ -203,6 +207,17 @@ char* strsplit_index(char text[], int index, char separator)
     }
     
     return nullptr;
+}
+char** strsplit(char text[], char separator, int* len) //brb, i leave this open, code as you wish - try this - how do i use it
+{
+    System::List<char*> *data = new System::List<char*>;
+    for (; strsplit_index(text, *len, separator) != nullptr;)
+    {
+        data->Add(strsplit_index(text, *len, separator));
+        *len +=1;
+        continue;
+    }
+    return data->ToArray();
 }
 
 // copy string

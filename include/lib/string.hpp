@@ -17,7 +17,7 @@
         // convert hexadecimal to string
         void strhex32(uint32_t num, char text[]);
         // reverse string
-        void strrev(char text[]);
+        char* strrev(char text[]);
         // add character to string
         void stradd(char text[], char c);
         // add string to string
@@ -44,7 +44,9 @@
         // check if string equal to string
         bool streql(char text[], char comp[]);
         char* strsplit_index(char text[], int index, char separator);
+        char** strsplit(char text[], char separator, int *len);
         bool IsEmpty(char* text);
+        int strindexof(char text[], char character);
     }
 
 namespace System

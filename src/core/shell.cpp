@@ -10,6 +10,7 @@
 #include <hardware/sudoers.hpp>
 #include <hardware/fat.hpp>
 #include <hardware/hostname.hpp>
+#include <lib/string.hpp>
 
 namespace System
 {
@@ -306,9 +307,21 @@ namespace System
                 KernelIO::Terminal.Write("Showing: ");
                 KernelIO::Terminal.WriteLine(listdir);
                 fat_dir_by_name(fat_master_fs,&dir, listdir);
-            }
-        }
 
+            }
+                int arraylen = 0;
+                char** split = strsplit("/users/aeros", '/', &arraylen);
+                char* path;
+                //char test[128];
+                for(int i=0;i<sizeof(split);i++)
+                {
+                    stradd(split[i],'\0');
+                    if(i == 0) { debug_writeln("Found root of FS"); continue;}
+                    debug_writeln_dec("ID of Entry is: ",i);
+                    debug_write("Name of Entry is: ");
+                    debug_writeln(split[i]);
+                }
+        }
         void CAT(char* input)
         {
             struct directory dir;
@@ -402,10 +415,33 @@ namespace System
             test.~List();
             */
         }
-
         void CD(char* input)
         {
             char* path = strsub(input, 3, strlen(input));
+            if(streql(path,"..")) { 
+            char count[9];
+            
+            if(strindexof(KernelIO::Shell.GetCurrentPath()+2,'/') == -1)
+            {
+                KernelIO::Shell.GetCurrentPath()[0] = '\0';
+                strcat(KernelIO::Shell.GetCurrentPath(),"/");
+            }
+            else
+            {
+            char* old_path = KernelIO::Shell.GetCurrentPath();
+            debug_writeln(old_path); 
+            struct directory* dir;
+            fat_populate_root_dir(fat_master_fs,dir);
+            char* new_path = fat_get_sub_folder(fat_master_fs,dir,old_path);
+            KernelIO::Shell.GetCurrentPath()[0] = '\0';
+            if (path[0] != '/') { 
+            char final_path[100]{'\0'};
+            strcat(final_path,"/");
+            strcat(final_path,new_path);
+            strcat(KernelIO::Shell.GetCurrentPath(),final_path);
+            }
+            }
+            }
             System::Security::Sudo sudo;
             if(StringContains(path,"/etc") && !sudo.CheckSudo(sudo.user))
             {
@@ -427,6 +463,8 @@ namespace System
             KernelIO::Shell.GetCurrentPath()[0] = '\0';
             if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
             strcat(KernelIO::Shell.GetCurrentPath(), path);  
+            debug_write("New Path: ");
+            debug_writeln(KernelIO::Shell.GetCurrentPath());
             } 
         }
 
