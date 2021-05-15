@@ -286,56 +286,54 @@ namespace System
             uint8_t yy = 0; 
             uint8_t xx = 0;
             // messages 
-            char panic_string[] = "====PANIC====";
-            char expl[] ="AerOS encountered a serious problem!";
-            char err[] = "Error Message: ";
-            char halt[] = "AerOS has been halted to prevent damage to your Computer!";
-            char temp[100];
+            char panic_string[] = "====PANIC====\0";
+            char expl[] ="AerOS encountered a serious problem!\0";
+            char err[] = "Error Message: \0";
+            char halt[] = "AerOS has been halted to prevent damage to your Computer!\0";
+            char temp[100] { '\0' };
             strcat(temp,err);
             strcat(temp,msg);
             debug_writeln(temp);
             if(XServer.Running)
             {
-            yy +=64;
-            uint32_t panic_width = strlen(panic_string) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-            uint32_t panic_center = (VESA.GetWidth() / 2) - (panic_width / 2);
-            uint32_t expl_width = strlen(expl) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-            uint32_t expl_center = (VESA.GetWidth() / 2) - (expl_width / 2);
-            uint32_t msg_width = strlen(temp) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-            uint32_t msg_center = (VESA.GetWidth() / 2) - (msg_width / 2);
-            uint32_t halt_width = strlen(halt) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-            uint32_t halt_center = (VESA.GetWidth() / 2) - (halt_width / 2);
-            Graphics::Canvas::Clear(Graphics::Colors::DarkBlue);
-            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Yellow,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            yy +=32;
-            Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            yy +=32;
-            Graphics::Canvas::DrawString(msg_center,yy,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            yy +=32;
-            Graphics::Canvas::DrawString(halt_center,yy,halt,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            yy +=32;
-            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Yellow,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            Graphics::Canvas::Display();
+                yy +=64;
+                uint32_t panic_width = strlen(panic_string) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+                uint32_t panic_center = (VESA.GetWidth() / 2) - (panic_width / 2);
+                uint32_t expl_width = strlen(expl) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+                uint32_t expl_center = (VESA.GetWidth() / 2) - (expl_width / 2);
+                uint32_t msg_width = strlen(temp) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+                uint32_t msg_center = (VESA.GetWidth() / 2) - (msg_width / 2);
+                uint32_t halt_width = strlen(halt) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+                uint32_t halt_center = (VESA.GetWidth() / 2) - (halt_width / 2);
+                Graphics::Canvas::Clear(Graphics::Colors::DarkBlue);
+                Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Yellow,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                yy +=32;
+                Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                yy +=32;
+                Graphics::Canvas::DrawString(msg_center,yy,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                yy +=32;
+                Graphics::Canvas::DrawString(halt_center,yy,halt,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                yy +=32;
+                Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Yellow,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                Graphics::Canvas::Display();
                 
             }
             else
-            {
-
-            
-            Terminal.Clear(COL4_DARK_BLUE);
-            Terminal.SetForeColor(COL4_WHITE);
-            Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER, COL4_WHITE);
-            yy += 2;
-            Terminal.Write(expl, yy++, TEXT_ALIGN_CENTER);
-            yy += 2;
-            Terminal.Write(err, yy++, TEXT_ALIGN_CENTER);
-            Terminal.Write(msg, yy++, TEXT_ALIGN_CENTER, COL4_RED);
-            yy += 2;
-            Terminal.Write(halt, yy++, TEXT_ALIGN_CENTER, COL4_RED);
-            Terminal.NewLine();
-            Terminal.NewLine();
-            Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER);
-            Terminal.DisableCursor();
+            {          
+                Terminal.Clear(COL4_DARK_BLUE);
+                Terminal.SetForeColor(COL4_WHITE);
+                Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER, COL4_WHITE);
+                yy += 2;
+                Terminal.Write(expl, yy++, TEXT_ALIGN_CENTER);
+                yy += 2;
+                Terminal.Write(err, yy++, TEXT_ALIGN_CENTER);
+                Terminal.Write(msg, yy++, TEXT_ALIGN_CENTER, COL4_RED);
+                yy += 2;
+                Terminal.Write(halt, yy++, TEXT_ALIGN_CENTER, COL4_RED);
+                Terminal.NewLine();
+                Terminal.NewLine();
+                Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER);
+                Terminal.DisableCursor();
             }
         }
 
