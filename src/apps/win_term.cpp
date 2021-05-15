@@ -85,6 +85,7 @@ namespace System
                 BufferHeight = (Bounds->Height - 19) / 16;
                 Buffer = new uint8_t[BufferWidth * BufferHeight * 2];                
                 KernelIO::Terminal.RegisterWindow(this); 
+                Clear();
                 KernelIO::Shell.PrintCaret();
 
                 old_w = Bounds->Width;
