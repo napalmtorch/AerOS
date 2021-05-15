@@ -278,6 +278,7 @@ namespace System
         // triggered when a kernel panic is injected
         void KernelBase::OnPanic(char* msg)
         {
+            fs_destroy(fat_master_fs);
             uint8_t yy = 0; 
             // messages 
             char panic_string[] = "====PANIC====";
@@ -302,18 +303,18 @@ namespace System
             uint32_t disc_center = (VESA.GetWidth() / 2) - (disc_width / 2);
             Graphics::Canvas::Clear(Graphics::Colors::DarkBlue);
             yy +=64;
-            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::FONT_8x16_CONSOLAS);
             yy +=32;
-            Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::FONT_8x16_CONSOLAS);
             yy +=32;
             Graphics::Canvas::DrawString(msg_center,yy,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            Graphics::Canvas::DrawString(msg_center,yy+1,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            Graphics::Canvas::DrawString(msg_center,yy+2,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            Graphics::Canvas::DrawString(msg_center,yy+1,temp,Graphics::Colors::Red,Graphics::FONT_8x16_CONSOLAS);
             yy +=32;
-            Graphics::Canvas::DrawString(halt_center,yy,halt,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            Graphics::Canvas::DrawString(disc_center,yy,disclaimer,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            Graphics::Canvas::DrawString(halt_center,yy,halt,Graphics::Colors::White,Graphics::FONT_8x16_CONSOLAS);
+            yy += 16;
+            Graphics::Canvas::DrawString(disc_center,yy,disclaimer,Graphics::Colors::White,Graphics::FONT_8x16_CONSOLAS);
             yy +=32;
-            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::FONT_8x16_CONSOLAS);
             Graphics::Canvas::Display();
                 
             }
