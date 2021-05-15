@@ -111,7 +111,7 @@ namespace System
             KernelIO::ThrowOK("Initialized desktop");;
 
             MenuBtn = Button(4, KernelIO::VESA.GetHeight() - 21, "");
-            MenuBtn.SetSize(56, 18);
+            MenuBtn.SetSize(70, 18);
             
             // initialize window manager
             WindowMgr.Initialize();        
@@ -216,10 +216,8 @@ namespace System
             Menu.Draw();
 
             // draw menu visible button stuff
-            Graphics::Canvas::DrawString(MenuBtn.Bounds->X + 7, MenuBtn.Bounds->Y + 5, "AerOS", ButtonStyle.Colors[1], Graphics::FONT_8x8_PHEONIX);
-            if (Menu.Visible) { Graphics::Canvas::DrawRectangle3D(MenuBtn.Bounds->X, MenuBtn.Bounds->Y, MenuBtn.Bounds->Width, MenuBtn.Bounds->Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }
-
-            
+            Graphics::Canvas::DrawString(MenuBtn.Bounds->X + 14, MenuBtn.Bounds->Y + 5, "AerOS", ButtonStyle.Colors[1], Graphics::FONT_8x8_PHEONIX);
+            if (Menu.Visible) { Graphics::Canvas::DrawRectangle3D(MenuBtn.Bounds->X, MenuBtn.Bounds->Y, MenuBtn.Bounds->Width, MenuBtn.Bounds->Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }  
 
             // draw mouse
             KernelIO::Mouse.Draw();
@@ -255,7 +253,7 @@ namespace System
         void XServerTaskbar::Update()
         {
             // update taskbar items
-            uint32_t xx = 64;
+            uint32_t xx = 78;
             uint32_t yy = KernelIO::VESA.GetHeight() - 21;
 
             // populate list - max allowed windows

@@ -290,32 +290,31 @@ namespace System
             strcat(temp,msg);
             if(XServer.Running)
             {
-            uint32_t panic_width = strlen(panic_string) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-            uint32_t panic_center = (VESA.GetWidth() / 2) - (panic_width / 2);
-            uint32_t expl_width = strlen(expl) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-            uint32_t expl_center = (VESA.GetWidth() / 2) - (expl_width / 2);
-            uint32_t msg_width = strlen(temp) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-            uint32_t msg_center = (VESA.GetWidth() / 2) - (msg_width / 2);
-            uint32_t halt_width = strlen(halt) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-            uint32_t halt_center = (VESA.GetWidth() / 2) - (halt_width / 2);
-            uint32_t disc_width = strlen(disclaimer) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-            uint32_t disc_center = (VESA.GetWidth() / 2) - (disc_width / 2);
-            Graphics::Canvas::Clear(Graphics::Colors::DarkBlue);
-            yy +=64;
-            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            yy +=32;
-            Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            yy +=32;
-            Graphics::Canvas::DrawString(msg_center,yy,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            Graphics::Canvas::DrawString(msg_center,yy+1,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            Graphics::Canvas::DrawString(msg_center,yy+2,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            yy +=32;
-            Graphics::Canvas::DrawString(halt_center,yy,halt,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            Graphics::Canvas::DrawString(disc_center,yy,disclaimer,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            yy +=32;
-            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-            Graphics::Canvas::Display();
-                
+                uint32_t panic_width = strlen(panic_string) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+                uint32_t panic_center = (VESA.GetWidth() / 2) - (panic_width / 2);
+                uint32_t expl_width = strlen(expl) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+                uint32_t expl_center = (VESA.GetWidth() / 2) - (expl_width / 2);
+                uint32_t msg_width = strlen(temp) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+                uint32_t msg_center = (VESA.GetWidth() / 2) - (msg_width / 2);
+                uint32_t halt_width = strlen(halt) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+                uint32_t halt_center = (VESA.GetWidth() / 2) - (halt_width / 2);
+                uint32_t disc_width = strlen(disclaimer) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+                uint32_t disc_center = (VESA.GetWidth() / 2) - (disc_width / 2);
+                Graphics::Canvas::Clear(Graphics::Colors::DarkBlue);
+                yy +=64;
+                Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                yy +=32;
+                Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                yy +=32;
+                Graphics::Canvas::DrawString(msg_center,yy,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                Graphics::Canvas::DrawString(msg_center,yy+1,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                Graphics::Canvas::DrawString(msg_center,yy+2,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                yy +=32;
+                Graphics::Canvas::DrawString(halt_center,yy,halt,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                Graphics::Canvas::DrawString(disc_center,yy,disclaimer,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                yy +=32;
+                Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+                Graphics::Canvas::Display();              
             }
             else
             {          

@@ -214,6 +214,29 @@ namespace Graphics
             }  
         }
 
+        void DrawBitmap(int32_t x, int32_t y, Color transKey, Graphics::Bitmap* bitmap)
+        {
+            if (bitmap == nullptr) { return; }
+            for (int32_t yy = bitmap->Height - 1; yy >= 0; yy--)
+            {
+                for (int32_t xx = bitmap->Width - 1; xx >= 0; xx--)
+                {
+                    if (bitmap->Depth == COLOR_DEPTH_24)
+                    {
+                        uint32_t offset = (3 * (xx + (yy * bitmap->Width)));
+                        uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
+                        if (color != Graphics::RGBToPackedValue(transKey.R, transKey.G, transKey.B)) { DrawPixel(x + (bitmap->Width - xx), y + (bitmap->Height - yy), color); }
+                    }
+                    else if (bitmap->Depth == COLOR_DEPTH_32)
+                    {
+                        uint32_t offset = (4 * (xx + (yy * bitmap->Width)));
+                        uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
+                        if (color != Graphics::RGBToPackedValue(transKey.R, transKey.G, transKey.B)) { DrawPixel(x + xx, y + (bitmap->Height - yy), color); }
+                    }
+                }
+            }  
+        }
+
         // draw scaled bitmap
         void DrawBitmap(int32_t x, int32_t y, int32_t scale, Graphics::Bitmap* bitmap)
         {

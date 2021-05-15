@@ -15,7 +15,9 @@ namespace System
 
         WinBitmapViewer::WinBitmapViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Bitmap Viewer")
         {
-            bmp = new Graphics::Bitmap("/test/parrot.bmp");
+            bmp = new Graphics::Bitmap("/test/bg.bmp");
+            Bounds->Width = bmp->Width + 3;
+            Bounds->Height = bmp->Height + 19;
         }
 
         void WinBitmapViewer::Update()
@@ -29,7 +31,7 @@ namespace System
 
             if (Flags->CanDraw) 
             { 
-                Graphics::Canvas::DrawBitmap(ClientBounds->X, ClientBounds->Y, 2, bmp);
+                Graphics::Canvas::DrawBitmap(ClientBounds->X, ClientBounds->Y, 1, bmp);
             }
         }
     }
