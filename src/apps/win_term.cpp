@@ -63,7 +63,7 @@ namespace System
             // set terminal
             if (Flags->Active)
             {
-                KernelIO::Terminal.Window = this;
+                if (KernelIO::Terminal.Window != this) { KernelIO::Terminal.RegisterWindow(this); KernelIO::Shell.PrintCaret(); }
                 KernelIO::Keyboard.BufferEnabled = true;
                 KernelIO::Keyboard.Event_OnEnterPressed = enter_pressed;
             }

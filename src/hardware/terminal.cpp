@@ -262,6 +262,20 @@ namespace HAL
     // initialize terminal interface
     void TerminalManager::Initialize() { term_init(); }
 
+    // register gui window
+    void TerminalManager::RegisterWindow(void* win)
+    {
+        if (Window != nullptr)
+        {
+            Window = win;
+            buffer_width = ((System::Applications::WinTerminal*)Window)->BufferWidth;
+            buffer_height = ((System::Applications::WinTerminal*)Window)->BufferHeight;
+            cursor_x = 0;
+            cursor_y = 0;
+            Clear();
+        }
+    }
+
     // clear the terminal
     void TerminalManager::Clear() 
     {

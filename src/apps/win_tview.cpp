@@ -45,11 +45,9 @@ namespace System
             // load message of the day
             if(fat_master_fs != nullptr)
             {
-                // directory
-                char* motd = text;
-                
+              
                 // open file
-                file_t *f = fopen(motd, NULL);
+                file_t *f = fopen(text, NULL);
 
                 if(f)
                 { 

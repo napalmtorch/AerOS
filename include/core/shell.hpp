@@ -1,10 +1,15 @@
 #pragma once
 #include <lib/types.h>
+#include <lib/list.hpp>
 #include <lib/string.hpp>
 #include <graphics/canvas.hpp>
 
 namespace System
 {
+    // maximum amount of commands
+    #define SHELL_MAX_COMMANDS 64
+
+    // structure to manage shell commands
     struct ShellCommand
     {
         char Name[16];
@@ -23,13 +28,15 @@ namespace System
             ~ShellHost();
             void Initialize();
             void PrintCaret();
+            void RegisterCommand(char* name, char* help, char* usage, void(*execute)(char*));
             void HandleInput(char* input);
             void ParseCommand(char* input);
             char* GetCurrentPath();
             ShellCommand GetCommand(uint32_t index);
         private:
             String CurrentPath;
-            ShellCommand CommandList[32];
+            ShellCommand CommandList[SHELL_MAX_COMMANDS];
+            uint32_t CommandIndex;
     };
 
     namespace Commands

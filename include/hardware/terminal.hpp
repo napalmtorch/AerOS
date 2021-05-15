@@ -101,6 +101,9 @@ namespace HAL
             // initialize terminal interface
             void Initialize();
 
+            // register gui window
+            void RegisterWindow(void* win);
+
             // clear the terminal
             void Clear();
             void Clear(COL4 color);

@@ -1,6 +1,5 @@
 #include <core/shell.hpp>
 #include <core/kernel.hpp>
-#include <lib/list.hpp>
 
 namespace System
 {
@@ -30,26 +29,24 @@ namespace System
     // initialize shell
     void ShellHost::Initialize()
     {
-        // add commands to list
-        uint32_t i = 0;
-        CommandList[i++] = ShellCommand("CLEAR",      "Clear the screen", "",                 Commands::CLEAR);
-        CommandList[i++] = ShellCommand("LSPCI",      "List detected PCI devices", "",        Commands::LSPCI);
-        CommandList[i++] = ShellCommand("CPUINFO",    "List processor information", "",       Commands::CPUINFO);
-        CommandList[i++] = ShellCommand("FG",         "Change foreground color", "",          Commands::FG);
-        CommandList[i++] = ShellCommand("BG",         "Change background color", "",          Commands::BG);
-        CommandList[i++] = ShellCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
-        CommandList[i++] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
-        CommandList[i++] = ShellCommand("DISKDUMP",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
-        CommandList[i++] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
-        CommandList[i++] = ShellCommand("POWEROFF",   "Perform a Legacy Shutdown", "",        Commands::LEGACY_SHUTDOWN);
-        CommandList[i++] = ShellCommand("REBOOT",    "Reboot the Computer", "",              Commands::REBOOT);
-        CommandList[i++] = ShellCommand("TEST",      "Call a test systemcall", "",           Commands::TEST);
-        CommandList[i++] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
-        CommandList[i++] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
-        CommandList[i++] = ShellCommand("LIST_TEST", "Test vector list", "",                 Commands::LIST_TEST);
-        CommandList[i++] = ShellCommand("LS",        "List Directory Contents", "",          Commands::LS);
-        CommandList[i++] = ShellCommand("CAT",       "Display File Contents", "",            Commands::CAT);
-        CommandList[i++] = ShellCommand("MKDIR",     "Create a Directory", "",               Commands::MKDIR);
+        RegisterCommand("CLEAR",      "Clear the screen", "",                 Commands::CLEAR);
+        RegisterCommand("LSPCI",      "List detected PCI devices", "",        Commands::LSPCI);
+        RegisterCommand("CPUINFO",    "List processor information", "",       Commands::CPUINFO);
+        RegisterCommand("FG",         "Change foreground color", "",          Commands::FG);
+        RegisterCommand("BG",         "Change background color", "",          Commands::BG);
+        RegisterCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
+        RegisterCommand("HELP",       "Show available commands", "",          Commands::HELP);
+        RegisterCommand("DISKDUMP",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
+        RegisterCommand("SHUTDOWN",   "Perform a ACPI shutdown", "",          Commands::SHUTDOWN);
+        RegisterCommand("POWEROFF",   "Perform a legacy shutdown", "",        Commands::LEGACY_SHUTDOWN);
+        RegisterCommand("REBOOT",     "Reboot the system", "",                Commands::REBOOT);
+        RegisterCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
+        RegisterCommand("PANIC",      "Throw a fake kernel panic", "",        Commands::PANIC);
+        RegisterCommand("GFX",        "Test graphics mode", "",               Commands::GFX);
+        RegisterCommand("LIST_TEST",  "Test vector list", "",                 Commands::LIST_TEST);
+        RegisterCommand("LS",         "List directory contents", "",          Commands::LS);
+        RegisterCommand("CAT",        "Display file contents", "",            Commands::CAT);
+        RegisterCommand("MKDIR",      "Create a new directory", "",           Commands::MKDIR);
 
         // print caret to screen
         PrintCaret();
@@ -58,6 +55,16 @@ namespace System
     void ShellHost::PrintCaret()
     {
         KernelIO::Terminal.Write("shell> ", COL4_YELLOW);
+    }
+
+    void ShellHost::RegisterCommand(char* name, char* help, char* usage, void(*execute)(char*))
+    {
+        if (CommandIndex >= SHELL_MAX_COMMANDS) { KernelIO::ThrowError("Maximum amount of shell commands reached"); return; }
+        strcpy(name, CommandList[CommandIndex].Name);
+        strcpy(help, CommandList[CommandIndex].Help);
+        strcpy(usage, CommandList[CommandIndex].Usage);
+        CommandList[CommandIndex].Execute = execute;
+        CommandIndex++;
     }
 
     void ShellHost::HandleInput(char* input)
@@ -192,7 +199,7 @@ namespace System
                 {
                     KernelIO::Terminal.Write("- ");
                     KernelIO::Terminal.Write(KernelIO::Shell.GetCommand(i).Name);
-                    KernelIO::Terminal.Write("      ");
+                    KernelIO::Terminal.SetCursorX(16);
                     KernelIO::Terminal.WriteLine(KernelIO::Shell.GetCommand(i).Help, COL4_GRAY);
                 }
             }
