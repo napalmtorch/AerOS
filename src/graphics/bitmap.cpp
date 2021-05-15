@@ -61,6 +61,8 @@ namespace Graphics
                 debug_writeln_dec("BMP HEIGHT: ", Height);
                 debug_writeln_dec("BMP DEPTH:  ", (uint32_t)Depth);
                 debug_writeln_dec("BMP SIZE:   ", TotalSize);
+
+                fclose(f);
             }
             // unable to locate file
             else

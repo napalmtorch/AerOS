@@ -99,7 +99,7 @@ namespace HAL
         }
         // handle shift
         else if (ScanCode == (uint8_t)HAL::Keys::LSHIFT || ScanCode == (uint8_t)HAL::Keys::RSHIFT) { ShiftDown = true; }
-        else if (ScanCode == 0xAA) { ShiftDown = false; }
+        else if (ScanCode == 0xAA || ScanCode == 0xB6) { ShiftDown = false; }
         // handle caps lock
         else if (ScanCode == (uint8_t)HAL::Keys::CAPSLOCK) { CapsLockDown = !CapsLockDown; }
         // handle enter

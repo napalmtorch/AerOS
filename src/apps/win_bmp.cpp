@@ -15,7 +15,7 @@ namespace System
 
         WinBitmapViewer::WinBitmapViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Bitmap Viewer")
         {
-            bmp = new Graphics::Bitmap("/test/test.bmp");
+            bmp = new Graphics::Bitmap("/test/wall2.bmp");
         }
 
         void WinBitmapViewer::Update()
@@ -31,21 +31,22 @@ namespace System
             { 
                 if (bmp != nullptr)
                 {
-                    for (size_t yy = 0; yy < bmp->Height; yy++)
+                    for (int32_t yy = bmp->Height - 1; yy >= 0; yy--)
                     {
-                        for (size_t xx = 0; xx < bmp->Width; xx++)
+                        for (int32_t xx = bmp->Width - 1; xx >= 0; xx--)
                         {
                             if (bmp->Depth == COLOR_DEPTH_24)
                             {
                                 uint32_t offset = (3 * (xx + (yy * bmp->Width)));
                                 uint32_t color = Graphics::RGBToPackedValue(bmp->ImageData[offset + 2], bmp->ImageData[offset + 1], bmp->ImageData[offset]);
-                                Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, color);
+                                Graphics::Canvas::DrawPixel(ClientBounds->X + (bmp->Width - xx), ClientBounds->Y + (bmp->Height - yy), color);
                             }
                             else if (bmp->Depth == COLOR_DEPTH_32)
                             {
                                 uint32_t offset = (4 * (xx + (yy * bmp->Width)));
-                                uint32_t color = Graphics::RGBToPackedValue(bmp->ImageData[offset + 1], bmp->ImageData[offset + 2], bmp->ImageData[offset + 3]);
-                                Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, color);
+                                uint32_t color = Graphics::RGBToPackedValue(bmp->ImageData[offset + 2], bmp->ImageData[offset + 1], bmp->ImageData[offset]);
+                                Graphics::Canvas::DrawPixel(ClientBounds->X + (bmp->Width - xx), ClientBounds->Y + (bmp->Height - yy), color);
+                                //Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, color);
                             }
                         }
                     }  
