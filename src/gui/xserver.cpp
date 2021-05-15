@@ -72,6 +72,9 @@ namespace System
             1, 1, 1, 1, 1, 1, 1, 1,
         };
 
+        // wallpapers
+        Graphics::Bitmap* Wallpaper;
+
         // performance stats
         char fpsString[16];
         char winCountStr[16];
@@ -113,6 +116,8 @@ namespace System
             // initialize window manager
             WindowMgr.Initialize();        
             KernelIO::ThrowOK("Initialized window manager");               
+
+            if (Wallpaper == nullptr) { Wallpaper = new Graphics::Bitmap("/test/bg.bmp");}
 
             // running flag
             Running = true;
@@ -173,7 +178,8 @@ namespace System
         void XServerHost::Draw()
         {
             // clear the screen
-            Graphics::Canvas::Clear(BackColor);
+            //Graphics::Canvas::Clear(BackColor);
+            Graphics::Canvas::DrawBitmap(0, 0, 2, Wallpaper);
             
             // draw status panel
             uint32_t spx = KernelIO::VESA.GetWidth() - 208;

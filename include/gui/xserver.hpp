@@ -72,5 +72,8 @@ namespace System
         // title bar icons
         extern uint8_t TitleBarIcon_Exit[];
         extern uint8_t TitleBarIcon_Max[];
+
+        // wallpapers
+        extern Graphics::Bitmap* Wallpaper;
     }
 }

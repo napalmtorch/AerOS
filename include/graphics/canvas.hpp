@@ -2,6 +2,8 @@
 #include "lib/types.h"
 #include "graphics/colors.hpp"
 #include "graphics/font.hpp"
+#include "graphics/bitmap.hpp"
+
 typedef enum
 {
     TEXT_ALIGN_LEFT,
@@ -47,6 +49,7 @@ namespace Graphics
         void DrawPixel(point_t pos, Color color);
 
         // draw filled rectangle
+        void DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color);
         void DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, Color color);
         void DrawFilledRectangle(point_t pos, point_t size, Color color);
         void DrawFilledRectangle(bounds_t bounds, Color color);
@@ -71,5 +74,8 @@ namespace Graphics
         void DrawString(point_t pos, char* text, Color fg, Color bg, Font font);
 
         void DrawFlatArray(int32_t x, int32_t y, int32_t w, int32_t h, uint8_t* data, Color color);
+
+        void DrawBitmap(int32_t x, int32_t y, Graphics::Bitmap* bitmap);
+        void DrawBitmap(int32_t x, int32_t y, uint8_t scale, Graphics::Bitmap* bitmap);
     }
 }

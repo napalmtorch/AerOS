@@ -62,6 +62,7 @@ namespace HAL
         regs16_t regs;
         VBEModeInfoBlock* mode_info = (VBEModeInfoBlock*)(0x80000 + sizeof(VBEInfoBlock) + 512);
         uint16_t* modes = (uint16_t*)REAL_PTR(InfoBlock.VideoMode);
+        
         // resulting mode
         uint16_t mode;
         // if the mode was set or not
@@ -73,6 +74,7 @@ namespace HAL
             regs.cx = modes[i];
             regs.es = SEG(mode_info);
             regs.di = OFF(mode_info);
+            
             // call interrupt
             int32(0x10, &regs);
 
