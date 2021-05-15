@@ -3,19 +3,8 @@
 
 extern "C"
 {
-    // ram allocation table entry structure
-    struct table_entry
-    {
-        // offset of the region of memory
-        uint32_t offset;
-        // size of the region of memory
-        uint32_t size;
-        // status flag of region of memory
-        uint8_t state;
-    };
-
     // private declarations
-    table_entry* mem_create_entry(uint32_t offset, uint32_t size, uint8_t state);
+    rat_entry_t* mem_create_entry(uint32_t offset, uint32_t size, uint8_t state);
     
     // ram allocation table properties
     uint32_t table_start;
@@ -51,6 +40,8 @@ extern "C"
 
             // map entire reserved memory region as a free chunk
             mem_create_entry(reserved_start, reserved_size, 0);
+
+            mem_print_rat();
         }
         else
         {
@@ -95,11 +86,22 @@ extern "C"
         if (!dynamic_mode) { return; }
     }
 
+    // print ram allocation table 
+    void mem_print_rat()
+    {
+        for (size_t i = 0; i < table_size; i += sizeof(rat_entry_t))
+        {
+            rat_entry_t* entry = (rat_entry_t*)i;
+
+            //serial_write_
+        }
+    }
+
     // create ram allocation table entry
-    table_entry* mem_create_entry(uint32_t offset, uint32_t size, uint8_t state)
+    rat_entry_t* mem_create_entry(uint32_t offset, uint32_t size, uint8_t state)
     {
         // create new item at next position
-        table_entry* entry = (table_entry*)(table_start + table_pos);
+        rat_entry_t* entry = (rat_entry_t*)(table_start + table_pos);
         
         // set entry properties
         entry->offset = offset;
@@ -107,7 +109,7 @@ extern "C"
         entry->state = state;
 
         // increment table position
-        table_pos += sizeof(table_entry);
+        table_pos += sizeof(rat_entry_t);
 
         // return allocation table entry pointer
         return entry;

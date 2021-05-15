@@ -82,7 +82,7 @@ namespace System
         // initialize xserver interface
         void XServerHost::Initialize()
         {
-            Running = true;
+            Running = false;
             FPS = 0;
             time = 1;
             fpsString[0] = '0';
@@ -117,7 +117,7 @@ namespace System
             WindowMgr.Initialize();        
             KernelIO::ThrowOK("Initialized window manager");               
 
-            if (Wallpaper == nullptr) { Wallpaper = new Graphics::Bitmap("/test/bg.bmp");}
+            //if (Wallpaper == nullptr) { Wallpaper = new Graphics::Bitmap("/test/bg.bmp");}
 
             // running flag
             Running = true;
@@ -284,16 +284,19 @@ namespace System
 
                     if (bounds_contains(&Items[i].Bounds, KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY()))
                     {
-                        if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
+                        if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed && !item_down)
                         {
                             Items[i].Down = true;
                             for (size_t j = 0; j < KernelIO::XServer.WindowMgr.Index + 1; j++)
                             {
                                 if (KernelIO::XServer.WindowMgr.Windows[j] == (Window*)Items[i].Window)
                                 {
-                                    KernelIO::XServer.WindowMgr.ActiveWindow = (Window*)Items[i].Window;
+                                    if (((Window*)Items[i].Window)->Flags->Minimized) { ((Window*)Items[i].Window)->Flags->Minimized = false; }
+                                    if (KernelIO::XServer.WindowMgr.ActiveWindow == (Window*)Items[i].Window) { ((Window*)Items[i].Window)->Flags->Minimized = true; KernelIO::XServer.WindowMgr.ActiveWindow = nullptr; }
+                                    else { KernelIO::XServer.WindowMgr.ActiveWindow = (Window*)Items[i].Window; }
                                     break;
                                 }
+                                item_down = true;
                             }
                         }
                         else { Items[i].Down = false; }

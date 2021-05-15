@@ -75,11 +75,11 @@ namespace System
             {
                 if (Windows[i] != nullptr && Windows[i] != ActiveWindow)
                 {
-                    Windows[i]->Draw();
+                    if (!Windows[i]->Flags->Minimized) { Windows[i]->Draw(); }
                 }
             }
 
-            if (ActiveWindow != nullptr) { ActiveWindow->Draw(); }
+            if (ActiveWindow != nullptr) { if (!ActiveWindow->Flags->Minimized) { ActiveWindow->Draw(); } }
         }
 
         void WindowManager::Open(Window* win)

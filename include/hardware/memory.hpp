@@ -4,12 +4,25 @@
 
 extern "C"
 {
+    // ram allocation table entry structure
+    typedef struct
+    {
+        // offset of the region of memory
+        uint32_t offset;
+        // size of the region of memory
+        uint32_t size;
+        // status flag of region of memory
+        uint8_t state;
+    } __attribute__((packed)) rat_entry_t;
+
     void mem_init(bool dynamic);
 
     size_t size(void* data);
 
     void* mem_alloc(size_t size);
     void mem_free(void* ptr);
+
+    void mem_print_rat();
 
     uint32_t mem_get_total_mb();
     uint32_t mem_get_total();
