@@ -10,8 +10,9 @@ namespace HAL
             KeyboardStream();
             KeyboardStream(char* output);
             void Update();
-            
+
         public:
             char* Text;
+            bool Enabled;
     };
 }

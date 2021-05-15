@@ -317,7 +317,7 @@ namespace System
 
             // draw time
             char* time = KernelIO::RTC.GetTimeString(false, false);
-            Graphics::Canvas::DrawString(KernelIO::VESA.GetWidth() - (strlen(time) * 8) - 4, KernelIO::VESA.GetHeight() - 16, time, ButtonStyle.Colors[1], Graphics::FONT_8x8_CONSOLAS);
+            Graphics::Canvas::DrawString(KernelIO::VESA.GetWidth() - (strlen(time) * 8) - 4, KernelIO::VESA.GetHeight() - 16, time, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
 
             // draw items
             for (size_t i = 0; i < 4; i++)

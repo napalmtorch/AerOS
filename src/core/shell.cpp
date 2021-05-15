@@ -32,33 +32,38 @@ namespace System
     // initialize shell
     void ShellHost::Initialize()
     {
-        RegisterCommand("CLEAR",      "Clear the screen", "",                 Commands::CLEAR);
-        RegisterCommand("LSPCI",      "List detected PCI devices", "",        Commands::LSPCI);
-        RegisterCommand("CPUINFO",    "List processor information", "",       Commands::CPUINFO);
-        RegisterCommand("FG",         "Change foreground color", "",          Commands::FG);
-        RegisterCommand("BG",         "Change background color", "",          Commands::BG);
-        RegisterCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
-        RegisterCommand("HELP",       "Show available commands", "",          Commands::HELP);
-        RegisterCommand("DISKDUMP",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
-        RegisterCommand("SHUTDOWN",   "Perform a ACPI shutdown", "",          Commands::SHUTDOWN);
-        RegisterCommand("POWEROFF",   "Perform a legacy shutdown", "",        Commands::LEGACY_SHUTDOWN);
-        RegisterCommand("REBOOT",     "Reboot the system", "",                Commands::REBOOT);
-        RegisterCommand("TEST",       "Call a test systemcall", "",           Commands::TEST);
-        RegisterCommand("PANIC",      "Throw a fake kernel panic", "",        Commands::PANIC);
-        RegisterCommand("GFX",        "Test graphics mode", "",               Commands::GFX);
-        RegisterCommand("LIST_TEST",  "Test vector list", "",                 Commands::LIST_TEST);
-        RegisterCommand("LS",         "List directory contents", "",          Commands::LS);
-        RegisterCommand("CAT",        "Display file contents", "",            Commands::CAT);
-        RegisterCommand("MKDIR",      "Create a new directory", "",           Commands::MKDIR);
-        RegisterCommand("TEXTVIEW",      "Open File in Textviewer", "",       Commands::TEXTVIEW);
+        RegisterCommand("clear",      "Clear the screen", "",                 Commands::CLEAR);
+        RegisterCommand("lspci",      "List detected PCI devices", "",        Commands::LSPCI);
+        RegisterCommand("cpuinfo",    "List processor information", "",       Commands::CPUINFO);
+        RegisterCommand("fg",         "Change foreground color", "",          Commands::FG);
+        RegisterCommand("bg",         "Change background color", "",          Commands::BG);
+        RegisterCommand("dump",       "Dump memory at location", "",          Commands::DUMP);
+        RegisterCommand("help",       "Show available commands", "",          Commands::HELP);
+        RegisterCommand("diskdump",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
+        RegisterCommand("shutdown",   "Perform a ACPI shutdown", "",          Commands::SHUTDOWN);
+        RegisterCommand("poweroff",   "Perform a legacy shutdown", "",        Commands::LEGACY_SHUTDOWN);
+        RegisterCommand("reboot",     "Reboot the system", "",                Commands::REBOOT);
+        RegisterCommand("syscall",    "Call a test systemcall", "",           Commands::TEST);
+        RegisterCommand("panic",      "Throw a fake kernel panic", "",        Commands::PANIC);
+        RegisterCommand("gfx",        "Test graphics mode", "",               Commands::GFX);
+        RegisterCommand("testlist",   "Test vector list", "",                 Commands::LIST_TEST);
+        RegisterCommand("ls",         "List directory contents", "",          Commands::LS);
+        RegisterCommand("cat",        "Display file contents", "",            Commands::CAT);
+        RegisterCommand("mkdir",      "Create a new directory", "",           Commands::MKDIR);
+        RegisterCommand("textview",   "Open file in Text Viewer", "",         Commands::TEXTVIEW);
 
         // print caret to screen
         PrintCaret();
+
+        CurrentPath[0] = '\0';
+        if (fat_master_fs != nullptr) { strcat(CurrentPath, "users/aeros/"); }
     }
 
     void ShellHost::PrintCaret()
     {
-        KernelIO::Terminal.Write("shell> ", COL4_YELLOW);
+        if (fat_master_fs == nullptr) { KernelIO::Terminal.Write("shell", COL4_YELLOW);}
+        else { KernelIO::Terminal.Write(CurrentPath, COL4_YELLOW); }
+        KernelIO::Terminal.Write(":- ");
     }
 
     void ShellHost::RegisterCommand(char* name, char* help, char* usage, void(*execute)(char*))
@@ -75,8 +80,8 @@ namespace System
     {
         ParseCommand(input);
         
-        char* cmd = strsplit_index(input, 0 ,' ');
-        strupper(cmd);
+        char* cmd = strsplit_index(input, 0, ' ');
+        strlower(cmd);
         if (!streql(cmd, "GFX")) { PrintCaret(); }
         delete cmd;
     }
@@ -84,11 +89,12 @@ namespace System
     void ShellHost::ParseCommand(char* input)
     {
         // get command from input
-        char* cmd = strsplit_index(input, 0 ,' ');
-        strupper(cmd);
+        char* cmd = strsplit_index(input, 0, ' ');
+        strlower(cmd);
 
         // hack to use second command for clearing
-        if (streql(cmd, "CLS")) { Commands::CLEAR(input); delete cmd; return; }
+        if (streql(cmd, "cls")) { Commands::CLEAR(input); delete cmd; return; }
+        if (streql(cmd, "dir")) { Commands::LS(input); delete cmd; return; }
 
         // loop through commands
         for (size_t i = 0; i < SHELL_MAX_COMMANDS; i++)
@@ -111,7 +117,7 @@ namespace System
 
     ShellCommand ShellHost::GetCommand(uint32_t index) { return CommandList[index]; }
 
-    char* ShellHost::GetCurrentPath() { return CurrentPath.ToCharArray(); }
+    char* ShellHost::GetCurrentPath() { return CurrentPath; }
 
 
     namespace Commands
@@ -266,7 +272,9 @@ namespace System
             {
                 //show root
                 KernelIO::Terminal.WriteLine("Showing Root");
-                fat_print_directory(fat_master_fs,&dir);
+                //fat_print_directory(fat_master_fs, &dir);
+                debug_writeln(KernelIO::Shell.GetCurrentPath());
+                fat_dir_by_name(fat_master_fs, &dir, KernelIO::Shell.GetCurrentPath());
             }
             else
             {
