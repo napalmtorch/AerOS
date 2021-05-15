@@ -17,11 +17,13 @@ namespace System
             // load message of the day
             if(fat_master_fs != nullptr)
             {
+                if(fat_file_exists("/users/aeros/documents/welcome.txt"))
+                {
                 // directory
-                char* motd = "/etc/motd";
-                
+                char* file = "/users/aeros/documents/welcome.txt";
+            
                 // open file
-                file_t *f = fopen(motd, NULL);
+                file_t *f = fopen(file, NULL);
 
                 if(f)
                 { 
@@ -31,6 +33,11 @@ namespace System
                     {
                         for(int i = 0; i < count; i++) { stradd(Document, c[i]); }
                     }
+                }
+                }
+                else 
+                {
+                    Document = "Welcome to AerOS";
                 }
             }
 
