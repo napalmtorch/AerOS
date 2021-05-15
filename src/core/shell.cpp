@@ -3,6 +3,7 @@
 #include <apps/win_term.hpp>
 #include <apps/win_tview.hpp>
 #include <gui/winmgr.hpp>
+#include <hardware/sudoers.hpp>
 
 namespace System
 {
@@ -265,6 +266,10 @@ namespace System
 
         void LS(char* input)
         {
+            char* user = "aeros";
+            System::Security::Sudo sudo;
+            if(sudo.CheckSudo(user))
+            {
             struct directory dir;
             fat_populate_root_dir(fat_master_fs, &dir);
             char* listdir = strsplit_index(input, 1, ' ');
@@ -281,6 +286,16 @@ namespace System
                 KernelIO::Terminal.Write("Showing: ");
                 KernelIO::Terminal.WriteLine(listdir);
                 fat_dir_by_name(fat_master_fs,&dir,listdir);
+            }
+            }
+            else
+            {
+                KernelIO::Terminal.WriteLine("Only Administrators can do this",COL4_RED);
+                char users[32] {'\0'};
+                char* user_text = "Current user is: ";
+                strcat(users,user_text);
+                strcat(users,user);
+                KernelIO::Terminal.WriteLine(users,COL4_RED);
             }
         }
 
