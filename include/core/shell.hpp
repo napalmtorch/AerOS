@@ -34,7 +34,7 @@ namespace System
             char* GetCurrentPath();
             ShellCommand GetCommand(uint32_t index);
         private:
-            String CurrentPath;
+            char CurrentPath[128];
             ShellCommand CommandList[SHELL_MAX_COMMANDS];
             uint32_t CommandIndex;
     };

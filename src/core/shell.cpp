@@ -54,11 +54,16 @@ namespace System
 
         // print caret to screen
         PrintCaret();
+
+        CurrentPath[0] = '\0';
+        if (fat_master_fs != nullptr) { strcat(CurrentPath, "users/aeros/"); }
     }
 
     void ShellHost::PrintCaret()
     {
-        KernelIO::Terminal.Write("shell> ", COL4_YELLOW);
+        if (fat_master_fs == nullptr) { KernelIO::Terminal.Write("shell", COL4_YELLOW);}
+        else { KernelIO::Terminal.Write(CurrentPath, COL4_YELLOW); }
+        KernelIO::Terminal.Write(":- ");
     }
 
     void ShellHost::RegisterCommand(char* name, char* help, char* usage, void(*execute)(char*))
@@ -112,7 +117,7 @@ namespace System
 
     ShellCommand ShellHost::GetCommand(uint32_t index) { return CommandList[index]; }
 
-    char* ShellHost::GetCurrentPath() { return CurrentPath.ToCharArray(); }
+    char* ShellHost::GetCurrentPath() { return CurrentPath; }
 
 
     namespace Commands
@@ -267,7 +272,9 @@ namespace System
             {
                 //show root
                 KernelIO::Terminal.WriteLine("Showing Root");
-                fat_print_directory(fat_master_fs,&dir);
+                //fat_print_directory(fat_master_fs, &dir);
+                debug_writeln(KernelIO::Shell.GetCurrentPath());
+                fat_dir_by_name(fat_master_fs, &dir, KernelIO::Shell.GetCurrentPath());
             }
             else
             {
