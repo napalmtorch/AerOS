@@ -12,7 +12,7 @@ namespace System
 
         void WindowManager::Initialize()
         {
-
+            Open(new Applications::WinTerminal(120,120));
         }
 
         bool clicked = false;
