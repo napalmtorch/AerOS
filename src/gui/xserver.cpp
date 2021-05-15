@@ -117,7 +117,7 @@ namespace System
             WindowMgr.Initialize();        
             KernelIO::ThrowOK("Initialized window manager");               
 
-            if (Wallpaper == nullptr) { Wallpaper = new Graphics::Bitmap("/test/bg.bmp");}
+            //if (Wallpaper == nullptr) { Wallpaper = new Graphics::Bitmap("/test/bg.bmp");}
 
             // running flag
             Running = true;
