@@ -1,10 +1,14 @@
 #include "apps/win_tview.hpp"
+#include <hardware/kbstream.hpp>
 #include <core/kernel.hpp>
 
 namespace System
 {
     namespace Applications
     {
+        char kb_txt[1000];
+        HAL::KeyboardStream kb_stream;
+
         WinTextViewer::WinTextViewer()
         {
 
@@ -12,6 +16,7 @@ namespace System
 
         WinTextViewer::WinTextViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Text Viewer")
         {
+            /*
             Document = (char*)new uint8_t[1000];
 
             // load message of the day
@@ -40,6 +45,9 @@ namespace System
                     Document = "Welcome to AerOS";
                 }
             }
+            */
+
+            kb_stream = HAL::KeyboardStream(kb_txt);
 
             Style = GUI::CopyStyle(&GUI::WindowStyle);
             Style->Colors[0] = Graphics::Colors::White;
@@ -74,6 +82,7 @@ namespace System
         void WinTextViewer::Update()
         {
             GUI::Window::Update();
+            kb_stream.Update();
         }
 
         void WinTextViewer::Draw()
@@ -81,6 +90,8 @@ namespace System
             GUI::Window::Draw();
 
             if (Flags->CanDraw) { Graphics::Canvas::DrawString(ClientBounds->X, ClientBounds->Y, Document, Graphics::Colors::Black, Graphics::FONT_8x16_CONSOLAS); }
+
+            Graphics::Canvas::DrawString(ClientBounds->X, ClientBounds->Y, kb_txt, Graphics::Colors::Black, Graphics::FONT_8x16_CONSOLAS);
         }
     }
 }

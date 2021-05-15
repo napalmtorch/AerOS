@@ -14,5 +14,7 @@ namespace HAL
         public:
             char* Text;
             bool Enabled;
+            bool ShiftDown;
+            bool CapsLockDown;
     };
 }

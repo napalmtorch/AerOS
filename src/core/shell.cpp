@@ -272,9 +272,9 @@ namespace System
             {
                 //show root
                 KernelIO::Terminal.WriteLine("Showing Root");
-                //fat_print_directory(fat_master_fs, &dir);
-                debug_writeln(KernelIO::Shell.GetCurrentPath());
-                fat_dir_by_name(fat_master_fs, &dir, KernelIO::Shell.GetCurrentPath());
+                fat_print_directory(fat_master_fs, &dir);
+                //debug_writeln(KernelIO::Shell.GetCurrentPath());
+                //fat_dir_by_name(fat_master_fs, &dir, KernelIO::Shell.GetCurrentPath());
             }
             else
             {
