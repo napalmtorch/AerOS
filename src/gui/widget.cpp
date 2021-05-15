@@ -374,39 +374,50 @@ namespace System
             TBar->Parent = this;
             TBar->Update();
 
-            // close button clicked
-            if (TBar->BtnClose->MouseFlags->Down && !TBar->BtnClose->MouseFlags->Clicked)
+            if (Flags->Active && !Flags->Minimized)
             {
-                KernelIO::XServer.WindowMgr.Close(this);
-                return;
-                TBar->BtnClose->MouseFlags->Clicked = true;
-            }
-
-            // maximize button clicked
-            if (TBar->BtnMax->MouseFlags->Down && !TBar->BtnMax->MouseFlags->Clicked)
-            {
-                Flags->Maximized = !Flags->Maximized;
-
-                if (Flags->Maximized)
+                // close button clicked
+                if (TBar->BtnClose->MouseFlags->Down && !TBar->BtnClose->MouseFlags->Clicked)
                 {
-                    OldBounds->X = Bounds->X;
-                    OldBounds->Y = Bounds->Y;
-                    OldBounds->Width = Bounds->Width;
-                    OldBounds->Height = Bounds->Height;
-                    Bounds->Width = KernelIO::VESA.GetWidth();
-                    Bounds->Height = KernelIO::VESA.GetHeight() - 24;
-                    Bounds->X = 0;
-                    Bounds->Y = 0;
-                }
-                else
-                {
-                    Bounds->X = OldBounds->X;
-                    Bounds->Y = OldBounds->Y;
-                    Bounds->Width = OldBounds->Width;
-                    Bounds->Height = OldBounds->Height;
+                    KernelIO::XServer.WindowMgr.Close(this);
+                    return;
+                    TBar->BtnClose->MouseFlags->Clicked = true;
                 }
 
-                TBar->BtnMax->MouseFlags->Clicked = true;
+                // maximize button clicked
+                if (TBar->BtnMax->MouseFlags->Down && !TBar->BtnMax->MouseFlags->Clicked)
+                {
+                    Flags->Maximized = !Flags->Maximized;
+
+                    if (Flags->Maximized)
+                    {
+                        OldBounds->X = Bounds->X;
+                        OldBounds->Y = Bounds->Y;
+                        OldBounds->Width = Bounds->Width;
+                        OldBounds->Height = Bounds->Height;
+                        Bounds->Width = KernelIO::VESA.GetWidth();
+                        Bounds->Height = KernelIO::VESA.GetHeight() - 24;
+                        Bounds->X = 0;
+                        Bounds->Y = 0;
+                    }
+                    else
+                    {
+                        Bounds->X = OldBounds->X;
+                        Bounds->Y = OldBounds->Y;
+                        Bounds->Width = OldBounds->Width;
+                        Bounds->Height = OldBounds->Height;
+                    }
+
+                    TBar->BtnMax->MouseFlags->Clicked = true;
+                }
+
+                // minimize button clicked
+                if (TBar->BtnMin->MouseFlags->Down && !TBar->BtnMin->MouseFlags->Clicked)
+                {
+                    Flags->Minimized = true;
+                    KernelIO::XServer.WindowMgr.ActiveWindow = nullptr;
+                    TBar->BtnMin->MouseFlags->Clicked = true;
+                }
             }
 
             // get mouse position
@@ -416,6 +427,8 @@ namespace System
             // check for movement
             if (KernelIO::XServer.WindowMgr.ActiveWindow == this)
             {
+                Flags->Active = true;
+
                 if (bounds_contains(TBar->Bounds, mx, my) && !TBar->BtnClose->MouseFlags->Down && !TBar->BtnMax->MouseFlags->Down && !TBar->BtnMin->MouseFlags->Down)
                 {
                     if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
@@ -447,7 +460,7 @@ namespace System
                     Flags->Moving = false;
                     move_click = false;
                 }
-            }
+            } else { Flags->Active = false; }
 
             // check if able to draw
             if (Flags->Moving || Flags->Resizing || Flags->Minimized) { Flags->CanDraw = false; } else { Flags->CanDraw = true; }
