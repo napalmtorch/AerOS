@@ -3,6 +3,4 @@ This Operating System is the labour of 3
 overly enthusiastic nerds,
 currently it is still being developed
 (and probably always will be xD)
-But feel free to explore and report 
-any bugs you might encounter on our github
-https://github.com/napalmtorch/AerOS/issues
+But feel free to explore!

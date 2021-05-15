@@ -120,4 +120,5 @@ extern "C"
     bool fat_file_exists(char* name);
     char* fat_change_dir(char* dir);
     extern f32 *fat_master_fs;
+
 }

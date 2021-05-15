@@ -1,4 +1,5 @@
 #include "apps/win_tview.hpp"
+#include <hardware/kbstream.hpp>
 #include <core/kernel.hpp>
 
 namespace System
@@ -12,6 +13,7 @@ namespace System
 
         WinTextViewer::WinTextViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Text Viewer")
         {
+            
             Document = (char*)new uint8_t[1000];
 
             // load message of the day
@@ -40,6 +42,7 @@ namespace System
                     Document = "Welcome to AerOS";
                 }
             }
+            
 
             Style = GUI::CopyStyle(&GUI::WindowStyle);
             Style->Colors[0] = Graphics::Colors::White;

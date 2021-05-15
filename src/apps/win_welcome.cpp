@@ -4,10 +4,6 @@ namespace System
 {
     namespace Applications
     {
-        void OpenMe(char* input)
-        {
-        KernelIO::XServer.WindowMgr.Open(new System::Applications::WinWelcome(120, 120));
-        }
 
         WinWelcome::WinWelcome()
         {
@@ -16,7 +12,6 @@ namespace System
 
         WinWelcome::WinWelcome(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Welcome to AerOS")
         { 
-            System::KernelIO::Shell.RegisterCommand("WELCOME","Display the Welcome Screen","",OpenMe);
             Document = (char*)new uint8_t[1000];
 
             // load message of the day

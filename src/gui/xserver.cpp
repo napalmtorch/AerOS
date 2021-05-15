@@ -161,9 +161,9 @@ namespace System
                 // terminal
                 if (Menu.SelectedIndex == 3) { WindowMgr.Open(new Applications::WinTerminal(64, 64)); Menu.Visible = false; }
                 // reboot
-                if (Menu.SelectedIndex == 4) { KernelIO::Shell.ParseCommand("POWEROFF"); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 4) { KernelIO::ACPI.Reboot(); Menu.Visible = false; }
                 // shutdown
-                if (Menu.SelectedIndex == 5) { KernelIO::Shell.ParseCommand("REBOOT"); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 5) { KernelIO::ACPI.Shutdown(); Menu.Visible = false; }
                 
                 item_down = true;
             }

@@ -2,8 +2,14 @@
 #include <core/kernel.hpp>
 #include <apps/win_term.hpp>
 #include <apps/win_tview.hpp>
+#include <apps/win_bmp.hpp>
+#include <apps/win_empty.hpp>
+#include <apps/win_raycast.hpp>
+#include <apps/win_welcome.hpp>
 #include <gui/winmgr.hpp>
 #include <hardware/sudoers.hpp>
+#include <hardware/fat.hpp>
+#include <hardware/hostname.hpp>
 
 namespace System
 {
@@ -48,10 +54,12 @@ namespace System
         RegisterCommand("panic",      "Throw a fake kernel panic", "",        Commands::PANIC);
         RegisterCommand("gfx",        "Test graphics mode", "",               Commands::GFX);
         RegisterCommand("testlist",   "Test vector list", "",                 Commands::LIST_TEST);
+        RegisterCommand("cd",         "Set current directory", "",            Commands::CD);
         RegisterCommand("ls",         "List directory contents", "",          Commands::LS);
         RegisterCommand("cat",        "Display file contents", "",            Commands::CAT);
         RegisterCommand("mkdir",      "Create a new directory", "",           Commands::MKDIR);
         RegisterCommand("textview",   "Open file in Text Viewer", "",         Commands::TEXTVIEW);
+        RegisterCommand("run",        "Run a windowed application", "",       Commands::RUN);
 
         // print caret to screen
         PrintCaret();
@@ -63,7 +71,16 @@ namespace System
     void ShellHost::PrintCaret()
     {
         if (fat_master_fs == nullptr) { KernelIO::Terminal.Write("shell", COL4_YELLOW);}
-        else { KernelIO::Terminal.Write(CurrentPath, COL4_YELLOW); }
+        else { 
+            System::Environment::Hostname env_host;
+            System::Security::Sudo sudo;
+            char temp[32] {'\0'};
+            strcat(temp,sudo.user);
+            strcat(temp,"@");
+            strcat(temp,env_host.GetHostName());
+            strcat(temp,": ");
+            KernelIO::Terminal.Write(temp,COL4_GREEN);
+            KernelIO::Terminal.Write(CurrentPath, COL4_YELLOW); }
         KernelIO::Terminal.Write(":- ");
     }
 
@@ -266,36 +283,29 @@ namespace System
 
         void LS(char* input)
         {
-            char* user = "aeros";
-            System::Security::Sudo sudo;
-            if(sudo.CheckSudo(user))
-            {
             struct directory dir;
             fat_populate_root_dir(fat_master_fs, &dir);
             char* listdir = strsplit_index(input, 1, ' ');
-            if(listdir == nullptr)
+            if (streql(KernelIO::Shell.GetCurrentPath(), "/"))
             {
-                //show root
-                KernelIO::Terminal.WriteLine("Showing Root");
+                KernelIO::Terminal.WriteLine("Showing: /");
+                fat_print_directory(fat_master_fs, &dir);
+            }
+            else if(listdir == nullptr)
+            {
+                KernelIO::Terminal.Write("Showing: ");
+                KernelIO::Terminal.WriteLine(KernelIO::Shell.GetCurrentPath());
                 //fat_print_directory(fat_master_fs, &dir);
-                debug_writeln(KernelIO::Shell.GetCurrentPath());
+                //debug_writeln(KernelIO::Shell.GetCurrentPath());
                 fat_dir_by_name(fat_master_fs, &dir, KernelIO::Shell.GetCurrentPath());
             }
             else
             {
+                char* path = listdir;
+                if (listdir[0] != '/') { path = new char[strlen(listdir) + 1]; path[0] = '/'; strcat(path, listdir); }
                 KernelIO::Terminal.Write("Showing: ");
                 KernelIO::Terminal.WriteLine(listdir);
-                fat_dir_by_name(fat_master_fs,&dir,listdir);
-            }
-            }
-            else
-            {
-                KernelIO::Terminal.WriteLine("Only Administrators can do this",COL4_RED);
-                char users[32] {'\0'};
-                char* user_text = "Current user is: ";
-                strcat(users,user_text);
-                strcat(users,user);
-                KernelIO::Terminal.WriteLine(users,COL4_RED);
+                fat_dir_by_name(fat_master_fs,&dir, listdir);
             }
         }
 
@@ -391,6 +401,45 @@ namespace System
             KernelIO::Terminal.WriteLine((*test.Get(2)));
             test.~List();
             */
+        }
+
+        void CD(char* input)
+        {
+            char* path = strsub(input, 3, strlen(input));
+            System::Security::Sudo sudo;
+            if(StringContains(path,"/etc") && !sudo.CheckSudo(sudo.user))
+            {
+                System::KernelIO::Terminal.WriteLine("Only an Administrator can display the path you are requesting!",COL4_RED);
+                return;
+            }
+            else if(StringContains(path,"/etc") && sudo.CheckSudo(sudo.user))
+            {
+            if (strlen(path) <= 0) { return; }
+            if (streql(fat_change_dir(path), "/") && !streql(path, "/")) { return; }
+            KernelIO::Shell.GetCurrentPath()[0] = '\0';
+            if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
+            strcat(KernelIO::Shell.GetCurrentPath(), path); 
+            }
+            else
+            {
+            if (strlen(path) <= 0) { return; }
+            if (streql(fat_change_dir(path), "/") && !streql(path, "/")) { return; }
+            KernelIO::Shell.GetCurrentPath()[0] = '\0';
+            if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
+            strcat(KernelIO::Shell.GetCurrentPath(), path);  
+            } 
+        }
+
+        void RUN(char* input)
+        {
+            char* app = strsplit_index(input, 1, ' ');
+            strlower(app);
+
+            // using a switch case temporarily, too tired but will fix tomorrow
+            if (streql(app, "imgview")) { KernelIO::XServer.WindowMgr.Open(new Applications::WinBitmapViewer(120, 120)); }
+            else if (streql(app, "raycaster")) { KernelIO::XServer.WindowMgr.Open(new Applications::WinRaycaster(160, 120)); }
+            else if (streql(app, "welcome")) { KernelIO::XServer.WindowMgr.Open(new Applications::WinWelcome(128, 128)); }
+            else { KernelIO::Terminal.WriteLine("Invalid application", COL4_RED); }
         }
     }
 }

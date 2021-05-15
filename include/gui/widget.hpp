@@ -160,12 +160,16 @@ namespace System
             // variables
             public:
                 char* Title;
+                char* Name;
                 bounds_t* Bounds;
                 bounds_t* ClientBounds;
                 bounds_t* OldBounds;
                 WindowFlags* Flags;
                 VisualStyle* Style;
                 TitleBar* TBar;
+            
+            private:
+                void SetName(char* text);
         };
 
         VisualStyle* CopyStyle(VisualStyle* src);
