@@ -6,6 +6,7 @@
 
 extern "C"
 {
+    extern uint8_t cursor_x, cursor_y;
     // initialize terminal interface
     void term_init();
 

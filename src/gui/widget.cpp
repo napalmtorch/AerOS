@@ -94,7 +94,7 @@ namespace System
                 {
                     widget->MouseFlags->Down = false;
                     widget->MouseFlags->Clicked = false;
-                    if (!m_down) { if (widget->OnClick != nullptr) { widget->OnClick(); } m_down = true; }
+                    if (!m_down) { m_down = true; }
                 }
             }
             // mouse is NOT hovering over widget

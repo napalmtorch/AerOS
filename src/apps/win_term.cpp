@@ -64,6 +64,8 @@ namespace System
             if (Flags->Active)
             {
                 if (KernelIO::Terminal.Window != this) { KernelIO::Terminal.RegisterWindow(this); KernelIO::Shell.PrintCaret(); }
+                cursor_x = CursorX;
+                cursor_y = CursorY;
                 KernelIO::Keyboard.BufferEnabled = true;
                 KernelIO::Keyboard.Event_OnEnterPressed = enter_pressed;
             }
@@ -82,7 +84,7 @@ namespace System
                 BufferWidth = (Bounds->Width - 3) / 8;
                 BufferHeight = (Bounds->Height - 19) / 16;
                 Buffer = new uint8_t[BufferWidth * BufferHeight * 2];                
-                Clear();
+                KernelIO::Terminal.RegisterWindow(this); 
                 KernelIO::Shell.PrintCaret();
 
                 old_w = Bounds->Width;
@@ -193,7 +195,7 @@ namespace System
         void WinTerminal::WriteLine(char* text, COL4 fg, COL4 bg)
         {
             Write(text, fg, bg);
-            WriteChar('\n');
+            NewLine();
         }
 
         // set cursor position

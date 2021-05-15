@@ -1,5 +1,6 @@
 #include <core/shell.hpp>
 #include <core/kernel.hpp>
+#include <apps/win_term.hpp>
 
 namespace System
 {
@@ -87,7 +88,7 @@ namespace System
         if (streql(cmd, "CLS")) { Commands::CLEAR(input); delete cmd; return; }
 
         // loop through commands
-        for (size_t i = 0; i < 32; i++)
+        for (size_t i = 0; i < SHELL_MAX_COMMANDS; i++)
         {
             // found match
             if (streql(cmd, CommandList[i].Name) == true)
@@ -193,13 +194,14 @@ namespace System
         void HELP(char* input)
         {
             // loop through commands
-            for (size_t i = 0; i < 32; i++)
+            for (size_t i = 0; i < SHELL_MAX_COMMANDS; i++)
             {
                 if (strlen(KernelIO::Shell.GetCommand(i).Name) > 0)
                 {
                     KernelIO::Terminal.Write("- ");
                     KernelIO::Terminal.Write(KernelIO::Shell.GetCommand(i).Name);
-                    KernelIO::Terminal.SetCursorX(16);
+                    if (!KernelIO::XServer.IsRunning()) { KernelIO::Terminal.SetCursorX(16); }
+                    else { ((Applications::WinTerminal*)KernelIO::Terminal.Window)->SetCursorX(16); }
                     KernelIO::Terminal.WriteLine(KernelIO::Shell.GetCommand(i).Help, COL4_GRAY);
                 }
             }
