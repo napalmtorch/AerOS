@@ -29,7 +29,7 @@
         // convert string to all upper case
         void strupper(char text[]);
         // convert string to all lower case
-        void strlower(char text[]);
+        char* strlower(char text[]);
         // copy string
         char* strcpy(char* src, char* dest);
         //check if string contains
