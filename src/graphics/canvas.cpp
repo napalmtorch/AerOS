@@ -41,6 +41,15 @@ namespace Graphics
         // draw pixel
         void DrawPixel(point_t pos, Color color) { DrawPixel(pos.X, pos.Y, color); }
 
+        void DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color)
+        {
+            if (((color & 0xFF000000) >> 24) == 0) { return; }
+            for (size_t i = 0; i < w * h; i++)
+            {
+                DrawPixel(x + (i % w), y + (i / w), color);
+            }
+        }
+
         // draw filled rectangle
         void DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, Color color)
         {
@@ -168,6 +177,52 @@ namespace Graphics
                     if (data[xx + (yy * w)] > 0) { DrawPixel(x + xx, y + yy, color); }
                 }
             }
+        }
+
+        // draw bitmap
+        void DrawBitmap(int32_t x, int32_t y, Graphics::Bitmap* bitmap)
+        {
+            if (bitmap == nullptr) { return; }
+            for (int32_t yy = bitmap->Height - 1; yy >= 0; yy--)
+            {
+                for (int32_t xx = bitmap->Width - 1; xx >= 0; xx--)
+                {
+                    if (bitmap->Depth == COLOR_DEPTH_24)
+                    {
+                        uint32_t offset = (3 * (xx + (yy * bitmap->Width)));
+                        uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
+                        DrawPixel(x + (bitmap->Width - xx), y + (bitmap->Height - yy), color);
+                    }
+                    else if (bitmap->Depth == COLOR_DEPTH_32)
+                    {
+                        uint32_t offset = (4 * (xx + (yy * bitmap->Width)));
+                        uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
+                        DrawPixel(x + (bitmap->Width - xx), y + (bitmap->Height - yy), color);
+                    }
+                }
+            }  
+        }
+
+        // draw scaled bitmap
+        void DrawBitmap(int32_t x, int32_t y, uint8_t scale, Graphics::Bitmap* bitmap)
+        {
+            uint32_t scaled_w = bitmap->Width  * scale;
+            uint32_t scaled_h = bitmap->Height * scale;
+            int32_t xx, yy, xxs, yys;
+
+            for (yy = bitmap->Height - 1; yy >= 0; yy--)
+            {
+                for (xx = bitmap->Width - 1; xx >= 0; xx--)
+                {
+                    xxs = (bitmap->Width - xx) * scale;
+                    yys = (bitmap->Height - yy) * scale;
+
+                    uint32_t offset = (4 * (xx + (yy * bitmap->Width)));
+                    uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
+                    DrawFilledRectangle(x + xxs, y + yys, scale, scale, color);
+                    //Graphics::Canvas::DrawPixel(ClientBounds->X + xx, ClientBounds->Y + yy, color);
+                }
+            }  
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Graphics
         Width = w;
         Height = h;
         Depth = depth;
-        ImageData = new uint8_t[Width * Height];
+        ImageData = new uint8_t[Width * Height * 4];
     }
 
     // constructor - load from disk
@@ -74,7 +74,27 @@ namespace Graphics
                 System::KernelIO::Write("'\n");
                 return;
             }
+        }  
+    }
+
+    void Bitmap::Resize(uint32_t w, uint32_t h)
+    {
+        int32_t x_ratio = (int32_t)((Width << 16) / w) + 1;
+        int32_t y_ratio = (int32_t)((Height << 16) / h) + 1;
+        int32_t xx, yy;
+        uint32_t* new_data = (uint32_t*)mem_alloc(w * h);
+        for (size_t i = 0; i < h; i++)
+        {
+            for (size_t j = 0; j < w; j++)
+            {
+                xx = ((j * x_ratio) >> 16);
+                yy = ((i * y_ratio) >> 16);
+                new_data[j + (i * w)] = ImageData[(xx + (yy * Width))];
+            }
         }
-        
+        if (ImageData != nullptr) { mem_free(ImageData); }
+        ImageData = (uint8_t*)new_data;
+        Width = w;
+        Height = h;
     }
 }

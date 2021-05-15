@@ -2,7 +2,6 @@
 #include <lib/types.h>
 #include <hardware/fat.hpp>
 #include <graphics/colors.hpp>
-#include <graphics/canvas.hpp>
 
 namespace Graphics
 {
@@ -49,5 +48,7 @@ namespace Graphics
 
             // constructor - load image
             Bitmap(char* fullname);
+
+            void Resize(uint32_t w, uint32_t h);
     };
 }
