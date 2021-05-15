@@ -737,34 +737,35 @@ extern "C"
             if(!streql(dir->entries[i].name,dirname))
             {
         
-            fat_write_file_impl(fs, dir, NULL, dirname, 0, DIRECTORY, 0);
+                fat_write_file_impl(fs, dir, NULL, dirname, 0, DIRECTORY, 0);
 
-            // We need to add the subdirectories '.' and '..'
-            struct directory subdir;
-            fat_populate_dir(fs, &subdir, dir->cluster);
-            uint32_t i;
-            for(i = 0; i < subdir.num_entries; i++) 
-            {
-                if(strcmp(subdir.entries[i].name, dirname) == 0) 
+                // We need to add the subdirectories '.' and '..'
+                struct directory subdir;
+                fat_populate_dir(fs, &subdir, dir->cluster);
+                uint32_t i;
+                for(i = 0; i < subdir.num_entries; i++) 
                 {
-                    struct directory newsubdir;
-                    fat_populate_dir(fs, &newsubdir, subdir.entries[i].first_cluster);
-                    fat_create_dir_subdirs(fs, &newsubdir, subdir.cluster);
-                    fat_free_dir(fs, &newsubdir);
+                    if(strcmp(subdir.entries[i].name, dirname) == 0) 
+                    {
+                        struct directory newsubdir;
+                        fat_populate_dir(fs, &newsubdir, subdir.entries[i].first_cluster);
+                        fat_create_dir_subdirs(fs, &newsubdir, subdir.cluster);
+                        fat_free_dir(fs, &newsubdir);
+                    }
                 }
+                fat_free_dir(fs, &subdir);
             }
-            fat_free_dir(fs, &subdir);
+            else { term_writeln_ext("File or directory already exists",COL4_RED); }
         }
-        else { term_writeln_ext("File or directory already exists",COL4_RED); }
     }
-    }
+
     void fat_dir_by_name(f32 *fs,struct directory *dir,char* name)
     {
         uint32_t i;
         uint32_t max_name;
         for(i = 0; i < dir->num_entries; i++) 
         {
-            if(streql(dir->entries[i].name,name))
+            if(streql(dir->entries[i].name, name))
             {
                 term_writeln_dec("Entry Found: ",i);
                 term_writeln(dir->entries[i].name);
@@ -829,7 +830,8 @@ extern "C"
         *saveptr=next+1;
         return begin;
     }
-       static inline int entry_for_path(const char *path, struct dir_entry_t *entry) 
+    
+    static inline int entry_for_path(const char *path, struct dir_entry_t *entry) 
     {
         struct directory dir;
         fat_populate_root_dir(fat_master_fs, &dir);
@@ -841,6 +843,7 @@ extern "C"
         char *next_dir = strtok_r(cutpath, "/", &tokstate);
         struct dir_entry_t *currentry = NULL;
         entry->name = NULL;
+
         while (next_dir) 
         {
             int found = 0;
