@@ -36,7 +36,7 @@ namespace Graphics
 
                 struct directory dir;
                 fat_populate_root_dir(fat_master_fs, &dir);
-                uint32_t size = fat_get_file_size(fat_master_fs,fullname);
+                uint32_t size = fat_get_file_size(fullname);
 
                 // read data from disk
                 void* buf = mem_alloc(size);

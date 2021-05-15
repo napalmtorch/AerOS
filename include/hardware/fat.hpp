@@ -113,10 +113,11 @@ extern "C"
     void fat_create_dir(f32 *fs, struct directory *dir, char *dirname);
     void fat_delete_file(f32 *fs, struct directory *dir, char *filename);
     void fat_dir_by_name(f32 *fs,struct directory *dir,char* name);
-    uint32_t fat_get_file_size(f32 *fs,char* name);
+    uint32_t fat_get_file_size(char* name);
     void fat_cat_file(f32 *fs,struct directory *dir,char* name);
     void fat_print_directory(f32 *fs, struct directory *dir);
     uint32_t fat_count_free_clusters(f32 *fs);
+    bool fat_file_exists(char* name);
 
     extern f32 *fat_master_fs;
 }
