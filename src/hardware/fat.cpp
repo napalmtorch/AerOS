@@ -970,9 +970,8 @@ extern "C"
                 if(cluster == 0) { debug_throw_panic("BAD CLUSTER CHAIN! FS IS CORRUPT!"); }
                 cluster_count++;
             }
-
-            debug_writeln_dec("clusters: ", cluster_count);
         }
+        
         mem_free(namebuff);
     }
 

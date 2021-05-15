@@ -31,24 +31,25 @@ namespace System
     void ShellHost::Initialize()
     {
         // add commands to list
-        CommandList[0] = ShellCommand("CLEAR",      "Clear the screen", "",                 Commands::CLEAR);
-        CommandList[1] = ShellCommand("LSPCI",      "List detected PCI devices", "",        Commands::LSPCI);
-        CommandList[2] = ShellCommand("CPUINFO",    "List processor information", "",       Commands::CPUINFO);
-        CommandList[3] = ShellCommand("FG",         "Change foreground color", "",          Commands::FG);
-        CommandList[4] = ShellCommand("BG",         "Change background color", "",          Commands::BG);
-        CommandList[5] = ShellCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
-        CommandList[6] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
-        CommandList[7] = ShellCommand("DISKDUMP",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
-        CommandList[8] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
-        CommandList[9] = ShellCommand("POWEROFF",   "Perform a Legacy Shutdown", "",        Commands::LEGACY_SHUTDOWN);
-        CommandList[10] = ShellCommand("REBOOT",    "Reboot the Computer", "",              Commands::REBOOT);
-        CommandList[11] = ShellCommand("TEST",      "Call a test systemcall", "",           Commands::TEST);
-        CommandList[12] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
-        CommandList[13] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
-        CommandList[14] = ShellCommand("LIST_TEST", "Test vector list", "",                 Commands::LIST_TEST);
-        CommandList[15] = ShellCommand("LS", "List Directory Contents", "",                 Commands::LS);
-        CommandList[16] = ShellCommand("CAT", "Display File Contents", "",                 Commands::CAT);
-        CommandList[17] = ShellCommand("fat_create_dir", "Create a Directory", "",                 Commands::fat_create_dir);
+        uint32_t i = 0;
+        CommandList[i++] = ShellCommand("CLEAR",      "Clear the screen", "",                 Commands::CLEAR);
+        CommandList[i++] = ShellCommand("LSPCI",      "List detected PCI devices", "",        Commands::LSPCI);
+        CommandList[i++] = ShellCommand("CPUINFO",    "List processor information", "",       Commands::CPUINFO);
+        CommandList[i++] = ShellCommand("FG",         "Change foreground color", "",          Commands::FG);
+        CommandList[i++] = ShellCommand("BG",         "Change background color", "",          Commands::BG);
+        CommandList[i++] = ShellCommand("DUMP",       "Dump memory at location", "",          Commands::DUMP);
+        CommandList[i++] = ShellCommand("HELP",       "Show available commands", "",          Commands::HELP);
+        CommandList[i++] = ShellCommand("DISKDUMP",   "Dump disk sectors into memory", "",    Commands::DISK_DUMP);
+        CommandList[i++] = ShellCommand("SHUTDOWN",   "Perform a ACPI Shutdown", "",          Commands::SHUTDOWN);
+        CommandList[i++] = ShellCommand("POWEROFF",   "Perform a Legacy Shutdown", "",        Commands::LEGACY_SHUTDOWN);
+        CommandList[i++] = ShellCommand("REBOOT",    "Reboot the Computer", "",              Commands::REBOOT);
+        CommandList[i++] = ShellCommand("TEST",      "Call a test systemcall", "",           Commands::TEST);
+        CommandList[i++] = ShellCommand("PANIC",     "Throw a fake kernel panic", "",        Commands::PANIC);
+        CommandList[i++] = ShellCommand("GFX",       "Test graphics mode", "",               Commands::GFX);
+        CommandList[i++] = ShellCommand("LIST_TEST", "Test vector list", "",                 Commands::LIST_TEST);
+        CommandList[i++] = ShellCommand("LS",        "List Directory Contents", "",          Commands::LS);
+        CommandList[i++] = ShellCommand("CAT",       "Display File Contents", "",            Commands::CAT);
+        CommandList[i++] = ShellCommand("MKDIR",     "Create a Directory", "",               Commands::MKDIR);
 
         // print caret to screen
         PrintCaret();
@@ -234,45 +235,43 @@ namespace System
             // call syscall
             asm volatile("int $0x80");
         }
-        void fat_create_dir(char* input)
+
+        void MKDIR(char* input)
         {
-                 struct directory dir;
-        fat_populate_root_dir(fat_master_fs, &dir);
-        char* dirname = strsplit_index(input, 1, ' ');
-        if(dirname == nullptr)
-        {
-            System::KernelIO::Terminal.WriteLine("Provide a directory name to be created");
+            struct directory dir;
+            fat_populate_root_dir(fat_master_fs, &dir);
+            char* dirname = strsplit_index(input, 1, ' ');
+            if(dirname == nullptr) { System::KernelIO::Terminal.WriteLine("No filename specified"); }
+            else { fat_create_dir(fat_master_fs,&dir,dirname); } 
         }
-        else
-        {
-        fat_create_dir(fat_master_fs,&dir,dirname);
-        }   
-        }
+
         void LS(char* input)
         {
-        struct directory dir;
-        fat_populate_root_dir(fat_master_fs, &dir);
-        char* listdir = strsplit_index(input, 1, ' ');
-        if(listdir == nullptr)
-        {
-            //show root
-            KernelIO::Terminal.WriteLine("Showing Root");
-            fat_print_directory(fat_master_fs,&dir);
+            struct directory dir;
+            fat_populate_root_dir(fat_master_fs, &dir);
+            char* listdir = strsplit_index(input, 1, ' ');
+            if(listdir == nullptr)
+            {
+                //show root
+                KernelIO::Terminal.WriteLine("Showing Root");
+                fat_print_directory(fat_master_fs,&dir);
+            }
+            else
+            {
+                KernelIO::Terminal.Write("Showing: ");
+                KernelIO::Terminal.WriteLine(listdir);
+                fat_dir_by_name(fat_master_fs,&dir,listdir);
+            }
         }
-        else
-        {
-            KernelIO::Terminal.Write("Showing: ");
-            KernelIO::Terminal.WriteLine(listdir);
-            fat_dir_by_name(fat_master_fs,&dir,listdir);
-        }
-        }
+
         void CAT(char* input)
         {
-        struct directory dir;
-        fat_populate_root_dir(fat_master_fs, &dir);
-        char* file = strsplit_index(input, 1, ' ');
-        fat_cat_file(fat_master_fs,&dir,file);
+            struct directory dir;
+            fat_populate_root_dir(fat_master_fs, &dir);
+            char* file = strsplit_index(input, 1, ' ');
+            fat_cat_file(fat_master_fs,&dir,file);
         }
+        
         void PANIC(char* input)
         {
             char* err = strsub(input, 6, strlen(input));
