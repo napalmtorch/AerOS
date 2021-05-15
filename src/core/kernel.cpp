@@ -266,18 +266,12 @@ namespace System
 
         // kernel core code, runs in a loop
         void KernelBase::Run()
-        {
-            
+        {      
             if (XServer.IsRunning())
             {
                 XServer.Update();
                 XServer.Draw();
             }
-            
-
-           //VESA.Clear(0xFFFF0000);
-           //for (size_t i = 0; i < 640; i++) { VESA.SetPixel(i, 64, 0xFFFFFFFF); }
-           //VESA.Render();
         }
         
         // triggered when a kernel panic is injected

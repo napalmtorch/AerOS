@@ -167,6 +167,17 @@ namespace Graphics
         // draw string with background color
         void DrawString(point_t pos, char* text, Color fg, Color bg, Font font) { DrawString(pos.X, pos.Y, text, fg, bg, font); }
 
+        void DrawArray(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t* data)
+        {
+            for (size_t yy = 0; yy < h; yy++)
+            {
+                for (size_t xx = 0; xx < w; xx++)
+                {
+                    DrawPixel(x + xx, y + yy, data[xx + (yy * w)]);
+                }
+            }
+        }
+
         // draw array of zeros and ones
         void DrawFlatArray(int32_t x, int32_t y, int32_t w, int32_t h, uint8_t* data, Color color)
         {
@@ -204,7 +215,7 @@ namespace Graphics
         }
 
         // draw scaled bitmap
-        void DrawBitmap(int32_t x, int32_t y, uint8_t scale, Graphics::Bitmap* bitmap)
+        void DrawBitmap(int32_t x, int32_t y, double scale, Graphics::Bitmap* bitmap)
         {
             uint32_t scaled_w = bitmap->Width  * scale;
             uint32_t scaled_h = bitmap->Height * scale;

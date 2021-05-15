@@ -29,7 +29,7 @@ namespace System
 
             if (Flags->CanDraw) 
             { 
-                Graphics::Canvas::DrawBitmap(ClientBounds->X, ClientBounds->Y, 2, bmp);
+                Graphics::Canvas::DrawBitmap(ClientBounds->X, ClientBounds->Y, 1, bmp);
             }
         }
     }
