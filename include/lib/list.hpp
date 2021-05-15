@@ -24,7 +24,7 @@ namespace System
             else
             {
                 Type** temp = new Type*[++Count];
-                mem_copy((uint8_t*)list, (uint8_t*)temp, size(list));
+                mem_copy((uint8_t*)list, (uint8_t*)temp, (Count-1)*sizeof(Type));
                 delete list;
                 list = temp;
                 list[Count - 1] = e;
@@ -121,6 +121,13 @@ namespace System
             ++Count;
             delete list;
             list = temp;
+        }
+        Type* ToArray()
+        {
+            Type* array = new Type[Count];
+            for (int i = 0; i < Count; i++)
+                array[i] = *list[i];
+            return array;
         }
 
         ~List()
