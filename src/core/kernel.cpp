@@ -74,7 +74,6 @@ namespace System
         void KernelBase::Initialize()
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
-            //SerialPort.SetPort(SERIAL_PORT_COM1);
             MemoryManager.Initialize(false);
 
             // read multiboot
@@ -216,9 +215,8 @@ namespace System
 
             // ready shell
             Shell.Initialize();
-            if (Parameters.VGA) { XServer.Start(); }
-            else if (Parameters.VESA) { XServer.Start(); }
-            ThrowOK("Successfully started XServer");
+            if (Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
+            else if (Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
             WriteLineDecimal("RUNNING: ", (uint8_t)XServer.Running);
         }
 

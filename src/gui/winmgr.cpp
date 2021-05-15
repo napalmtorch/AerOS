@@ -12,7 +12,7 @@ namespace System
 
         void WindowManager::Initialize()
         {
-
+            
         }
 
         bool clicked = false;
