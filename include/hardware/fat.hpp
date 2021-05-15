@@ -119,7 +119,6 @@ extern "C"
     uint32_t fat_count_free_clusters(f32 *fs);
     bool fat_file_exists(char* name);
     char* fat_change_dir(char* dir);
-
     extern f32 *fat_master_fs;
 
 }
