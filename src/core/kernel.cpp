@@ -3,6 +3,7 @@
 #include <graphics/canvas.hpp>
 #include <graphics/colors.hpp>
 #include <graphics/canvas.hpp>
+#include <graphics/bitmap.hpp>
 
 extern "C"
 {
@@ -278,38 +279,42 @@ namespace System
         void KernelBase::OnPanic(char* msg)
         {
             uint8_t yy = 0; 
-            uint8_t xx = 0;
             // messages 
-            char panic_string[] = "====PANIC====\0";
-            char expl[] ="AerOS encountered a serious problem!\0";
-            char err[] = "Error Message: \0";
-            char halt[] = "AerOS has been halted to prevent damage to your Computer!\0";
-            char temp[100] { '\0' };
+            char panic_string[] = "====PANIC====";
+            char expl[] ="AerOS encountered a serious problem!";
+            char err[] = "Error Message: ";
+            char halt[] = "AerOS has been halted to prevent damage to your Computer!";
+            char disclaimer[] = "Since there is no documentation you are basically fucked now xD";
+            char temp[100]{ '\0' }; //make sure we have enough space for error messages
             strcat(temp,err);
             strcat(temp,msg);
-            debug_writeln(temp);
             if(XServer.Running)
             {
-                yy +=64;
-                uint32_t panic_width = strlen(panic_string) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-                uint32_t panic_center = (VESA.GetWidth() / 2) - (panic_width / 2);
-                uint32_t expl_width = strlen(expl) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-                uint32_t expl_center = (VESA.GetWidth() / 2) - (expl_width / 2);
-                uint32_t msg_width = strlen(temp) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-                uint32_t msg_center = (VESA.GetWidth() / 2) - (msg_width / 2);
-                uint32_t halt_width = strlen(halt) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-                uint32_t halt_center = (VESA.GetWidth() / 2) - (halt_width / 2);
-                Graphics::Canvas::Clear(Graphics::Colors::DarkBlue);
-                Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Yellow,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                yy +=32;
-                Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                yy +=32;
-                Graphics::Canvas::DrawString(msg_center,yy,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                yy +=32;
-                Graphics::Canvas::DrawString(halt_center,yy,halt,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                yy +=32;
-                Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Yellow,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                Graphics::Canvas::Display();
+            uint32_t panic_width = strlen(panic_string) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+            uint32_t panic_center = (VESA.GetWidth() / 2) - (panic_width / 2);
+            uint32_t expl_width = strlen(expl) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+            uint32_t expl_center = (VESA.GetWidth() / 2) - (expl_width / 2);
+            uint32_t msg_width = strlen(temp) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+            uint32_t msg_center = (VESA.GetWidth() / 2) - (msg_width / 2);
+            uint32_t halt_width = strlen(halt) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+            uint32_t halt_center = (VESA.GetWidth() / 2) - (halt_width / 2);
+            uint32_t disc_width = strlen(disclaimer) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
+            uint32_t disc_center = (VESA.GetWidth() / 2) - (disc_width / 2);
+            Graphics::Canvas::Clear(Graphics::Colors::DarkBlue);
+            yy +=64;
+            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            yy +=32;
+            Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            yy +=32;
+            Graphics::Canvas::DrawString(msg_center,yy,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            Graphics::Canvas::DrawString(msg_center,yy+1,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            Graphics::Canvas::DrawString(msg_center,yy+2,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            yy +=32;
+            Graphics::Canvas::DrawString(halt_center,yy,halt,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            Graphics::Canvas::DrawString(disc_center,yy,disclaimer,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            yy +=32;
+            Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
+            Graphics::Canvas::Display();
                 
             }
             else
