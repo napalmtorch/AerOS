@@ -1,6 +1,5 @@
 #include "apps/win_welcome.hpp"
 #include <core/kernel.hpp>
-#include <hardware/config_parser.hpp>
 namespace System
 {
     namespace Applications
@@ -14,9 +13,6 @@ namespace System
         WinWelcome::WinWelcome(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Welcome")
         { 
             Document = (char*)new uint8_t[1000];
-            Config::ConfigParser* config = new Config::ConfigParser("/etc/global.cfg");
-            debug_writeln_ext(config->GetConfigValue("wallpaper"),COL4_RED);
-            debug_writeln_ext(config->GetConfigValue("mouse"),COL4_GREEN);
             // load message of the day
             if(fat_master_fs != nullptr)
             {
