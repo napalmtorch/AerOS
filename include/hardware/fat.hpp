@@ -119,6 +119,10 @@ extern "C"
     uint32_t fat_count_free_clusters(f32 *fs);
     bool fat_file_exists(char* name);
     char* fat_change_dir(char* dir);
+    char* fat_change_dir_absolute(char* dir);
+    char* fat_change_in_current_folder(char* str);
+    char* fat_get_sub_folder(char* str);
+    void populate_dir_by_name(f32 *fs,struct directory *dir,char* name);
     extern f32 *fat_master_fs;
 
 }

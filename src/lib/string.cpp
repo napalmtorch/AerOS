@@ -208,7 +208,7 @@ char* strsplit_index(char text[], int index, char separator)
     
     return nullptr;
 }
-char** strsplit(char text[], char separator, int* len) //brb, i leave this open, code as you wish - try this - how do i use it
+char** strsplit(char text[], char separator, uint32_t* len) //brb, i leave this open, code as you wish - try this - how do i use it
 {
     System::List<char*> *data = new System::List<char*>;
     for (; strsplit_index(text, *len, separator) != nullptr;)

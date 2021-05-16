@@ -19,10 +19,10 @@ namespace System
             // load message of the day
             if(fat_master_fs != nullptr)
             {
-                if(fat_file_exists("/users/aeros/documents/welcome.txt"))
+                if(fat_file_exists("/etc/motd"))
                 {
                 // directory
-                char* file = "/users/aeros/documents/welcome.txt";
+                char* file = "/etc/motd";
             
                 // open file
                 file_t *f = fopen(file, NULL);

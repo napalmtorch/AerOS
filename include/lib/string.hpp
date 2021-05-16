@@ -44,7 +44,7 @@
         // check if string equal to string
         bool streql(char text[], char comp[]);
         char* strsplit_index(char text[], int index, char separator);
-        char** strsplit(char text[], char separator, int *len);
+        char** strsplit(char text[], char separator, uint32_t *len);
         bool IsEmpty(char* text);
         int strindexof(char text[], char character);
     }

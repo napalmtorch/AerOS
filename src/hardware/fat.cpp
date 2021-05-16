@@ -866,6 +866,88 @@ extern "C"
         }
         return false; 
     } 
+    char *replace(const char *s, char ch, const char *repl) {
+    int count = 0;
+    const char *t;
+    for(t=s; *t; t++)
+        count += (*t == ch);
+
+    size_t rlen = strlen_c(repl);
+    char *res = (char*)mem_alloc(strlen_c(s) + (rlen-1)*count + 1);
+    char *ptr = res;
+    for(t=s; *t; t++) {
+        if(*t == ch) {
+            mem_copy((uint8_t*)repl,(uint8_t*)ptr, rlen);
+            ptr += rlen;
+        } else {
+            *ptr++ = *t;
+        }
+    }
+    *ptr = 0;
+    return res;
+}
+
+    char* fat_get_sub_folder(char* str) //char* str contains the full path
+    {
+            uint32_t arraylen = 0;
+            char** split = strsplit(str, '/', &arraylen);
+            int size = 0; 
+            char* path;
+            debug_writeln(str);
+            //prepare array
+            for(int i = 0; i < 256; i++) ///sizeof cant handle many nested folders, lets hope this gets never reached....
+            {
+                if(split[i] == nullptr) { continue; }
+                if(IsEmpty(split[i])) { continue; }
+                if(i == 0) { continue; }
+                size +=1;
+
+            }
+            //check if we hit root
+            if(size-1 == 0 || size-1 < 0)
+                {
+                    path = "/";
+                    return path;
+                }
+                else
+                {
+                    path = split[size-1];
+                }
+            //lets build our new path
+            char dirpath[256]{'\0'};
+            stradd(dirpath,'/');
+            for(int a=0; a<size; a++)
+            {
+                if(split[a] == nullptr) { continue; }
+                if(IsEmpty(split[a])) { continue; }
+                if(a == 0) { continue; }
+                stradd(dirpath,'/');
+                strcat(dirpath,split[a]);
+                continue;
+            }
+            //lets check if the pathbuilder added an additional slash
+            //if yes we remove it
+            char* final_string;
+            if(dirpath[0] == '/' && dirpath[1]=='/')
+            {
+                final_string = dirpath+1;
+            }
+            //finally, check if we get a FS entry for our path,
+            //if yes we return this, otherwise we return the base string
+            struct dir_entry_t compare;
+            if(entry_for_path(final_string,&compare))
+            {
+                  struct directory * dir;
+                  fat_free_dir(fat_master_fs,dir);
+                  populate_dir_by_name(fat_master_fs,dir,final_string);  
+                
+                    return fat_change_dir_absolute(final_string);
+            }
+            else
+            {
+                return str;
+            }
+        }
     char* fat_change_dir(char* dir)
     {
         struct dir_entry_t entry;
@@ -873,7 +955,50 @@ extern "C"
         {
             return entry.name;
         }
+        return dir;
+    }
+    char* fat_change_in_current_folder(char* str)
+    {
+        struct dir_entry_t entry;
+        if(entry_for_path(str,&entry))
+        {
+                    struct directory * dir;
+                  fat_free_dir(fat_master_fs,dir);
+                  populate_dir_by_name(fat_master_fs,dir,str);
+            return str;
+        }
+        else
+        {
+            return System::KernelIO::Shell.GetCurrentPath();
+        }
+    }
+    char* fat_change_dir_absolute(char* dir)
+    {
+        struct dir_entry_t entry;
+        if(entry_for_path(dir, &entry))
+        {
+            return dir;
+        }
         return "/";
+    }
+    void populate_dir_by_name(f32 *fs,struct directory *dir,char* name)
+    {
+        uint32_t i;
+        uint32_t max_name;
+        struct dir_entry_t entry;
+        if(entry_for_path(name, &entry))
+        {
+ 
+            for(i = 0; i < dir->num_entries; i++) 
+            {
+
+                uint32_t cluster = dir->entries[i].first_cluster;
+                if(cluster == 0) { cluster = 2; }
+                fat_free_dir(fs, dir);
+                fat_populate_dir(fs, dir, cluster);
+                break;
+            }
+        }
     }
     void fat_dir_by_name(f32 *fs,struct directory *dir,char* name)
     {
@@ -886,8 +1011,6 @@ extern "C"
             for(i = 0; i < dir->num_entries; i++) 
             {
 
-                term_writeln_dec("Entry Found: ",i);
-                term_writeln(dir->entries[i].name);
                 uint32_t cluster = dir->entries[i].first_cluster;
                 if(cluster == 0) { cluster = 2; }
                 fat_free_dir(fs, dir);

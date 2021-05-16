@@ -7,7 +7,7 @@ namespace System
         class Sudo
         {
             public:
-                char* user = "aeros";
+                char* user = "aeros\0";
                 char* Document;
                 char* sudoers = "/etc/sudoers";
                 bool CheckSudo(char* user);
