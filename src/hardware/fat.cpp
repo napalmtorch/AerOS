@@ -1080,11 +1080,18 @@ extern "C"
             namebuff[max_name] = 0;
 
             for(j = 0; j < strlen(dir->entries[i].name); j++) { namebuff[j] = dir->entries[i].name[j]; }
-
             if(dir->entries[i].dir_attrs == DIRECTORY) 
             { 
-                System::KernelIO::Terminal.Write("-- ");
-                System::KernelIO::Terminal.WriteLine(namebuff, COL4_GREEN);
+                    if(streql(dir->entries[i].name,".") || streql(dir->entries[i].name,".."))
+                    {
+                        System::KernelIO::Terminal.Write("   ");
+                        System::KernelIO::Terminal.WriteLine(namebuff, COL4_GREEN);
+                    }
+                    else
+                    {
+                        System::KernelIO::Terminal.Write("-- ");
+                        System::KernelIO::Terminal.WriteLine(namebuff, COL4_GREEN);
+                    }
             } 
             else 
             { 
