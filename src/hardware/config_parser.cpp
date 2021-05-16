@@ -21,7 +21,7 @@ namespace System
                 }
             }
         }
-        char* ConfigParser::GetConfigValue(char* string)
+        char* ConfigParser::GetConfigValue(char* string,ResponseType resp)
         {   debug_write_ext("ConfigParser>> ",COL4_CYAN);
             debug_write("parsing config for : ");
             debug_writeln(string);
@@ -42,18 +42,21 @@ namespace System
                         break;
                     }
                 }
-                return "Config value not found";
+                if(resp == ResponseTypeString)
+                    return "Config value not found";
+                else if(resp == ResponseTypeBool || resp == ResponseTypeUint || resp == ResponseTypeInt)
+                    return 0;
             }
         }
 
         char* ConfigParser::GetConfigString(char* string)
         {
-                return ConfigParser::GetConfigValue(string);    
+                return ConfigParser::GetConfigValue(string,ResponseTypeString);    
         }
 
         bool ConfigParser::GetConfigBool(char* string)
         {
-            char* response = GetConfigValue(string);
+            char* response = GetConfigValue(string,ResponseTypeBool);
             if(streql(response,"True") || streql(response,"TRUE") || streql(response,"true") || streql(response,"1"))
             {
                 return true;
@@ -62,12 +65,12 @@ namespace System
         }
         uint32_t ConfigParser::GetConfigUint(char* string)
         {
-            return (uint32_t)GetConfigValue(string);
+            return (uint32_t)GetConfigValue(string,ResponseTypeUint);
         }
         
         int32_t ConfigParser::GetConfigInt(char* string)
         {
-            return (int32_t)GetConfigValue(string);
+            return (int32_t)GetConfigValue(string,ResponseTypeInt);
         }
     }
 }
