@@ -10,7 +10,7 @@ namespace System
               
         }
 
-        WinWelcome::WinWelcome(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Welcome to AerOS")
+        WinWelcome::WinWelcome(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Welcome")
         { 
             Document = (char*)new uint8_t[1000];
 
