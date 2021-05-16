@@ -13,7 +13,6 @@ namespace System
         WinWelcome::WinWelcome(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Welcome")
         { 
             Document = (char*)new uint8_t[1000];
-
             // load message of the day
             if(fat_master_fs != nullptr)
             {
