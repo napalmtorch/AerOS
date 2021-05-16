@@ -221,7 +221,6 @@ namespace System
             Shell.Initialize();
             if (Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
             else if (Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
-            WriteLineDecimal("RUNNING: ", (uint8_t)XServer.Running);
         }
 
 

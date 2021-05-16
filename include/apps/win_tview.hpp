@@ -2,6 +2,7 @@
 #include <lib/types.h>
 #include <gui/widget.hpp>
 #include <gui/xserver.hpp>
+#include <hardware/kbstream.hpp>
 
 namespace System
 {
@@ -11,6 +12,7 @@ namespace System
         {
             public:
                 char* Document;
+                HAL::KeyboardStream KBStream;
                 WinTextViewer();
                 WinTextViewer(int32_t x, int32_t y);
                 WinTextViewer(int32_t x, int32_t y, char* text);

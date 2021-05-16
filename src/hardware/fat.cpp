@@ -939,7 +939,7 @@ extern "C"
             {
                   struct directory * dir;
                   fat_free_dir(fat_master_fs,dir);
-                  populate_dir_by_name(fat_master_fs,dir,final_string);  
+                  fat_populate_dir_by_name(fat_master_fs,dir,final_string);  
                 
                     return fat_change_dir_absolute(final_string);
             }
@@ -964,7 +964,7 @@ extern "C"
         {
                     struct directory * dir;
                   fat_free_dir(fat_master_fs,dir);
-                  populate_dir_by_name(fat_master_fs,dir,str);
+                  fat_populate_dir_by_name(fat_master_fs,dir,str);
             return str;
         }
         else
@@ -981,7 +981,7 @@ extern "C"
         }
         return "/";
     }
-    void populate_dir_by_name(f32 *fs,struct directory *dir,char* name)
+    void fat_populate_dir_by_name(f32 *fs,struct directory *dir,char* name)
     {
         uint32_t i;
         uint32_t max_name;

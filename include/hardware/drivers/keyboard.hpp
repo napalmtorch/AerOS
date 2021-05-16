@@ -124,7 +124,7 @@ namespace HAL
         public:
             // keyboard buffer
             bool BufferEnabled;
-            char Buffer[256];
+            char* Buffer;
             void (*Event_OnEnterPressed)(char*);
 
             // keyboard layouts

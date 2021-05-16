@@ -46,6 +46,9 @@ namespace System
 
             Style = GUI::CopyStyle(&GUI::WindowStyle);
             Style->Colors[0] = Graphics::Colors::White;
+
+            KBStream = HAL::KeyboardStream();
+            KBStream.Text = Document;
         }
 
         WinTextViewer::WinTextViewer(int32_t x, int32_t y, char* text) : GUI::Window(x, y, 400, 300, "Text Viewer")
@@ -72,11 +75,19 @@ namespace System
 
             Style = GUI::CopyStyle(&GUI::WindowStyle);
             Style->Colors[0] = Graphics::Colors::White;
+
+            KBStream = HAL::KeyboardStream();
+            KBStream.Text = Document;
         }
 
         void WinTextViewer::Update()
         {
             GUI::Window::Update();
+
+            if (Flags->Active && Flags->CanDraw)
+            {
+                KBStream.Update();
+            }
         }
 
         void WinTextViewer::Draw()
