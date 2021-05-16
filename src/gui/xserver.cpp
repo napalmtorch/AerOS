@@ -220,7 +220,8 @@ namespace System
             if (Menu.Visible) { Graphics::Canvas::DrawRectangle3D(MenuBtn.Bounds->X, MenuBtn.Bounds->Y, MenuBtn.Bounds->Width, MenuBtn.Bounds->Height, ButtonStyle.Colors[4], ButtonStyle.Colors[2], ButtonStyle.Colors[2]); }  
 
             // draw mouse
-            KernelIO::Mouse.Draw();
+            if (!Loading) { KernelIO::Mouse.Draw(); }
+            else { Graphics::Canvas::DrawArray(KernelIO::Mouse.GetX(), KernelIO::Mouse.GetY(), 11, 20, Graphics::Colors::Magenta, (uint32_t*)HAL::CursorDataWait32); }
             KernelIO::VESA.Render();
 
             // swap buffer

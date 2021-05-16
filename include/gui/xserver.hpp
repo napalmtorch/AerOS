@@ -58,6 +58,7 @@ namespace System
                 bool IsRunning();
                 WindowManager WindowMgr;
                 bool Running;
+                bool Loading;
             private:
                 XServerTaskbar Taskbar;
                 Button MenuBtn;

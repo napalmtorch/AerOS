@@ -178,6 +178,19 @@ namespace Graphics
             }
         }
 
+        void DrawArray(int32_t x, int32_t y, int32_t w, int32_t h, Color trans_key, uint32_t* data)
+        {
+            for (size_t yy = 0; yy < h; yy++)
+            {
+                for (size_t xx = 0; xx < w; xx++)
+                {
+                    uint32_t color = data[xx + (yy * w)];
+                    if (color != Graphics::RGBToPackedValue(trans_key.R, trans_key.G, trans_key.B)) 
+                    { DrawPixel(x + xx, y + yy, color); }
+                }
+            }
+        }
+
         // draw array of zeros and ones
         void DrawFlatArray(int32_t x, int32_t y, int32_t w, int32_t h, uint8_t* data, Color color)
         {
@@ -214,7 +227,7 @@ namespace Graphics
             }  
         }
 
-        void DrawBitmap(int32_t x, int32_t y, Color transKey, Graphics::Bitmap* bitmap)
+        void DrawBitmap(int32_t x, int32_t y, Color trans_key, Graphics::Bitmap* bitmap)
         {
             if (bitmap == nullptr) { return; }
             for (int32_t yy = bitmap->Height - 1; yy >= 0; yy--)
@@ -225,13 +238,13 @@ namespace Graphics
                     {
                         uint32_t offset = (3 * (xx + (yy * bitmap->Width)));
                         uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
-                        if (color != Graphics::RGBToPackedValue(transKey.R, transKey.G, transKey.B)) { DrawPixel(x + (bitmap->Width - xx), y + (bitmap->Height - yy), color); }
+                        if (color != Graphics::RGBToPackedValue(trans_key.R, trans_key.G, trans_key.B)) { DrawPixel(x + (bitmap->Width - xx), y + (bitmap->Height - yy), color); }
                     }
                     else if (bitmap->Depth == COLOR_DEPTH_32)
                     {
                         uint32_t offset = (4 * (xx + (yy * bitmap->Width)));
                         uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
-                        if (color != Graphics::RGBToPackedValue(transKey.R, transKey.G, transKey.B)) { DrawPixel(x + xx, y + (bitmap->Height - yy), color); }
+                        if (color != Graphics::RGBToPackedValue(trans_key.R, trans_key.G, trans_key.B)) { DrawPixel(x + xx, y + (bitmap->Height - yy), color); }
                     }
                 }
             }  

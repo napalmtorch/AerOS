@@ -87,14 +87,13 @@ namespace System
                 {
                     widget->MouseFlags->Down = true;
                     widget->MouseFlags->Up = false;
-                    m_down = false;
+                    if (!m_down) { m_down = true; }
                 }
                 // left mouse button is up
                 else
                 {
-                    widget->MouseFlags->Down = false;
                     widget->MouseFlags->Clicked = false;
-                    if (!m_down) { m_down = true; }
+                    widget->MouseFlags->Down = false;
                 }
             }
             // mouse is NOT hovering over widget

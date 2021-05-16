@@ -74,11 +74,12 @@ namespace Graphics
         void DrawString(point_t pos, char* text, Color fg, Color bg, Font font);
 
         void DrawArray(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t* data);
+        void DrawArray(int32_t x, int32_t y, int32_t w, int32_t h, Color trans_key, uint32_t* data);
 
         void DrawFlatArray(int32_t x, int32_t y, int32_t w, int32_t h, uint8_t* data, Color color);
 
         void DrawBitmap(int32_t x, int32_t y, Graphics::Bitmap* bitmap);
-        void DrawBitmap(int32_t x, int32_t y, Color transKey, Graphics::Bitmap* bitmap);
+        void DrawBitmap(int32_t x, int32_t y, Color trans_key, Graphics::Bitmap* bitmap);
         void DrawBitmap(int32_t x, int32_t y, int32_t scale, Graphics::Bitmap* bitmap);
     }
 }
