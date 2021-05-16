@@ -5,49 +5,12 @@
 #include <apps/win_tview.hpp>
 #include <apps/win_raycast.hpp>
 #include <apps/win_bmp.hpp>
-#include <graphics/colors.hpp>
-#include <graphics/canvas.hpp>
+#include <apps/win_demo.hpp>
 
 namespace System
 {
     namespace GUI
     {
-        // default button style
-        VisualStyle ButtonStyle = 
-        {
-            "Default",
-            {
-                { 255, 200, 200, 200 },     // background
-                { 255, 0,   0,   0   },     // text
-                { 255, 255, 255, 255 },     // border top left
-                { 255, 154, 151, 147 },     // border inner bottom right
-                { 255, 0,   0,   0,  },     // border outer bottom right
-                { 255, 0,   0,   0,  },     // unused
-                { 255, 0,   0,   0,  },     // unused
-                { 255, 0,   0,   0,  },     // unused
-            },
-            BORDER_STYLE_3D, 1,
-            &Graphics::FONT_8x8_SERIF,
-        };
-
-        // default window style
-        VisualStyle WindowStyle = 
-        {
-            "Default",
-            {
-                { 255, 200, 200, 200 },     // background
-                { 255, 0,   0,   0   },     // text
-                { 255, 255, 255, 255 },     // border top left
-                { 255, 154, 151, 147 },     // border inner bottom right
-                { 255, 0,   0,   0,  },     // border outer bottom right
-                { 255, 0,   0,   255 },     // title bar background
-                { 255, 255, 255, 255 },     // title bar text
-                { 255, 0,   0,   0,  },     // unused
-            },
-            BORDER_STYLE_3D, 1,
-            &Graphics::FONT_8x8,
-        };
-
         // title bar exit icon
         uint8_t TitleBarIcon_Exit[8 * 7] = 
         {
@@ -158,12 +121,14 @@ namespace System
                 if (Menu.SelectedIndex == 1) { WindowMgr.Open(new Applications::WinTextViewer(64, 64)); Menu.Visible = false; }
                 // raycaster
                 if (Menu.SelectedIndex == 2) { WindowMgr.Open(new Applications::WinRaycaster(64, 64)); Menu.Visible = false; }
+                // gui demo
+                if (Menu.SelectedIndex == 3) { WindowMgr.Open(new Applications::WinGUIDemo(120, 120)); Menu.Visible = false; }
                 // terminal
-                if (Menu.SelectedIndex == 3) { WindowMgr.Open(new Applications::WinTerminal(64, 64)); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 4) { WindowMgr.Open(new Applications::WinTerminal(64, 64)); Menu.Visible = false; }
                 // reboot
-                if (Menu.SelectedIndex == 4) { KernelIO::ACPI.Reboot(); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 5) { KernelIO::ACPI.Reboot(); Menu.Visible = false; }
                 // shutdown
-                if (Menu.SelectedIndex == 5) { KernelIO::ACPI.Shutdown(); Menu.Visible = false; }
+                if (Menu.SelectedIndex == 6) { KernelIO::ACPI.Shutdown(); Menu.Visible = false; }
                 
                 item_down = true;
             }
@@ -343,6 +308,7 @@ namespace System
             Items[Count++] = XServerTaskbarItem("Bitmap Viewer");
             Items[Count++] = XServerTaskbarItem("Text Viewer");
             Items[Count++] = XServerTaskbarItem("Raycaster");
+            Items[Count++] = XServerTaskbarItem("GUI Demo");
             Items[Count++] = XServerTaskbarItem("Terminal");
             Items[Count++] = XServerTaskbarItem("Reboot");
             Items[Count++] = XServerTaskbarItem("Shutdown");

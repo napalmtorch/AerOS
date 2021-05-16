@@ -41,6 +41,12 @@ namespace System
 {
     namespace GUI
     {
+        // title bar icons
+        extern uint8_t TitleBarIcon_Exit[];
+        extern uint8_t TitleBarIcon_Max[];
+
+        extern uint32_t CheckMarkIcon[];
+
         // mouse flags
         typedef struct
         {
@@ -62,6 +68,11 @@ namespace System
             Graphics::Font* Font;
 
         } VisualStyle;
+
+        // default visual styles
+        extern VisualStyle ButtonStyle;
+        extern VisualStyle WindowStyle;
+        extern VisualStyle CheckBoxStyle;
 
         typedef struct
         {
@@ -122,6 +133,7 @@ namespace System
                 WidgetFlags* Flags;
         };
 
+        // button - derived from widget class
         class Button : public Widget
         {
             public:
@@ -129,6 +141,20 @@ namespace System
                 Button(int32_t x, int32_t y, char* text);
                 void Update() override;
                 void Draw() override;
+        };
+
+        // check box - derived from widget class
+        class CheckBox : public Widget
+        {
+            public:
+                CheckBox();
+                CheckBox(int32_t x, int32_t y, char* text);
+                CheckBox(int32_t x, int32_t y, char* text, bool toggled);
+                void Update() override;
+                void Draw() override;
+                bounds_t* CheckBounds;
+            private:
+                bool m_down;
         };
 
         // window - forward declaration

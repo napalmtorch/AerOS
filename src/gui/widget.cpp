@@ -6,6 +6,60 @@ namespace System
 {
     namespace GUI
     {
+        // default button style
+        VisualStyle ButtonStyle = 
+        {
+            "Default",
+            {
+                { 255, 200, 200, 200 },     // background
+                { 255, 0,   0,   0   },     // text
+                { 255, 255, 255, 255 },     // border top left
+                { 255, 154, 151, 147 },     // border inner bottom right
+                { 255, 0,   0,   0,  },     // border outer bottom right
+                { 255, 0,   0,   0,  },     // unused
+                { 255, 0,   0,   0,  },     // unused
+                { 255, 0,   0,   0,  },     // unused
+            },
+            BORDER_STYLE_3D, 1,
+            &Graphics::FONT_8x8_SERIF,
+        };
+
+        // default checkbox style
+        VisualStyle CheckBoxStyle = 
+        {
+            "Default",
+            {
+                { 255, 255, 255, 255 },     // background
+                { 255, 0,   0,   0   },     // text
+                { 255, 0,   0,   0   },     // border top left
+                { 255, 154, 151, 147 },     // border inner bottom right
+                { 255, 255, 255, 255 },     // border outer bottom right
+                { 255, 0,   0,   0,  },     // check color
+                { 255, 0,   0,   0,  },     // unused
+                { 255, 0,   0,   0,  },     // unused
+            },
+            BORDER_STYLE_3D, 1,
+            &Graphics::FONT_8x8_SERIF,
+        };
+
+        // default window style
+        VisualStyle WindowStyle = 
+        {
+            "Default",
+            {
+                { 255, 200, 200, 200 },     // background
+                { 255, 0,   0,   0   },     // text
+                { 255, 255, 255, 255 },     // border top left
+                { 255, 154, 151, 147 },     // border inner bottom right
+                { 255, 0,   0,   0,  },     // border outer bottom right
+                { 255, 0,   0,   255 },     // title bar background
+                { 255, 255, 255, 255 },     // title bar text
+                { 255, 0,   0,   0,  },     // unused
+            },
+            BORDER_STYLE_3D, 1,
+            &Graphics::FONT_8x8,
+        };
+
         uint8_t TITLEBAR_ICON_CLOSE[8 * 7] = 
         {
             1, 1, 0, 0, 0, 0, 1, 1,
@@ -48,6 +102,18 @@ namespace System
             0, 1, 0, 0, 0, 1, 0, 1,
             0, 1, 0, 0, 0, 1, 1, 1,
             0, 1, 1, 1, 1, 1, 0, 0,
+        };
+
+        uint32_t CheckMarkIcon[9 * 8] = 
+        {
+            0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF,
+            0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFF000000, 0xFFFF00FF,
+            0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFF000000, 0xFF000000, 0xFFFF00FF,
+            0xFFFF00FF, 0xFF000000, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFF000000, 0xFF000000, 0xFF000000, 0xFFFF00FF,
+            0xFFFF00FF, 0xFF000000, 0xFF000000, 0xFFFF00FF, 0xFF000000, 0xFF000000, 0xFF000000, 0xFFFF00FF, 0xFFFF00FF,
+            0xFFFF00FF, 0xFF000000, 0xFF000000, 0xFF000000, 0xFF000000, 0xFF000000, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF,
+            0xFFFF00FF, 0xFFFF00FF, 0xFF000000, 0xFF000000, 0xFF000000, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF,
+            0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFF000000, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF, 0xFFFF00FF
         };
 
         VisualStyle* CopyStyle(VisualStyle* src)
@@ -260,6 +326,83 @@ namespace System
             }
         }
 
+        // -------------------------------------------------- CHECK BOX ---------------------------------------------------- //
+
+        CheckBox::CheckBox() : Widget()
+        {
+
+        }
+
+        CheckBox::CheckBox(int32_t x, int32_t y, char* text) : Widget(x, y, 112, 22, WIDGET_TYPE_CHECKBOX)
+        {
+            // set style
+            Style = &CheckBoxStyle;
+
+            // set text
+            SetText(text);
+
+            // set flag
+            Flags->Toggled = false;
+
+            // set bounds
+            CheckBounds = new bounds_t();
+            CheckBounds->Width = 12;
+            CheckBounds->Height = 12;
+            CheckBounds->X = Bounds->X + 4;
+            CheckBounds->Y = Bounds->Y + 5;
+        }
+
+        CheckBox::CheckBox(int32_t x, int32_t y, char* text, bool toggled) : Widget(x, y, 112, 22, WIDGET_TYPE_CHECKBOX)
+        {
+            // set style
+            Style = &CheckBoxStyle;
+
+            // set text
+            SetText(text);
+
+            // set flag
+            Flags->Toggled = toggled;
+        }
+
+        void CheckBox::Update()
+        {   
+            Widget::Update();
+            CheckWidgetEvents(this);
+
+            // set check bounds
+            CheckBounds->X = Bounds->X + 4;
+            CheckBounds->Y = Bounds->Y + 5;
+
+            if (MouseFlags->Down && !m_down)
+            {
+                Flags->Toggled = !Flags->Toggled;
+                m_down = true;
+            }
+
+            if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Released) { m_down = false; }
+        }
+
+        void CheckBox::Draw()
+        {
+            Widget::Draw();
+
+            // draw check area
+            Graphics::Canvas::DrawFilledRectangle((*CheckBounds), Graphics::Colors::White);
+            if (Style->BorderStyle == BORDER_STYLE_3D) { Graphics::Canvas::DrawRectangle3D(CheckBounds->X, CheckBounds->Y, CheckBounds->Width, CheckBounds->Height, Style->Colors[2], Style->Colors[3], Style->Colors[4]); }
+            else { Graphics::Canvas::DrawRectangle((*CheckBounds), 1, Style->Colors[2]); } 
+
+            // drwa check marker
+            if (Flags->Toggled)
+            { Graphics::Canvas::DrawArray(CheckBounds->X + 1, CheckBounds->Y + 1, 9, 8, Graphics::Colors::Magenta, CheckMarkIcon); }
+
+            // draw text
+            if (Text != nullptr && strlen(Text) > 0 && !streql(Text, "\0"))
+            {
+                int32_t sh = Style->Font->GetHeight() + Style->Font->GetVerticalSpacing();
+                Graphics::Canvas::DrawString(CheckBounds->X + CheckBounds->Width + 4, Bounds->Y + (Bounds->Height / 2) - (sh / 2), Text, Style->Colors[1], (*Style->Font));
+            }
+        }
+
         // -------------------------------------------------- TITLE BAR ---------------------------------------------------- //
 
         TitleBar::TitleBar()
@@ -320,9 +463,9 @@ namespace System
 
             // draw button icons
             Graphics::Canvas::DrawFlatArray(BtnClose->Bounds->X + 3, BtnClose->Bounds->Y + 2, 8, 7, TITLEBAR_ICON_CLOSE, BtnClose->Style->Colors[1]);
-            if (!Parent->Flags->Maximized) { Graphics::Canvas::DrawFlatArray(BtnMax->Bounds->X + 3,   BtnMax->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_MAX, BtnMax->Style->Colors[1]); }
-            else { Graphics::Canvas::DrawFlatArray(BtnMax->Bounds->X + 3,   BtnMax->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_RES, BtnMax->Style->Colors[1]); }
-            Graphics::Canvas::DrawFlatArray(BtnMin->Bounds->X + 3,   BtnMin->Bounds->Y + 2,   8, 7, TITLEBAR_ICON_MIN, BtnMin->Style->Colors[1]);
+            if (!Parent->Flags->Maximized) { Graphics::Canvas::DrawFlatArray(BtnMax->Bounds->X + 3, BtnMax->Bounds->Y + 2, 8, 7, TITLEBAR_ICON_MAX, BtnMax->Style->Colors[1]); }
+            else { Graphics::Canvas::DrawFlatArray(BtnMax->Bounds->X + 3, BtnMax->Bounds->Y + 2, 8, 7, TITLEBAR_ICON_RES, BtnMax->Style->Colors[1]); }
+            Graphics::Canvas::DrawFlatArray(BtnMin->Bounds->X + 3, BtnMin->Bounds->Y + 2, 8, 7, TITLEBAR_ICON_MIN, BtnMin->Style->Colors[1]);
         }
 
         // -------------------------------------------------- WINDOW BASE -------------------------------------------------- //

@@ -19,8 +19,8 @@ namespace System
             KernelIO::XServer.Draw();
             bmp = new Graphics::Bitmap("/test/bg.bmp");
             KernelIO::XServer.Loading = false;
-            Bounds->Width = bmp->Width + 3;
-            Bounds->Height = bmp->Height + 19;
+            Bounds->Width = (2 * bmp->Width) + 3;
+            Bounds->Height = (2 * bmp->Height) + 19;
         }
 
         void WinBitmapViewer::Update()
@@ -34,7 +34,9 @@ namespace System
 
             if (Flags->CanDraw) 
             { 
-                Graphics::Canvas::DrawBitmap(ClientBounds->X, ClientBounds->Y, 1, bmp);
+                Graphics::Canvas::DrawBitmap(ClientBounds->X, ClientBounds->Y, 2, bmp);
+                Bounds->Width = (2 * bmp->Width) + 3;
+                Bounds->Height = (2 * bmp->Height) + 19;
             }
         }
     }
