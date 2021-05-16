@@ -8,7 +8,6 @@ namespace HAL
     {
         public:
             KeyboardStream();
-            KeyboardStream(char* output);
             void Update();
 
         public:

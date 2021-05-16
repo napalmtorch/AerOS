@@ -83,6 +83,8 @@ namespace HAL
 
         KeyboardLayoutUS = { KB_LAYOUT_US, "United States", "??!@#$%^&*()_+??QWERTYUIOP{}??ASDFGHJKL:\"~?|ZXCVBNM<>???? ", "" };
         KeyboardLayoutDE = { KB_LAYOUT_DE, "German",        "??!\"§$%&/()=?`??QWERTZUIOP?*??ASDFGHJKL??'?>YXCVBNM;:???? ", "" }; 
+
+        Buffer = new char[256];
     }
 
     // handle keyboard string input
@@ -107,7 +109,8 @@ namespace HAL
         {
             System::KernelIO::Terminal.WriteChar('\n');
             if (Event_OnEnterPressed != 0) { Event_OnEnterPressed(Buffer); }
-            Buffer[0] = '\0';
+            if (!System::KernelIO::XServer.IsRunning()) { Buffer[0] = '\0'; }
+            else { stradd(Buffer, '\n'); }
         }
         // handle characters
         else

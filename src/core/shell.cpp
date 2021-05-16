@@ -62,26 +62,27 @@ namespace System
         RegisterCommand("textview",   "Open file in Text Viewer", "",         Commands::TEXTVIEW);
         RegisterCommand("run",        "Run a windowed application", "",       Commands::RUN);
 
-        // print caret to screen
-        PrintCaret();
-
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
+
+        // print caret to screen
+        PrintCaret();
     }
 
     void ShellHost::PrintCaret()
     {
         if (fat_master_fs == nullptr) { KernelIO::Terminal.Write("shell", COL4_YELLOW);}
-        else { 
+        else {
+
             System::Environment::Hostname env_host;
             System::Security::Sudo sudo;
             char temp[32] {'\0'};
             strcat(temp,sudo.user);
-            strcat(temp,"@");
-            strcat(temp,env_host.GetHostName());
-            strcat(temp,": ");
-            KernelIO::Terminal.Write(temp,COL4_GREEN);
-            KernelIO::Terminal.Write(CurrentPath, COL4_YELLOW); }
+            KernelIO::Terminal.Write(temp, COL4_CYAN);
+            KernelIO::Terminal.WriteChar('@', COL4_WHITE);
+            KernelIO::Terminal.Write(CurrentPath, COL4_YELLOW); 
+        }
+
         KernelIO::Terminal.Write(":- ");
     }
 
@@ -373,9 +374,9 @@ namespace System
                     }
                     else
                     {
-                        KernelIO::Terminal.Write("File: ", COL4_RED);
+                        KernelIO::Terminal.Write("'", COL4_RED);
                         KernelIO::Terminal.Write(input, COL4_RED);
-                        KernelIO::Terminal.WriteLine(" is not a text file, TextViewer cannot display it!", COL4_RED); return;
+                        KernelIO::Terminal.WriteLine("' is not a text file, TextViewer cannot display it!", COL4_RED); return;
                     }
                 }
                 else
@@ -386,7 +387,7 @@ namespace System
             }
             else
             {
-                KernelIO::Terminal.WriteLine("Cannot open Application in Text Mode!", COL4_RED); return;
+                KernelIO::Terminal.WriteLine("Cannot open application in text mode!", COL4_RED); return;
             }
         }
 
@@ -442,15 +443,15 @@ namespace System
             debug_writeln_ext(new_dir,COL4_CYAN);
             strcat(temp_path,new_dir);
             
-            KernelIO::Shell.GetCurrentPath()[0] = '\0';
-            strcat(KernelIO::Shell.GetCurrentPath(),temp_path);
+                KernelIO::Shell.GetCurrentPath()[0] = '\0';
+                strcat(KernelIO::Shell.GetCurrentPath(),temp_path);
             }
             else if(StringContains(path,"/etc") && !sudo.CheckSudo(sudo.user))
             {
-                System::KernelIO::Terminal.WriteLine("Only an Administrator can display the path you are requesting!",COL4_RED);
+                System::KernelIO::Terminal.WriteLine("Access is denied.", COL4_RED);
                 return;
             }
-            else if(StringContains(path,"/etc") && sudo.CheckSudo(sudo.user))
+            else if (StringContains(path,"/etc") && sudo.CheckSudo(sudo.user))
             {
             if (strlen(path) <= 0) { return; }
             if (streql(fat_change_dir(path), "/") && !streql(path, "/")) { return; }

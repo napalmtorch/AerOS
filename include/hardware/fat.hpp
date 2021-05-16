@@ -108,21 +108,21 @@ extern "C"
     void fat_populate_dir(f32 *fs, struct directory *dir, uint32_t cluster);
     void fat_free_dir(f32 *fs, struct directory *dir);
 
-    uint8_t *fat_read_file(f32 *fs, struct dir_entry_t *dirent);
-    void fat_write_file(f32 *fs, struct directory *dir, uint8_t *file, char *fname, uint32_t flen);
-    void fat_create_dir(f32 *fs, struct directory *dir, char *dirname);
-    void fat_delete_file(f32 *fs, struct directory *dir, char *filename);
-    void fat_dir_by_name(f32 *fs,struct directory *dir,char* name);
-    uint32_t fat_get_file_size(char* name);
-    void fat_cat_file(f32 *fs,struct directory *dir,char* name);
-    void fat_print_directory(f32 *fs, struct directory *dir);
-    uint32_t fat_count_free_clusters(f32 *fs);
-    bool fat_file_exists(char* name);
-    char* fat_change_dir(char* dir);
-    char* fat_change_dir_absolute(char* dir);
-    char* fat_change_in_current_folder(char* str);
-    char* fat_get_sub_folder(char* str);
-    void populate_dir_by_name(f32 *fs,struct directory *dir,char* name);
-    extern f32 *fat_master_fs;
+    uint8_t*    fat_read_file(f32 *fs, struct dir_entry_t *dirent);
+    void        fat_write_file(f32 *fs, struct directory *dir, uint8_t *file, char *fname, uint32_t flen);
+    void        fat_create_dir(f32 *fs, struct directory *dir, char *dirname);
+    void        fat_delete_file(f32 *fs, struct directory *dir, char *filename);
+    void        fat_dir_by_name(f32 *fs,struct directory *dir,char* name);
+    uint32_t    fat_get_file_size(char* name);
+    void        fat_cat_file(f32 *fs,struct directory *dir,char* name);
+    void        fat_print_directory(f32 *fs, struct directory *dir);
+    uint32_t    fat_count_free_clusters(f32 *fs);
+    bool        fat_file_exists(char* name);
+    char*       fat_change_dir(char* dir);
+    char*       fat_change_dir_absolute(char* dir);
+    char*       fat_change_in_current_folder(char* str);
+    char*       fat_get_sub_folder(char* str);
+    void        fat_populate_dir_by_name(f32 *fs,struct directory *dir,char* name);
+    extern f32* fat_master_fs;
 
 }
