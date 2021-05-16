@@ -124,6 +124,7 @@ namespace HAL
         public:
             // keyboard buffer
             bool BufferEnabled;
+            bool TerminalBuffer;
             char* Buffer;
             void (*Event_OnEnterPressed)(char*);
 

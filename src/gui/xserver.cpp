@@ -153,25 +153,30 @@ namespace System
             Graphics::Canvas::DrawRectangle3D(spx, spy, 200, 64, ButtonStyle.Colors[2], ButtonStyle.Colors[3], ButtonStyle.Colors[4]);
 
             // status panel - fps
-            Graphics::Canvas::DrawString(spx + 5, spy + 5, "FPS: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 5, spy + 5, "FPS ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             Graphics::Canvas::DrawString(spx + 93, spy + 5, fpsString, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
 
             // status panel - used mem
             strdec(mem_get_used() / 1024, str);
-            Graphics::Canvas::DrawString(spx + 5, spy + 16, "RAM USED: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 5, spy + 16, "RAM USED ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             Graphics::Canvas::DrawString(spx + 93, spy + 16, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             uint32_t sw = strlen(str) * 8;
             Graphics::Canvas::DrawString(spx + 93 + sw, spy + 16, " KB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             strdec(mem_get_total_usable() / 1024 / 1024, str);
-            Graphics::Canvas::DrawString(spx + 5, spy + 27, "RAM TOTAL: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 5, spy + 27, "RAM TOTAL ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             Graphics::Canvas::DrawString(spx + 93, spy + 27, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             sw = strlen(str) * 8;
             Graphics::Canvas::DrawString(spx + 93 + sw, spy + 27, " MB", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
 
             // status panel - active window
             strdec((uint32_t)WindowMgr.ActiveWindow, str);
-            Graphics::Canvas::DrawString(spx + 5, spy + 38, "ACTIVE WIN: ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 5, spy + 38, "ACTIVE WIN ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             Graphics::Canvas::DrawString(spx + 93, spy + 38, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+
+            // current keyboard buffer
+            strdec((uint32_t)KernelIO::Keyboard.Buffer, str);
+            Graphics::Canvas::DrawString(spx + 5, spy + 49, "KB BUFFER ", ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
+            Graphics::Canvas::DrawString(spx + 93, spy + 49, str, ButtonStyle.Colors[1], Graphics::FONT_8x8_SERIF);
             
             WindowMgr.Draw();
             

@@ -8,9 +8,11 @@ namespace HAL
     {
         public:
             KeyboardStream();
+            KeyboardStream(void* window);
             void Update();
 
         public:
+            void* Window;
             char* Text;
             bool Enabled;
             bool ShiftDown;
