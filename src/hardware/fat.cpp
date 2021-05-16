@@ -889,11 +889,16 @@ extern "C"
 
     char* fat_get_sub_folder(char* str) //char* str contains the full path
     {
+
             uint32_t arraylen = 0;
             char** split = strsplit(str, '/', &arraylen);
             int size = 0; 
             char* path;
-            debug_writeln(str);
+            debug_writeln_ext(str,COL4_CYAN);
+            if(str[0] == '/' && str[1] == '/')
+            {
+                str = str+2;
+            }
             //prepare array
             for(int i = 0; i < 256; i++) ///sizeof cant handle many nested folders, lets hope this gets never reached....
             {
@@ -906,7 +911,7 @@ extern "C"
             //check if we hit root
             if(size-1 == 0 || size-1 < 0)
                 {
-                    path = "/";
+                    path = "";
                     return path;
                 }
                 else
@@ -915,7 +920,10 @@ extern "C"
                 }
             //lets build our new path
             char dirpath[256]{'\0'};
+            if(!streql(str,"/"))
+            {
             stradd(dirpath,'/');
+            }
             for(int a=0; a<size; a++)
             {
                 if(split[a] == nullptr) { continue; }

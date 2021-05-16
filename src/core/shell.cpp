@@ -420,49 +420,52 @@ namespace System
                 KernelIO::Shell.GetCurrentPath()[0] = '\0';
                 strcat(KernelIO::Shell.GetCurrentPath(),homefolder);
 
+            
             }
-            else if (streql(path, "..")) 
-            { 
-                char temp_path[128]{'\0'};
-                char* old_dir = KernelIO::Shell.GetCurrentPath();
-                char* new_dir = fat_get_sub_folder(old_dir);
-                debug_writeln_ext(new_dir,COL4_CYAN);
-                if (strlen(path) <= 0) { return; }
-                strcat(temp_path,new_dir);
+            else if(streql(path,".")) {
+                return;
+            }
+            else if(streql(path,"/")) {
+                KernelIO::Shell.GetCurrentPath()[0] = '\0';
+                
+                if(IsEmpty(KernelIO::Shell.GetCurrentPath()))
+                {
+                strcat(KernelIO::Shell.GetCurrentPath(),"/");
+                }
+                return;
+            }
+            else if(streql(path,"..")) { 
+            char temp_path[128]{'\0'};
+            if (strlen(path) <= 0) { return; }
+            if (streql(fat_change_dir(path), "/") && !streql(path, "/")) { return; }
+            char* old_dir = KernelIO::Shell.GetCurrentPath();
+            char* new_dir = fat_get_sub_folder(old_dir);
+            debug_writeln_ext(new_dir,COL4_CYAN);
+            strcat(temp_path,new_dir);
             
                 KernelIO::Shell.GetCurrentPath()[0] = '\0';
                 strcat(KernelIO::Shell.GetCurrentPath(),temp_path);
             }
-            else if (!streql(path, "/") && path != "..") 
-            {
-                char* old_path = KernelIO::Shell.GetCurrentPath();
-                char test[64]{'\0'};
-                strcat(test,old_path);
-                strcat(test,"/");
-                strcat(test,path);
-                KernelIO::Shell.GetCurrentPath()[0] = '\0';
-                strcat(KernelIO::Shell.GetCurrentPath(),fat_change_in_current_folder(test));
-                debug_writeln(test);
-            
-            }
-            else if (StringContains(path,"/etc") && !sudo.CheckSudo(sudo.user))
+            else if(StringContains(path,"/etc") && !sudo.CheckSudo(sudo.user))
             {
                 System::KernelIO::Terminal.WriteLine("Access is denied.", COL4_RED);
                 return;
             }
             else if (StringContains(path,"/etc") && sudo.CheckSudo(sudo.user))
             {
-                if (strlen(path) <= 0) { return; }
-                KernelIO::Shell.GetCurrentPath()[0] = '\0';
-                if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
-                strcat(KernelIO::Shell.GetCurrentPath(), path); 
+            if (strlen(path) <= 0) { return; }
+            if (streql(fat_change_dir(path), "/") && !streql(path, "/")) { return; }
+            KernelIO::Shell.GetCurrentPath()[0] = '\0';
+            if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
+            strcat(KernelIO::Shell.GetCurrentPath(), path); 
             }
             else
             {
-                if (strlen(path) <= 0) { return; }
-                KernelIO::Shell.GetCurrentPath()[0] = '\0';
-                if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
-                strcat(KernelIO::Shell.GetCurrentPath(), path);  
+            if (strlen(path) <= 0) { return; }
+            if (streql(fat_change_dir(path), "/") && !streql(path, "/")) { return; }
+            KernelIO::Shell.GetCurrentPath()[0] = '\0';
+            if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
+            strcat(KernelIO::Shell.GetCurrentPath(), path);  
             }
         }
 
