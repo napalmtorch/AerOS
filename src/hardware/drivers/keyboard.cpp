@@ -1,8 +1,6 @@
 #include "hardware/drivers/keyboard.hpp"
 #include "core/kernel.hpp"
 
-
-
 // ---------------------------------------- UPPER CASE ---------------------------------------- //
 
 // upper case scancode indexed ascii values 
@@ -200,12 +198,19 @@ namespace HAL
     }
 
     // check if any key is down
-    bool PS2Keyboard::IsAnyKeyDown() { return ScanCode > 0; }
+    bool PS2Keyboard::IsAnyKeyDown()
+    {
+        for (size_t i = 0; i < 88; i++)
+        {
+            if (PressedKeys[i] == true) { return true; }
+        }
+        return false;
+    }
 
     // check if all keys are up
     bool PS2Keyboard::IsAllKeysUp()
     {
-        for (int i = 0; i < KB_SCANCODE_MAX; i++)
+        for (size_t i = 0; i < 88; i++)
         {
             if (PressedKeys[i] == true) { return false; }
         }

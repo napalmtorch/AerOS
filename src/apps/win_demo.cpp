@@ -6,6 +6,7 @@ namespace System
     {
         GUI::Button* DemoBtn;
         GUI::CheckBox* DemoChk;
+        GUI::TextBox * DemoText;
         char checked_str[] = "Checked";
         char unchecked_str[] = "Unchecked";
 
@@ -18,6 +19,7 @@ namespace System
         {
             DemoBtn = new GUI::Button(ClientBounds->X + 4, ClientBounds->Y + 4, "Click me");
             DemoChk = new GUI::CheckBox(ClientBounds->X + 4, ClientBounds->Y + 30, "Unchecked");
+            DemoText = new GUI::TextBox(ClientBounds->X + 4, ClientBounds->Y + 56);
         }
 
         void WinGUIDemo::Update()
@@ -34,6 +36,10 @@ namespace System
                 DemoChk->SetPosition(ClientBounds->X + 4, ClientBounds->Y + 30);
                 DemoChk->Update();
                 if (DemoChk->Flags->Toggled) { DemoChk->Text = checked_str; } else { DemoChk->Text = unchecked_str; }
+
+                // update textbox
+                DemoText->SetPosition(ClientBounds->X + 4, ClientBounds->Y + 56);
+                DemoText->Update();
             }
         }
 
@@ -46,6 +52,7 @@ namespace System
                 // draw widgets
                 DemoBtn->Draw();
                 DemoChk->Draw();
+                DemoText->Draw();
             }
         }
     }

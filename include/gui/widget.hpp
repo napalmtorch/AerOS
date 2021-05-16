@@ -4,6 +4,7 @@
 #include <graphics/canvas.hpp>
 #include <graphics/colors.hpp>
 #include <graphics/font.hpp>
+#include <hardware/kbstream.hpp>
 
 typedef enum
 {
@@ -117,7 +118,7 @@ namespace System
                 void SetBounds(int32_t x, int32_t y, int32_t w, int32_t h);
                 void SetBounds(point_t* pos, point_t* size);
                 void SetBounds(bounds_t* bounds);
-                void SetText(char* text);
+                virtual void SetText(char* text);
 
             // events
             public:
@@ -155,6 +156,24 @@ namespace System
                 bounds_t* CheckBounds;
             private:
                 bool m_down;
+        };
+        
+        // text box - derived from widget class
+        class TextBox : public Widget
+        {
+            public:
+                TextBox();
+                TextBox(int32_t x, int32_t y);
+                TextBox(int32_t x, int32_t y, char* text);
+                void Update() override;
+                void Draw() override;
+                void SetText(char* text) override;
+                HAL::KeyboardStream KBStream;
+                uint32_t MaxLength;
+            private:
+                uint32_t OldMaxLength;
+                bool CursorFlash;
+                uint32_t time, last_time;
         };
 
         // window - forward declaration

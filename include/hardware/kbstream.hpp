@@ -15,5 +15,6 @@ namespace HAL
             bool Enabled;
             bool ShiftDown;
             bool CapsLockDown;
+            bool KeyDown;
     };
 }

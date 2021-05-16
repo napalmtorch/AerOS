@@ -152,6 +152,7 @@ namespace System
                 if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
                 {
                     widget->MouseFlags->Down = true;
+                    widget->Flags->Active = true;
                     widget->MouseFlags->Up = false;
                     if (!m_down) { m_down = true; }
                 }
@@ -169,6 +170,11 @@ namespace System
                 widget->MouseFlags->Down = false;
                 widget->MouseFlags->Clicked = false;
                 m_down = false;
+
+                if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
+                {
+                    widget->Flags->Active = false;
+                }
             }
         }
 
@@ -402,6 +408,87 @@ namespace System
                 Graphics::Canvas::DrawString(CheckBounds->X + CheckBounds->Width + 4, Bounds->Y + (Bounds->Height / 2) - (sh / 2), Text, Style->Colors[1], (*Style->Font));
             }
         }
+
+        // -------------------------------------------------- TEXT BOX ----------------------------------------------------- //
+
+        TextBox::TextBox() : Widget() { }
+
+        TextBox::TextBox(int32_t x, int32_t y) : Widget(x, y, 128, 22, WIDGET_TYPE_TEXTBOX)
+        {
+            // set style
+            Style = &CheckBoxStyle;
+
+            MaxLength = 256;
+            Text = new char[MaxLength] { '\0' };
+            KBStream.Text = Text;
+        }
+
+        TextBox::TextBox(int32_t x, int32_t y, char* text) : Widget(x, y, 128, 22, WIDGET_TYPE_TEXTBOX)
+        {
+            // set style
+            Style = &CheckBoxStyle;
+
+            // set text
+            MaxLength = 256;
+            Text = new char[MaxLength] { '\0' };
+            KBStream.Text = Text;
+        }
+
+        void TextBox::Update()
+        {
+            // update base
+            Widget::Update();
+            CheckWidgetEvents(this);
+
+            if (this->Flags->Active)
+            {
+                // get input
+                KBStream.Update();
+
+                // flash cursor
+                time = KernelIO::RTC.GetSecond();
+                if (time != last_time)
+                {
+                    CursorFlash = !CursorFlash;
+                    last_time = time;
+                }
+            }
+            else { CursorFlash = false; }
+        }
+
+        void TextBox::Draw()
+        {
+            // draw base
+            Widget::Draw();
+
+            // draw background
+            Graphics::Canvas::DrawFilledRectangle((*Bounds), Graphics::Colors::White);
+
+            // draw border
+            if (Style->BorderStyle == BORDER_STYLE_3D) { Graphics::Canvas::DrawRectangle3D(Bounds->X, Bounds->Y, Bounds->Width, Bounds->Height, Style->Colors[2], Style->Colors[3], Style->Colors[4]); }
+            else { Graphics::Canvas::DrawRectangle((*Bounds), 1, Style->Colors[2]); } 
+
+            uint32_t sw = strlen(Text) * (Style->Font->GetWidth() + Style->Font->GetHorizontalSpacing());
+            uint32_t sh = Style->Font->GetHeight() + Style->Font->GetVerticalSpacing();
+
+            // draw text
+            if (Text != nullptr && strlen(Text) > 0 && !streql(Text, "\0"))
+            {
+                Graphics::Canvas::DrawString(Bounds->X + 4, Bounds->Y + (Bounds->Height / 2) - (sh / 2), Text, Style->Colors[1], (*Style->Font));
+            }
+
+            // draw cursor
+            if (CursorFlash)
+            {
+                Graphics::Canvas::DrawFilledRectangle(Bounds->X + sw + 6, Bounds->Y + (Bounds->Height / 2) - (sh / 2), 1, Style->Font->GetHeight(), Style->Colors[1]);
+            }
+        }
+
+        void TextBox::SetText(char* text)
+        {
+            strcpy(text, Text);
+        }
+
 
         // -------------------------------------------------- TITLE BAR ---------------------------------------------------- //
 
