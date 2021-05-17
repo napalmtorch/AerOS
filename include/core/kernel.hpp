@@ -100,6 +100,9 @@ void enter_pressed(char* input);
             // pci controller driver
             extern HAL::PCIBusController PCIBus;
 
+            //SMBIOS
+            extern BIOS::SMBIOS smbios;
+
             // memory manager
             extern HAL::MemoryManager MemoryManager;
 
