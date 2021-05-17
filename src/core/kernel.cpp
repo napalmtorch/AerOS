@@ -39,6 +39,8 @@ namespace System
         // pci controller driver
         HAL::PCIBusController PCIBus;
 
+        //SMBIOS
+        BIOS::SMBIOS smbios;
         // memory manager
         HAL::MemoryManager MemoryManager;
 
@@ -163,11 +165,40 @@ namespace System
             // initialize pci bus
             PCIBus.Initialize();
 
+            // initialize SMBIOS
+            smbios.Initialize();
+            smbios.DetectMachine();
+
             // initialize real time clock
             RTC.Initialize();
             ThrowOK("Initialized real time clock");
-
-            if (!Parameters.DisableFS)
+            char test[32];
+            strdec((uint32_t)smbios.CheckMachine(),test);
+            Terminal.Write("Detected Machine: ");
+            Terminal.WriteLine(test);
+            bool FS_Disable=false;
+            if(smbios.CheckMachine() == smbios.Bochs)
+            {
+                Terminal.WriteLine("Welcome Bochs!");
+                FS_Disable = true;
+            }
+            else if(smbios.CheckMachine() == smbios.Qemu)
+            {
+                Terminal.WriteLine("Welcome QEMU!");
+                FS_Disable = false;
+            }
+            else if(smbios.CheckMachine() == smbios.VMWare)
+            {
+                Terminal.WriteLine("Welcome VMWare!");
+                FS_Disable = true;
+            }
+            else if(smbios.CheckMachine() == smbios.Unknown)
+            {
+                Terminal.WriteLine("Welcome Unknown Machine!");
+                FS_Disable = false;
+            }
+            else if(!Parameters.DisableFS) { FS_Disable = false; }
+            if (!FS_Disable)
             {
                 // initialize ata controller driver
                 ATA.Initialize();
