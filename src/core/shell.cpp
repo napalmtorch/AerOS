@@ -10,6 +10,7 @@
 #include <hardware/sudoers.hpp>
 #include <hardware/fat.hpp>
 #include <hardware/hostname.hpp>
+#include <hardware/drivers/rtc.hpp>
 #include <lib/string.hpp>
 
 namespace System
@@ -61,6 +62,7 @@ namespace System
         RegisterCommand("mkdir",      "Create a new directory", "",           Commands::MKDIR);
         RegisterCommand("textview",   "Open file in Text Viewer", "",         Commands::TEXTVIEW);
         RegisterCommand("run",        "Run a windowed application", "",       Commands::RUN);
+        RegisterCommand("time",        "Display time", "",                    Commands::TIME);
 
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
@@ -282,7 +284,13 @@ namespace System
             if(dirname == nullptr) { System::KernelIO::Terminal.WriteLine("No filename specified"); }
             else { fat_create_dir(fat_master_fs,&dir,dirname); } 
         }
-
+        void TIME(char* input)
+        {
+            HAL::RTCManager rtc;
+            rtc.Initialize();
+            rtc.Read();
+            KernelIO::Terminal.WriteLine(rtc.GetTimeString(true,true));
+        }
         void LS(char* input)
         {
             struct directory dir;
