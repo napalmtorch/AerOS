@@ -29,6 +29,10 @@ iso:
 	mkdir -p bin/isodir/boot
 	cp bin/kernel.bin bin/isodir/boot/
 	grub-mkrescue -d /usr/lib/grub/i386-pc --compress=xz -o AerOS.iso cdrom 'bin/isodir/boot/kernel.bin' -V 'AerOS'
+
+vmware-disk:
+	scripts/create_vmware_disk.sh
+
 fs:
 	sudo scripts/mkfs.sh	
 qemu:
