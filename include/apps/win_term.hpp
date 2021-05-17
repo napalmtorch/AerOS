@@ -6,6 +6,8 @@
 
 namespace System
 {
+    extern char vterm_kb_buffer[];
+
     namespace Applications
     {
         class WinTerminal : public GUI::Window

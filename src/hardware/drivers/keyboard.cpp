@@ -1,4 +1,5 @@
 #include "hardware/drivers/keyboard.hpp"
+#include <apps/win_term.hpp>
 #include "core/kernel.hpp"
 
 // ---------------------------------------- UPPER CASE ---------------------------------------- //
@@ -83,6 +84,7 @@ namespace HAL
         KeyboardLayoutDE = { KB_LAYOUT_DE, "German",        "??!\"§$%&/()=?`??QWERTZUIOP?*??ASDFGHJKL??'?>YXCVBNM;:???? ", "" }; 
 
         Buffer = new char[256];
+        TerminalBuffer = true;
     }
 
     // handle keyboard string input
@@ -94,7 +96,7 @@ namespace HAL
             if (strlen(Buffer) > 0)
             {
                 strdel(Buffer);
-                System::KernelIO::Terminal.Delete();
+                if (TerminalBuffer) { System::KernelIO::Terminal.Delete(); }
             }
         }
         // handle shift
@@ -105,10 +107,9 @@ namespace HAL
         // handle enter
         else if (ScanCode == (uint8_t)HAL::Keys::ENTER)
         {
-            System::KernelIO::Terminal.WriteChar('\n');
+            if (TerminalBuffer) { System::KernelIO::Terminal.WriteChar('\n'); }
             if (Event_OnEnterPressed != 0) { Event_OnEnterPressed(Buffer); }
-            if (!System::KernelIO::XServer.IsRunning()) { Buffer[0] = '\0'; }
-            else { stradd(Buffer, '\n'); }
+            Buffer[0] = '\0';
         }
         // handle characters
         else
@@ -174,7 +175,7 @@ namespace HAL
             if (letter > 0)
             {
                 stradd(Buffer, letter);
-                System::KernelIO::Terminal.WriteChar(letter);
+                if (TerminalBuffer) { System::KernelIO::Terminal.WriteChar(letter); }
             }
         }
     }

@@ -453,7 +453,11 @@ namespace System
                     last_time = time;
                 }
             }
-            else { CursorFlash = false; }
+            else 
+            { 
+                CursorFlash = false; 
+                if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed && KernelIO::Keyboard.Buffer == KBStream.Text) { KernelIO::Keyboard.Buffer = nullptr; }    
+            }
         }
 
         void TextBox::Draw()
@@ -470,17 +474,34 @@ namespace System
 
             uint32_t sw = strlen(Text) * (Style->Font->GetWidth() + Style->Font->GetHorizontalSpacing());
             uint32_t sh = Style->Font->GetHeight() + Style->Font->GetVerticalSpacing();
+            VisibleLength = (Bounds->Width - 6) / (Style->Font->GetHeight() + Style->Font->GetVerticalSpacing());
+            if (strlen(Text) > VisibleLength)
+            { VisiblePos = strlen(Text) - VisibleLength; }
 
             // draw text
+            if (Flags->Active)
+            {
+                DrawText[0] = '\0';
+                for (size_t i = 0; i < VisibleLength; i++) { stradd(DrawText, Text[VisiblePos + i]); }
+            }
+            else
+            {
+                DrawText[0] = '\0';
+                for (size_t i = 0; i < VisibleLength; i++) { stradd(DrawText, Text[i]); }
+            }
+
             if (Text != nullptr && strlen(Text) > 0 && !streql(Text, "\0"))
             {
-                Graphics::Canvas::DrawString(Bounds->X + 4, Bounds->Y + (Bounds->Height / 2) - (sh / 2), Text, Style->Colors[1], (*Style->Font));
+                if (strlen(Text) > VisibleLength) { Graphics::Canvas::DrawString(Bounds->X + 4, Bounds->Y + (Bounds->Height / 2) - (sh / 2), DrawText, Style->Colors[1], (*Style->Font)); }
+                else { Graphics::Canvas::DrawString(Bounds->X + 4, Bounds->Y + (Bounds->Height / 2) - (sh / 2), Text, Style->Colors[1], (*Style->Font)); }
             }
 
             // draw cursor
             if (CursorFlash)
             {
-                Graphics::Canvas::DrawFilledRectangle(Bounds->X + sw + 6, Bounds->Y + (Bounds->Height / 2) - (sh / 2), 1, Style->Font->GetHeight(), Style->Colors[1]);
+                if (strlen(Text) > VisibleLength) 
+                { Graphics::Canvas::DrawFilledRectangle(Bounds->X + Bounds->Width - 12, Bounds->Y + (Bounds->Height / 2) - (sh / 2), 1, Style->Font->GetHeight() + Style->Font->GetVerticalSpacing(), Style->Colors[1]); }
+                else { Graphics::Canvas::DrawFilledRectangle(Bounds->X + sw + 6, Bounds->Y + (Bounds->Height / 2) - (sh / 2), 1, Style->Font->GetHeight() + Style->Font->GetVerticalSpacing(), Style->Colors[1]); }
             }
         }
 
@@ -596,6 +617,7 @@ namespace System
             // create title bar
             TBar = new TitleBar(this);
             TBar->Parent = this;
+
         }
 
         bool move_click = false;
@@ -661,7 +683,7 @@ namespace System
             {
                 Flags->Active = true;
 
-                if (bounds_contains(TBar->Bounds, mx, my) && !TBar->BtnClose->MouseFlags->Down && !TBar->BtnMax->MouseFlags->Down && !TBar->BtnMin->MouseFlags->Down)
+                if (bounds_contains(TBar->Bounds, mx, my) && !TBar->BtnClose->MouseFlags->Hover && !TBar->BtnMax->MouseFlags->Hover && !TBar->BtnMin->MouseFlags->Hover)
                 {
                     if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
                     {
@@ -693,6 +715,12 @@ namespace System
                     move_click = false;
                 }
             } else { Flags->Active = false; }
+
+            if (!bounds_contains(Bounds, mx, my) && KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed) 
+            { 
+                this->Flags->Active = false;
+                if (KernelIO::XServer.WindowMgr.ActiveWindow == this) { KernelIO::XServer.WindowMgr.ActiveWindow = nullptr; }
+            }
 
             // check if able to draw
             if (Flags->Moving || Flags->Resizing || Flags->Minimized) { Flags->CanDraw = false; } else { Flags->CanDraw = true; }

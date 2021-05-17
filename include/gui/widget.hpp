@@ -171,8 +171,10 @@ namespace System
                 HAL::KeyboardStream KBStream;
                 uint32_t MaxLength;
             private:
+                char DrawText[512];
                 uint32_t OldMaxLength;
                 bool CursorFlash;
+                uint32_t VisiblePos, VisibleLength;
                 uint32_t time, last_time;
         };
 

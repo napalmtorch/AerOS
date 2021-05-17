@@ -3,6 +3,8 @@
 
 namespace System
 {
+    char vterm_kb_buffer[256];
+
     namespace Applications
     {
         bool cursor_flash;
@@ -66,8 +68,15 @@ namespace System
                 if (KernelIO::Terminal.Window != this) { KernelIO::Terminal.RegisterWindow(this); KernelIO::Shell.PrintCaret(); }
                 cursor_x = CursorX;
                 cursor_y = CursorY;
+                KernelIO::Keyboard.Buffer = vterm_kb_buffer;
                 KernelIO::Keyboard.BufferEnabled = true;
                 KernelIO::Keyboard.Event_OnEnterPressed = enter_pressed;
+                if (!KernelIO::Keyboard.TerminalBuffer) { KernelIO::Keyboard.TerminalBuffer = true; }
+            }
+            else
+            {
+                if (KernelIO::Keyboard.Buffer == vterm_kb_buffer) { KernelIO::Keyboard.Buffer = nullptr; }
+                 KernelIO::Keyboard.TerminalBuffer = false;
             }
 
             time = KernelIO::RTC.GetSecond();

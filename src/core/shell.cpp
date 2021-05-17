@@ -100,12 +100,15 @@ namespace System
 
     void ShellHost::HandleInput(char* input)
     {
-        ParseCommand(input);
-        
-        char* cmd = strsplit_index(input, 0, ' ');
-        strlower(cmd);
-        if (!streql(cmd, "GFX")) { PrintCaret(); }
-        delete cmd;
+        if (KernelIO::Keyboard.TerminalBuffer)
+        {
+            ParseCommand(input);
+            
+            char* cmd = strsplit_index(input, 0, ' ');
+            strlower(cmd);
+            if (!streql(cmd, "GFX")) { PrintCaret(); }
+            delete cmd;
+        }
     }
 
     void ShellHost::ParseCommand(char* input)

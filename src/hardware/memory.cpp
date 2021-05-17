@@ -87,9 +87,9 @@ extern "C"
             mem_used += size + 1;
 
             // allocation message
-            //debug_write("ALLOCATION: ");
-            //debug_write_hex("offset = ", offset);
-            //debug_writeln_dec("      size = ", size + 1);
+            debug_write("ALLOCATION: ");
+            debug_write_hex("offset = ", offset);
+            debug_writeln_dec("      size = ", size + 1);
 
             // return offset
             return (void*)offset;
