@@ -50,7 +50,8 @@ void enter_pressed(char* input);
             bool Serial;
             bool DisableFS;
             bool VGA;
-            bool VESA; 
+            bool VESA;
+            bool SMBIOS; 
         };
 
         namespace KernelIO

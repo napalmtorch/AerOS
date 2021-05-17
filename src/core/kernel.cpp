@@ -167,16 +167,18 @@ namespace System
 
             // initialize SMBIOS
             smbios.Initialize();
-            smbios.DetectMachine();
 
             // initialize real time clock
             RTC.Initialize();
             ThrowOK("Initialized real time clock");
             char test[32];
             strdec((uint32_t)smbios.CheckMachine(),test);
+            bool FS_Disable=false;
+            if(!Parameters.SMBIOS)
+            {
             Terminal.Write("Detected Machine: ");
             Terminal.WriteLine(test);
-            bool FS_Disable=false;
+            smbios.DetectMachine();
             if(smbios.CheckMachine() == smbios.Bochs)
             {
                 Terminal.WriteLine("Welcome Bochs!");
@@ -197,7 +199,8 @@ namespace System
                 Terminal.WriteLine("Welcome Unknown Machine!");
                 FS_Disable = false;
             }
-            else if(!Parameters.DisableFS) { FS_Disable = false; }
+            }
+            else if(!Parameters.DisableFS) { FS_Disable = false; } else { FS_Disable=true; }
             if (!FS_Disable)
             {
                 // initialize ata controller driver
@@ -271,6 +274,7 @@ namespace System
             Parameters.DisableFS = false;
             Parameters.VGA = false;
             Parameters.VESA = false;
+            Parameters.SMBIOS = false;
 
             // count delmiters
             for (i = 0; i < strlen(input); i++)
@@ -292,6 +296,8 @@ namespace System
                 if (streql(val, "--vesa")) { Parameters.VESA = true; }
                 // disable filesystem flag
                 if (streql(val, "--no_fs")) { Parameters.DisableFS = true; }
+                // disable SMBIOS flag
+                if (streql(val, "--no_smbios")) { Parameters.SMBIOS = true; }
             }
         }
 
