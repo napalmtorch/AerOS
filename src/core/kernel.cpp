@@ -163,6 +163,7 @@ namespace System
             VMM.Initialize();
 
             // initialize pci bus
+            PciInit();
             PCIBus.Initialize();
 
             // initialize SMBIOS
@@ -222,7 +223,7 @@ namespace System
                     ThrowError("Error initializing Filesystem. Disk not FAT32?");
                 }
             }
-
+           // init_ps2();
             // initialize keyboard
             Keyboard.Initialize();
             Keyboard.BufferEnabled = true;

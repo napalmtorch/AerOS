@@ -59,6 +59,22 @@ outfile="$(echo $infile | sed 's/cpp/o/g')"
 i686-elf-g++ -w -Iinclude -c src/hardware/drivers/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
 done
 
+# PCI
+for file in src/hardware/drivers/PCI/*.cpp 
+do
+infile=$(basename $file)
+outfile="$(echo $infile | sed 's/cpp/o/g')"
+i686-elf-g++ -w -Iinclude -c src/hardware/drivers/PCI/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+done
+
+# peripherals
+for file in src/hardware/drivers/peripherals/*.cpp 
+do
+infile=$(basename $file)
+outfile="$(echo $infile | sed 's/cpp/o/g')"
+i686-elf-g++ -w -Iinclude -c src/hardware/drivers/peripherals/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+done
+
 # interrupt
 for file in src/hardware/interrupt/*.cpp 
 do
