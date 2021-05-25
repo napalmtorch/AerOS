@@ -232,15 +232,7 @@ namespace System
             Terminal.WriteLine("The value is %s",12);
             Terminal.WriteLine("The hex value is 0x%x",12);
             Terminal.WriteLine("The value is %s",12,COL4_CYAN);
-            Terminal.WriteLine("The value is %s",12,COL4_CYAN,COL4_DARK_GRAY);
-            /*BitMap *bitmap;
-            bitmap = read_bmp("/test/test2.bmp");
-            debug_writeln_dec("Bitmap Height:",bitmap->height);
-            debug_writeln_dec("Bitmap Width:",bitmap->width);
-            debug_writeln_dec("Bitmap R:",(*bitmap->bitmap)->r);
-            debug_writeln_dec("Bitmap G:",(*bitmap->bitmap)->g);
-            debug_writeln_dec("Bitmap B:",(*bitmap->bitmap)->b);
-            */
+            Terminal.WriteLine("The hex value is 0x%x",12,COL4_BLACK,COL4_DARK_GREEN);
             Mouse.Initialize();
             ThrowOK("Initialized PS/2 mouse driver");
 
