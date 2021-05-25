@@ -47,6 +47,7 @@
         char** strsplit(char text[], char separator, uint32_t *len);
         bool IsEmpty(char* text);
         int strindexof(char text[], char character);
+        char * stringReplace(char *search, char *replace, char *string);
     }
 
 namespace System

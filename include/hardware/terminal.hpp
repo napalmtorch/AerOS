@@ -145,6 +145,9 @@ namespace HAL
 
             // write line to next position
             void WriteLine(char* text);
+            void WriteLine(char* text,int num);
+            void WriteLine(char* text,int num,COL4 fg);
+            void WriteLine(char* text,int num,COL4 fg,COL4 bg);
             void WriteLine(char* text, COL4 fg);
             void WriteLine(char* text, COL4 fg, COL4 bg);
 

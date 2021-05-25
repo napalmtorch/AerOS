@@ -229,6 +229,10 @@ namespace System
             Keyboard.BufferEnabled = true;
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
+            Terminal.WriteLine("The value is %s",12);
+            Terminal.WriteLine("The hex value is 0x%x",12);
+            Terminal.WriteLine("The value is %s",12,COL4_CYAN);
+            Terminal.WriteLine("The value is %s",12,COL4_CYAN,COL4_DARK_GRAY);
             /*BitMap *bitmap;
             bitmap = read_bmp("/test/test2.bmp");
             debug_writeln_dec("Bitmap Height:",bitmap->height);

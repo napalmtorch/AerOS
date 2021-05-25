@@ -293,6 +293,44 @@ int32_t strcmp(char text[], char comp[])
 // check if string equal to string
 bool streql(char text[], char comp[]) { return strcmp(text, comp) == 0; }
 
+
+char * stringReplace(char *search, char *replace, char *strings) {
+	char *tempString, *searchStart;
+	int len=0;
+
+
+	// check if the search string exists
+	searchStart = strstr(strings, search);
+	if(searchStart == NULL) {
+		return strings;
+	}
+
+	// Lets reserve some memory
+	tempString = (char*) mem_alloc(strlen(strings) * sizeof(char));
+	if(tempString == NULL) {
+        debug_writeln("String is empty uh oh");
+		return NULL;
+	}
+
+	// Create temporary copy
+	strcpy(strings,tempString);
+	// set first segment in string
+	len = searchStart - strings;
+	strings[len] = '\0';
+
+	// append second segment
+	strcat(strings, replace);
+
+	// finally append third segment
+	len += strlen(search);
+	strcat(strings, (char*)tempString+len);
+
+	// release memory
+	mem_free(tempString);
+	//return the replaced string
+	return strings;
+}
+
 namespace System
 {
     // default constructor

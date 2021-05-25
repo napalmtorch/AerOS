@@ -412,6 +412,52 @@ namespace HAL
         }
     }
 
+    // Write line to next position
+    void TerminalManager::WriteLine(char* text,int num) {
+        char str_rep[1000];
+        char* end;
+        if(strstr(text,"%s")!=0)
+        {
+            strdec(num,str_rep);
+            end = stringReplace("%s",str_rep,text);
+        }
+        else if(strstr(text,"%x")!=0)
+        {
+            strhex(num,str_rep);
+            end = stringReplace("%x",str_rep,text);
+        }
+        WriteLine(end, fore_color, back_color);
+    }
+       void TerminalManager::WriteLine(char* text,int num,COL4 fg) {
+        char str_rep[1000];
+        char* end;
+        if(strstr(text,"%s")!=0)
+        {
+            strdec(num,str_rep);
+            end = stringReplace("%s",str_rep,text);
+        }
+        else if(strstr(text,"%x")!=0)
+        {
+            strhex(num,str_rep);
+            end = stringReplace("%x",str_rep,text);
+        }
+        WriteLine(end, fg, back_color);
+    }
+       void TerminalManager::WriteLine(char* text,int num,COL4 fg,COL4 bg) {
+        char str_rep[1000];
+        char* end;
+        if(strstr(text,"%s")!=0)
+        {
+            strdec(num,str_rep);
+            end = stringReplace("%s",str_rep,text);
+        }
+        else if(strstr(text,"%x")!=0)
+        {
+            strhex(num,str_rep);
+            end = stringReplace("%x",str_rep,text);
+        }
+        WriteLine(end, fg, bg);
+    }
     // write line to next position
     void TerminalManager::WriteLine(char* text) { WriteLine(text, fore_color, back_color); }
 
