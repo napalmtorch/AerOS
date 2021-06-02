@@ -64,6 +64,7 @@ namespace System
         RegisterCommand("run",        "Run a windowed application", "",       Commands::RUN);
         RegisterCommand("time",       "Display time", "",                     Commands::TIME);
         RegisterCommand("rat",        "Show ram allocation table", "",        Commands::RAT);    
+        RegisterCommand("format",      "Format a disk to the NapalmFS format","",Commands::FORMAT);
 
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
@@ -241,7 +242,10 @@ namespace System
                 }
             }
         }
-
+        void FORMAT(char* input)
+        {
+        System::KernelIO::NapalmFS.Format(true);
+        }
         void DISK_DUMP(char* input)
         {
             char* str_sector = strsplit_index(input, 1, ' ');
@@ -269,7 +273,9 @@ namespace System
 
         void REBOOT(char* input)
         {
-            System::KernelIO::ACPI.Reboot();
+            uint64_t null_idtr = 0;
+            asm("xor %%eax, %%eax; lidt %0; int3" :: "m" (null_idtr));
+           // System::KernelIO::ACPI.Reboot();
         }
         
         void TEST(char* input)

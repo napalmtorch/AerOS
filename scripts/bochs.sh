@@ -43,6 +43,6 @@ fi
 if [ "$1" == "--gnome-terminal" ]; then
 gnome-terminal -- bochs -q -f ../configs/bochsrc.txt &
 else
-xterm -e bochs -q -f ./configs/bochsrc.txt 
+xterm -e /usr/bin/bochs -q -f ./configs/bochsrc.txt 
 fi
 fi
