@@ -43,9 +43,6 @@ namespace HAL
         // create sector buffer
         sec_buff = (uint8_t*)mem_alloc(sec_size);
 
-        // format disk
-        Format(true);
-
         // read boot record from disk
         ReadBootRecord();
     }

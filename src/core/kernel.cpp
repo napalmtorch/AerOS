@@ -234,6 +234,7 @@ namespace System
 
                 NapalmFS.Initialize();  
                 ThrowOK("Initialized NAPALM file system");             
+                NapalmFS.Format(true);
             }
            // init_ps2();
             // initialize keyboard
