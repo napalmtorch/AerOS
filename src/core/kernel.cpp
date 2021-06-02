@@ -215,25 +215,41 @@ namespace System
                 ATA.Initialize();
                 ThrowOK("Initialized ATA controller driver");
                 
-                /*
-                fat_master_fs = fs_create("");
-                if(fat_master_fs != NULL) 
+                // read boot record
+                uint8_t* boot_sec = (uint8_t*)mem_alloc(512);
+                ata_pio_read48(0, 1, boot_sec);
+                
+                // check for fat signatures
+                if (boot_sec[38] == 0x28 || boot_sec[38] == 0x29 || boot_sec[66] == 0x28 || boot_sec[66] == 0x29)
                 {
-                    struct directory dir;
-                    fat_populate_root_dir(fat_master_fs, &dir);
-                    System::KernelIO::Terminal.WriteLine("Initialized FAT32 Filesystem");
-                    //term_writeln_dec("Kernel Start:", (uint32_t)&start);
-                    term_writeln_dec("Kernel End:", (uint32_t)&kernel_end);
-                    //term_writeln_dec("Kernel Size:", (&kernel_end - &start));
+                    fat_master_fs = fs_create("");
+                    if(fat_master_fs != NULL) 
+                    {
+                        struct directory dir;
+                        fat_populate_root_dir(fat_master_fs, &dir);
+                        System::KernelIO::Terminal.WriteLine("Initialized FAT32 Filesystem");
+                        //term_writeln_dec("Kernel Start:", (uint32_t)&start);
+                        term_writeln_dec("Kernel End:", (uint32_t)&kernel_end);
+                        //term_writeln_dec("Kernel Size:", (&kernel_end - &start));
+                    }
+                    else
+                    {
+                        ThrowError("Error initializing Filesystem. Disk not FAT32?");
+                    }
                 }
-                else
+                // check for nfs signature
+                else if (boot_sec[14] == 0x66 && boot_sec[15] == 0x66 && boot_sec[16]  == 0x94 && boot_sec[17] == 0x20)
                 {
-                    ThrowError("Error initializing Filesystem. Disk not FAT32?");
+                    NapalmFS.Initialize();  
+                    ThrowOK("Initialized NAPALM file system");             
                 }
+<<<<<<< HEAD
                 */
 
                 NapalmFS.Initialize();  
                 ThrowOK("Initialized NAPALM file system");             
+=======
+>>>>>>> 698231c8d3cc2abf90170107bcaf6156278cff81
             }
            // init_ps2();
             // initialize keyboard
