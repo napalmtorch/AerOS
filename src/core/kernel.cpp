@@ -80,7 +80,7 @@ namespace System
         void KernelBase::Initialize()
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
-            MemoryManager.Initialize(false);
+            MemoryManager.Initialize(true);
 
             // read multiboot
             Multiboot.Read();
@@ -92,6 +92,8 @@ namespace System
             Terminal.Clear(COL4_BLACK);
             Terminal.DisableCursor();
             Terminal.EnableCursor();
+
+            mem_print_rat();
 
             // initialize fonts
             Graphics::InitializeFonts();

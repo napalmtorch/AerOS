@@ -62,7 +62,8 @@ namespace System
         RegisterCommand("mkdir",      "Create a new directory", "",           Commands::MKDIR);
         RegisterCommand("textview",   "Open file in Text Viewer", "",         Commands::TEXTVIEW);
         RegisterCommand("run",        "Run a windowed application", "",       Commands::RUN);
-        RegisterCommand("time",        "Display time", "",                    Commands::TIME);
+        RegisterCommand("time",       "Display time", "",                     Commands::TIME);
+        RegisterCommand("rat",        "Show ram allocation table", "",        Commands::RAT);    
 
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
@@ -287,13 +288,12 @@ namespace System
             if(dirname == nullptr) { System::KernelIO::Terminal.WriteLine("No filename specified"); }
             else { fat_create_dir(fat_master_fs,&dir,dirname); } 
         }
+
         void TIME(char* input)
-        {
-            HAL::RTCManager rtc;
-            rtc.Initialize();
-            rtc.Read();
-            KernelIO::Terminal.WriteLine(rtc.GetTimeString(true,true));
+        {  
+            KernelIO::Terminal.WriteLine(System::KernelIO::RTC.GetTimeString(true,true));
         }
+
         void LS(char* input)
         {
             struct directory dir;
@@ -322,6 +322,7 @@ namespace System
 
             }
         }
+
         void CAT(char* input)
         {
             struct directory dir;
@@ -490,6 +491,11 @@ namespace System
             else if (streql(app, "raycaster")) { KernelIO::XServer.WindowMgr.Open(new Applications::WinRaycaster(160, 120)); }
             else if (streql(app, "welcome")) { KernelIO::XServer.WindowMgr.Open(new Applications::WinWelcome(128, 128)); }
             else { KernelIO::Terminal.WriteLine("Invalid application", COL4_RED); }
+        }
+
+        void RAT(char* input)
+        {
+            System::KernelIO::MemoryManager.PrintRAT();
         }
     }
 }

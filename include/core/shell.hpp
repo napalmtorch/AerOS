@@ -62,6 +62,7 @@ namespace System
         void MKDIR(char* input);
         void TEXTVIEW(char* input);
         void RUN(char* input);
-        void TIME(char* inpur);
+        void TIME(char* input);
+        void RAT(char* input);
     }
 }

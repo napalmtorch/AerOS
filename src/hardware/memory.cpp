@@ -4,15 +4,18 @@
 extern "C"
 {
     // private declarations
-    rat_entry_t* mem_create_entry(uint32_t offset, uint32_t size, uint8_t state);
-    bool         mem_delete_entry(rat_entry_t* entry);
-    uint32_t     mem_get_free_offset(uint32_t size);
+    rat_entry_t* get_neighbour(rat_entry_t* entry);
+    rat_entry_t* create_entry(uint32_t offset, uint32_t size, uint8_t state);
+    bool         delete_entry(rat_entry_t* entry);
+    rat_entry_t* get_free_entry(uint32_t size);
+    rat_entry_t* get_entry(int32_t index);
     
-    // ram allocation table properties
-    uint32_t table_start;
-    uint32_t table_size;
-    uint32_t table_pos;
-    uint32_t table_count;
+    // rat table properties
+    uint32_t     rat_table;
+    uint32_t     rat_table_size;
+    uint32_t     rat_max_entries;
+    uint32_t     rat_pos;
+    uint32_t     rat_count;
 
     // reserved memory properties
     uint32_t reserved_start;
@@ -31,22 +34,24 @@ extern "C"
 
         if (dynamic_mode)
         {
-            // setup table
-            table_start = kernel_end_real + (4 * 1024 * 1024);
-            table_size = 4 * 1024 * 1024;
-            table_pos = 0;
-            table_count = 0;
+            // setup rat
+            rat_table       = kernel_end_real + (1 * 1024 * 1024);
+            rat_max_entries = 32768;
+            rat_table_size  = rat_max_entries * sizeof(rat_entry_t);
+            rat_pos         = 0;
+            rat_count       = 0;
 
             // clear table
-            mem_fill((uint8_t*)table_start, 0, table_size);
+            mem_fill((uint8_t*)rat_table, 0, rat_table_size);
 
-            // setup reserved memory
-            reserved_start = table_start + table_size;
-            reserved_size = (mem_get_total_mb() * 1024 * 1024) - reserved_start;
-            reserved_pos = 0;
+            // setup reserved region
+            reserved_start = rat_table + rat_table_size;
+            reserved_size = ((mem_get_total_mb() - 1) * 1024 * 1024) - rat_table_size;
+            reserved_pos  = 0;
+            mem_used = 0;
 
             // map entire reserved memory region as a free chunk
-            mem_create_entry(reserved_start, reserved_size, MEM_STATE_FREE);
+            rat_entry_t* e = create_entry(reserved_start, reserved_size, MEM_STATE_FREE);
 
             mem_print_rat();
         }
@@ -64,15 +69,18 @@ extern "C"
         // dynamic allocation mode
         if (dynamic_mode)
         {
-            rat_entry_t* entry = (rat_entry_t*)mem_get_free_offset(size + 1);
-            
+            // check if size is valid
+            if (size == 0) { debug_throw_message(MSG_TYPE_ERROR, "Tried to allocate 0 bytes"); return nullptr; }
+
+            // get next available free entry
+            rat_entry_t* entry = get_free_entry(size + 2);
+
             // allocation message
             debug_write("ALLOCATION: ");
             debug_write_hex("offset = ", entry->offset);
-            debug_writeln_dec("      size = ", size + 1);
+            debug_writeln_dec("      size = ", size + 2);
 
-            mem_used += size;
-            debug_writeln_dec("RAT COUNT: ", table_count);
+            // return entry data offset
             return (void*)entry->offset;
         }
         // 'never look back' mode
@@ -103,170 +111,230 @@ extern "C"
         if (!dynamic_mode) { return; }
         if (ptr == nullptr) { return; }
 
-
         // locate entry in table
-        for (size_t i = 0; i < table_size; i += sizeof(rat_entry_t))
+        for (size_t i = 0; i < rat_max_entries; i++)
         {
-            rat_entry_t* entry = (rat_entry_t*)(table_start + i);
+            rat_entry_t* entry = get_entry(i);
 
-            // located rat entry
+            // found match
             if (entry->offset == (uint32_t)ptr)
             {
-                debug_write("FREE: ");
+                // size should never be zero - filtered by 'mem_alloc'
+                if (entry->size == 0) { debug_throw_panic("RAT Corruption"); return; }
+                entry->state = MEM_STATE_FREE;
+
+                // free message
+                debug_write("FREE:       ");
                 debug_write_hex("offset = ", entry->offset);
                 debug_writeln_dec("      size = ", entry->size);
 
-                // free and return
-                entry->state = MEM_STATE_FREE;
-                mem_used -= entry->size;
+                // combine free entries
+                mem_combine_free_entries();
                 return;
             }
         }
-
     }
 
-    uint32_t mem_get_free_offset(uint32_t size)
+    // combine free entires
+    void mem_combine_free_entries()
     {
-        rat_entry_t* entry;
-        size_t i;
-
-        // attempt to find perfectly sized region
-        for (i = 0; i < table_size; i += sizeof(rat_entry_t))
+        for (size_t i = 0; i < rat_max_entries; i++)
         {
-            entry = (rat_entry_t*)(table_start + i);
+            rat_entry_t* entry = get_entry(i);
 
-            // confirm entry is valid
-            if (entry->offset != 0)
+            if (entry->offset > 0 && entry->size > 0 && entry->state == MEM_STATE_FREE)
             {
-                // found perfectly sized region
-                if (entry->size == size && entry->state == MEM_STATE_FREE)
+                rat_entry_t* next = get_neighbour(entry);
+                if (next != nullptr)
                 {
-                    // set entry state to used
-                    entry->state = MEM_STATE_USED;
-                    // return
-                    return (uint32_t)entry;
+                    entry->size += next->size;
+                    entry->state = MEM_STATE_FREE;
+                    delete_entry(next);
                 }
             }
         }
 
-        // find a regioWhan larger and portion it
-        for (i = 0; i < table_size; i += sizeof(rat_entry_t))
+        uint32_t free_total = 0;
+        uint32_t free_offset = 0;
+        for (size_t i = 0; i < rat_max_entries; i++)
         {
-            entry = (rat_entry_t*)(table_start + i);
+            rat_entry_t* entry = get_entry(i);
 
-            // confirm entry is valid
-            if (entry->offset != 0)
+            if (entry->offset > 0 && entry->size > 0 && entry->state == MEM_STATE_FREE)
             {
-                // found region large enough to portion
-                if (entry->size > size && entry->state == MEM_STATE_FREE)
-                {
-                    mem_create_entry(entry->offset + size, entry->size - size, MEM_STATE_FREE);
-                    entry->size = size;
-                    entry->state = MEM_STATE_USED;
-                    return (uint32_t)entry;
-                }
+                free_total += entry->size;
+                if (entry->offset > free_offset) { free_offset = entry->offset; }
+                delete_entry(entry);
             }
         }
-
-        // return offset - likely invalid if it got this far
-        debug_throw_message(MSG_TYPE_ERROR, "Unable to allocate more memory");
-        return 0;
+        create_entry(free_offset, free_total, MEM_STATE_FREE);
     }
 
-    // create ram allocation table entry
-    rat_entry_t* mem_create_entry(uint32_t offset, uint32_t size, uint8_t state)
+    // get neighbouring free entry
+    rat_entry_t* get_neighbour(rat_entry_t* entry)
     {
-        if (table_pos >= table_size) { debug_throw_message(MSG_TYPE_ERROR, "RAM allocation table is full"); return nullptr; }
+        if (entry == nullptr) { return nullptr; }
+        if (entry->offset == 0) { return nullptr; }
 
-        // create new item at next position
-        rat_entry_t* entry = (rat_entry_t*)(table_start + table_pos);
-        
-        // set entry properties
+        for (size_t i = 0; i < rat_max_entries; i++)
+        {
+            rat_entry_t* temp = get_entry(i);
+            if (temp != entry && entry->offset + entry->size == temp->offset && temp->state == MEM_STATE_FREE) { return temp; }
+            if (temp != entry && temp->offset + temp->size == entry->offset && temp->state == MEM_STATE_FREE) { return temp; }
+        }
+        return nullptr;
+    }
+
+    // create new rat entry
+    rat_entry_t* create_entry(uint32_t offset, uint32_t size, uint8_t state)
+    {
+        rat_entry_t* entry = get_entry(rat_pos);
         entry->offset = offset;
         entry->size = size;
         entry->state = state;
-
-        // increment table position
-        table_pos += sizeof(rat_entry_t);
-        table_count++;
-
-        // return allocation table entry pointer
+        rat_pos++;
+        rat_count++;
         return entry;
     }
 
-    // delete ram allocation table entry
-    bool mem_delete_entry(rat_entry_t* entry)
+    // delete rat entry
+    bool delete_entry(rat_entry_t* entry)
     {
-        uint32_t entry_offset = (uint32_t)entry;
-        bool exists = false;
-        if (entry_offset == 0) { debug_throw_message(MSG_TYPE_ERROR, "Tried to delete null rat entry"); return false; }
-        for (size_t i = 0; i < table_size; i += sizeof(rat_entry_t))
+        // invalid entry
+        if (entry == nullptr)   { debug_throw_message(MSG_TYPE_ERROR, "Tried to delete null entry"); return false; }
+        if (entry->offset == 0) { debug_throw_message(MSG_TYPE_ERROR, "Tried to delete entry with null offset"); return false; }
+        if (entry->size == 0)   { debug_throw_message(MSG_TYPE_ERROR, "Tried to delete entry with size of 0"); return false; }
+
+        // locate entry in table
+        for (size_t i = 0; i < rat_max_entries; i++)
         {
-            // get entry
-            rat_entry_t* e = (rat_entry_t*)(table_start + i);
+            rat_entry_t* temp = get_entry(i);
 
-            // located entry in table
-            if (e->offset == entry->offset) { exists = true; break; }
+            if (temp->offset == entry->offset)
+            {
+                // check if size is valid
+                if (entry->size != temp->size) { debug_throw_message(MSG_TYPE_ERROR, "Size mismatch while locating entry for deletion"); return false; }
+
+                // clear data
+                temp->offset = 0;
+                temp->size = 0;
+                temp->state = 0;
+
+                // shift data
+                for (size_t j = i; j < rat_count; j++)
+                {
+                    rat_entry_t* now = get_entry(j);
+                    rat_entry_t* next = get_entry(j + 1);
+                    now->offset = next->offset;
+                    now->size = next->size;
+                    now->state = next->state;
+                    next->offset = 0;
+                    next->size = 0;
+                    next->state = 0;
+                
+                }
+
+                rat_count--;
+                rat_pos--;
+                return true;
+            }
         }
-
-        if (exists)
-        {
-            // clear entry
-            entry->offset = 0;
-            entry->size = 0;
-            entry->state = 0;
-
-            // shift list to the left by 1 entry
-            for (size_t i = 0; i < sizeof(rat_entry_t); i++) { mem_lshift((uint8_t*)entry_offset, (uint8_t*)(table_start + (table_count * sizeof(rat_entry_t)))); }
-
-            // decrement table count and return success
-            table_count--;
-            table_pos -= sizeof(rat_entry_t);
-            return true;
-        }
-
-        // unable to locate entry in table
-        debug_throw_message(MSG_TYPE_ERROR, "Unable to locate rat entry in table");
         return false;
+    }
+
+    rat_entry_t* get_free_entry(uint32_t size)
+    {
+        if (size == 0) { return nullptr; }
+        size_t i = 0;
+
+        // attempt to find perfectly sized region first
+        for (i = 0; i < rat_max_entries; i++)
+        {
+            rat_entry_t* entry = get_entry(i);
+
+            if (entry->offset > 0 && entry->size == size && entry->state == MEM_STATE_FREE)
+            {
+                entry->state = MEM_STATE_USED;
+                return entry;
+            }
+        }
+
+        // couldn't find perfect match so locate larger chunk
+        for (i = 0; i < rat_max_entries; i++)
+        {
+            rat_entry_t* entry = get_entry(i);
+
+            // found available entry
+            if (entry->offset > 0 && entry->size >= size && entry->state == MEM_STATE_FREE)
+            {
+                create_entry(entry->offset + size, entry->size - size, MEM_STATE_FREE);
+                entry->size = size;
+                entry->state = MEM_STATE_USED;
+                return entry;
+            }
+        }
+
+        // unable to locate free entry
+        debug_throw_panic("System out of memory");
+        return nullptr;
+    }
+
+    // get size of entry by pointer
+    uint32_t mem_get_size_of(void* ptr)
+    {
+        if (ptr == nullptr) { debug_throw_message(MSG_TYPE_ERROR, "Unable to determine size of nullptr"); return 0; }
+        for (size_t i = 0; i < rat_max_entries; i++)
+        {
+            rat_entry_t* entry = get_entry(i);
+            if (entry->offset == (uint32_t)ptr) { return entry->size; }
+        }
+        debug_throw_message(MSG_TYPE_ERROR, "Unable to locate pointer within RAT");
+        return 0;
+    }
+
+
+    // get rat entry by index
+    rat_entry_t* get_entry(int32_t index)
+    {
+        return (rat_entry_t*)(rat_table + (index * sizeof(rat_entry_t)));
     }
 
     // print ram allocation table 
     void mem_print_rat()
     {
-        char temp[16];
-        uint32_t index = 0;
-        for (size_t i = 0; i < table_size; i += sizeof(rat_entry_t))
-        {
-            rat_entry_t* entry = (rat_entry_t*)(table_start + i);
+        char temp[24];
+        uint index = 0;
 
-            if (entry->offset != 0)
+        term_writeln_ext("Showing RAM allocation table", COL4_GREEN);
+        for (size_t i = 0; i < rat_max_entries; i++)
+        {
+            rat_entry_t* entry = get_entry(i);
+            if (entry->offset != 0 && entry->size != 0)
             {
-                // id
-                serial_write_ext("ENTRY ", COL4_YELLOW);
+                // index
+                term_write_ext("ID: 0x", COL4_GREEN);
                 strhex32(index, temp);
-                serial_write_ext(temp, COL4_YELLOW);
-                serial_write_ext(":    ", COL4_YELLOW);
+                term_write(temp);
 
                 // offset
-                serial_write_ext("offset = ", COL4_CYAN);
+                term_write_ext("  offset", COL4_CYAN);
                 strhex32(entry->offset, temp);
-                serial_write(temp);
-                serial_write("    ");
-                
+                term_write(" = ");
+                term_write(temp);
+
                 // state
-                serial_write_ext("state = ", COL4_CYAN);
-                strdec(entry->state, temp);
-                serial_write(temp);
-                serial_write("  ");
+                term_write_ext("  state", COL4_MAGENTA);
+                if (entry->state == MEM_STATE_FREE) { term_write(" = FREE"); } else { term_write(" = USED"); }
 
                 // size
-                serial_write_ext("size = ", COL4_CYAN);
+                term_write_ext("  size", COL4_YELLOW);
                 strdec(entry->size, temp);
-                serial_writeln(temp);
+                term_write(" = ");
+                term_writeln(temp);
             }
-            
             index++;
         }
+        term_newline();
     }
 
     // get amount of memory used
@@ -416,4 +484,43 @@ namespace HAL
 
     // free region of memory
     void MemoryManager::Free(void* ptr) { mem_free(ptr); }
+
+    // print ram allocation table - compatible with gui
+    void MemoryManager::PrintRAT()
+    {
+        char temp[24];
+        uint index = 0;
+
+        System::KernelIO::Terminal.WriteLine("Showing RAM allocation table", COL4_GREEN);
+        for (size_t i = 0; i < rat_max_entries; i++)
+        {
+            rat_entry_t* entry = get_entry(i);
+            if (entry->offset != 0 && entry->size != 0)
+            {
+                // index
+                System::KernelIO::Terminal.Write("ID: 0x", COL4_GREEN);
+                strhex32(index, temp);
+                System::KernelIO::Terminal.Write(temp);
+
+                // offset
+                System::KernelIO::Terminal.Write("  offset", COL4_CYAN);
+                strhex32(entry->offset, temp);
+                System::KernelIO::Terminal.Write(" = ");
+                System::KernelIO::Terminal.Write(temp);
+
+                // state
+                System::KernelIO::Terminal.Write("  state", COL4_MAGENTA);
+                if (entry->state == MEM_STATE_FREE) 
+                { System::KernelIO::Terminal.Write(" = FREE"); } else { System::KernelIO::Terminal.Write(" = USED"); }
+
+                // size
+                System::KernelIO::Terminal.Write("  size", COL4_YELLOW);
+                strdec(entry->size, temp);
+                System::KernelIO::Terminal.Write(" = ");
+                System::KernelIO::Terminal.WriteLine(temp);
+            }
+            index++;
+        }
+        System::KernelIO::Terminal.NewLine();
+    }
 }

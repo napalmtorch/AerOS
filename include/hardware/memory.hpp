@@ -24,6 +24,7 @@ extern "C"
 
     void* mem_alloc(size_t size);
     void mem_free(void* ptr);
+    void mem_combine_free_entries();
 
     void mem_print_rat();
 
@@ -65,5 +66,6 @@ namespace HAL
             void Initialize(bool dynamic);
             void* Allocate(size_t size);
             void Free(void* ptr);
+            void PrintRAT();
     };
 }
