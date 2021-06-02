@@ -252,11 +252,9 @@ namespace System
             uint32_t bytes =  stod(str_bytes);
             if (bytes > 512) { bytes = 512; }
 
-            uint32_t offset = (uint32_t)((sector * 512) + buffer);
-
             KernelIO::ATA.ReadSectors(buffer, sector, 1);
 
-            KernelIO::DumpMemory((uint8_t*)offset, bytes, 12, true);
+            KernelIO::DumpMemory((uint8_t*)buffer, bytes, 12, true);
         }
 
         void SHUTDOWN(char* input)

@@ -2,6 +2,7 @@
 #include <lib/types.h>
 #include <lib/string.hpp>
 #include <hardware/memory.hpp>
+#include <hardware/drivers/ata_pio.hpp>
 #include <core/debug.hpp>
 
 namespace HAL
