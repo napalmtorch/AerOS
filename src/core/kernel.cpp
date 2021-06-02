@@ -238,9 +238,9 @@ namespace System
                     }
                 }
                 // check for nfs signature
-                else if (boot_sec[14] == 0x66 && boot_sec[15] == 0x66 && boot_sec[16]  == 0x94 && boot_sec[17] == 0x20)
+                else if (boot_sec[19] == 0x66 && boot_sec[18] == 0x66 && boot_sec[17] == 0x94 && boot_sec[16] == 0x20)
                 {
-                    NapalmFS.Initialize();  
+                    NapalmFS.Mount();  
                     ThrowOK("Initialized NAPALM file system");             
                 }
             }
