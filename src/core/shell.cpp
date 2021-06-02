@@ -273,7 +273,9 @@ namespace System
 
         void REBOOT(char* input)
         {
-            System::KernelIO::ACPI.Reboot();
+            uint64_t null_idtr = 0;
+            asm("xor %%eax, %%eax; lidt %0; int3" :: "m" (null_idtr));
+           // System::KernelIO::ACPI.Reboot();
         }
         
         void TEST(char* input)
