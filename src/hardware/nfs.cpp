@@ -114,6 +114,10 @@ namespace HAL
         boot_record.first_table_sector = NFS_SECTOR_TABLE_START;
         boot_record.first_data_sector  = NFS_SECTOR_TABLE_START + ((sizeof(nfs_directory_t) * 4096) / 512);
         for (size_t i = 0; i < 498; i++) { boot_record.reserved[0] = 0x00; }
+        boot_record.reserved[0] = 0x66;
+        boot_record.reserved[1] = 0x66;
+        boot_record.reserved[2] = 0x94;
+        boot_record.reserved[3] = 0x20;
 
         // clear buffer
         sec_clear();
