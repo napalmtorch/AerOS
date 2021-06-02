@@ -91,6 +91,7 @@ namespace HAL
         // write boot record
         debug_throw_message(MSG_TYPE_OK, "Writing new boot record");
         WriteBootRecord(512, 65536);
+        ReadBootRecord();
 
         // write allocation table info
         debug_throw_message(MSG_TYPE_OK, "Writing allocation table info");
