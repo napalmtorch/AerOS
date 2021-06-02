@@ -243,13 +243,6 @@ namespace System
                     NapalmFS.Initialize();  
                     ThrowOK("Initialized NAPALM file system");             
                 }
-<<<<<<< HEAD
-                */
-
-                NapalmFS.Initialize();  
-                ThrowOK("Initialized NAPALM file system");             
-=======
->>>>>>> 698231c8d3cc2abf90170107bcaf6156278cff81
             }
            // init_ps2();
             // initialize keyboard
