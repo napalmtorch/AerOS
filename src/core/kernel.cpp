@@ -74,8 +74,12 @@ namespace System
         // vesa driver
         HAL::VESA VESA;
 
+        // napalm file system
+        HAL::NapalmFileSystem NapalmFS;
+
         // window server
         System::GUI::XServerHost XServer;
+
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -179,37 +183,39 @@ namespace System
             bool FS_Disable=false;
             if(!Parameters.SMBIOS)
             {
-            Terminal.Write("Detected Machine: ");
-            Terminal.WriteLine(test);
-            smbios.DetectMachine();
-            if(smbios.CheckMachine() == smbios.Bochs)
-            {
-                Terminal.WriteLine("Welcome Bochs!");
-                FS_Disable = true;
+                Terminal.Write("Detected Machine: ");
+                Terminal.WriteLine(test);
+                smbios.DetectMachine();
+                if(smbios.CheckMachine() == smbios.Bochs)
+                {
+                    Terminal.WriteLine("Welcome Bochs!");
+                    FS_Disable = true;
+                }
+                else if(smbios.CheckMachine() == smbios.Qemu)
+                {
+                    Terminal.WriteLine("Welcome QEMU!");
+                    FS_Disable = false;
+                }
+                else if(smbios.CheckMachine() == smbios.VMWare)
+                {
+                    Terminal.WriteLine("Welcome VMWare!");
+                    FS_Disable = true;
+                }
+                else if(smbios.CheckMachine() == smbios.Unknown)
+                {
+                    Terminal.WriteLine("Welcome Unknown Machine!");
+                    FS_Disable = false;
+                }
             }
-            else if(smbios.CheckMachine() == smbios.Qemu)
-            {
-                Terminal.WriteLine("Welcome QEMU!");
-                FS_Disable = false;
-            }
-            else if(smbios.CheckMachine() == smbios.VMWare)
-            {
-                Terminal.WriteLine("Welcome VMWare!");
-                FS_Disable = true;
-            }
-            else if(smbios.CheckMachine() == smbios.Unknown)
-            {
-                Terminal.WriteLine("Welcome Unknown Machine!");
-                FS_Disable = false;
-            }
-            }
-            else if(!Parameters.DisableFS) { FS_Disable = false; } else { FS_Disable=true; }
+            else if (!Parameters.DisableFS) { FS_Disable = false; } else { FS_Disable = true; }
+
             if (!FS_Disable)
             {
                 // initialize ata controller driver
                 ATA.Initialize();
                 ThrowOK("Initialized ATA controller driver");
                 
+                /*
                 fat_master_fs = fs_create("");
                 if(fat_master_fs != NULL) 
                 {
@@ -224,6 +230,10 @@ namespace System
                 {
                     ThrowError("Error initializing Filesystem. Disk not FAT32?");
                 }
+                */
+
+                NapalmFS.Initialize();  
+                ThrowOK("Initialized NAPALM file system");             
             }
            // init_ps2();
             // initialize keyboard
