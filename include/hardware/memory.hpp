@@ -66,6 +66,6 @@ namespace HAL
             void Initialize(bool dynamic);
             void* Allocate(size_t size);
             void Free(void* ptr);
-            void PrintRAT();
+            void PrintRAT(bool serial);
     };
 }

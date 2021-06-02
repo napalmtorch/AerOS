@@ -74,11 +74,20 @@ extern "C"
 
             // get next available free entry
             rat_entry_t* entry = get_free_entry(size + 2);
+            
+            uint32_t free = 0;
+            for (size_t i = 0; i < rat_max_entries; i++)
+            {
+                rat_entry_t* entry = get_entry(i);
+
+                if (entry->offset > 0 && entry->size > 0 && entry->state == MEM_STATE_FREE) { free += entry->size; }
+            }
+            mem_used = reserved_size - free;
 
             // allocation message
-            debug_write("ALLOCATION: ");
-            debug_write_hex("offset = ", entry->offset);
-            debug_writeln_dec("      size = ", size + 2);
+            //debug_write("ALLOCATION: ");
+            //debug_write_hex("offset = ", entry->offset);
+            //debug_writeln_dec("      size = ", size + 2);
 
             // return entry data offset
             return (void*)entry->offset;
@@ -92,12 +101,11 @@ extern "C"
             // increment reserved memory position
             reserved_pos += size + 1;
             // increment memory used
-            mem_used += size + 1;
 
             // allocation message
-            debug_write("ALLOCATION: ");
-            debug_write_hex("offset = ", offset);
-            debug_writeln_dec("      size = ", size + 1);
+            //debug_write("ALLOCATION: ");
+            //debug_write_hex("offset = ", offset);
+            //debug_writeln_dec("      size = ", size + 1);
 
             // return offset
             return (void*)offset;
@@ -138,12 +146,14 @@ extern "C"
     // combine free entires
     void mem_combine_free_entries()
     {
+        uint32_t free = 0;
         for (size_t i = 0; i < rat_max_entries; i++)
         {
             rat_entry_t* entry = get_entry(i);
 
             if (entry->offset > 0 && entry->size > 0 && entry->state == MEM_STATE_FREE)
             {
+                free += entry->size;
                 rat_entry_t* next = get_neighbour(entry);
                 if (next != nullptr)
                 {
@@ -168,6 +178,8 @@ extern "C"
             }
         }
         create_entry(free_offset, free_total, MEM_STATE_FREE);
+
+        mem_used = reserved_size - free;
     }
 
     // get neighbouring free entry
@@ -486,41 +498,81 @@ namespace HAL
     void MemoryManager::Free(void* ptr) { mem_free(ptr); }
 
     // print ram allocation table - compatible with gui
-    void MemoryManager::PrintRAT()
+    void MemoryManager::PrintRAT(bool serial)
     {
-        char temp[24];
-        uint index = 0;
-
-        System::KernelIO::Terminal.WriteLine("Showing RAM allocation table", COL4_GREEN);
-        for (size_t i = 0; i < rat_max_entries; i++)
+        if (!serial)
         {
-            rat_entry_t* entry = get_entry(i);
-            if (entry->offset != 0 && entry->size != 0)
+            char temp[24];
+            uint index = 0;
+
+            System::KernelIO::Terminal.WriteLine("Showing RAM allocation table", COL4_GREEN);
+            for (size_t i = 0; i < rat_max_entries; i++)
             {
-                // index
-                System::KernelIO::Terminal.Write("ID: 0x", COL4_GREEN);
-                strhex32(index, temp);
-                System::KernelIO::Terminal.Write(temp);
+                rat_entry_t* entry = get_entry(i);
+                if (entry->offset != 0 && entry->size != 0)
+                {
+                    // index
+                    System::KernelIO::Terminal.Write("ID: 0x", COL4_GREEN);
+                    strhex32(index, temp);
+                    System::KernelIO::Terminal.Write(temp);
 
-                // offset
-                System::KernelIO::Terminal.Write("  offset", COL4_CYAN);
-                strhex32(entry->offset, temp);
-                System::KernelIO::Terminal.Write(" = ");
-                System::KernelIO::Terminal.Write(temp);
+                    // offset
+                    System::KernelIO::Terminal.Write("  offset", COL4_CYAN);
+                    strhex32(entry->offset, temp);
+                    System::KernelIO::Terminal.Write(" = ");
+                    System::KernelIO::Terminal.Write(temp);
 
-                // state
-                System::KernelIO::Terminal.Write("  state", COL4_MAGENTA);
-                if (entry->state == MEM_STATE_FREE) 
-                { System::KernelIO::Terminal.Write(" = FREE"); } else { System::KernelIO::Terminal.Write(" = USED"); }
+                    // state
+                    System::KernelIO::Terminal.Write("  state", COL4_MAGENTA);
+                    if (entry->state == MEM_STATE_FREE) 
+                    { System::KernelIO::Terminal.Write(" = FREE"); } else { System::KernelIO::Terminal.Write(" = USED"); }
 
-                // size
-                System::KernelIO::Terminal.Write("  size", COL4_YELLOW);
-                strdec(entry->size, temp);
-                System::KernelIO::Terminal.Write(" = ");
-                System::KernelIO::Terminal.WriteLine(temp);
+                    // size
+                    System::KernelIO::Terminal.Write("  size", COL4_YELLOW);
+                    strdec(entry->size, temp);
+                    System::KernelIO::Terminal.Write(" = ");
+                    System::KernelIO::Terminal.WriteLine(temp);
+                }
+                index++;
             }
-            index++;
+            System::KernelIO::Terminal.NewLine();
         }
-        System::KernelIO::Terminal.NewLine();
+        else
+        {
+            char temp[24];
+            uint index = 0;
+
+            serial_writeln_ext("Showing RAM allocation table", COL4_GREEN);
+            for (size_t i = 0; i < rat_max_entries; i++)
+            {
+                rat_entry_t* entry = get_entry(i);
+                if (entry->offset != 0 && entry->size != 0)
+                {
+                    // index
+                    serial_write_ext("ID: 0x", COL4_GREEN);
+                    strhex32(index, temp);
+                    serial_write(temp);
+
+                    // offset
+                    serial_write_ext("  offset", COL4_CYAN);
+                    strhex32(entry->offset, temp);
+                    serial_write(" = ");
+                    serial_write(temp);
+
+                    // state
+                    serial_write_ext("  state", COL4_MAGENTA);
+                    if (entry->state == MEM_STATE_FREE) 
+                    { serial_write(" = FREE"); } else { serial_write(" = USED"); }
+
+                    // size
+                    serial_write_ext("  size", COL4_YELLOW);
+                    strdec(entry->size, temp);
+                    serial_write(" = ");
+                    serial_writeln(temp);
+                }
+                index++;
+            }
+            System::KernelIO::Terminal.NewLine();
+        }
     }
 }

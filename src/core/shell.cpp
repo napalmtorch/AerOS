@@ -495,7 +495,7 @@ namespace System
 
         void RAT(char* input)
         {
-            System::KernelIO::MemoryManager.PrintRAT();
+            System::KernelIO::MemoryManager.PrintRAT(true);
         }
     }
 }
