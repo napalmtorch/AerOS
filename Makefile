@@ -63,5 +63,8 @@ fullqemu: clean all iso qemu
 
 fullqemuk: clean all qemu-kernel
 
+nfs:
+	scripts/build_nfs.sh --no-qemu
+
 #add this because i (kev) keep typing "make run"
 run: qemu
