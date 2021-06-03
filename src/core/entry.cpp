@@ -7,9 +7,6 @@ extern "C" void syscall_event(uint32_t* regs)
 }
 extern "C" void kernel_main(void)
 {
-            SetUpPages();
-            FillPages();
-            InitPaging();
     System::KernelIO::Kernel.Initialize();
     while (true) { System::KernelIO::Kernel.Run(); }
 }

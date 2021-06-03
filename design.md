@@ -16,6 +16,7 @@ HAL:
 - VGA
 - VBE
 - VMSVGA
+- PCI DRIVER
 
 Graphics:
 - Font
