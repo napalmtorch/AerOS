@@ -270,7 +270,6 @@ namespace System
             XServer.Initialize();
 
             // ready shell
-            this is a fucking error and jenkins should fail
             Shell.Initialize();
             if (Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
             else if (Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
