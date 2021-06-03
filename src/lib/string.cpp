@@ -291,17 +291,7 @@ int32_t strcmp(char text[], char comp[])
 }
 
 // check if string equal to string
-bool streql(char text[], char comp[]) 
-{ 
-    int len = strlen(text);
-
-    for (size_t i = 0; i < len; i++)
-    {
-        if (text[i] != comp[i]) { return false; }
-    }
-    return true;
-    }
-
+bool streql(char text[], char comp[]) { return (bool)strcmp(text, comp) == 0; }
 
 char * stringReplace(char *search, char *replace, char *strings) {
 	char *tempString, *searchStart;

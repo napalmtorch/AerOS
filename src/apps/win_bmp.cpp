@@ -23,7 +23,7 @@ namespace System
             KernelIO::XServer.Loading = true;
             KernelIO::XServer.Draw();
             //bmp = new Graphics::Bitmap("/test/bg.bmp");
-            bmp = new Graphics::Bitmap("/home/will/pictures/oldwp.bmp");
+            bmp = new Graphics::Bitmap("/home/will/pictures/bliss.bmp");
             KernelIO::XServer.Loading = false;
             Bounds->Width = (bmp->Width) + 3;
             Bounds->Height = (bmp->Height) + 19;

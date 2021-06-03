@@ -38,6 +38,30 @@ namespace Graphics
         Buffer = (uint8_t*)file.data;
         TotalSize = file.size;
         Depth = (COLOR_DEPTH)info->biBitCount;
+
+        uint32_t* new_data = (uint32_t*)mem_alloc(Width * Height * 4);
+        for (int32_t yy = Height - 1; yy >= 0; yy--)
+        {
+            for (int32_t xx = Width - 1; xx >= 0; xx--)
+            {
+                if (Depth == COLOR_DEPTH_24)
+                {
+                    uint32_t offset = (3 * (xx + (yy * Width)));
+                    uint32_t color = Graphics::RGBToPackedValue(ImageData[offset + 2], ImageData[offset + 1], ImageData[offset]);
+                    uint32_t output_offset = (Width - xx) + ((Height - yy) * Width);
+                    new_data[output_offset] = color;
+                }
+                else if (Depth == COLOR_DEPTH_32)
+                {
+                    uint32_t offset = (4 * (xx + (yy * Width)));
+                    uint32_t color = Graphics::RGBToPackedValue(ImageData[offset + 2], ImageData[offset + 1], ImageData[offset]);
+                    uint32_t output_offset = (Width - xx) + ((Height - yy) * Width);
+                    new_data[output_offset] = color;
+                }
+            }
+        }  
+        ImageData = (uint8_t*)new_data;
+        mem_free((void*)file.data);
         
 
         debug_writeln_dec("BMP WIDTH:  ", Width);

@@ -80,7 +80,7 @@ namespace System
             WindowMgr.Initialize();        
             KernelIO::ThrowOK("Initialized window manager");               
 
-            //if (Wallpaper == nullptr) { Wallpaper = new Graphics::Bitmap("/test/bg.bmp");}
+            if (Wallpaper == nullptr) { Wallpaper = new Graphics::Bitmap("/home/will/pictures/bliss.bmp"); }
 
             // running flag
             Running = true;
@@ -144,7 +144,7 @@ namespace System
         {
             // clear the screen
             if (Wallpaper == nullptr) { Graphics::Canvas::Clear(BackColor); }
-            else { Graphics::Canvas::DrawBitmap(-2, -2, 2, Wallpaper); }
+            else { Graphics::Canvas::DrawBitmap(0, 0, Wallpaper); }
             
             // draw status panel
             uint32_t spx = KernelIO::VESA.GetWidth() - 208;

@@ -85,9 +85,11 @@ extern "C"
             mem_used = reserved_size - free;
 
             // allocation message
-            //debug_write("ALLOCATION: ");
-            //debug_write_hex("offset = ", entry->offset);
-            //debug_writeln_dec("      size = ", size + 2);
+            debug_write("["); debug_write_ext("MALLOC", COL4_CYAN); debug_write("] ");
+            debug_write_ext("offset", COL4_YELLOW);
+            debug_write_hex(" = ", entry->offset);
+            debug_write_ext("      size", COL4_YELLOW);
+            debug_writeln_dec(" = ", size + 2);
 
             // return entry data offset
             return (void*)entry->offset;
@@ -131,10 +133,12 @@ extern "C"
                 if (entry->size == 0) { debug_throw_panic("RAT Corruption"); return; }
                 entry->state = MEM_STATE_FREE;
 
-                // free message
-                debug_write("FREE:       ");
-                debug_write_hex("offset = ", entry->offset);
-                debug_writeln_dec("      size = ", entry->size);
+                // allocation message
+                debug_write("["); debug_write_ext(" FREE ", COL4_GREEN); debug_write("] ");
+                debug_write_ext("offset", COL4_YELLOW);
+                debug_write_hex(" = ", entry->offset);
+                debug_write_ext("      size", COL4_YELLOW);
+                debug_writeln_dec(" = ", entry->size);
 
                 // combine free entries
                 mem_combine_free_entries();

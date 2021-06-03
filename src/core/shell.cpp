@@ -118,6 +118,7 @@ namespace System
         // get command from input
         char* cmd = strsplit_index(input, 0, ' ');
         strlower(cmd);
+        serial_writeln(cmd);
 
         // hack to use second command for clearing
         if (streql(cmd, "cls")) { Commands::CLEAR(input); delete cmd; return; }

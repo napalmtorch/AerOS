@@ -207,6 +207,7 @@ namespace Graphics
         void DrawBitmap(int32_t x, int32_t y, Graphics::Bitmap* bitmap)
         {
             if (bitmap == nullptr) { return; }
+            /*
             for (int32_t yy = bitmap->Height - 1; yy >= 0; yy--)
             {
                 for (int32_t xx = bitmap->Width - 1; xx >= 0; xx--)
@@ -225,6 +226,17 @@ namespace Graphics
                     }
                 }
             }  
+            */
+
+           uint32_t* data = (uint32_t*)bitmap->ImageData;
+           for (int32_t yy = 0; yy < bitmap->Height; yy++)
+           {
+               for (int32_t xx = 0; xx < bitmap->Width; xx++)
+               {
+                   uint32_t color = data[(xx + (yy * bitmap->Width))];
+                   DrawPixel(x + xx, y + yy, color);
+               }
+           }
         }
 
         void DrawBitmap(int32_t x, int32_t y, Color trans_key, Graphics::Bitmap* bitmap)

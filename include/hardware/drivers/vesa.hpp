@@ -42,7 +42,7 @@ namespace HAL
 
     class VESA
     {
-    private:
+    public:
         VBEInfoBlock InfoBlock;
         VBEModeInfoBlock ModeInfoBlock;
 		uint32_t Width, Height;
