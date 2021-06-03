@@ -80,6 +80,7 @@ namespace System
         // window server
         System::GUI::XServerHost XServer;
 
+        System::Threading::ThreadManager TaskManager;
         // called as first function before kernel run
         void KernelBase::Initialize()
         {
@@ -268,7 +269,8 @@ namespace System
 
             // initialize x server
             XServer.Initialize();
-
+            auto thread = tinit([]() { while (true) ThrowOK("test"); });
+            tstart(thread);
             // ready shell
             Shell.Initialize();
             if (Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }

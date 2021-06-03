@@ -30,6 +30,7 @@
 #include "hardware/nfs.hpp"
 #include "gui/xserver.hpp"
 #include "hardware/drivers/vesa.hpp"
+#include "lib/multitasking.h"
 
 extern "C" 
 {
@@ -144,6 +145,8 @@ void enter_pressed(char* input);
 
             // napalm file system
             extern HAL::NapalmFileSystem NapalmFS;
+
+            extern System::Threading::ThreadManager TaskManager;
         }
     }
 #else
