@@ -8,7 +8,7 @@ LINK_SOURCES=$(shell find . -name '*.o')
 CPP_FILES_OUT = $(SOURCES:.cpp=.o)
 .PHONY: all as clean link iso run bochs
 
-all: as $(CPP_FILES_OUT) link iso nfs clean
+all: as $(CPP_FILES_OUT) link iso nfs
 
 as:
 	as --32 'src/boot/boot.asm' -o 'src/boot/boot.o'
@@ -24,7 +24,7 @@ clean:
 
 iso:
 	mkdir -p bin/isodir/boot
-	cp bin/kernel.bin bin/isodir/boot/
+	cp kernel.bin bin/isodir/boot/
 	grub-mkrescue -d /usr/lib/grub/i386-pc --compress=xz -o AerOS.iso cdrom 'bin/isodir/boot/kernel.bin' -V 'AerOS'
 
 nfs:
