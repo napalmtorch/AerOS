@@ -8,7 +8,7 @@ LINK_SOURCES=$(shell find . -name '*.o')
 CPP_FILES_OUT = $(SOURCES:.cpp=.o)
 .PHONY: all as clean link iso run bochs
 
-all: as $(CPP_FILES_OUT) link iso nfs
+all: as $(CPP_FILES_OUT) link iso nfs clean
 
 as:
 	as --32 'src/boot/boot.asm' -o 'src/boot/boot.o'
@@ -31,3 +31,6 @@ nfs:
 
 run:
 	qemu-system-i386 -m 256M -vga std -drive file=disks/fat32.img,format=raw -cdrom 'AerOS.iso' -serial stdio -boot d -rtc base=localtime -soundhw all -device e1000 -enable-kvm -cpu host -name "AerOS Development Copy"
+
+bochs:
+	/usr/bin/bochs -q -f ./configs/bochsrc.txt 
