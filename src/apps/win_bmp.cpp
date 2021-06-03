@@ -13,14 +13,20 @@ namespace System
 
         }
 
+        WinBitmapViewer::~WinBitmapViewer()
+        {
+            delete bmp;
+        }
+
         WinBitmapViewer::WinBitmapViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Bitmap Viewer")
         {
             KernelIO::XServer.Loading = true;
             KernelIO::XServer.Draw();
-            bmp = new Graphics::Bitmap("/test/bg.bmp");
+            //bmp = new Graphics::Bitmap("/test/bg.bmp");
+            bmp = new Graphics::Bitmap("/home/will/pictures/oldwp.bmp");
             KernelIO::XServer.Loading = false;
-            Bounds->Width = (2 * bmp->Width) + 3;
-            Bounds->Height = (2 * bmp->Height) + 19;
+            Bounds->Width = (bmp->Width) + 3;
+            Bounds->Height = (bmp->Height) + 19;
         }
 
         void WinBitmapViewer::Update()
@@ -34,9 +40,9 @@ namespace System
 
             if (Flags->CanDraw) 
             { 
-                Graphics::Canvas::DrawBitmap(ClientBounds->X, ClientBounds->Y, 2, bmp);
-                Bounds->Width = (2 * bmp->Width) + 3;
-                Bounds->Height = (2 * bmp->Height) + 19;
+                Graphics::Canvas::DrawBitmap(ClientBounds->X, ClientBounds->Y, bmp);
+                Bounds->Width = (bmp->Width) + 3;
+                Bounds->Height = (bmp->Height) + 19;
             }
         }
     }

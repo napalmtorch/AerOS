@@ -104,7 +104,77 @@ namespace HAL
 
     nfs_file_t NapalmFileSystem::ReadFile(char* path)
     {
+        // get file name
+        uint32_t parts_count = 0;
+        char** parts = str_lsplit(path, '/', &parts_count);
+        char* name = parts[parts_count - 1];    
 
+        //for (int i = 0; i < strlen(name); i++) { strdel(path); }
+        nfs_directory_t parent = GetParentFromPath(path);
+
+        // check if parent directory is valid
+        if (parent.type == NFS_ENTRY_NULL) { debug_throw_message(MSG_TYPE_ERROR, "Unable to locate directory while reading file"); return null_file; }
+
+        // create file entry
+        nfs_file_t file;
+
+        // loop through table sectors
+        int index = 0;
+        uint8_t* data = new uint8_t[512];
+        for (size_t sector = boot_record.first_table_sector; sector < boot_record.first_data_sector; sector++)
+        {
+            // get current entries
+            ata_pio_read48(sector, 1, data);
+
+            // loop through entries in sector
+            for (size_t i = 0; i < boot_record.bytes_per_sector; i += sizeof(nfs_file_t))
+            {
+                nfs_file_t* temp = (nfs_file_t*)((uint32_t)data + i);
+
+                if (temp->type != NFS_ENTRY_NULL)
+                {
+                    if (streql(temp->name, name) && temp->parent_index == GetDirectoryIndex(parent))
+                    {
+                        // populate file entry
+                        mem_copy((uint8_t*)temp->name, (uint8_t*)file.name, 32);
+                        file.type = temp->type;
+                        file.parent_index = temp->parent_index;
+                        file.status = temp->status;
+                        file.size = temp->size;
+                        file.sector_start = temp->sector_start;
+                        file.sector_count = temp->sector_count;
+                        break;
+                    }
+                }
+                index++;
+            }
+        }
+
+        delete data;
+
+        if (strlen(file.name) > 0 && file.type == NFS_ENTRY_FILE)
+        {
+            file.data = (uint32_t)mem_alloc(file.size);
+
+            int total = 0;
+            for (uint32_t sector = file.sector_start; sector < file.sector_start + file.sector_count; sector++)
+            {
+                // read sector into buffer
+                sec_read(sector);
+
+                // loop through entries in sector
+                for (size_t i = 0; i < boot_record.bytes_per_sector; i++)
+                {
+                    if (total < file.size) { ((uint8_t*)file.data)[total] = sec_buff[i]; }
+                    total++;
+                }
+            }
+            debug_throw_message(MSG_TYPE_OK, "Successfully loaded file");
+        }
+        else { debug_throw_message(MSG_TYPE_ERROR, "Unable to locate file for opening"); return null_file; }
+
+        // return file
+        return file;
     }
 
     nfs_directory_t NapalmFileSystem::GetParentFromPath(char* path)
@@ -164,7 +234,12 @@ namespace HAL
 
                 if (goto_next) { break; }
             }
+
+            mem_free(parts[part]);
         }
+
+        mem_free(parts);
+        return dir;
     }
 
     int32_t NapalmFileSystem::GetDirectoryIndex(nfs_directory_t dir)

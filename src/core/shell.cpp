@@ -242,10 +242,12 @@ namespace System
                 }
             }
         }
+        
         void FORMAT(char* input)
         {
-        System::KernelIO::NapalmFS.Format(true);
+            //System::KernelIO::NapalmFS.Format(true);
         }
+
         void DISK_DUMP(char* input)
         {
             char* str_sector = strsplit_index(input, 1, ' ');

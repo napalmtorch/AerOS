@@ -198,8 +198,19 @@ namespace HAL
     }
     void VESA::Render()
     {
-        // copy data from buffer to video address
-        mem_copy((uint8_t*)Buffer, (uint8_t*)ModeInfoBlock.PhysicalBase, (ModeInfoBlock.Height * ModeInfoBlock.Pitch));
+        uint32_t buffer_size = ModeInfoBlock.Height * ModeInfoBlock.Pitch;
+        uint32_t dest       = ModeInfoBlock.PhysicalBase;
+        uint32_t src        = (uint32_t)Buffer;
+        uint32_t num_dwords = buffer_size / 4;
+        uint32_t num_bytes  = buffer_size % 4;
+        uint32_t *dest32    = (uint32_t*)dest;
+        uint32_t *src32     = (uint32_t*)src;
+        uint8_t *dest8      = ((uint8_t*)dest) + num_dwords * 4;
+        uint8_t *src8       = ((uint8_t*)src) + num_dwords * 4;
+        uint32_t i;
+
+        for (i = 0; i < num_dwords; i++) { dest32[i] = src32[i]; }
+        for (i = 0; i < num_bytes; i++) { dest8[i] = src8[i]; }
     }
 
     uint32_t VESA::GetWidth() { return Width; }

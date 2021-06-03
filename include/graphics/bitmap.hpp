@@ -43,6 +43,8 @@ namespace Graphics
             // constructor - blank
             Bitmap();
 
+            ~Bitmap();
+
             // constructor - new image
             Bitmap(int32_t w, int32_t h, COLOR_DEPTH depth);
 

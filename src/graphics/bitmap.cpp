@@ -21,6 +21,31 @@ namespace Graphics
     // constructor - load from disk
     Bitmap::Bitmap(char* fullname)
     {
+        HAL::nfs_file_t file = System::KernelIO::NapalmFS.ReadFile(fullname);    
+        debug_write("NAME: ");
+        debug_writeln_ext(file.name, COL4_YELLOW);
+
+        bmp_fileheader_t* h = (bmp_fileheader_t*)file.data;
+        uint32_t offset = h->bfOffBits;
+        debug_writeln_dec("BMP SIZE:   ", h->bfSize);
+        debug_writeln_dec("BMP OFFSET: ", offset);
+
+        bmp_infoheader_t* info = (bmp_infoheader_t*)(file.data + sizeof(bmp_fileheader_t));
+        
+        Width = info->biWidth;
+        Height = info->biHeight;
+        ImageData = (uint8_t*)((uint32_t)file.data + offset);
+        Buffer = (uint8_t*)file.data;
+        TotalSize = file.size;
+        Depth = (COLOR_DEPTH)info->biBitCount;
+        
+
+        debug_writeln_dec("BMP WIDTH:  ", Width);
+        debug_writeln_dec("BMP HEIGHT: ", Height);
+        debug_writeln_dec("BMP DEPTH:  ", (uint32_t)Depth);
+        debug_writeln_dec("BMP SIZE:   ", TotalSize);
+
+        /*
         if(fat_master_fs != nullptr)
         {
             // open file
@@ -75,6 +100,12 @@ namespace Graphics
                 return;
             }
         }  
+        */
+    }
+
+    Bitmap::~Bitmap()
+    {
+        delete Buffer;
     }
 
     void Bitmap::Resize(uint32_t w, uint32_t h)

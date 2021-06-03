@@ -44,7 +44,7 @@ namespace HAL
         typedef struct
         {
             char     name[32];                          // name of directory - root is empty
-            int32_t  parent_index;                      // index of parent directory - root is -1
+            uint32_t parent_index;                      // index of parent directory - root is -1
             uint8_t  type;                              // type of entry
             uint8_t  status;
             uint8_t  reserved[26];                      // first byte indicates if root directory, otherwise unused memory
@@ -54,7 +54,7 @@ namespace HAL
         typedef struct
         {
             char     name[32];                          // name of file
-            int32_t  parent_index;                      // index of parent directory - root is -1
+            uint32_t parent_index;                      // index of parent directory - root is -1
             uint8_t  type;                              // type of entry
             uint8_t  status;
             uint32_t size;                              // size of file in bytes

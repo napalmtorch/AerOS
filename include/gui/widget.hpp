@@ -201,6 +201,7 @@ namespace System
             public:
                 Window();
                 Window(int32_t x, int32_t y, int32_t w, int32_t h, char* title);
+                virtual ~Window();
                 virtual void Update();
                 virtual void Draw();
 

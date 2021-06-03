@@ -241,7 +241,7 @@ namespace System
                 else if (boot_sec[19] == 0x66 && boot_sec[18] == 0x66 && boot_sec[17] == 0x94 && boot_sec[16] == 0x20)
                 {
                     NapalmFS.Mount();  
-                    ThrowOK("Initialized NAPALM file system");             
+                    ThrowOK("Initialized NAPALM file system");
                 }
             }
            // init_ps2();

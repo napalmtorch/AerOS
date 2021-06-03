@@ -580,6 +580,8 @@ namespace System
 
         Window::Window() { }
 
+        Window::~Window() { debug_writeln("DESTRUCTED"); }
+
         Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, char* title)
         {
             // create bounds

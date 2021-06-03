@@ -99,6 +99,7 @@ namespace System
                 if (Windows[i] == win)
                 {
                     ActiveWindow = nullptr;
+                    Windows[i]->~Window();
                     delete Windows[i];
                     Windows[i] = nullptr;
                     Count--;
