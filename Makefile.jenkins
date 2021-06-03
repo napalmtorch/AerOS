@@ -1,5 +1,5 @@
-CXX=/opt/cross/i686-elf-g++
-LD=/opt/cross/i686-elf-gcc
+CXX=/opt/cross/bin/i686-elf-g++
+LD=/opt/cross/bin/i686-elf-gcc
 CXXFLAGS=-Iinclude -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -w -Wno-narrowing -Wno-sign-compare -Wno-type-limits -Wno-unused-parameter -Wno-missing-field-initializers
 NASM=nasm
 ASFLAGS=-felf32
