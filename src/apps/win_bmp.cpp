@@ -15,7 +15,8 @@ namespace System
 
         WinBitmapViewer::~WinBitmapViewer()
         {
-            delete bmp;
+            mem_free(bmp->ImageData);
+            mem_free(bmp);
         }
 
         WinBitmapViewer::WinBitmapViewer(int32_t x, int32_t y) : GUI::Window(x, y, 400, 300, "Bitmap Viewer")
