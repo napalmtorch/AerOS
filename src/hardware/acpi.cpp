@@ -282,7 +282,10 @@ int initAcpi()
    return -1;
 }
 
-
+void OldShutdown()
+{
+   __asm__ __volatile__ ("outw %1, %0" : : "dN" ((uint16_t)0xB004), "a" ((uint16_t)0x2000));
+}
 
 void acpiPowerOff(void)
 {
@@ -295,13 +298,14 @@ void acpiPowerOff(void)
    // send the shutdown command
    outw((unsigned int) PM1a_CNT, SLP_TYPa | SLP_EN );
    if ( PM1b_CNT != 0 )
+   {
       outw((unsigned int) PM1b_CNT, SLP_TYPb | SLP_EN );
-
-   System::KernelIO::WriteLine("acpi poweroff failed.\n");
-}
-void OldShutdown()
-{
-   __asm__ __volatile__ ("outw %1, %0" : : "dN" ((uint16_t)0xB004), "a" ((uint16_t)0x2000));
+   }
+   else
+   {
+   System::KernelIO::WriteLine("acpi poweroff failed. Performing Legacy Shutdown\n");
+   OldShutdown();
+   }
 }
  
 void Reboot()
