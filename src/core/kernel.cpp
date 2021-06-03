@@ -240,7 +240,9 @@ namespace System
                 // check for nfs signature
                 else if (boot_sec[19] == 0x66 && boot_sec[18] == 0x66 && boot_sec[17] == 0x94 && boot_sec[16] == 0x20)
                 {
-                    NapalmFS.Mount();  
+                    NapalmFS.Mount();
+                    bool exists = NapalmFS.FileExists("/home/will/pictures/bliss.bmp");
+                    WriteLineDecimal("BLISS.BMP exists?  ", (int32_t)exists);
                     ThrowOK("Initialized NAPALM file system");
                 }
             }

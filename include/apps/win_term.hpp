@@ -16,6 +16,7 @@ namespace System
                 WinTerminal();
                 WinTerminal(int32_t x, int32_t y);
                 WinTerminal(int32_t x, int32_t y, char* args);
+                ~WinTerminal();
                 void Update() override;
                 void Draw() override;
                 void Clear();

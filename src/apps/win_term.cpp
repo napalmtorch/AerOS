@@ -58,6 +58,11 @@ namespace System
 
         }
 
+        WinTerminal::~WinTerminal()
+        {
+            delete Buffer;
+        }
+
         void WinTerminal::Update()
         {
             GUI::Window::Update();

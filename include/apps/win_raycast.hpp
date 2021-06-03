@@ -12,6 +12,7 @@ namespace System
             public:
                 WinRaycaster();
                 WinRaycaster(int32_t x, int32_t y);
+                ~WinRaycaster();
                 void Update() override;
                 void Draw() override;
                 Color ConvertColor(uint8_t color);

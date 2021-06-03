@@ -61,6 +61,11 @@ namespace System
             Style->Colors[0] = Graphics::Colors::Transparent;
         }
 
+        WinRaycaster::~WinRaycaster()
+        {
+            delete Buffer;
+        }
+
         void WinRaycaster::Update()
         {
             // update base

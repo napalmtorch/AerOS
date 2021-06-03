@@ -256,9 +256,79 @@ namespace HAL
         return dir;
     }
 
-    int32_t NapalmFileSystem::GetDirectoryIndex(nfs_directory_t dir)
+  int32_t NapalmFileSystem::GetDirectoryIndex(nfs_directory_t dir)
     {
         int index = 0;
+        uint8_t* buff = new uint8_t[boot_record.bytes_per_sector];
+        for (size_t sector = boot_record.first_table_sector; sector < boot_record.first_data_sector; sector++)
+        {
+            mem_fill(buff, 0, boot_record.bytes_per_sector);
+
+            // loop through entries in sector
+            for (size_t i = 0; i < boot_record.bytes_per_sector; i += sizeof(nfs_directory_t))
+            {
+                // read sector into buffer
+                ata_pio_read48(sector, 1, buff);
+
+                nfs_directory_t* temp = (nfs_directory_t*)((uint32_t)buff + i);
+                if (streql(temp->name, dir.name) && temp->parent_index == dir.parent_index && temp->type == dir.type && temp->status == dir.status)
+                { return index; }
+
+                index++;
+            }
+
+        }
+        mem_free(buff);
+    }
+
+    bool NapalmFileSystem::FileExists(char* path)
+    {
+        nfs_directory_t parent = GetParentFromPath(path);
+        if (parent.type != NFS_ENTRY_DIR) { return false; }
+
+        uint32_t parts_count = 0;
+        char** parts = str_lsplit(path, '/', &parts_count);
+        char* name = parts[parts_count - 1];
+
+        // locate specific file
+        bool found = false;
+        for (size_t sector = boot_record.first_table_sector; sector < boot_record.first_data_sector; sector++)
+        {
+            // loop through entries in sector
+            for (size_t i = 0; i < boot_record.bytes_per_sector; i += sizeof(nfs_directory_t))
+            {
+                // read sector into buffer
+                sec_read(sector);
+                nfs_file_t* file = (nfs_file_t*)((uint32_t)sec_buff + i);
+
+                if (streql(file->name, name) && file->parent_index == GetDirectoryIndex(parent) && file->type == NFS_ENTRY_FILE)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) { break; }
+        }
+
+        for (size_t i = 0; i < parts_count; i++) { mem_free(parts[i]); }
+        mem_free(parts);
+        return found;
+    }
+
+    bool NapalmFileSystem::DirectoryExists(char* path)
+    {
+        if (path[strlen(path) - 1] == '/') { strdel(path); }
+        nfs_directory_t parent = GetParentFromPath(path);
+        if (parent.type != NFS_ENTRY_DIR) { return false; }
+        int32_t pindex = GetDirectoryIndex(parent);
+
+        uint32_t parts_count = 0;
+        char** parts = str_lsplit(path, '/', &parts_count);
+        char* name = parts[parts_count - 1];
+
+        // locate specific file
+        bool found = false;
         for (size_t sector = boot_record.first_table_sector; sector < boot_record.first_data_sector; sector++)
         {
             // loop through entries in sector
@@ -267,12 +337,20 @@ namespace HAL
                 // read sector into buffer
                 sec_read(sector);
 
-                nfs_directory_t* temp = (nfs_directory_t*)((uint32_t)sec_buff + i);
-                if (streql(temp->name, dir.name) && temp->parent_index == dir.parent_index && temp->type == dir.type && temp->status == dir.status)
-                { return index; }
+                nfs_directory_t* dir = (nfs_directory_t*)((uint32_t)sec_buff + i);
 
-                index++;
+                if (streql(dir->name, name) && dir->parent_index == pindex && dir->type == NFS_ENTRY_DIR)
+                {
+                    found = true;
+                    break;
+                }
             }
+
+            if (found) { break; }
         }
+
+        for (size_t i = 0; i < parts_count; i++) { mem_free(parts[i]); }
+        mem_free(parts);
+        return found;
     }
 }

@@ -74,5 +74,7 @@ namespace HAL
             nfs_file_t ReadFile(char* path);
             nfs_directory_t GetParentFromPath(char* path);
             int32_t GetDirectoryIndex(nfs_directory_t dir);
+            bool FileExists(char* path);
+            bool DirectoryExists(char* path);
     };
 }
