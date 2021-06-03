@@ -107,7 +107,11 @@ namespace HAL
         // get file name
         uint32_t parts_count = 0;
         char** parts = str_lsplit(path, '/', &parts_count);
-        char* name = parts[parts_count - 1];    
+        char* name = (char*)mem_alloc(strlen(parts[parts_count - 1]));
+        strcpy(parts[parts_count - 1], name);
+
+        for (size_t i = 0; i < parts_count; i++) { mem_free(parts[i]); }
+        mem_free(parts);
 
         //for (int i = 0; i < strlen(name); i++) { strdel(path); }
         nfs_directory_t parent = GetParentFromPath(path);
@@ -150,7 +154,7 @@ namespace HAL
             }
         }
 
-        delete data;
+        mem_free(data);
 
         if (strlen(file.name) > 0 && file.type == NFS_ENTRY_FILE)
         {
@@ -184,8 +188,18 @@ namespace HAL
         char** parts = str_lsplit(path, '/', &parts_count);
 
         // path is root directory
-        if (parts_count == 1 && streql(parts[0], "/")) { return root_dir; }
-        if (streql(path, "/")) { return root_dir; }
+        if (parts_count == 1 && streql(parts[0], "/")) 
+        { 
+            for (size_t i = 0; i < parts_count; i++) { mem_free(parts[i]); }
+            mem_free(parts);
+            return root_dir; 
+        }
+        if (streql(path, "/")) 
+        { 
+            for (size_t i = 0; i < parts_count; i++) { mem_free(parts[i]); }
+            mem_free(parts);
+            return root_dir; 
+        }
 
         // create output directory
         nfs_directory_t dir;
