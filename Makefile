@@ -8,7 +8,7 @@ LINK_SOURCES=$(shell find . -name '*.o')
 CPP_FILES_OUT = $(SOURCES:.cpp=.o)
 .PHONY: all as clean link iso run bochs
 
-all: as $(CPP_FILES_OUT) link iso run
+all: as $(CPP_FILES_OUT) link iso nfs
 
 as:
 	as --32 'src/boot/boot.asm' -o 'src/boot/boot.o'
