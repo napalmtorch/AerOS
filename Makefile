@@ -1,5 +1,5 @@
 CXX=i686-elf-g++
-LD=
+LD=i686-elf-gcc
 CXXFLAGS=-Iinclude -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -w -Wno-narrowing -Wno-sign-compare -Wno-type-limits -Wno-unused-parameter -Wno-missing-field-initializers
 NASM=nasm
 ASFLAGS=-felf32
@@ -17,9 +17,10 @@ as:
 	nasm -felf32 'include/hardware/interrupt/irqs.asm' -o 'include/hardware/interrupt/irqs.o'
 
 link:
-	i686-elf-gcc -w -T 'include/boot/linker.ld' -o 'kernel.bin' -ffreestanding -O2 -nostdlib $(LINK_SOURCES) -lgcc
+	$(LD) -w -T 'include/boot/linker.ld' -o 'kernel.bin' -ffreestanding -O2 -nostdlib $(LINK_SOURCES) -lgcc
+
 clean:
-	-rm -Rf $(shell find . -name '*.o') *.bin
+	-rm -Rf $(shell find . -name '*.o') $(shell find . -name '*.bin') $(shell find . -name '*.iso')  
 
 iso:
 	mkdir -p bin/isodir/boot
