@@ -321,29 +321,29 @@ extern "C"
         char temp[24];
         uint index = 0;
 
-        term_writeln_ext("Showing RAM allocation table", COL4_GREEN);
+        term_writeln_ext("Showing RAM allocation table", Graphics::Colors::Green);
         for (size_t i = 0; i < rat_max_entries; i++)
         {
             rat_entry_t* entry = get_entry(i);
             if (entry->offset != 0 && entry->size != 0)
             {
                 // index
-                term_write_ext("ID: 0x", COL4_GREEN);
+                term_write_ext("ID: 0x", Graphics::Colors::Green);
                 strhex32(index, temp);
                 term_write(temp);
 
                 // offset
-                term_write_ext("  offset", COL4_CYAN);
+                term_write_ext("  offset", Graphics::Colors::Cyan);
                 strhex32(entry->offset, temp);
                 term_write(" = ");
                 term_write(temp);
 
                 // state
-                term_write_ext("  state", COL4_MAGENTA);
+                term_write_ext("  state", Graphics::Colors::Magenta);
                 if (entry->state == MEM_STATE_FREE) { term_write(" = FREE"); } else { term_write(" = USED"); }
 
                 // size
-                term_write_ext("  size", COL4_YELLOW);
+                term_write_ext("  size", Graphics::Colors::Yellow);
                 strdec(entry->size, temp);
                 term_write(" = ");
                 term_writeln(temp);

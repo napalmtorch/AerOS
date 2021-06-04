@@ -79,6 +79,8 @@ typedef struct
 
 namespace Graphics
 {
+    bool IsColorEqual(Color a, Color b);
+
     // brute force method for converting vga palette color to rgb
     uint32_t VGAPaletteToRGB(uint8_t color);
 

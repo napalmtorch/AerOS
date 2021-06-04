@@ -7,23 +7,28 @@
 extern "C"
 {
     extern uint8_t cursor_x, cursor_y;
+
     // initialize terminal interface
     void term_init();
 
+    void term_draw();
+
+    void term_cursor_flash();
+
     // clear the terminal
-    void term_clear(COL4 color);
+    void term_clear(Color color);
 
     // write character to terminal
     void term_write_char(char c);
 
     // put specified character at position in terminal
-    void term_put_char(uint8_t x, uint8_t y, char c, COL4 fg, COL4 bg);
+    void term_put_char(uint8_t x, uint8_t y, char c, Color fg, Color bg);
 
     // write string to terminal
     void term_write(char* text);
 
     // write string to terminal with foreground color
-    void term_write_ext(char* text, COL4 color);
+    void term_write_ext(char* text, Color color);
 
     // write string and decimal value to terminal
     void term_write_dec(char* text, int32_t num);
@@ -35,7 +40,7 @@ extern "C"
     void term_writeln(char* text);
 
     // write string to terminal with foreground color
-    void term_writeln_ext(char* text, COL4 color);
+    void term_writeln_ext(char* text, Color color);
 
     // write string and decimal value to terminal
     void term_writeln_dec(char* text, int32_t num);
@@ -53,19 +58,20 @@ extern "C"
     void term_scroll(uint32_t amount);
 
     // set terminal foreground color
-    void term_set_fg(COL4 color);
+    void term_set_fg(Color color);
 
     // set terminal background color
-    void term_set_bg(COL4 color);
+    void term_set_bg(Color color);
 
     // set terminal foreground and background color
-    void term_set_colors(COL4 fg, COL4 bg);
+    void term_set_colors(Color fg, Color bg);
 
     // pack 2 4-bit colors into 1 byte
     uint8_t term_pack_colors(COL4 fg, COL4 bg);
 
     // set size of terminal buffer
     void term_set_size(uint8_t w, uint8_t h);
+    void term_set_size_auto();
 
     // set terminal buffer
     void term_set_buffer(uint8_t* buf);
@@ -127,6 +133,8 @@ namespace HAL
             void WriteChar(char c);
             void WriteChar(char c, COL4 fg);
             void WriteChar(char c, COL4 fg, COL4 bg);
+            void WriteChar(char c, Color fg);
+            void WriteChar(char c, Color fg, Color bg);
 
             // write aligned char to position
             void WriteChar(char c, int y, TEXT_ALIGN align);
@@ -137,6 +145,8 @@ namespace HAL
             void Write(char* text);
             void Write(char* text, COL4 fg);
             void Write(char* text, COL4 fg, COL4 bg);
+            void Write(char* text, Color fg);
+            void Write(char* text, Color fg, Color bg);
 
             // write aligned string to position
             void Write(char* text, int y, TEXT_ALIGN align);
@@ -146,10 +156,14 @@ namespace HAL
             // write line to next position
             void WriteLine(char* text);
             void WriteLine(char* text,int num);
-            void WriteLine(char* text,int num,COL4 fg);
-            void WriteLine(char* text,int num,COL4 fg,COL4 bg);
+            void WriteLine(char* text,int num, COL4 fg);
+            void WriteLine(char* text,int num, COL4 fg, COL4 bg);
             void WriteLine(char* text, COL4 fg);
             void WriteLine(char* text, COL4 fg, COL4 bg);
+            void WriteLine(char* text, Color fg);
+            void WriteLine(char* text, Color fg, Color bg);
+            void WriteLine(char* text, int num, Color fg);
+            void WriteLine(char* text, int num, Color fg, Color bg);
 
             // set cursor position
             void SetCursorPos(uint16_t x, uint16_t y);
@@ -168,9 +182,12 @@ namespace HAL
 
             // set colors
             void SetColors(COL4 fg, COL4 bg);
+            void SetColors(Color fg, Color bg);
             void SetColors(uint8_t packed_value);
             void SetForeColor(COL4 color);
             void SetBackColor(COL4 color);
+            void SetForeColor(Color color);
+            void SetBackColor(Color color);
 
             // get colors
             COL4 GetForeColor();

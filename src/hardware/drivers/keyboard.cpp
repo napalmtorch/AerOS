@@ -1,5 +1,4 @@
 #include "hardware/drivers/keyboard.hpp"
-#include <apps/win_term.hpp>
 #include "core/kernel.hpp"
 
 // ---------------------------------------- UPPER CASE ---------------------------------------- //

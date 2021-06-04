@@ -3,7 +3,6 @@
 #include <hardware/memory.hpp>
 #include <hardware/drivers/ata_pio.hpp>
 #include <core/kernel.hpp>
-#include <apps/win_term.hpp>
 
 extern "C"
 {
@@ -755,7 +754,7 @@ extern "C"
                 }
                 fat_free_dir(fs, &subdir);
             }
-            else { term_writeln_ext("File or directory already exists",COL4_RED); }
+            else { term_writeln_ext("File or directory already exists", Graphics::Colors::Red); }
         }
     }
         char *strdup(const char *s) 

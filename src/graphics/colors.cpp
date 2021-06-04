@@ -4,30 +4,62 @@
 
 namespace Graphics
 {
+    bool IsColorEqual(Color a, Color b)
+    {
+        return a.R == b.R && a.G == b.G && a.B == b.B;
+    }
+
     // brute force method for converting vga palette color to rgb
     uint32_t VGAPaletteToRGB(uint8_t color)
     {
-        UNUSED(color);
-        return 0;
+        COL4 c = (COL4)color;
+        switch (c)
+        {
+            case COL4_BLACK:        { return RGBToPackedValue(0x00, 0x00, 0x00); }
+            case COL4_DARK_BLUE:    { return RGBToPackedValue(0x00, 0x00, 0x7F); }
+            case COL4_DARK_GREEN:   { return RGBToPackedValue(0x00, 0x7F, 0x00); }
+            case COL4_DARK_CYAN:    { return RGBToPackedValue(0x00, 0x7F, 0x7F); }
+            case COL4_DARK_RED:     { return RGBToPackedValue(0x7F, 0x00, 0x00); }
+            case COL4_DARK_MAGENTA: { return RGBToPackedValue(0x7F, 0x00, 0x7F); }
+            case COL4_DARK_YELLOW:  { return RGBToPackedValue(0x7F, 0x7F, 0x00); }
+            case COL4_GRAY:         { return RGBToPackedValue(0xAF, 0xAF, 0xAF); }
+            case COL4_DARK_GRAY:    { return RGBToPackedValue(0x7F, 0x7F, 0x7F); }
+            case COL4_BLUE:         { return RGBToPackedValue(0x00, 0x00, 0xFF); }
+            case COL4_GREEN:        { return RGBToPackedValue(0x00, 0xFF, 0x00); }
+            case COL4_CYAN:         { return RGBToPackedValue(0x00, 0xFF, 0xFF); }
+            case COL4_RED:          { return RGBToPackedValue(0xFF, 0x00, 0x00); }
+            case COL4_MAGENTA:      { return RGBToPackedValue(0xFF, 0x00, 0xFF); }
+            case COL4_YELLOW:       { return RGBToPackedValue(0xFF, 0xFF, 0x00); }
+            case COL4_WHITE:        { return RGBToPackedValue(0xFF, 0xFF, 0xFF); }
+            default: { return RGBToPackedValue(0x00, 0x00, 0x00); }
+        }
     }
 
     // brute force method for converting rgb to palette color
     uint8_t RGBToVGAPallete(uint8_t r, uint8_t g, uint8_t b)
     {
-        uint32_t packed = (r << 16) | (g << 8) | b;
-
-        // black
-        if (packed == 0x000000) { return (uint8_t)COL4_BLACK; }
-        // white
-        if (packed == 0xFFFFFF) { return (uint8_t)COL4_WHITE; }
-        // red
-        if (packed == 0xFF0000) { return (uint8_t)COL4_RED; }
-        // blue
-        if (packed == 0x0000FF) { return (uint8_t)COL4_BLUE; }
-
-        return 0;
+        return RGBToVGAPallete({ 255, r, g, b });
     }
-    uint8_t RGBToVGAPallete(Color color) { return RGBToVGAPallete(color.R, color.G, color.B); }
+
+    uint8_t RGBToVGAPallete(Color color)
+    {
+        if (IsColorEqual(color, Colors::Black)) { return 0; }
+        else if (IsColorEqual(color, Colors::DarkBlue)) { return 1; }
+        else if (IsColorEqual(color, Colors::DarkGreen)) { return 2; }
+        else if (IsColorEqual(color, Colors::DarkCyan)) { return 3; }
+        else if (IsColorEqual(color, Colors::DarkRed)) { return 4; }
+        else if (IsColorEqual(color, Colors::DarkMagenta)) { return 5; }
+        else if (IsColorEqual(color, Colors::DarkOrange)) { return 6; }
+        else if (IsColorEqual(color, { 0xAF, 0xAF, 0xAF})) { return 7; }
+        else if (IsColorEqual(color, Colors::DarkGray)) { return 8; }
+        else if (IsColorEqual(color, Colors::Blue)) { return 9; }
+        else if (IsColorEqual(color, Colors::Green)) { return 10; }
+        else if (IsColorEqual(color, Colors::Cyan)) { return 11; }
+        else if (IsColorEqual(color, Colors::Red)) { return 12; }
+        else if (IsColorEqual(color, Colors::Magenta)) { return 13; }
+        else if (IsColorEqual(color, Colors::Yellow)) { return 14; }
+        else if (IsColorEqual(color, Colors::White)) { return 15; }
+    }
 
     // convert rgb value to packed color
     uint32_t RGBToPackedValue(uint8_t r, uint8_t g, uint8_t b)

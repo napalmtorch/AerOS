@@ -1,5 +1,4 @@
 #include "core/kernel.hpp"
-#include <gui/widget.hpp>
 #include <graphics/canvas.hpp>
 #include <graphics/colors.hpp>
 #include <graphics/canvas.hpp>
@@ -70,9 +69,6 @@ namespace System
         // napalm file system
         HAL::NapalmFileSystem NapalmFS;
 
-        // window server
-        System::GUI::XServerHost XServer;
-
         System::Threading::ThreadManager TaskManager;
         
         void InTest()
@@ -86,6 +82,7 @@ namespace System
             InTest();
             
         }
+
         void KernelBase::InitThreaded()
         {
             // this is the kernel's thread pool.
@@ -96,11 +93,10 @@ namespace System
             thread->Start();
 
             WriteLine("Shell initialization started as thread");
-            if (KernelIO::Kernel.Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
-            else if (KernelIO::Kernel.Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
 
             while (true) { Run(); }
         }
+
         void KernelBase::Initialize()
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
@@ -109,18 +105,13 @@ namespace System
             // read multiboot
             Multiboot.Read();
 
-            // initialize terminal interface
-            Terminal.Initialize();
-
-            // prepare terminal
-            Terminal.Clear(COL4_BLACK);
-            Terminal.DisableCursor();
-            Terminal.EnableCursor();
-
-            mem_print_rat();
-
             // initialize fonts
             Graphics::InitializeFonts();
+
+            KernelIO::VESA.Initialize();
+            KernelIO::VESA.SetMode(800, 600, 32);
+
+            term_init();
 
             // parse start parameters
             ParseStartParameters();
@@ -154,31 +145,6 @@ namespace System
             // boot message
             Terminal.WriteLine("Starting AerOS...", COL4_GRAY);
 
-            // vga mode
-            if (Parameters.VGA)
-            {
-                VGA.SetMode(VGA.GetAvailableMode(4));
-                ThrowOK("Initialized VGA driver");
-                ThrowOK("Set VGA mode to 320x200 double buffered");
-                SetDebugConsoleOutput(false);
-            }
-            // vesa mode
-            else if (Parameters.VESA)
-            {
-                KernelIO::VESA.SetMode(640, 480, 32);
-                SetDebugConsoleOutput(false);
-                ThrowOK("Initialized VESA driver");
-                ThrowOK("Set VESA mode to 640x480 double buffered");
-            }
-            // text mode
-            else
-            {
-                VGA.Initialize();
-                VGA.SetMode(VGA.GetAvailableMode(0));
-                ThrowOK("Initialized VGA driver");
-                ThrowOK("Set VGA mode to 80x25");
-            }
-
             // initialize interrupt service routines
             HAL::CPU::InitializeISRs();
             
@@ -201,6 +167,7 @@ namespace System
             char test[32];
             strdec((uint32_t)smbios.CheckMachine(),test);
             bool FS_Disable=false;
+
             if(!Parameters.SMBIOS)
             {
                 Terminal.Write("Detected Machine: ");
@@ -266,7 +233,7 @@ namespace System
                     ThrowOK("Initialized NAPALM file system");
                 }
             }
-           // init_ps2();
+
             // initialize keyboard
             Keyboard.Initialize();
             Keyboard.BufferEnabled = true;
@@ -280,19 +247,15 @@ namespace System
             HAL::CPU::InitializePIT(60, nullptr);
             ThrowOK("Initialized PIT controller at 60 Hz");
 
-            // enable interrupts
-            asm volatile("cli");
-            HAL::CPU::EnableInterrupts();
-            ThrowOK("Re-enabled interrupts");
-
-            // initialize x server
-            XServer.Initialize();
-
             // initialize task manager
             TaskManager = System::Threading::ThreadManager();
 
             auto kernel_thread = tinit([] () {KernelIO::Kernel.InitThreaded();});
             tstart(kernel_thread);
+
+            // enable interrupts
+            HAL::CPU::EnableInterrupts();
+            ThrowOK("Enabled interrupts");
         }
         // parse start parameters
         void KernelBase::ParseStartParameters()
@@ -340,11 +303,8 @@ namespace System
         // kernel core code, runs in a loop
         void KernelBase::Run()
         {      
-            if (XServer.IsRunning())
-            {
-                XServer.Update();
-                XServer.Draw();
-            }
+            term_draw();
+            VESA.Render();
         }
         
         // triggered when a kernel panic is injected
@@ -363,52 +323,21 @@ namespace System
             char disclaimer[] = "Since there is no documentation you are basically fucked now xD";
             char temp[100]{ '\0' }; //make sure we have enough space for error messages
             strcat(temp,err);
-            strcat(temp,msg);
-            if(XServer.Running)
-            {
-                uint32_t panic_width = strlen(panic_string) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-                uint32_t panic_center = (VESA.GetWidth() / 2) - (panic_width / 2);
-                uint32_t expl_width = strlen(expl) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-                uint32_t expl_center = (VESA.GetWidth() / 2) - (expl_width / 2);
-                uint32_t msg_width = strlen(temp) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-                uint32_t msg_center = (VESA.GetWidth() / 2) - (msg_width / 2);
-                uint32_t halt_width = strlen(halt) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-                uint32_t halt_center = (VESA.GetWidth() / 2) - (halt_width / 2);
-                uint32_t disc_width = strlen(disclaimer) * (Graphics::FONT_8x16_CONSOLAS.GetWidth() + Graphics::FONT_8x16_CONSOLAS.GetHorizontalSpacing());
-                uint32_t disc_center = (VESA.GetWidth() / 2) - (disc_width / 2);
-                Graphics::Canvas::Clear(Graphics::Colors::DarkBlue);
-                yy +=64;
-                Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                yy +=32;
-                Graphics::Canvas::DrawString(expl_center,yy,expl,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                yy +=32;
-                Graphics::Canvas::DrawString(msg_center,yy,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                Graphics::Canvas::DrawString(msg_center,yy+1,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                Graphics::Canvas::DrawString(msg_center,yy+2,temp,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                yy +=32;
-                Graphics::Canvas::DrawString(halt_center,yy,halt,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                Graphics::Canvas::DrawString(disc_center,yy,disclaimer,Graphics::Colors::White,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                yy +=32;
-                Graphics::Canvas::DrawString(panic_center,yy,panic_string,Graphics::Colors::Red,Graphics::Colors::DarkBlue,Graphics::FONT_8x16_CONSOLAS);
-                Graphics::Canvas::Display();              
-            }
-            else
-            {          
-                Terminal.Clear(COL4_DARK_BLUE);
-                Terminal.SetForeColor(COL4_WHITE);
-                Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER, COL4_WHITE);
-                yy += 2;
-                Terminal.Write(expl, yy++, TEXT_ALIGN_CENTER);
-                yy += 2;
-                Terminal.Write(err, yy++, TEXT_ALIGN_CENTER);
-                Terminal.Write(msg, yy++, TEXT_ALIGN_CENTER, COL4_RED);
-                yy += 2;
-                Terminal.Write(halt, yy++, TEXT_ALIGN_CENTER, COL4_RED);
-                Terminal.NewLine();
-                Terminal.NewLine();
-                Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER);
-                Terminal.DisableCursor();
-            }
+            strcat(temp,msg);       
+            Terminal.Clear(COL4_DARK_BLUE);
+            Terminal.SetForeColor(COL4_WHITE);
+            Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER, COL4_WHITE);
+            yy += 2;
+            Terminal.Write(expl, yy++, TEXT_ALIGN_CENTER);
+            yy += 2;
+            Terminal.Write(err, yy++, TEXT_ALIGN_CENTER);
+            Terminal.Write(msg, yy++, TEXT_ALIGN_CENTER, COL4_RED);
+            yy += 2;
+            Terminal.Write(halt, yy++, TEXT_ALIGN_CENTER, COL4_RED);
+            Terminal.NewLine();
+            Terminal.NewLine();
+            Terminal.Write(panic_string, yy++, TEXT_ALIGN_CENTER);
+            Terminal.DisableCursor();
         }
 
         // triggered when a handled interrupt call is finished
@@ -424,6 +353,8 @@ namespace System
                 RTC.Read();
                 delta = 0;
             }
+
+            term_cursor_flash();
         }
 
         // triggered when interrupt 0x80 is triggered

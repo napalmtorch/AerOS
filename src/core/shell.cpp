@@ -1,12 +1,5 @@
 #include <core/shell.hpp>
 #include <core/kernel.hpp>
-#include <apps/win_term.hpp>
-#include <apps/win_tview.hpp>
-#include <apps/win_bmp.hpp>
-#include <apps/win_empty.hpp>
-#include <apps/win_raycast.hpp>
-#include <apps/win_welcome.hpp>
-#include <gui/winmgr.hpp>
 #include <hardware/sudoers.hpp>
 #include <hardware/fat.hpp>
 #include <hardware/hostname.hpp>
@@ -238,8 +231,7 @@ namespace System
                 {
                     KernelIO::Terminal.Write("- ");
                     KernelIO::Terminal.Write(KernelIO::Shell.GetCommand(i).Name);
-                    if (!KernelIO::XServer.IsRunning()) { KernelIO::Terminal.SetCursorX(16); }
-                    else { ((Applications::WinTerminal*)KernelIO::Terminal.Window)->SetCursorX(16); }
+                    KernelIO::Terminal.SetCursorX(16);
                     KernelIO::Terminal.WriteLine(KernelIO::Shell.GetCommand(i).Help, COL4_GRAY);
                 }
             }
@@ -348,67 +340,12 @@ namespace System
 
         void GFX(char* input)
         {
-            if (KernelIO::Terminal.Window != nullptr || KernelIO::XServer.Running) { KernelIO::Terminal.WriteLine("Graphics mode already running", COL4_RED); return; }
-
-            KernelIO::VESA.SetMode(640, 480, 32);
-            KernelIO::SetDebugConsoleOutput(false);
-            KernelIO::ThrowOK("Initialized VESA driver");
-            KernelIO::ThrowOK("Set VESA mode to 640x480 double buffered");
-
-            
-            // initialize keyboard
-            KernelIO::Keyboard.BufferEnabled = false;
-            KernelIO::Keyboard.Event_OnEnterPressed = nullptr;
-
-            // initialize mouse
-            outb(0x64, 0xA8);
-            outb(0x64, 0x20);
-            uint8_t status = inb(0x60) | 2;
-            outb(0x64, 0x60);
-            outb(0x60, status);
-            outb(0x64, 0xD4);
-            outb(0x60, 0xF4);
-            inb(0x60);
-            
-            // enable interrupts
-            asm volatile("cli");
-            HAL::CPU::EnableInterrupts();
-
-            KernelIO::XServer.Initialize();
-            KernelIO::XServer.Start();
-            
+              
         }
 
         void TEXTVIEW(char* input)
         {
-            if (KernelIO::Terminal.Window != nullptr || KernelIO::XServer.Running) 
-            { 
-                char* file = strsplit_index(input, 1, ' ');
-                debug_write("Opening: ");
-                debug_writeln(file);
-                if(fat_file_exists(file))
-                {
-                    if(StringContains(strlower(input),".txt") || StringContains(strlower(input),".cfg") || streql("/etc/motd",file)) 
-                    { 
-                        KernelIO::XServer.WindowMgr.Open(new System::Applications::WinTextViewer(120, 120, file));
-                    }
-                    else
-                    {
-                        KernelIO::Terminal.Write("'", COL4_RED);
-                        KernelIO::Terminal.Write(input, COL4_RED);
-                        KernelIO::Terminal.WriteLine("' is not a text file, TextViewer cannot display it!", COL4_RED); return;
-                    }
-                }
-                else
-                {
-                    KernelIO::Terminal.Write("Could not find File: ", COL4_RED);
-                    KernelIO::Terminal.WriteLine(input, COL4_RED); return;
-                }
-            }
-            else
-            {
-                KernelIO::Terminal.WriteLine("Cannot open application in text mode!", COL4_RED); return;
-            }
+            
         }
 
         void LIST_TEST(char*input)
@@ -505,11 +442,7 @@ namespace System
             char* app = strsplit_index(input, 1, ' ');
             strlower(app);
 
-            // using a switch case temporarily, too tired but will fix tomorrow
-            if (streql(app, "imgview")) { KernelIO::XServer.WindowMgr.Open(new Applications::WinBitmapViewer(120, 120)); }
-            else if (streql(app, "raycaster")) { KernelIO::XServer.WindowMgr.Open(new Applications::WinRaycaster(160, 120)); }
-            else if (streql(app, "welcome")) { KernelIO::XServer.WindowMgr.Open(new Applications::WinWelcome(128, 128)); }
-            else { KernelIO::Terminal.WriteLine("Invalid application", COL4_RED); }
+            mem_free(app);
         }
 
         void RAT(char* input)

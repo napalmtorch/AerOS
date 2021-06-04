@@ -28,7 +28,7 @@ extern "C"
         if (debug_console_enabled)
         {
             term_write("[");
-            term_write_ext(header, (COL4)fg);
+            term_write_ext(header, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)));
             term_write("] ");
             term_writeln(msg);
         }
@@ -79,7 +79,7 @@ extern "C"
         // write text to console if enabled
         if (debug_console_enabled)
         {
-            term_write_ext(text, color);
+            term_write_ext(text, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(color)));
         }
 
         // write text to serial if enabled
@@ -113,7 +113,7 @@ extern "C"
         // write text to console if enabled
         if (debug_console_enabled)
         {
-            term_writeln_ext(text, color);
+            term_writeln_ext(text, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(color)));
         }
 
         // write text to serial if enabled

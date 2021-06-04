@@ -28,7 +28,6 @@
 #include "core/shell.hpp"
 #include "hardware/fat.hpp"
 #include "hardware/nfs.hpp"
-#include "gui/xserver.hpp"
 #include "hardware/drivers/vesa.hpp"
 #include "lib/multitasking.h"
 
@@ -134,9 +133,6 @@ static void pit_callback(registers_t regs);
 
             // shell
             extern System::ShellHost Shell;
-
-            // window server
-            extern System::GUI::XServerHost XServer;
 
             // acpi
             extern HAL::ACPI ACPI;
