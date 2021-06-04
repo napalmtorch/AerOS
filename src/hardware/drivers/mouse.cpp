@@ -67,26 +67,33 @@ namespace HAL
     void PS2Mouse::OnInterrupt()
     {
         uint8_t status = inb(0x64);
-        if (!(status & 0x20)) { return; }
+        if ((!(status & 1)) == 1) { Cycle = 0; return; }
+        if ((!(status & 2)) == 0) { Cycle = 0; return; }
+        if (!(status & 0x20)) { Cycle = 0; return; }
 
-        Buffer[Offset] = inb(0x60);
-        Offset = (Offset + 1) % 3;
-        if (Offset == 0)
+        switch (Cycle)
         {
-            if (Buffer[1] != 0 || Buffer[2] != 0)
+            case 0:
             {
-                OnMouseMove((int8_t)Buffer[1], -((int8_t)Buffer[2]));
+                Buffer[0] = inb(0x60);
+                Cycle++;
+                break;
             }
-
-            for (uint8_t i = 0; i < 3; i++)
+            case 1:
             {
-                if ((Buffer[0] & (0x1 << i)) != (Buttons & (0x1 << i)))
-                {
-                    if ((uint8_t)(Buttons & (0x1 << i))) { LeftPressed = ButtonState::Released; } else { LeftPressed = ButtonState::Pressed; }
-                }
+                Buffer[1] = inb(0x60);
+                Cycle++;
+                break;
             }
-
-            Buttons = Buffer[0];
+            case 2:
+            {
+                Buffer[2] = inb(0x60);
+                OnMouseMove(Buffer[1], -Buffer[2]);
+                LeftPressed = (ButtonState)(Buffer[0] & 0b00000001);
+                RightPressed = (ButtonState)((Buffer[0] & 0b00000010) >> 1);
+                Cycle = 0;
+                break;
+            }
         }
     }
 

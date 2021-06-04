@@ -102,6 +102,7 @@ void System::Threading::ThreadManager::thread_switch(uint32_t* regs)
     *regs = (uint32_t)(KernelIO::TaskManager.CurrentThread->regs_state);
     init = true;
     //KernelIO::WriteLine("Switching tasks");
+    KernelIO::Kernel.OnInterrupt();
 }
 void System::Threading::ThreadManager::LoadThread(Thread* thread)
 {

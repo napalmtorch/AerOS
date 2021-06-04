@@ -10,17 +10,10 @@ extern "C"
     uint32_t kernel_end_real = (uint32_t)&kernel_end;
 }
 
-static void pit_callback(registers_t regs)
-{
-    System::KernelIO::Kernel.OnInterrupt();
-    UNUSED(regs);
-}
-
 void enter_pressed(char* input)
 {
     System::KernelIO::Kernel.OnEnterPressed(input);
 }
-
 
 
 namespace System
@@ -106,14 +99,13 @@ namespace System
             if (KernelIO::Kernel.Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
             else if (KernelIO::Kernel.Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
 
-            while (true);
+            while (true) { Run(); }
         }
         void KernelBase::Initialize()
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
             MemoryManager.Initialize(true);
 
-            
             // read multiboot
             Multiboot.Read();
 
@@ -280,15 +272,12 @@ namespace System
             Keyboard.BufferEnabled = true;
             Keyboard.Event_OnEnterPressed = enter_pressed;
             ThrowOK("Initialized PS/2 keyboard driver");
-            Terminal.WriteLine("The value is %s",12);
-            Terminal.WriteLine("The hex value is 0x%x",12);
-            Terminal.WriteLine("The value is %s",12,COL4_CYAN);
-            Terminal.WriteLine("The hex value is 0x%x",12,COL4_BLACK,COL4_DARK_GREEN);
+            
             Mouse.Initialize();
             ThrowOK("Initialized PS/2 mouse driver");
 
             // initialize pit
-            HAL::CPU::InitializePIT(60, pit_callback);
+            HAL::CPU::InitializePIT(60, nullptr);
             ThrowOK("Initialized PIT controller at 60 Hz");
 
             // enable interrupts

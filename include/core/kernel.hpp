@@ -42,6 +42,7 @@ extern "C"
 
 void enter_pressed(char* input);
 
+static void pit_callback(registers_t regs);
 
 #ifdef __cplusplus
     // main namespace of the System library
