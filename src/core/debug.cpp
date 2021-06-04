@@ -50,17 +50,24 @@ extern "C"
     // throw kernel panic message
     void debug_throw_panic(char* msg)
     {
-        /* TODO: implement proper panic screen */
+        if (System::KernelIO::TaskManager.GetCurrentThread() == NULL)
+        {
+            /* TODO: implement proper panic screen */
 
-        // temporary solution
-        debug_throw_message(MSG_TYPE_ERROR, msg);
+            // temporary solution
+            debug_throw_message(MSG_TYPE_ERROR, msg);
 
-        // call kernel's OnPanic function
-        System::KernelIO::Kernel.OnPanic(msg);
+            // call kernel's OnPanic function
+            System::KernelIO::Kernel.OnPanic(msg);
 
-        // stop execution
-        __asm__ __volatile__("cli");
-        __asm__ __volatile__("hlt");
+            // stop execution
+            __asm__ __volatile__("cli");
+            __asm__ __volatile__("hlt");
+        }
+        else 
+        {
+            System::KernelIO::TaskManager.GetCurrentThread()->OnUnhandledException(msg);
+        }
     }
 
     // write string of text

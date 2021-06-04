@@ -59,6 +59,13 @@ System::Threading::ThreadState System::Threading::Thread::GetState()
 {
     return this->state;
 }
+void System::Threading::Thread::OnUnhandledException(char* exception)
+{
+    KernelIO::Terminal.WriteLine("process with PID %s was killed due to an error.", this->state.PID, COL4_DARK_RED);
+    KernelIO::Terminal.WriteLine(exception, COL4_GRAY);
+    state.state = State::Failed;
+    KernelIO::TaskManager.UnloadThread(this);
+}
 
 System::Threading::ThreadManager::ThreadManager()
 {
@@ -70,12 +77,13 @@ static bool init = false;
 void System::Threading::ThreadManager::thread_switch(uint32_t* regs)
 {
     registers_t* _regs = (registers_t*)*regs;
-    if (KernelIO::TaskManager.loaded_threads.Count == 0 || KernelIO::TaskManager.loaded_threads.ToArray() == nullptr) return;
-    if (init) (*KernelIO::TaskManager.loaded_threads.Get(KernelIO::TaskManager.CurrentPos))->regs_state = _regs;
+    if (KernelIO::TaskManager.count == 0 || KernelIO::TaskManager.loaded_threads == nullptr) return;
+    if (init && KernelIO::TaskManager.CurrentPos > 0) KernelIO::TaskManager.loaded_threads[KernelIO::TaskManager.CurrentPos]->regs_state = _regs;
 
-    if (++KernelIO::TaskManager.CurrentPos >= KernelIO::TaskManager.loaded_threads.Count)
+    if (++KernelIO::TaskManager.CurrentPos >= KernelIO::TaskManager.count)
         KernelIO::TaskManager.CurrentPos = 0;
-    Thread* next = (*KernelIO::TaskManager.loaded_threads.Get(KernelIO::TaskManager.CurrentPos));
+    
+    Thread* next = KernelIO::TaskManager.loaded_threads[KernelIO::TaskManager.CurrentPos];
 
     if (next == nullptr) { return; }
 
@@ -93,24 +101,44 @@ void System::Threading::ThreadManager::thread_switch(uint32_t* regs)
     KernelIO::TaskManager.CurrentThread = next;
     *regs = (uint32_t)(KernelIO::TaskManager.CurrentThread->regs_state);
     init = true;
+    //KernelIO::WriteLine("Switching tasks");
 }
 void System::Threading::ThreadManager::LoadThread(Thread* thread)
 {
-    thread->state.PID = loaded_threads.Count;
-    loaded_threads.Add(thread);
-    KernelIO::ThrowOK("loaded thread");
+    thread->state.PID = count;
+    Thread** temp = new Thread*[count+1];
+    if (loaded_threads != nullptr) { mem_copy((uint8_t*)loaded_threads, (uint8_t*)temp, sizeof(Thread*)*count); delete loaded_threads; }
+    count++;
+    loaded_threads = temp;
+    loaded_threads[count-1] = thread;
 }
 void System::Threading::ThreadManager::UnloadThread(Thread* thread)
 {
+    if (thread == CurrentThread) CurrentThread = nullptr;
     thread->state.PID = -1;
-    loaded_threads.Remove(thread);
+    Thread** temp = new Thread*[count-1];
+    int res = 0;
+    for (int i = 0, s = 0; i < count; i++)
+    {
+        if (loaded_threads[i] != thread)
+        {
+            temp[s] = loaded_threads[i];
+            s++;
+        }
+        else { res = i; }
+    }
+    --count;
+    if (CurrentPos >= res) CurrentPos--;
+    delete loaded_threads;
+    loaded_threads = temp;
+    temp = nullptr;
 }
 List<uint64_t> System::Threading::ThreadManager::GetPids()
 {
     List<uint64_t> result;
-    for (int i = 0; i < loaded_threads.Count; i++)
+    for (int i = 0; i < count; i++)
     {
-        result.Add((*loaded_threads.Get(i))->state.PID);
+        result.Add(loaded_threads[i]->state.PID);
     }
     return result;
 }

@@ -66,6 +66,9 @@ void enter_pressed(char* input);
                     // start parameters
                     StartParameters Parameters;
                     
+                    // called to initialize kernel as threaded function
+                    void InitThreaded();
+
                     // called as first function before kernel run
                     void Initialize();
 

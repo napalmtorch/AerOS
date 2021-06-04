@@ -84,13 +84,27 @@ namespace System
         
         void InTest()
         {
-            Terminal.WriteLine("Your mom pussy");
+            while (true);
         }
         
         // called as first function before kernel run
         void Test()
         {
             InTest();
+            
+        }
+        void KernelBase::InitThreaded()
+        {
+            // this is the kernel's thread pool.
+            // load here every useful thread for kernel initialization
+            
+            // ready shell
+            auto thread = tinit([]() {Shell.Initialize(); });
+            thread->Start();
+
+            WriteLine("Shell initialization started as thread");
+            if (KernelIO::Kernel.Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
+            else if (KernelIO::Kernel.Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
         }
         void KernelBase::Initialize()
         {
@@ -285,13 +299,9 @@ namespace System
 
             // initialize task manager
             TaskManager = System::Threading::ThreadManager();
-            
-            // ready shell
-            auto thread = tinit([]() {Shell.Initialize();});
-            thread->Start();
-            WriteLine("Shell initialization started as thread");
-            if (Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
-            else if (Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
+
+            auto kernel_thread = tinit([] () {KernelIO::Kernel.InitThreaded();});
+            tstart(kernel_thread);
         }
         // parse start parameters
         void KernelBase::ParseStartParameters()

@@ -31,11 +31,14 @@ namespace System
             static void  handle();
             ThreadStart  entry;
             bool         initialized;
+            Thread();
         public:
             Thread(ThreadStart protocol);
 
             bool Start();
             bool Stop();
+
+            void OnUnhandledException(char* exception);
 
             ThreadState GetState();
         };
@@ -44,8 +47,9 @@ namespace System
         friend class Thread;
         private:
             uint32_t CurrentPos = 0;
+            uint32_t count = 0;
             Thread* CurrentThread = NULL;
-            List<Thread*> loaded_threads = List<Thread*>();
+            Thread** loaded_threads = nullptr;
             static void thread_switch(uint32_t* regs);
             void LoadThread(Thread* thread);
             void UnloadThread(Thread* thread);
