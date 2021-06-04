@@ -89,7 +89,10 @@ namespace System
         {
             // this is the kernel's thread pool.
             // load here every useful thread for kernel initialization
-            
+
+            //We load a test thread currently which does nothing, but aslong as this runs we know nested threads work
+            //if not .... blame the italian plumber
+            auto test_thread = tinit("Test",[]() { Test(); }); test_thread->Start();
             Shell.Initialize();
 
             while (true) { Run(); }
