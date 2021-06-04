@@ -70,14 +70,14 @@ static bool init = false;
 void System::Threading::ThreadManager::thread_switch(uint32_t* regs)
 {
     registers_t* _regs = (registers_t*)*regs;
-    if (KernelIO::TaskManager.loaded_threads.Count == 0) return;
+    if (KernelIO::TaskManager.loaded_threads.Count == 0 || KernelIO::TaskManager.loaded_threads.ToArray() == nullptr) return;
     if (init) (*KernelIO::TaskManager.loaded_threads.Get(KernelIO::TaskManager.CurrentPos))->regs_state = _regs;
 
     if (++KernelIO::TaskManager.CurrentPos >= KernelIO::TaskManager.loaded_threads.Count)
         KernelIO::TaskManager.CurrentPos = 0;
     Thread* next = (*KernelIO::TaskManager.loaded_threads.Get(KernelIO::TaskManager.CurrentPos));
 
-    if (next == nullptr) { KernelIO::ThrowPanic("multitasking was unable to get the next thread"); }
+    if (next == nullptr) { return; }
 
     if (next->state.state == State::Failed)
     {

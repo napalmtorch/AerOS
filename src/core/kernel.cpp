@@ -81,12 +81,16 @@ namespace System
         System::GUI::XServerHost XServer;
 
         System::Threading::ThreadManager TaskManager;
+        
+        void InTest()
+        {
+            Terminal.WriteLine("Your mom pussy");
+        }
+        
         // called as first function before kernel run
         void Test()
         {
-            while(true) {
-                debug_writeln("Thread Running!");
-            }
+            InTest();
         }
         void KernelBase::Initialize()
         {
@@ -278,13 +282,14 @@ namespace System
 
             // initialize x server
             XServer.Initialize();
-            auto testd = new System::Threading::ThreadManager();
-                       
-            auto thread = tinit(Test);
-           // auto threads = tinit([]() { while (true) ThrowOK("test"); });
-            tstart(thread);
+
+            // initialize task manager
+            TaskManager = System::Threading::ThreadManager();
+            
             // ready shell
-            Shell.Initialize();
+            auto thread = tinit([]() {Shell.Initialize();});
+            thread->Start();
+            WriteLine("Shell initialization started as thread");
             if (Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
             else if (Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
         }
