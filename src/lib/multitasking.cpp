@@ -63,6 +63,7 @@ System::Threading::ThreadState System::Threading::Thread::GetState()
 System::Threading::ThreadManager::ThreadManager()
 {
     HAL::CPU::RegisterIRQ(IRQ0, ThreadManager::thread_switch);
+    debug_writeln("Registered ThreadManager");
 }
 
 static bool init = false;

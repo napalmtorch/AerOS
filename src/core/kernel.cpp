@@ -82,11 +82,18 @@ namespace System
 
         System::Threading::ThreadManager TaskManager;
         // called as first function before kernel run
+        void Test()
+        {
+            while(true) {
+                debug_writeln("Thread Running!");
+            }
+        }
         void KernelBase::Initialize()
         {
             // initialize memory manager - we need memory first to parse start parameters effectively
             MemoryManager.Initialize(true);
 
+            
             // read multiboot
             Multiboot.Read();
 
@@ -271,17 +278,16 @@ namespace System
 
             // initialize x server
             XServer.Initialize();
-            auto thread = tinit([]() { while (true) ThrowOK("test"); });
-            auto threads = tinit([]() { while (true) ThrowOK("test"); });
+            auto testd = new System::Threading::ThreadManager();
+                       
+            auto thread = tinit(Test);
+           // auto threads = tinit([]() { while (true) ThrowOK("test"); });
             tstart(thread);
-            tstart(threads);
             // ready shell
             Shell.Initialize();
             if (Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
             else if (Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
         }
-
-
         // parse start parameters
         void KernelBase::ParseStartParameters()
         {
