@@ -65,5 +65,6 @@ namespace System
         void TIME(char* input);
         void RAT(char* input);
         void FORMAT(char* input);
+        void PS(char* input);
     }
 }

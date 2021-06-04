@@ -65,6 +65,7 @@ namespace System
         RegisterCommand("time",       "Display time", "",                     Commands::TIME);
         RegisterCommand("rat",        "Show ram allocation table", "",        Commands::RAT);    
         RegisterCommand("format",      "Format a disk to the NapalmFS format","",Commands::FORMAT);
+        RegisterCommand("ps",          "List PIDS","",                          Commands::PS);
 
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
@@ -423,6 +424,17 @@ namespace System
             test.~List();
             */
         }
+
+        void PS(char* input)
+        {
+            List<uint64_t> result = KernelIO::TaskManager.GetPids();
+            KernelIO::Terminal.WriteLine("Total Pids: %s",result.Count);
+            for (int i=0; i < result.Count; i++)
+            {
+                KernelIO::Terminal.WriteLine("PID: %s",*result.Get(i));
+            }
+        }
+
         void CD(char* input)
         {
             System::Security::Sudo sudo;

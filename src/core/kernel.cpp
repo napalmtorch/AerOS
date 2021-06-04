@@ -270,7 +270,9 @@ namespace System
             // initialize x server
             XServer.Initialize();
             auto thread = tinit([]() { while (true) ThrowOK("test"); });
+            auto threads = tinit([]() { while (true) ThrowOK("test"); });
             tstart(thread);
+            tstart(threads);
             // ready shell
             Shell.Initialize();
             if (Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
