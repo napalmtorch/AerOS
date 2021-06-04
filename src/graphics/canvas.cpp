@@ -234,7 +234,7 @@ namespace Graphics
                for (int32_t xx = 0; xx < bitmap->Width; xx++)
                {
                    uint32_t color = data[(xx + (yy * bitmap->Width))];
-                   DrawPixel(x + xx, y + yy, color);
+                   DrawPixel(x + (bitmap->Width - xx - 1), y + yy, color);
                }
            }
         }
