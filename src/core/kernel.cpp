@@ -105,6 +105,8 @@ namespace System
             WriteLine("Shell initialization started as thread");
             if (KernelIO::Kernel.Parameters.VGA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
             else if (KernelIO::Kernel.Parameters.VESA) { XServer.Start(); ThrowOK("Successfully started XServer"); }
+
+            while (true);
         }
         void KernelBase::Initialize()
         {

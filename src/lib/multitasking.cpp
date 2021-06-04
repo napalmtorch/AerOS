@@ -78,7 +78,7 @@ void System::Threading::ThreadManager::thread_switch(uint32_t* regs)
 {
     registers_t* _regs = (registers_t*)*regs;
     if (KernelIO::TaskManager.count == 0 || KernelIO::TaskManager.loaded_threads == nullptr) return;
-    if (init && KernelIO::TaskManager.CurrentPos > 0) KernelIO::TaskManager.loaded_threads[KernelIO::TaskManager.CurrentPos]->regs_state = _regs;
+    if (init) KernelIO::TaskManager.loaded_threads[KernelIO::TaskManager.CurrentPos]->regs_state = _regs;
 
     if (++KernelIO::TaskManager.CurrentPos >= KernelIO::TaskManager.count)
         KernelIO::TaskManager.CurrentPos = 0;
@@ -128,10 +128,10 @@ void System::Threading::ThreadManager::UnloadThread(Thread* thread)
         else { res = i; }
     }
     --count;
-    if (CurrentPos >= res) CurrentPos--;
+    delete loaded_threads[res];
     delete loaded_threads;
+    CurrentPos = -1;
     loaded_threads = temp;
-    temp = nullptr;
 }
 List<uint64_t> System::Threading::ThreadManager::GetPids()
 {
