@@ -3,7 +3,7 @@ plugin_ctrl: unmapped=true, biosdev=true, speaker=true, extfpuirq=true, parallel
 config_interface: textconfig
 display_library: x, options="gui_debug"
 memory: host=256, guest=256
-romimage: file="/usr/local/share/bochs/BIOS-bochs-latest", address=0x00000000, options=none
+romimage: file="/usr/share/bochs/BIOS-bochs-latest", address=0x00000000, options=none
 vgaromimage: file="/usr/share/bochs/VGABIOS-lgpl-latest"
 boot: cdrom
 floppy_bootsig_check: disabled=0

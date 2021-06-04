@@ -28,10 +28,13 @@ iso:
 	grub-mkrescue -d /usr/lib/grub/i386-pc --compress=xz -o AerOS.iso cdrom 'bin/isodir/boot/kernel.bin' -V 'AerOS'
 
 nfs:
-	qemu-system-i386 -cpu host -m 256M -vga std -hda 'disks/nfs_disk.img' -cdrom 'AerOS.iso' -name 'AerOS Development Copy' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm -rtc base=localtime
+	qemu-system-i386 -cpu host -m 256M -vga std -drive file=disks/nfs_disk.img,format=raw --no-reboot --no-shutdown -cdrom 'AerOS.iso' -name 'AerOS Development Copy' -serial stdio -boot d -device e1000 -enable-kvm -rtc base=localtime
 
 run:
 	qemu-system-i386 -m 256M -vga std -drive file=disks/fat32.img,format=raw -cdrom 'AerOS.iso' -serial stdio -boot d -rtc base=localtime -soundhw all -device e1000 -enable-kvm -cpu host -name "AerOS Development Copy"
 
 bochs:
 	/usr/bin/bochs -q -f ./configs/bochsrc.txt 
+
+old:
+	scripts/build_nfs.sh
