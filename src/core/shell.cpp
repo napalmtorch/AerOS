@@ -363,12 +363,6 @@ namespace System
 
         void PS(char* input)
         {
-            List<uint64_t> result = KernelIO::TaskManager.GetPids();
-            KernelIO::Terminal.WriteLine("Total Pids: %s",result.Count);
-            for (int i=0; i < result.Count; i++)
-            {
-                KernelIO::Terminal.WriteLine("PID: %s",*result.Get(i));
-            }
             KernelIO::TaskManager.PrintThreads();
         }
 
