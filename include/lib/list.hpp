@@ -124,6 +124,7 @@ namespace System
         }
         Type* ToArray()
         {
+            if (list == nullptr) return nullptr;
             Type* array = new Type[Count];
             for (int i = 0; i < Count; i++)
                 array[i] = *list[i];
