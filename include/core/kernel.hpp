@@ -30,6 +30,7 @@
 #include "hardware/nfs.hpp"
 #include "hardware/drivers/vesa.hpp"
 #include "lib/multitasking.h"
+#include "gui/xserver.hpp"
 
 extern "C" 
 {
@@ -146,7 +147,9 @@ static void pit_callback(registers_t regs);
             // napalm file system
             extern HAL::NapalmFileSystem NapalmFS;
 
-            extern System::Threading::ThreadManager TaskManager;
+            extern Threading::ThreadManager TaskManager;
+
+            extern XServerHost XServer;
         }
     }
 #else

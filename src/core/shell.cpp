@@ -339,7 +339,7 @@ namespace System
 
         void GFX(char* input)
         {
-              
+            KernelIO::XServer.Start();
         }
 
         void TEXTVIEW(char* input)
@@ -369,6 +369,7 @@ namespace System
             {
                 KernelIO::Terminal.WriteLine("PID: %s",*result.Get(i));
             }
+            KernelIO::TaskManager.PrintThreads();
         }
 
         void CD(char* input)

@@ -69,7 +69,9 @@ namespace System
         // napalm file system
         HAL::NapalmFileSystem NapalmFS;
 
-        System::Threading::ThreadManager TaskManager;
+        Threading::ThreadManager TaskManager;
+
+        XServerHost XServer;
         
         void InTest()
         {
@@ -88,11 +90,7 @@ namespace System
             // this is the kernel's thread pool.
             // load here every useful thread for kernel initialization
             
-            // ready shell
-            auto thread = tinit([]() {Shell.Initialize(); });
-            thread->Start();
-
-            WriteLine("Shell initialization started as thread");
+            Shell.Initialize();
 
             while (true) { Run(); }
         }
@@ -241,6 +239,8 @@ namespace System
             ThrowOK("Initialized PS/2 keyboard driver");
             
             Mouse.Initialize();
+            Mouse.SetBounds(0, 0, VESA.GetWidth(), VESA.GetHeight());
+            Mouse.SetPosition(VESA.GetWidth() / 2, VESA.GetHeight() / 2);
             ThrowOK("Initialized PS/2 mouse driver");
 
             // initialize pit
@@ -250,7 +250,7 @@ namespace System
             // initialize task manager
             TaskManager = System::Threading::ThreadManager();
 
-            auto kernel_thread = tinit([] () {KernelIO::Kernel.InitThreaded();});
+            auto kernel_thread = tinit("kernel", [] () { KernelIO::Kernel.InitThreaded(); });
             tstart(kernel_thread);
 
             // enable interrupts
@@ -302,8 +302,14 @@ namespace System
 
         // kernel core code, runs in a loop
         void KernelBase::Run()
-        {      
-            term_draw();
+        {     
+            if (XServer.IsRunning())
+            {
+                XServer.Update();
+                XServer.Draw();
+            }
+            else { term_draw(); }
+
             VESA.Render();
         }
         
@@ -312,7 +318,7 @@ namespace System
         {
             if(fat_master_fs != NULL)
             {
-            fs_destroy(fat_master_fs);
+                fs_destroy(fat_master_fs);
             }
             uint8_t yy = 0; 
             // messages 
@@ -354,7 +360,8 @@ namespace System
                 delta = 0;
             }
 
-            term_cursor_flash();
+            if (!XServer.IsRunning()) { term_cursor_flash(); }
+            else { XServer.OnInterrupt(); }
         }
 
         // triggered when interrupt 0x80 is triggered

@@ -7,11 +7,16 @@
 using namespace System;
 using namespace System::Threading;
         
-System::Threading::Thread::Thread(ThreadStart protocol)
+System::Threading::Thread::Thread(char* n, ThreadStart protocol)
 {
     stack = (void*)(new char[1*1024*1024]);
     regs_state = (registers_t*)((uint32_t)stack + (1*1024*1024) - sizeof(registers_t));
-    
+
+    for (int i = 0; i < 64; i++)
+    {
+        if (i < strlen(n)) { stradd(name, n[i]); }
+    }
+
     regs_state->edi = 0x00;
     regs_state->esi = 0x00;
     regs_state->ebp = 0x00;
@@ -38,6 +43,8 @@ bool System::Threading::Thread::Start()
     if (initialized) return false;
     KernelIO::TaskManager.LoadThread(this);
     state.state = State::Running;
+    KernelIO::Write("Started thread: ", COL4_GREEN);
+    KernelIO::WriteLine(name);
     initialized = true;
     return true;
 }
@@ -45,6 +52,8 @@ bool System::Threading::Thread::Stop()
 {
     if (!initialized) return false;
     state.state = State::Halted;
+    KernelIO::Write("Stopped thread: ", COL4_RED);
+    KernelIO::WriteLine(name);
     return true;
 }
 void System::Threading::Thread::handle()
@@ -133,6 +142,19 @@ void System::Threading::ThreadManager::UnloadThread(Thread* thread)
     CurrentPos = -1;
     loaded_threads = temp;
 }
+
+void System::Threading::ThreadManager::PrintThreads()
+{
+    for (size_t i = 0; i < count; i++)
+    {
+        Thread* thread = loaded_threads[i];
+        term_write_dec("PID: ", (int32_t)thread->state.PID);
+        term_set_cursor_x(20);
+        term_write("NAME: ");
+        term_writeln(thread->name);
+    }
+}
+
 List<uint64_t> System::Threading::ThreadManager::GetPids()
 {
     List<uint64_t> result;
@@ -149,9 +171,9 @@ System::Threading::Thread* System::Threading::ThreadManager::GetCurrentThread()
 
 extern "C"
 {
-    System::Threading::Thread* tinit(System::Threading::ThreadStart protocol)
+    System::Threading::Thread* tinit(char* n, System::Threading::ThreadStart protocol)
     {
-        auto thread = new System::Threading::Thread(protocol);
+        auto thread = new System::Threading::Thread(n, protocol);
         return thread;
     }
     bool tstart(System::Threading::Thread* thread)

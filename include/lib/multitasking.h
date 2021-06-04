@@ -25,6 +25,7 @@ namespace System
         {
         friend class ThreadManager;
         private:
+            char         name[64];
             void*        stack;
             registers_t* regs_state;
             ThreadState  state;
@@ -33,7 +34,7 @@ namespace System
             bool         initialized;
             Thread();
         public:
-            Thread(ThreadStart protocol);
+            Thread(char* n, ThreadStart protocol);
 
             bool Start();
             bool Stop();
@@ -56,6 +57,7 @@ namespace System
         public:
             Thread*           GetCurrentThread();
             List<uint64_t>    GetPids();
+            void PrintThreads();
             ThreadManager();
         };
     }
@@ -63,7 +65,7 @@ namespace System
 
 extern "C"
 {
-    System::Threading::Thread*     tinit       (System::Threading::ThreadStart protocol);
+    System::Threading::Thread*     tinit       (char* n, System::Threading::ThreadStart protocol);
     bool                           tstart      (System::Threading::Thread* thread);
     bool                           tstop       (System::Threading::Thread* thread);
     System::Threading::ThreadState tstate      (System::Threading::Thread* thread);
