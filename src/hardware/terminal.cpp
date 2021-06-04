@@ -377,22 +377,55 @@ namespace HAL
 
     // write line to next position
     void TerminalManager::WriteLine(char* text) { term_writeln(text); }
-    void TerminalManager::WriteLine(char* text,int num) { term_writeln_dec(text, num); }
+    void TerminalManager::WriteLine(char* text,int num) { 
+        char* temp;
+        char repl[32];
+        if(strstr(text,"%s") !=0)
+        {
+            strdec(num,repl);
+            temp = stringReplace("%s",repl,text);
+        }
+        else if(strstr(text,"%x") !=0)
+        {
+            strdec(num,repl);
+            temp = stringReplace("%s",repl,text);
+        }
+        Write(temp);
+        term_newline();
+        }
     void TerminalManager::WriteLine(char* text,int num, COL4 fg)
     {
-        Write(text, fg);
-        char temp[32];
-        strdec(num, temp);
-        Write(temp, fg);
+        char* temp;
+        char repl[32];
+        if(strstr(text,"%s") !=0)
+        {
+            strdec(num,repl);
+            temp = stringReplace("%s",repl,text);
+        }
+        else if(strstr(text,"%x") !=0)
+        {
+            strdec(num,repl);
+            temp = stringReplace("%s",repl,text);
+        }
+        Write(temp,fg);
         term_newline();
     }
 
     void TerminalManager::WriteLine(char* text,int num, COL4 fg, COL4 bg)
     {
-        Write(text, fg, bg);
-        char temp[32];
-        strdec(num, temp);
-        Write(temp, fg, bg);
+        char* temp;
+        char repl[32];
+        if(strstr(text,"%s") !=0)
+        {
+            strdec(num,repl);
+            temp = stringReplace("%s",repl,text);
+        }
+        else if(strstr(text,"%x") !=0)
+        {
+            strdec(num,repl);
+            temp = stringReplace("%s",repl,text);
+        }
+        Write(temp,fg,bg);
         term_newline();
     }
     void TerminalManager::WriteLine(char* text, COL4 fg) { Write(text, fg); term_newline(); }
@@ -401,10 +434,19 @@ namespace HAL
     void TerminalManager::WriteLine(char* text, Color fg, Color bg) { Write(text, fg, bg); term_newline(); }
     void TerminalManager::WriteLine(char* text, int num, Color fg)
     {
-        Write(text, fg);
-        char temp[32];
-        strdec(num, temp);
-        Write(temp, fg);
+        char* temp;
+        char repl[32];
+        if(strstr(text,"%s") !=0)
+        {
+            strdec(num,repl);
+            temp = stringReplace("%s",repl,text);
+        }
+        else if(strstr(text,"%x") !=0)
+        {
+            strdec(num,repl);
+            temp = stringReplace("%s",repl,text);
+        }
+        Write(temp,fg);
         term_newline();
     }
 
