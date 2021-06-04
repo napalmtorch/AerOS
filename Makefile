@@ -6,7 +6,7 @@ ASFLAGS=-felf32
 SOURCES=$(shell find . -name '*.cpp')
 LINK_SOURCES=$(shell find . -name '*.o')
 CPP_FILES_OUT = $(SOURCES:.cpp=.o)
-.PHONY: all as clean link iso run bochs nfs
+.PHONY: all as clean link iso run bochs nfs old
 
 all: as $(CPP_FILES_OUT) link iso nfs
 
