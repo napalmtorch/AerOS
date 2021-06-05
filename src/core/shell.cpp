@@ -369,9 +369,9 @@ namespace System
         void KILL(char* input)
         {
          char* name = strsub(input, 5, strlen(input));
-         KernelIO::Terminal.Write ("Checking if Thread ");
-         KernelIO::Terminal.Write(name);
-         KernelIO::Terminal.WriteLine(" exists");
+         KernelIO::Terminal.Write ("Checking if Thread '");
+         KernelIO::Terminal.Write(name,COL4_CYAN);
+         KernelIO::Terminal.WriteLine("' exists");
          //We first check if we have a running thread by name, this is case sensitive
          if(KernelIO::TaskManager.ThreadRunning(name)) {
              //We found a thread 
