@@ -379,7 +379,7 @@ namespace System
              //Are we trying to kill the threadpool? dont do that doofus!
              if(strstr(name,"kernel")!=0) {  KernelIO::Terminal.WriteLine("Cowardly refusing to kill the main Threadpool!",COL4_RED); return; }
              //lets check if killing the thread succeded!
-             //For this we cal thread->Stop(); and set the state to "Failed" since it was killed!
+             //For this we call thread->Stop(); and set the state to "Failed" since it was killed!
              //FIXME: We should also have a "Stopped" state since Halted is basically just pausing the thread and a closed thread is not always completed,
              //instead it was stopped by the user.
              if(KernelIO::TaskManager.KillRunning(name))
