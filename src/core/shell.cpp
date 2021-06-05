@@ -60,6 +60,7 @@ namespace System
         RegisterCommand("format",   "Format a disk to the NapalmFS format","",Commands::FORMAT);
         RegisterCommand("ps",          "List PIDS","",                        Commands::PS);
         RegisterCommand("kill",        "Kill Pid by Name","",                 Commands::KILL);
+        RegisterCommand("whoami",   "Display the currently logged in user!","",Commands::WHOAMI);
 
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
@@ -376,12 +377,14 @@ namespace System
          if(KernelIO::TaskManager.ThreadRunning(name)) {
              //We found a thread 
              KernelIO::Terminal.WriteLine("Thread is Active!",COL4_GREEN);
+             //Lets check if we are permitted to kill the thread first, right now we can only 
+             //kill processes that belong to "aeros", all others should fail
+             if(KernelIO::TaskManager.CanKill(name))
+             {
              //lets check if killing the thread succeded!
              //For this we call thread->Stop(); and set the state to "Failed" since it was killed!
              //FIXME: We should also have a "Stopped" state since Halted is basically just pausing the thread and a closed thread is not always completed,
              //instead it was stopped by the user.
-             if(KernelIO::TaskManager.CanKill(name))
-             {
              if(KernelIO::TaskManager.KillRunning(name))
              {
                 //Yep, we did it
@@ -403,6 +406,9 @@ namespace System
              //Thread with given name was not found!
              KernelIO::Terminal.WriteLine("Thread is not Active!",COL4_RED);
          }
+        }
+        void WHOAMI(char* input) {
+            KernelIO::Terminal.WriteLine("aeros");
         }
         void CD(char* input)
         {

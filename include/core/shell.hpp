@@ -67,5 +67,6 @@ namespace System
         void FORMAT(char* input);
         void PS(char* input);
         void KILL(char* input);
+        void WHOAMI(char* input);
     }
 }
