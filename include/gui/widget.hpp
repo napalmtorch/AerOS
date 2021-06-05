@@ -9,6 +9,49 @@ namespace System
 {
     namespace GUI
     {
+        // title bar exit icon - 9x9
+        const uint8_t ICON_TITLEBAR_EXIT_9x9[9 * 9] = 
+        {
+            1, 1, 0, 0, 0, 0, 0, 1, 1,
+            1, 1, 1, 0, 0, 0, 1, 1, 1,
+            0, 1, 1, 1, 0, 1, 1, 1, 0,
+            0, 0, 1, 1, 1, 1, 1, 0, 0,
+            0, 0, 0, 1, 1, 1, 0, 0, 0,
+            0, 0, 1, 1, 1, 1, 1, 0, 0,
+            0, 1, 1, 1, 0, 1, 1, 1, 0,
+            1, 1, 1, 0, 0, 0, 1, 1, 1,
+            1, 1, 0, 0, 0, 0, 0, 1, 1,
+        };
+
+        // title bar maximize icon - 9x9
+        const uint8_t ICON_TITLEBAR_MAX_9x9[9 * 9] = 
+        {
+            1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1,
+        };
+
+        // title bar restore icon - 9x9
+        const uint8_t ICON_TITLEBAR_RES_9x9[9 * 9] = 
+        {
+            0, 0, 1, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 1, 1, 1, 1, 1, 1,
+            0, 0, 1, 0, 0, 0, 0, 0, 1,
+            1, 1, 1, 1, 1, 1, 1, 0, 1,
+            1, 1, 1, 1, 1, 1, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 1, 1, 1,
+            1, 0, 0, 0, 0, 0, 1, 0, 0,
+            1, 0, 0, 0, 0, 0, 1, 0, 0,
+            1, 0, 0, 0, 0, 0, 1, 0, 0,
+        };
+
+
         // types of border styles
         typedef enum
         {
@@ -25,6 +68,7 @@ namespace System
             bool Moving;
             bool Resizing;
             bool CanDraw;
+            bool Active;
         } __attribute__((packed)) WindowFlags;
 
         typedef struct
@@ -54,7 +98,7 @@ namespace System
                 { 0xFF, 0x32, 0x32, 0x32 },     // border
                 { 0xFF, 0x10, 0x10, 0x10 },     // title bar background
                 { 0xFF, 0xFF, 0xFF, 0xFF },     // title bar foreground
-                { 0xFF, 0x00, 0x00, 0x00 },     // unused
+                { 0xFF, 0,    153,  255  },     // title bar accent
                 { 0xFF, 0x00, 0x00, 0x00 },     // unused
                 { 0xFF, 0x00, 0x00, 0x00 },     // unused
             },
@@ -77,6 +121,7 @@ namespace System
                 Window();
                 Window(int32_t x, int32_t y, int32_t w, int32_t h, char* title, char* name);
                 virtual ~Window();
+                virtual void OnLoad();
                 virtual void Update();
                 virtual void Draw();
 
@@ -94,6 +139,12 @@ namespace System
                 HAL::MouseFlags MSFlags;
                 char* Title;
                 char* Name;
+
+            private:
+                bounds_t CloseBounds, MaxBounds, MinBounds;
+                bool CloseHover, CloseDown, CloseClicked;
+                bool MaxHover, MaxDown, MaxClicked;
+                bool MinHover, MinDown, MinClicked;
 
         };
     }

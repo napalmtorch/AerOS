@@ -72,6 +72,7 @@ namespace System
         Threading::ThreadManager TaskManager;
 
         XServerHost XServer;
+        WindowManager WindowMgr;
         
         void InTest()
         {
@@ -90,12 +91,6 @@ namespace System
             // this is the kernel's thread pool.
             // load here every useful thread for kernel initialization
             Shell.Initialize();
-
-            auto test = tinit("test", "aeros", [] () { while (true) { } });
-            tstart(test);
-
-            auto test2 = tinit("test2", "aeros", [] () { while (true) { } });
-            tstart(test2);
 
             while (true) { Run(); }
         }

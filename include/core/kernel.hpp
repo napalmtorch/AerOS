@@ -31,6 +31,7 @@
 #include "hardware/drivers/vesa.hpp"
 #include "lib/multitasking.h"
 #include "gui/xserver.hpp"
+#include "gui/winmgr.hpp"
 
 extern "C" 
 {
@@ -150,6 +151,7 @@ static void pit_callback(registers_t regs);
             extern Threading::ThreadManager TaskManager;
 
             extern XServerHost XServer;
+            extern WindowManager WindowMgr;
         }
     }
 #else

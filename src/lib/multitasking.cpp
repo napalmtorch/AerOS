@@ -73,7 +73,7 @@ System::Threading::ThreadState System::Threading::Thread::GetState()
 }
 void System::Threading::Thread::OnUnhandledException(char* exception)
 {
-    KernelIO::Terminal.WriteLine("process with PID %s was killed due to an error.", this->state.PID, COL4_DARK_RED);
+    KernelIO::Terminal.WriteLine("Process with PID %s has encountered an exception and has terminated", this->state.PID, COL4_DARK_RED);
     KernelIO::Terminal.WriteLine(exception, COL4_GRAY);
     state.state = State::Failed;
     KernelIO::TaskManager.UnloadThread(this);
@@ -82,7 +82,7 @@ void System::Threading::Thread::OnUnhandledException(char* exception)
 System::Threading::ThreadManager::ThreadManager()
 {
     HAL::CPU::RegisterIRQ(IRQ0, ThreadManager::thread_switch);
-    debug_writeln("Registered ThreadManager");
+    debug_throw_message(MSG_TYPE_OK, "Initialized task manager");
 }
 
 static bool init = false;

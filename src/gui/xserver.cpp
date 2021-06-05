@@ -5,14 +5,19 @@ namespace System
 {
     int32_t time, last_time, fps, frames;
     char fps_string[64];
-    
-    GUI::Window* window;
 
     void XServerHost::Start()
     {
         Taskbar.Initialize();
         Running = true;
-        window = new GUI::Window(64, 64, 320, 240, "Testing", "testing");
+        
+        KernelIO::WindowMgr.Initialize();
+
+        GUI::Window* window = new GUI::Window(64, 64, 320, 240, "Testing", "testing");
+        KernelIO::WindowMgr.Start(window);
+
+        GUI::Window* window2 = new GUI::Window(256, 190, 320, 240, "ANOTHER TEST", "testing2");
+        KernelIO::WindowMgr.Start(window2);
     }
 
     void XServerHost::Update()
@@ -22,14 +27,14 @@ namespace System
 
         Taskbar.Update();
 
-        window->Update();
+        KernelIO::WindowMgr.Update();
     }
 
     void XServerHost::Draw()
     {
-        Graphics::Canvas::Clear({ 0xFF, 0x7F, 0x00, 0x7F });
+        Graphics::Canvas::Clear({ 0xFF, 156, 27, 12 });
 
-        window->Draw();
+        KernelIO::WindowMgr.Draw();
 
         Taskbar.Draw();
 
@@ -38,7 +43,7 @@ namespace System
 
     void XServerHost::OnInterrupt()
     {
-        
+        KernelIO::WindowMgr.OnInterrupt();
     }
 
     void XServerHost::CalculateFPS()
