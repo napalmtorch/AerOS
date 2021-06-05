@@ -141,6 +141,7 @@ void System::Threading::ThreadManager::UnloadThread(Thread* thread)
         else { res = i; }
     }
     --count;
+    mem_free(loaded_threads[res]->stack);
     delete loaded_threads[res];
     delete loaded_threads;
     CurrentPos = -1;

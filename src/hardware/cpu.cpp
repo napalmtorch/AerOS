@@ -74,6 +74,8 @@ namespace HAL
 {
     namespace CPU
     {
+        bool is_sse, is_mmx;
+
         // total amount of ticks
         uint32_t Ticks;
 
@@ -109,7 +111,7 @@ namespace HAL
             outb(0x40, low);
             outb(0x40, high);
         }
-        
+
         //Quick workaround for not having a working pit based sleep method
         void PitWait(int sec) {
         uint32_t jiffies = 0;
@@ -159,9 +161,10 @@ namespace HAL
 
                 System::KernelIO::Terminal.Write("Instructions: ");
 
+                if (edx & EDX_MMX)      { System::KernelIO::Terminal.Write(" MMX"); is_mmx = true; }
                 if (edx & EDX_TSC)      System::KernelIO::Terminal.Write(" TSC");
                 if (edx & EDX_MSR)      System::KernelIO::Terminal.Write(" MSR");
-                if (edx & EDX_SSE)      System::KernelIO::Terminal.Write(" SSE");
+                if (edx & EDX_SSE)      { System::KernelIO::Terminal.Write(" SSE"); is_sse = true; }
                 if (edx & EDX_SSE2)     System::KernelIO::Terminal.Write(" SSE2");
                 if (ecx & ECX_SSE3)     System::KernelIO::Terminal.Write(" SSE3");
                 if (ecx & ECX_SSSE3)    System::KernelIO::Terminal.Write(" SSSE3");
@@ -208,5 +211,8 @@ namespace HAL
                 System::KernelIO::Terminal.WriteLine((char*)p);
             }
         }
+
+        bool IsSSE() { return is_sse; }
+        bool IsMMX() { return is_mmx; }
     }
 }

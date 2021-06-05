@@ -418,7 +418,19 @@ extern "C"
     // copy range of memory
     void mem_copy(uint8_t* src, uint8_t* dest, uint32_t len)
     {
-        for (size_t i = 0; i < len; i++) { *(dest + i) = *(src + i); }
+        uint32_t buffer_size = len;
+        uint32_t destt       = (uint32_t)dest;
+        uint32_t srcc        = (uint32_t)src;
+        uint32_t num_dwords = buffer_size / 4;
+        uint32_t num_bytes  = buffer_size % 4;
+        uint32_t *dest32    = (uint32_t*)destt;
+        uint32_t *src32     = (uint32_t*)srcc;
+        uint8_t *dest8      = ((uint8_t*)destt) + num_dwords * 4;
+        uint8_t *src8       = ((uint8_t*)srcc) + num_dwords * 4;
+        uint32_t i;
+
+        for (i = 0; i < num_dwords; i++) { dest32[i] = src32[i]; }
+        for (i = 0; i < num_bytes; i++) { dest8[i] = src8[i]; }
     }
 
     // swap range of memory

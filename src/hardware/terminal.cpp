@@ -62,7 +62,7 @@ extern "C"
     void term_cursor_flash()
     {
         cursor_flash_tick++;
-        if (cursor_flash_tick >= 15) { cursor_flash = !cursor_flash; cursor_flash_tick = 0; }
+        if (cursor_flash_tick >= 500) { cursor_flash = !cursor_flash; cursor_flash_tick = 0; }
     }
 
     // clear the terminal

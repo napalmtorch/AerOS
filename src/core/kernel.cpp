@@ -91,10 +91,10 @@ namespace System
             // load here every useful thread for kernel initialization
             Shell.Initialize();
 
-            auto test = tinit("test", [] () { while (true) { } });
+            auto test = tinit("test", "aeros", [] () { while (true) { } });
             tstart(test);
 
-            auto test2 = tinit("test2", [] () { while (true) { } });
+            auto test2 = tinit("test2", "aeros", [] () { while (true) { } });
             tstart(test2);
 
             while (true) { Run(); }
@@ -252,18 +252,18 @@ namespace System
             HAL::CPU::InitializePIT(2000, nullptr);
             ThrowOK("Initialized PIT controller at 60 Hz");
 
+            HAL::CPU::Detect();
+            ThrowOK("Successfully retrieved processor information");
+
             // initialize task manager
             TaskManager = System::Threading::ThreadManager();
-
-            auto kernel_thread = tinit("kernel","System", [] () { KernelIO::Kernel.InitThreaded(); });
-            tstart(kernel_thread);
 
             // enable interrupts
             HAL::CPU::EnableInterrupts();
             ThrowOK("Enabled interrupts");
-            
-            //We load a test thread currently which does nothing, but aslong as this runs we know threads work
-            auto test_thread = tinit("Test","aeros",[]() { Test(); }); test_thread->Start();
+
+            auto kernel_thread = tinit("kernel","System", [] () { KernelIO::Kernel.InitThreaded(); });
+            tstart(kernel_thread);
         }
         // parse start parameters
         void KernelBase::ParseStartParameters()
@@ -310,15 +310,13 @@ namespace System
 
         // kernel core code, runs in a loop
         void KernelBase::Run()
-        {     
-            
+        {               
             if (XServer.IsRunning())
             {
                 XServer.Update();
-                XServer.Draw();
+                XServer.Draw(); 
             }
             else { term_draw(); }
-
             VESA.Render();
         }
         
@@ -363,7 +361,7 @@ namespace System
             HAL::CPU::Ticks++;
         
             delta++;
-            if (delta >= 60)
+            if (delta >= 1000)
             {
                 RTC.Read();
                 delta = 0;
