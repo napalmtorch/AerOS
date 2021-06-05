@@ -8,6 +8,6 @@ extern "C" void syscall_event(uint32_t* regs)
 extern "C" void kernel_main(void)
 {
     System::KernelIO::Kernel.Initialize();
-    debug_bochs_break();
-    while (true) { System::KernelIO::Kernel.Run(); }
+    //We need this until the threadpool has started, DONT REMOVE - unless you have a solution
+    while (true); 
 }
