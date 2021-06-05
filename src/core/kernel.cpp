@@ -249,7 +249,7 @@ namespace System
             // initialize task manager
             TaskManager = System::Threading::ThreadManager();
 
-            auto kernel_thread = tinit("kernel", [] () { KernelIO::Kernel.InitThreaded(); });
+            auto kernel_thread = tinit("kernel","System", [] () { KernelIO::Kernel.InitThreaded(); });
             tstart(kernel_thread);
 
             // enable interrupts
@@ -257,7 +257,7 @@ namespace System
             ThrowOK("Enabled interrupts");
             
             //We load a test thread currently which does nothing, but aslong as this runs we know threads work
-            auto test_thread = tinit("Test",[]() { Test(); }); test_thread->Start();
+            auto test_thread = tinit("Test","aeros",[]() { Test(); }); test_thread->Start();
         }
         // parse start parameters
         void KernelBase::ParseStartParameters()

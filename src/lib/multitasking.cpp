@@ -7,7 +7,7 @@
 using namespace System;
 using namespace System::Threading;
         
-System::Threading::Thread::Thread(char* n, ThreadStart protocol)
+System::Threading::Thread::Thread(char* n, char* u, ThreadStart protocol)
 {
     stack = (void*)(new char[1*1024*1024]);
     regs_state = (registers_t*)((uint32_t)stack + (1*1024*1024) - sizeof(registers_t));
@@ -15,6 +15,10 @@ System::Threading::Thread::Thread(char* n, ThreadStart protocol)
     for (int i = 0; i < 64; i++)
     {
         if (i < strlen(n)) { stradd(name, n[i]); }
+    }
+    for (int i = 0; i < 64; i++)
+    {
+        if (i < strlen(u)) { stradd(user, u[i]); }
     }
 
     regs_state->edi = 0x00;
@@ -151,7 +155,10 @@ void System::Threading::ThreadManager::PrintThreads()
         term_write_dec("PID: ", (int32_t)thread->state.PID);
         term_set_cursor_x(20);
         term_write("NAME: ");
-        term_writeln(thread->name);
+        term_write(thread->name);
+        term_set_cursor_x(40);
+        term_write("USER: ");
+        term_writeln(thread->user);
     }
 }
 bool System::Threading::ThreadManager::ThreadRunning(char* name)
@@ -172,6 +179,15 @@ bool System::Threading::ThreadManager::KillRunning(char* name)
     }
     return false;
 }
+bool System::Threading::ThreadManager::CanKill(char* name)
+{
+    for (size_t i = 0; i < count; i++)
+    {
+        Thread* thread = loaded_threads[i];
+        if(streql(thread->user,"aeros")) { return true; }
+    }
+    return false;
+}
 
 List<uint64_t> System::Threading::ThreadManager::GetPids()
 {
@@ -189,9 +205,9 @@ System::Threading::Thread* System::Threading::ThreadManager::GetCurrentThread()
 
 extern "C"
 {
-    System::Threading::Thread* tinit(char* n, System::Threading::ThreadStart protocol)
+    System::Threading::Thread* tinit(char* n, char* u, System::Threading::ThreadStart protocol)
     {
-        auto thread = new System::Threading::Thread(n, protocol);
+        auto thread = new System::Threading::Thread(n, u, protocol);
         return thread;
     }
     bool tstart(System::Threading::Thread* thread)

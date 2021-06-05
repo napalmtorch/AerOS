@@ -376,12 +376,12 @@ namespace System
          if(KernelIO::TaskManager.ThreadRunning(name)) {
              //We found a thread 
              KernelIO::Terminal.WriteLine("Thread is Active!",COL4_GREEN);
-             //Are we trying to kill the threadpool? dont do that doofus!
-             if(strstr(name,"kernel")!=0) {  KernelIO::Terminal.WriteLine("Cowardly refusing to kill the main Threadpool!",COL4_RED); return; }
              //lets check if killing the thread succeded!
              //For this we call thread->Stop(); and set the state to "Failed" since it was killed!
              //FIXME: We should also have a "Stopped" state since Halted is basically just pausing the thread and a closed thread is not always completed,
              //instead it was stopped by the user.
+             if(KernelIO::TaskManager.CanKill(name))
+             {
              if(KernelIO::TaskManager.KillRunning(name))
              {
                 //Yep, we did it
@@ -391,6 +391,11 @@ namespace System
              {
                  //How the fuck did we get here?
                 KernelIO::Terminal.WriteLine("There was an error killing the specified thread",COL4_RED); 
+             }
+             }
+             else
+             {
+                 KernelIO::Terminal.WriteLine("You cannot kill a thread that doesnt belong to you",COL4_RED); 
              }
          }  
          else
