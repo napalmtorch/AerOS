@@ -31,6 +31,7 @@
 #include "hardware/drivers/vesa.hpp"
 #include "lib/multitasking.h"
 #include "gui/xserver.hpp"
+#include <lib/md5.hpp>
 
 extern "C" 
 {
