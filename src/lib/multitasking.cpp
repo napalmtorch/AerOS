@@ -154,6 +154,24 @@ void System::Threading::ThreadManager::PrintThreads()
         term_writeln(thread->name);
     }
 }
+bool System::Threading::ThreadManager::ThreadRunning(char* name)
+{
+    for (size_t i = 0; i < count; i++)
+    {
+        Thread* thread = loaded_threads[i];
+        if(streql(thread->name,name)) { return true; }
+    }
+    return false;
+}
+bool System::Threading::ThreadManager::KillRunning(char* name)
+{
+    for (size_t i = 0; i < count; i++)
+    {
+        Thread* thread = loaded_threads[i];
+        if(streql(thread->name,name)) { thread->Stop(); thread->state.state = State::Failed; return true; }
+    }
+    return false;
+}
 
 List<uint64_t> System::Threading::ThreadManager::GetPids()
 {

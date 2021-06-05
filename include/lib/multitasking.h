@@ -58,6 +58,8 @@ namespace System
             Thread*           GetCurrentThread();
             List<uint64_t>    GetPids();
             void PrintThreads();
+            bool ThreadRunning(char* name);
+            bool KillRunning(char* name);
             ThreadManager();
         };
     }
