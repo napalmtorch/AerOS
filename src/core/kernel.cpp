@@ -92,6 +92,12 @@ namespace System
             
             Shell.Initialize();
 
+            auto test = tinit("test", [] () { while (true) { } });
+            tstart(test);
+
+            auto test2 = tinit("test2", [] () { while (true) { } });
+            tstart(test2);
+
             while (true) { Run(); }
         }
 
@@ -244,7 +250,7 @@ namespace System
             ThrowOK("Initialized PS/2 mouse driver");
 
             // initialize pit
-            HAL::CPU::InitializePIT(60, nullptr);
+            HAL::CPU::InitializePIT(2000, nullptr);
             ThrowOK("Initialized PIT controller at 60 Hz");
 
             // initialize task manager
@@ -303,6 +309,7 @@ namespace System
         // kernel core code, runs in a loop
         void KernelBase::Run()
         {     
+            
             if (XServer.IsRunning())
             {
                 XServer.Update();

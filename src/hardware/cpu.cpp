@@ -109,6 +109,7 @@ namespace HAL
             outb(0x40, low);
             outb(0x40, high);
         }
+        
         //Quick workaround for not having a working pit based sleep method
         void PitWait(int sec) {
         uint32_t jiffies = 0;

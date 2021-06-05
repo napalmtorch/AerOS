@@ -5,11 +5,14 @@ namespace System
 {
     int32_t time, last_time, fps, frames;
     char fps_string[64];
+    
+    GUI::Window* window;
 
     void XServerHost::Start()
     {
         Taskbar.Initialize();
         Running = true;
+        window = new GUI::Window(64, 64, 320, 240, "Testing", "testing");
     }
 
     void XServerHost::Update()
@@ -18,11 +21,15 @@ namespace System
         CalculateFPS();
 
         Taskbar.Update();
+
+        window->Update();
     }
 
     void XServerHost::Draw()
     {
         Graphics::Canvas::Clear({ 0xFF, 0x7F, 0x00, 0x7F });
+
+        window->Draw();
 
         Taskbar.Draw();
 

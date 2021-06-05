@@ -9,5 +9,5 @@ extern "C" void kernel_main(void)
 {
     System::KernelIO::Kernel.Initialize();
     debug_bochs_break();
-    while (true) { System::KernelIO::Kernel.Run(); }
+    while (true) {  }
 }
