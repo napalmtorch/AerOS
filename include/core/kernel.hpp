@@ -32,6 +32,7 @@
 #include "lib/multitasking.h"
 #include "gui/xserver.hpp"
 #include "gui/winmgr.hpp"
+#include <lib/md5.hpp>
 
 extern "C" 
 {
