@@ -135,7 +135,7 @@ namespace System
         }
         else { BtnHover = false; BtnDown = false; BtnClicked = false; }
 
-        // on meny button clicked
+        // on menu button clicked
         if (BtnDown && !BtnClicked)
         {
             KernelIO::XServer.Menu.Visible = !KernelIO::XServer.Menu.Visible;
