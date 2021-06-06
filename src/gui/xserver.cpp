@@ -30,7 +30,7 @@ namespace System
             ico_settings = new Graphics::Bitmap("/sys/resources/settings32.bmp");
 
             // load wallpaper
-            wallpaper = new Graphics::Bitmap("/sys/resources/wallpaper.bmp");
+            wallpaper = new Graphics::Bitmap("/sys/resources/aeros_wp.bmp");
 
             // must be initialized after icons are loaded
             Taskbar.Initialize();
