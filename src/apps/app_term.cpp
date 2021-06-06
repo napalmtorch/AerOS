@@ -6,15 +6,14 @@ namespace System
     namespace Applications
     {
         const uint ATTR_SIZE = 9;
-        int old_w = 0, old_h = 0;
 
         WinTerminal::WinTerminal() : GUI::Window() { }
 
-        WinTerminal::WinTerminal(int32_t x, int32_t y) : GUI::Window(x, y, 402, 325, "Terminal", "terminal")
+        WinTerminal::WinTerminal(int32_t x, int32_t y) : GUI::Window(x, y, 474, 325, "XTerm", "xterm")
         {
-            old_w = 402;
+            old_w = 474;
             old_h = 325;
-            
+
             // set backcolor to transparent - region will be populate by buffer and this will improve performance
             Style.Colors[0] = Graphics::Colors::Transparent;
 

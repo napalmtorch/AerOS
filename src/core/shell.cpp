@@ -57,10 +57,11 @@ namespace System
         RegisterCommand("run",        "Run a windowed application", "",       Commands::RUN);
         RegisterCommand("time",       "Display time", "",                     Commands::TIME);
         RegisterCommand("rat",        "Show ram allocation table", "",        Commands::RAT);    
-        RegisterCommand("format",   "Format a disk to the NapalmFS format","",Commands::FORMAT);
-        RegisterCommand("ps",          "List PIDS","",                        Commands::PS);
-        RegisterCommand("kill",        "Kill Pid by Name","",                 Commands::KILL);
-        RegisterCommand("whoami",   "Display the currently logged in user!","",Commands::WHOAMI);
+        RegisterCommand("format",     "Format primary disk as NFS", "",       Commands::FORMAT);
+        RegisterCommand("ps",         "List all running threads","",          Commands::PS);
+        RegisterCommand("kill",       "Kill Pid by Name","",                  Commands::KILL);
+        RegisterCommand("whoami",     "Show current user information", "",    Commands::WHOAMI);
+        RegisterCommand("winls",      "List all running windows", "",         Commands::WINLS);
 
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
@@ -486,6 +487,11 @@ namespace System
         void RAT(char* input)
         {
             System::KernelIO::MemoryManager.PrintRAT(true);
+        }
+
+        void WINLS(char* input)
+        {
+            System::KernelIO::WindowMgr.PrintWindowList();
         }
     }
 }

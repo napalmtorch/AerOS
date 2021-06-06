@@ -6,6 +6,18 @@
 
 namespace System
 {
+    struct XMenuItem
+    {
+        char* Text;
+        Graphics::Bitmap* Icon;
+        bounds_t Bounds;
+        bool Hover;
+        bool Down;
+        bool Clicked;
+        XMenuItem();
+        XMenuItem(char* text, Graphics::Bitmap* icon);
+    };
+    
     class XTaskbar
     {
         public:
@@ -24,6 +36,31 @@ namespace System
             bool     BtnClicked;
     };
 
+    class XMenu
+    {
+        public:
+            void Initialize();
+            void Update();
+            void Draw();
+            void AddItem(XMenuItem* item);
+            void AddItem(char* text, Graphics::Bitmap* icon);
+        
+        public:
+            bounds_t    Bounds;
+            bool        Visible;
+            XMenuItem** Items;
+            uint32_t    ItemCount;
+            int32_t     ItemIndex;
+
+        // default items
+        private:
+            XMenuItem* ItemFiles;
+            XMenuItem* ItemNotes;
+            XMenuItem* ItemTerm;
+            XMenuItem* ItemSettings;
+
+    };
+
     class XServerHost
     {
         public:
@@ -39,8 +76,11 @@ namespace System
         private:
             void CalculateFPS();
 
+        public:
+            XTaskbar Taskbar;
+            XMenu Menu;
+
         private:
             bool Running;
-            XTaskbar Taskbar;
     };
 }

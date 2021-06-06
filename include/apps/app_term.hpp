@@ -56,6 +56,7 @@ namespace System
                 int32_t  BufferWidth;
                 int32_t  BufferHeight;
                 char*    InputBuffer;
+                int      old_w, old_h;
 
                 // cursor
                 int32_t CursorX;

@@ -115,6 +115,7 @@ namespace System
         window->OnLoad();
         window->Flags.Active = true;
         window->Update();
+        window->Flags.Active = false;
 
         // message
         KernelIO::Write("Opened window: ", COL4_GREEN);
@@ -245,4 +246,20 @@ namespace System
 
     // check if window manager is initialized
     bool WindowManager::IsInitialized() { return Initialized; }
+
+    void WindowManager::PrintWindowList()
+    {
+        char temp[32];
+        for (size_t i = 0; i < WindowCount; i++)
+        {
+            if (WindowList[i] != nullptr)
+            {
+                KernelIO::Terminal.Write("PID: ", Graphics::Colors::Yellow);
+                strdec(i, temp);
+                KernelIO::Terminal.Write(temp);
+                KernelIO::Terminal.Write("  NAME: ", Graphics::Colors::Cyan);
+                KernelIO::Terminal.WriteLine(WindowList[i]->Name);
+            }
+        }
+    }
 }

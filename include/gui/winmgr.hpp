@@ -28,6 +28,7 @@ namespace System
             GUI::Window** GetWindowList();
             uint32_t      GetWindowCount();
             bool          IsInitialized();
+            void          PrintWindowList();
 
         // properties
         private:

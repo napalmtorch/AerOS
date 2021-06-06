@@ -257,9 +257,10 @@ namespace System
             HAL::CPU::EnableInterrupts();
             ThrowOK("Enabled interrupts");
 
-            auto kernel_thread = tinit("kernel","System", [] () { KernelIO::Kernel.InitThreaded(); });
+            auto kernel_thread = tinit("core", "system", [] () { KernelIO::Kernel.InitThreaded(); });
             tstart(kernel_thread);
         }
+
         // parse start parameters
         void KernelBase::ParseStartParameters()
         {

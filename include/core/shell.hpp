@@ -7,7 +7,7 @@
 namespace System
 {
     // maximum amount of commands
-    #define SHELL_MAX_COMMANDS 64
+    #define SHELL_MAX_COMMANDS 256
 
     // structure to manage shell commands
     struct ShellCommand
@@ -68,5 +68,6 @@ namespace System
         void PS(char* input);
         void KILL(char* input);
         void WHOAMI(char* input);
+        void WINLS(char* input);
     }
 }

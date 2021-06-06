@@ -153,13 +153,14 @@ void System::Threading::ThreadManager::PrintThreads()
     for (size_t i = 0; i < count; i++)
     {
         Thread* thread = loaded_threads[i];
-        term_write_dec("PID: ", (int32_t)thread->state.PID);
-        term_set_cursor_x(20);
-        term_write("NAME: ");
-        term_write(thread->name);
-        term_set_cursor_x(40);
-        term_write("USER: ");
-        term_writeln(thread->user);
+        char temp[32];
+        strdec((int32_t)thread->state.PID, temp);
+        KernelIO::Terminal.Write("PID: ", Graphics::Colors::Yellow);
+        KernelIO::Terminal.Write(temp);
+        KernelIO::Terminal.Write("  NAME: ", Graphics::Colors::Cyan);
+        KernelIO::Terminal.Write(thread->name);
+        KernelIO::Terminal.Write("  USER: ", Graphics::Colors::Magenta);
+        KernelIO::Terminal.WriteLine(thread->user);
     }
 }
 bool System::Threading::ThreadManager::ThreadRunning(char* name)
