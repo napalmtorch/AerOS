@@ -107,7 +107,7 @@ namespace System
             Graphics::InitializeFonts();
 
             KernelIO::VESA.Initialize();
-            KernelIO::VESA.SetMode(800, 600, 32);
+            KernelIO::VESA.SetMode(1920, 1080, 32);
 
             term_init();
 

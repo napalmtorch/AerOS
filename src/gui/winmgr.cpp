@@ -58,6 +58,12 @@ namespace System
 
                 // update window
                 WindowList[i]->Update();
+
+                if (WindowList[i]->Flags.ExitRequest)
+                {
+                    Close(WindowList[i]);
+                    return;
+                }
             }
         }
 
@@ -184,15 +190,17 @@ namespace System
         uint8_t* end   = (uint8_t*)((uint32_t)WindowList + (4 * WindowCount));
         for (size_t i = (uint32_t)start; i < (uint32_t)end; i += 4)
         {
-            uint32_t* ptr = (uint32_t*)(i - 1);
+            uint32_t* ptr = (uint32_t*)(i + 1);
             ptr[0] = ptr[1];
         }
 
         // decrement values
         WindowIndex--;
         WindowCount--;
-        if (ActiveWindow == window && WindowIndex < MaxWindowCount) { ActiveWindow = WindowList[WindowCount - 1]; }
+        if (ActiveWindow == window && WindowIndex < MaxWindowCount) { SetActiveWindow(WindowList[WindowCount - 1]); }
         else { ActiveWindow = nullptr; }
+        KernelIO::Write("REAL CLOSE");
+        return true;
     }
 
     // set active window

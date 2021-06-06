@@ -75,7 +75,7 @@ namespace System
                 // close button clicked
                 if (CloseDown && !CloseClicked)
                 {
-                    KernelIO::WindowMgr.Close(this);
+                    Flags.ExitRequest = true;
                     return;
                 }
 

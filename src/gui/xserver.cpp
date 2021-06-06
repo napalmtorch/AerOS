@@ -1,6 +1,7 @@
 #include <gui/xserver.hpp>
 #include <core/kernel.hpp>
 #include <apps/app_term.hpp>
+#include <apps/app_taskmgr.hpp>
 
 namespace System
 {
@@ -38,6 +39,9 @@ namespace System
             // must be initialized after icons are loaded
             Taskbar.Initialize();
             Menu.Initialize();
+
+            Applications::WinTaskManager* taskmgr = new Applications::WinTaskManager(128, 128);
+            KernelIO::WindowMgr.Start(taskmgr);
 
             // set running flag
             Running = true;

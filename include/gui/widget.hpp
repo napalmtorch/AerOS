@@ -69,6 +69,7 @@ namespace System
             bool Resizing;
             bool CanDraw;
             bool Active;
+            bool ExitRequest;
         } __attribute__((packed)) WindowFlags;
 
         typedef struct
