@@ -43,20 +43,20 @@ namespace Graphics
         uint32_t* new_data = (uint32_t*)mem_alloc(Width * Height * 4);
         for (int32_t yy = Height - 1; yy >= 0; yy--)
         {
-            for (int32_t xx = Width - 1; xx >= 0; xx--)
+            for (int32_t xx = 0; xx < Width; xx++)
             {
                 if (Depth == COLOR_DEPTH_24)
                 {
                     uint32_t offset = (3 * (xx + (yy * Width)));
                     uint32_t color = Graphics::RGBToPackedValue(ImageData[offset + 2], ImageData[offset + 1], ImageData[offset]);
-                    uint32_t output_offset = (Width - xx - 1) + ((Height - yy - 1) * Width);
+                    uint32_t output_offset = xx + ((Height - yy - 1) * Width);
                     new_data[output_offset] = color;
                 }
                 else if (Depth == COLOR_DEPTH_32)
                 {
                     uint32_t offset = (4 * (xx + (yy * Width)));
                     uint32_t color = Graphics::RGBToPackedValue(ImageData[offset + 2], ImageData[offset + 1], ImageData[offset]);
-                    uint32_t output_offset = (Width - xx - 1) + ((Height - yy - 1) * Width);
+                    uint32_t output_offset = xx + ((Height - yy - 1) * Width);
                     new_data[output_offset] = color;
                 }
             }

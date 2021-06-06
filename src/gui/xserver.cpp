@@ -7,6 +7,7 @@ namespace System
     int32_t time, last_time, fps, frames;
     char fps_string[64];
     Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings;
+    Graphics::Bitmap* wallpaper;
 
     XServerHost::XServerHost()
     {
@@ -27,6 +28,9 @@ namespace System
             ico_alert = new Graphics::Bitmap("/sys/resources/alert32.bmp");
             ico_notes = new Graphics::Bitmap("/sys/resources/notes32.bmp");
             ico_settings = new Graphics::Bitmap("/sys/resources/settings32.bmp");
+
+            // load wallpaper
+            wallpaper = new Graphics::Bitmap("/sys/resources/wallpaper.bmp");
 
             // must be initialized after icons are loaded
             Taskbar.Initialize();
@@ -50,7 +54,8 @@ namespace System
 
     void XServerHost::Draw()
     {
-        Graphics::Canvas::Clear({ 0xFF, 156, 27, 12 });
+        if (wallpaper->Depth != COLOR_DEPTH_32) { Graphics::Canvas::Clear({ 0xFF, 156, 27, 12 }); }
+        else { Graphics::Canvas::DrawBitmap(0, 0, wallpaper); }
 
         KernelIO::WindowMgr.Draw();
 
