@@ -334,6 +334,7 @@ namespace System
             fat_populate_root_dir(fat_master_fs, &dir);
             char* file = strsplit_index(input, 1, ' ');
             fat_cat_file(fat_master_fs,&dir,file);*/
+            return;
         }
         
         void PANIC(char* input)
@@ -416,7 +417,7 @@ namespace System
         }
         void CD(char* input)
         {
-            System::Security::Sudo sudo;
+        /*    System::Security::Sudo sudo;
             char* path = strsub(input, 3, strlen(input));
             struct directory* dir;
             fat_populate_root_dir(fat_master_fs,dir);
@@ -476,7 +477,9 @@ namespace System
             KernelIO::Shell.GetCurrentPath()[0] = '\0';
             if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
             strcat(KernelIO::Shell.GetCurrentPath(), path);  
-            }
+            }*/
+            System::KernelIO::Terminal.WriteLine("Well..... this used to work until SOMEONE decided fat32 wasnt good enough for him ;)", COL4_CYAN);
+            return;
         }
 
         void RUN(char* input)
