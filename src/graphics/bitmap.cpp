@@ -62,6 +62,7 @@ namespace Graphics
             }
         }  
         ImageData = (uint8_t*)new_data;
+        debug_writeln_hex("IMG DATA OFFSET: ", (uint32_t)ImageData);
         mem_free((void*)file.data);
         
 
@@ -133,23 +134,40 @@ namespace Graphics
         delete Buffer;
     }
 
+    double floor(double num) 
+    {
+    if (num >= 9223372036854775807 || num <= -9223372036854775807 || num != num)
+     {
+        /* handle large values, infinities and nan */
+        return num;
+    }
+    long long n = (long long)num;
+    double d = (double)n;
+
+    if (d == num || num >= 0)
+        return d;
+    else
+        return d - 1;
+    }
+
     void Bitmap::Resize(uint32_t w, uint32_t h)
     {
         uint32_t* temp = new uint32_t[w * h];
-        int x_ratio = (int)((Width << 16) / w) + 1;
-        int y_ratio = (int)((Height << 16) / h) + 1;
-        int x2, y2;
+        double x_ratio = (double)Width / (double)w;
+        double y_ratio = (double)Height / (double)h;
+        int px, py;
         for (int i = 0; i < h; i++)
         {
             for (int j = 0; j < w; j++)
             {
-                x2 = ((j * x_ratio) >> 16);
-                y2 = ((i * y_ratio) >> 16);
-                temp[j + (i * w)] = ImageData[x2 + (y2 * Width)];
+                px = floor(j * x_ratio);
+                py = floor(i * y_ratio);
+                temp[(i * w) + j] = ((uint32_t*)ImageData)[(int)((py * Width) + px)];
             }
         }
-        if (ImageData != nullptr) { delete ImageData; }
+        //if (ImageData != nullptr) { delete ImageData; }
         ImageData = (uint8_t*)temp;
+        debug_writeln_hex("IMG DATA OFFSET: ", (uint32_t)ImageData);
         Width = w;
         Height = h;
     }
