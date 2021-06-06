@@ -37,6 +37,7 @@ namespace System
             uint32_t      WindowCount;
             int32_t       WindowIndex;
             uint32_t      MaxWindowCount;
+            int32_t       ActiveIndex;
             bool          Initialized;
 
 

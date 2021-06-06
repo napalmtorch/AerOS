@@ -11,6 +11,7 @@ namespace System
 
         // reset counters
         ActiveWindow = nullptr;
+        ActiveIndex = -1;
         WindowCount = 0;
         WindowIndex = 0;
         MaxWindowCount = 4096;
@@ -37,7 +38,10 @@ namespace System
         uint32_t moving = 0;
         uint32_t resizing = 0;
         int32_t mx = KernelIO::Mouse.GetX(), my = KernelIO::Mouse.GetY();
+        int32_t active = ActiveIndex;
+        int32_t top_hover_index;
 
+        int32_t last_hover = -1;
         for (size_t i = 0; i < WindowCount; i++)
         {
             if (WindowList[i] != nullptr)
@@ -46,30 +50,47 @@ namespace System
                 if (bounds_contains(&WindowList[i]->Bounds, mx, my)) { hover++; }
                 if (WindowList[i]->Flags.Moving) { moving++; }
                 if (WindowList[i]->Flags.Resizing) { resizing++; }
+                if (WindowList[i] == ActiveWindow) { active = i; }
                 WindowList[i]->Flags.Active = (WindowList[i] == ActiveWindow);
+                if (bounds_contains(&WindowList[i]->Bounds, mx, my) && i > top_hover_index) { top_hover_index = i; }
+
+                if (i > last_hover && i < WindowCount - 1) { last_hover = i; }
 
                 // update window
                 WindowList[i]->Update();
             }
         }
 
+        ActiveIndex = active;
+
         // if mouse clicked but no window selected then reset active window
         if (hover + moving == 0 && KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed) { ActiveWindow = nullptr; }
 
         // determine active window
-        if (moving == 0 && hover < 2)
+        if (moving == 0)
         {
-            uint32_t last_hover = 99999999;
             for (uint32_t i = 0; i < WindowCount; i++)
             {
                 if (WindowList[i] != nullptr)
                 {
-                    if (bounds_contains(&WindowList[i]->Bounds, mx, my))
+                    if (ActiveWindow == nullptr)
                     {
-                        if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
+                        if (bounds_contains(&WindowList[i]->Bounds, mx, my))
                         {
-                            last_hover = i;
-                            if (last_hover >= i && ActiveWindow != GetWindow(last_hover)) { SetActiveWindow(GetWindow(last_hover)); }
+                            if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
+                            {
+                                SetActiveWindow(GetWindow(i));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (bounds_contains(&WindowList[i]->Bounds, mx, my))
+                        {
+                            if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
+                            {
+                                if (ActiveIndex != i && ActiveWindow != GetWindow(i) && !bounds_contains(&ActiveWindow->Bounds, mx, my)) { SetActiveWindow(GetWindow(i)); }
+                            }
                         }
                     }
                 }
@@ -90,6 +111,15 @@ namespace System
                 if (!WindowList[i]->Flags.Minimized) { WindowList[i]->Draw(); }
             }
         }
+
+        // print varius information
+        char header[64];
+        char temp[32];
+        header[0] = '\0'; temp[0] = '\0';
+        strcat(header, "ACTIVE: ");
+        strdec(ActiveIndex, temp);
+        strcat(header, temp);
+        Graphics::Canvas::DrawString(8, 32, header, Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
     }
 
     // executed on pit interrupt
@@ -125,6 +155,7 @@ namespace System
         WindowIndex++;
         WindowCount++;
         ActiveWindow = window;
+        SetActiveWindow(WindowList[WindowIndex - 1]);
         return window;
     }
 
@@ -192,6 +223,7 @@ namespace System
 
         // replace last window
         WindowList[WindowCount - 1] = window;
+        ActiveIndex = GetWindowIndex(window);
 
         // return window pointer
         return ActiveWindow;
