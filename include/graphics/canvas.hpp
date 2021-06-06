@@ -78,6 +78,7 @@ namespace Graphics
 
         void DrawFlatArray(int32_t x, int32_t y, int32_t w, int32_t h, uint8_t* data, Color color);
 
+        void DrawBitmapFast(int32_t x, int32_t y, Graphics::Bitmap* bitmap);
         void DrawBitmap(int32_t x, int32_t y, Graphics::Bitmap* bitmap);
         void DrawBitmap(int32_t x, int32_t y, Color trans_key, Graphics::Bitmap* bitmap);
         void DrawBitmap(int32_t x, int32_t y, int32_t scale, Graphics::Bitmap* bitmap);

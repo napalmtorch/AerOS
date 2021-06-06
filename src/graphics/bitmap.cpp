@@ -135,21 +135,21 @@ namespace Graphics
 
     void Bitmap::Resize(uint32_t w, uint32_t h)
     {
-        int32_t x_ratio = (int32_t)((Width << 16) / w) + 1;
-        int32_t y_ratio = (int32_t)((Height << 16) / h) + 1;
-        int32_t xx, yy;
-        uint32_t* new_data = (uint32_t*)mem_alloc(w * h);
-        for (size_t i = 0; i < h; i++)
+        uint32_t* temp = new uint32_t[w * h];
+        int x_ratio = (int)((Width << 16) / w) + 1;
+        int y_ratio = (int)((Height << 16) / h) + 1;
+        int x2, y2;
+        for (int i = 0; i < h; i++)
         {
-            for (size_t j = 0; j < w; j++)
+            for (int j = 0; j < w; j++)
             {
-                xx = ((j * x_ratio) >> 16);
-                yy = ((i * y_ratio) >> 16);
-                new_data[j + (i * w)] = ImageData[(xx + (yy * Width))];
+                x2 = ((j * x_ratio) >> 16);
+                y2 = ((i * y_ratio) >> 16);
+                temp[j + (i * w)] = ImageData[x2 + (y2 * Width)];
             }
         }
-        if (ImageData != nullptr) { mem_free(ImageData); }
-        ImageData = (uint8_t*)new_data;
+        if (ImageData != nullptr) { delete ImageData; }
+        ImageData = (uint8_t*)temp;
         Width = w;
         Height = h;
     }

@@ -4,6 +4,8 @@
 
 namespace System
 {
+    const char* wallpaper_path = "/sys/resources/aeros_wp.bmp";
+
     int32_t time, last_time, fps, frames;
     char fps_string[64];
     Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings;
@@ -30,7 +32,8 @@ namespace System
             ico_settings = new Graphics::Bitmap("/sys/resources/settings32.bmp");
 
             // load wallpaper
-            wallpaper = new Graphics::Bitmap("/sys/resources/aeros_wp.bmp");
+            wallpaper = new Graphics::Bitmap((char*)wallpaper_path);
+            AutoSizeWallpaper();
 
             // must be initialized after icons are loaded
             Taskbar.Initialize();
@@ -55,7 +58,7 @@ namespace System
     void XServerHost::Draw()
     {
         if (wallpaper->Depth != COLOR_DEPTH_32) { Graphics::Canvas::Clear({ 0xFF, 156, 27, 12 }); }
-        else { Graphics::Canvas::DrawBitmap(0, 0, wallpaper); }
+        else { Graphics::Canvas::DrawBitmapFast(0, 0, wallpaper); }
 
         KernelIO::WindowMgr.Draw();
 
@@ -99,6 +102,21 @@ namespace System
             KernelIO::VESA.Render();
         } 
         */  
+    }
+
+    // auto resize wallpaper based on screen size
+    void XServerHost::AutoSizeWallpaper()
+    {
+        uint32_t w = KernelIO::VESA.GetWidth();
+        uint32_t h = KernelIO::VESA.GetHeight();
+
+        if (wallpaper->Width != w || wallpaper->Height != h)
+        {
+            Graphics::Bitmap* scaled_wallpaper = new Graphics::Bitmap((char*)wallpaper_path);
+            scaled_wallpaper->Resize(w, h);
+            if (wallpaper != nullptr) { delete wallpaper; }
+            wallpaper = scaled_wallpaper;
+        }
     }
 
     bool XServerHost::IsRunning() { return Running; }

@@ -203,22 +203,30 @@ namespace Graphics
             }
         }
 
+        void DrawBitmapFast(int32_t x, int32_t y, Graphics::Bitmap* bitmap)
+        {
+            if (bitmap == nullptr) { return; }
+            uint32_t* data = (uint32_t*)bitmap->ImageData;
+            uint32_t* dest = (uint32_t*)(System::KernelIO::VESA.Buffer + (x + (y * bitmap->Width)));
+            uint32_t len = bitmap->Width * bitmap->Height * 4;
+            uint32_t max_len = (uint32_t)(System::KernelIO::VESA.GetWidth() * System::KernelIO::VESA.GetHeight() * 4);
+            if (len >= max_len) { len = max_len; }
+            mem_copy((uint8_t*)data, (uint8_t*)dest, len);
+        }
+
         // draw bitmap
         void DrawBitmap(int32_t x, int32_t y, Graphics::Bitmap* bitmap)
         {
             if (bitmap == nullptr) { return; }
-
             uint32_t* data = (uint32_t*)bitmap->ImageData;
-            uint32_t* dest = (uint32_t*)(System::KernelIO::VESA.Buffer + (x + (y * bitmap->Width)));
-            mem_copy((uint8_t*)data, (uint8_t*)dest, bitmap->Width * bitmap->Height * 4);
-            /*for (int32_t yy = 0; yy < bitmap->Height; yy++)
+            for (int32_t yy = 0; yy < bitmap->Height; yy++)
             {
                 for (int32_t xx = 0; xx < bitmap->Width; xx++)
                 {
                     uint32_t color = data[(xx + (yy * bitmap->Width))];
                     DrawPixel(x + xx, y + yy, color);
                 }
-            }*/
+            }
         }
 
         void DrawBitmap(int32_t x, int32_t y, Color trans_key, Graphics::Bitmap* bitmap)

@@ -69,6 +69,7 @@ namespace System
             void Update();
             void Draw();
             void OnInterrupt();
+            void AutoSizeWallpaper();
             bool IsRunning();
             int32_t GetFPS();
             char* GetFPSString();
