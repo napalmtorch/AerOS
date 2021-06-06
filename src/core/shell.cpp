@@ -300,7 +300,7 @@ namespace System
 
         void LS(char* input)
         {
-            struct directory dir;
+         /*   struct directory dir;
             fat_populate_root_dir(fat_master_fs, &dir);
             char* listdir = strsplit_index(input, 1, ' ');
             if (streql(KernelIO::Shell.GetCurrentPath(), "/"))
@@ -324,15 +324,16 @@ namespace System
                 KernelIO::Terminal.WriteLine(listdir);
                 fat_dir_by_name(fat_master_fs,&dir, listdir);
 
-            }
+            }*/
+            return;
         }
 
         void CAT(char* input)
         {
-            struct directory dir;
+          /*  struct directory dir;
             fat_populate_root_dir(fat_master_fs, &dir);
             char* file = strsplit_index(input, 1, ' ');
-            fat_cat_file(fat_master_fs,&dir,file);
+            fat_cat_file(fat_master_fs,&dir,file);*/
         }
         
         void PANIC(char* input)
