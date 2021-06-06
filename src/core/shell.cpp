@@ -286,11 +286,12 @@ namespace System
 
         void MKDIR(char* input)
         {
-            struct directory dir;
+           /* struct directory dir;
             fat_populate_root_dir(fat_master_fs, &dir);
             char* dirname = strsplit_index(input, 1, ' ');
             if(dirname == nullptr) { System::KernelIO::Terminal.WriteLine("No filename specified"); }
-            else { fat_create_dir(fat_master_fs,&dir,dirname); } 
+            else { fat_create_dir(fat_master_fs,&dir,dirname); } */
+            System::KernelIO::Terminal.WriteLine("Yes i am looking at you Napalm xDDDD",COL4_CYAN);
         }
 
         void TIME(char* input)
