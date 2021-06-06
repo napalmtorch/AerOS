@@ -15,13 +15,13 @@ namespace System
             Name = name;
             SetBounds(x, y, w, h);
             CopyStyle(&WindowStyle, &Style);
+
+            // update client bounds
+            UpdateClientBounds();
         }
 
         // destroy window
-        Window::~Window()
-        {
-            delete this;
-        }
+        Window::~Window() { }
 
         void Window::OnLoad()
         {
@@ -36,11 +36,7 @@ namespace System
             // update when window is active
             if (Flags.Active)
             {
-                // update client bounds
-                ClientBounds.X = Bounds.X + 1;
-                ClientBounds.Y = Bounds.Y + 20;
-                ClientBounds.Width = Bounds.Width - 2;
-                ClientBounds.Height = Bounds.Height - 21;
+                UpdateClientBounds();
 
                 // update button bounds
                 bounds_set(&CloseBounds, Bounds.X + Bounds.Width - 16, Bounds.Y + 6, 9, 9);
@@ -75,6 +71,38 @@ namespace System
                     else { MinDown = false; MinClicked = false; }
                 }
                 else { MinHover = false; MinDown = false; MinClicked = false; }
+
+                // close button clicked
+                if (CloseDown && !CloseClicked)
+                {
+                    KernelIO::WindowMgr.Close(this);
+                    return;
+                }
+
+                // max button clicked
+                if (MaxDown && !MaxClicked)
+                {
+                    KernelIO::WindowMgr.SetActiveWindow(this);
+                    if (Flags.Maximized)
+                    {
+                        bounds_set(&Bounds, OldBounds.X, OldBounds.Y, OldBounds.Width, OldBounds.Height);
+                        Flags.Maximized = false;
+                    }
+                    else
+                    {
+                        bounds_set(&OldBounds, Bounds.X, Bounds.Y, Bounds.Width, Bounds.Height);
+                        bounds_set(&Bounds, 0, 20, KernelIO::VESA.GetWidth(), KernelIO::VESA.GetHeight() - 20);
+                        Flags.Maximized = true;
+                    }
+
+                    MaxClicked = true;
+                }
+
+                // min button down
+                if (MinDown && !MinClicked)
+                {
+                    MinClicked = true;
+                }
 
                 // check for movement
                 if (!Flags.Maximized && !Flags.Minimized)
@@ -161,5 +189,14 @@ namespace System
         void Window::SetPosition(int32_t x, int32_t y) { Bounds.X = x; Bounds.Y = y; }
         void Window::SetSize(int32_t w, int32_t h) { Bounds.Width = w; Bounds.Height = h; }
         void Window::SetBounds(int32_t x, int32_t y, int32_t w, int32_t h) { SetPosition(x, y); SetSize(w, h); }
+
+        void Window::UpdateClientBounds()
+        {
+            // update client bounds
+            ClientBounds.X = Bounds.X + 1;
+            ClientBounds.Y = Bounds.Y + 20;
+            ClientBounds.Width = Bounds.Width - 2;
+            ClientBounds.Height = Bounds.Height - 21;
+        }
     }
 }

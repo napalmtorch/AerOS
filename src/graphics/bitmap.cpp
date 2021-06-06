@@ -38,6 +38,7 @@ namespace Graphics
         Buffer = (uint8_t*)file.data;
         TotalSize = file.size;
         Depth = (COLOR_DEPTH)info->biBitCount;
+        if (Width == 0 || Height == 0 || Depth == 0 || file.size < 0 || strlen(file.name) == 0) { System::KernelIO::ThrowError("Unable to locate file"); return; }
 
         uint32_t* new_data = (uint32_t*)mem_alloc(Width * Height * 4);
         for (int32_t yy = Height - 1; yy >= 0; yy--)

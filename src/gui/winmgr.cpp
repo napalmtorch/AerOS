@@ -27,6 +27,12 @@ namespace System
     {
         if (WindowCount == 0) { return; }
 
+        // disable terminal input if no terminal is open
+        if (!streql(ActiveWindow->Name, "terminal"))
+        {
+            KernelIO::Keyboard.TerminalBuffer = false;
+        }
+
         uint32_t hover = 0;
         uint32_t moving = 0;
         uint32_t resizing = 0;

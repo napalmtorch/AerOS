@@ -16,11 +16,18 @@ namespace System
         public:
             bounds_t Bounds;
             GUI::VisualStyle Style;
+
+        private:
+            bounds_t BtnBounds;
+            bool     BtnHover;
+            bool     BtnDown;
+            bool     BtnClicked;
     };
 
     class XServerHost
     {
         public:
+            XServerHost();
             void Start();
             void Update();
             void Draw();

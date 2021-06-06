@@ -207,59 +207,32 @@ namespace Graphics
         void DrawBitmap(int32_t x, int32_t y, Graphics::Bitmap* bitmap)
         {
             if (bitmap == nullptr) { return; }
-            /*
-            for (int32_t yy = bitmap->Height - 1; yy >= 0; yy--)
-            {
-                for (int32_t xx = bitmap->Width - 1; xx >= 0; xx--)
-                {
-                    if (bitmap->Depth == COLOR_DEPTH_24)
-                    {
-                        uint32_t offset = (3 * (xx + (yy * bitmap->Width)));
-                        uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
-                        DrawPixel(x + (bitmap->Width - xx), y + (bitmap->Height - yy), color);
-                    }
-                    else if (bitmap->Depth == COLOR_DEPTH_32)
-                    {
-                        uint32_t offset = (4 * (xx + (yy * bitmap->Width)));
-                        uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
-                        DrawPixel(x + (bitmap->Width - xx), y + (bitmap->Height - yy), color);
-                    }
-                }
-            }  
-            */
 
-           uint32_t* data = (uint32_t*)bitmap->ImageData;
-           for (int32_t yy = 0; yy < bitmap->Height; yy++)
-           {
-               for (int32_t xx = 0; xx < bitmap->Width; xx++)
-               {
-                   uint32_t color = data[(xx + (yy * bitmap->Width))];
-                   DrawPixel(x + (bitmap->Width - xx - 1), y + yy, color);
-               }
-           }
+            uint32_t* data = (uint32_t*)bitmap->ImageData;
+            for (int32_t yy = 0; yy < bitmap->Height; yy++)
+            {
+                for (int32_t xx = 0; xx < bitmap->Width; xx++)
+                {
+                    uint32_t color = data[(xx + (yy * bitmap->Width))];
+                    DrawPixel(x + (bitmap->Width - xx - 1), y + yy, color);
+                }
+            }
         }
 
         void DrawBitmap(int32_t x, int32_t y, Color trans_key, Graphics::Bitmap* bitmap)
         {
             if (bitmap == nullptr) { return; }
-            for (int32_t yy = bitmap->Height - 1; yy >= 0; yy--)
+
+            uint32_t* data = (uint32_t*)bitmap->ImageData;
+            for (int32_t yy = 0; yy < bitmap->Height; yy++)
             {
-                for (int32_t xx = bitmap->Width - 1; xx >= 0; xx--)
+                for (int32_t xx = 0; xx < bitmap->Width; xx++)
                 {
-                    if (bitmap->Depth == COLOR_DEPTH_24)
-                    {
-                        uint32_t offset = (3 * (xx + (yy * bitmap->Width)));
-                        uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
-                        if (color != Graphics::RGBToPackedValue(trans_key.R, trans_key.G, trans_key.B)) { DrawPixel(x + (bitmap->Width - xx), y + (bitmap->Height - yy), color); }
-                    }
-                    else if (bitmap->Depth == COLOR_DEPTH_32)
-                    {
-                        uint32_t offset = (4 * (xx + (yy * bitmap->Width)));
-                        uint32_t color = Graphics::RGBToPackedValue(bitmap->ImageData[offset + 2], bitmap->ImageData[offset + 1], bitmap->ImageData[offset]);
-                        if (color != Graphics::RGBToPackedValue(trans_key.R, trans_key.G, trans_key.B)) { DrawPixel(x + xx, y + (bitmap->Height - yy), color); }
-                    }
+                    uint32_t color = data[(xx + (yy * bitmap->Width))];
+                    if (color != RGBToPackedValue(trans_key.R, trans_key.G, trans_key.B))
+                    { DrawPixel(x + (bitmap->Width - xx - 1), y + yy, color); }
                 }
-            }  
+            }
         }
 
         // draw scaled bitmap

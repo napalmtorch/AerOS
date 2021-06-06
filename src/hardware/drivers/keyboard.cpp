@@ -82,7 +82,8 @@ namespace HAL
         KeyboardLayoutUS = { KB_LAYOUT_US, "United States", "??!@#$%^&*()_+??QWERTYUIOP{}??ASDFGHJKL:\"~?|ZXCVBNM<>???? ", "" };
         KeyboardLayoutDE = { KB_LAYOUT_DE, "German",        "??!\"§$%&/()=?`??QWERTZUIOP?*??ASDFGHJKL??'?>YXCVBNM;:???? ", "" }; 
 
-        Buffer = new char[256];
+        InputBuffer = new char[512];
+        Buffer = InputBuffer;
         TerminalBuffer = true;
     }
 

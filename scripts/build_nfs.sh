@@ -9,6 +9,14 @@ nasm -felf32 'src/boot/realmode.asm' -o 'bin/objs/rm.o'
 nasm -felf32 'src/boot/gdt.asm' -o 'bin/objs/gdt.o'
 nasm -felf32 'include/hardware/interrupt/irqs.asm' -o 'bin/objs/irqs.o'
 
+# apps
+for file in src/apps/*.cpp 
+do
+infile=$(basename $file)
+outfile="$(echo $infile | sed 's/cpp/o/g')"
+i686-elf-g++ -w -Iinclude -c src/apps/$infile -o "bin/objs/$outfile"  -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable
+done
+
 # core
 for file in src/core/*.cpp 
 do

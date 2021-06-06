@@ -126,6 +126,7 @@ namespace HAL
             bool BufferEnabled;
             bool TerminalBuffer;
             char* Buffer;
+            char* InputBuffer;
             void (*Event_OnEnterPressed)(char*);
 
             // keyboard layouts

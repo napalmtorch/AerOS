@@ -88,6 +88,7 @@ System::Threading::ThreadManager::ThreadManager()
 static bool init = false;
 void System::Threading::ThreadManager::thread_switch(uint32_t* regs)
 {
+    KernelIO::Kernel.OnInterrupt();
     registers_t* _regs = (registers_t*)*regs;
     if (KernelIO::TaskManager.count == 0 || KernelIO::TaskManager.loaded_threads == nullptr) return;
     if (init) KernelIO::TaskManager.loaded_threads[KernelIO::TaskManager.CurrentPos]->regs_state = _regs;
@@ -114,7 +115,6 @@ void System::Threading::ThreadManager::thread_switch(uint32_t* regs)
     *regs = (uint32_t)(KernelIO::TaskManager.CurrentThread->regs_state);
     init = true;
     //KernelIO::WriteLine("Switching tasks");
-    KernelIO::Kernel.OnInterrupt();
 }
 void System::Threading::ThreadManager::LoadThread(Thread* thread)
 {

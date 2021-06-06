@@ -93,6 +93,14 @@ namespace Graphics
 
     Color PackedValueToRGB(uint32_t packed);
 
+    static inline void SetColor(Color* color, uint8_t a, uint8_t r, uint8_t g, uint8_t b)
+    {
+        color->A = a;
+        color->R = r;
+        color->G = g;
+        color->B = b;
+    }
+
     // pre-defined rgb colors
     namespace Colors
     {

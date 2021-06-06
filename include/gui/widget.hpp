@@ -145,6 +145,7 @@ namespace System
                 bool CloseHover, CloseDown, CloseClicked;
                 bool MaxHover, MaxDown, MaxClicked;
                 bool MinHover, MinDown, MinClicked;
+                void UpdateClientBounds();
 
         };
     }
