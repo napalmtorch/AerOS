@@ -112,6 +112,8 @@ namespace System
 
     void ShellHost::ParseCommand(char* input)
     {
+        if (strlen(input) == 0) { return; }
+        
         // get command from input
         char* cmd = strsplit_index(input, 0, ' ');
         strlower(cmd);
