@@ -10,7 +10,7 @@ namespace System
 
     int32_t time, last_time, fps, frames;
     char fps_string[64];
-    Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings, *ico_perf;
+    Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings, *ico_perf,*ico_resol;
     Graphics::Bitmap* wallpaper;
 
     XServerHost::XServerHost()
@@ -33,6 +33,7 @@ namespace System
             ico_notes = new Graphics::Bitmap("/sys/resources/notes32.bmp");
             ico_perf = new Graphics::Bitmap("/sys/resources/perf32.bmp");
             ico_settings = new Graphics::Bitmap("/sys/resources/settings32.bmp");
+            ico_resol = new Graphics::Bitmap("/sys/resources/blank32.bmp");
 
             // load wallpaper
             wallpaper = new Graphics::Bitmap((char*)wallpaper_path);
@@ -211,6 +212,7 @@ namespace System
         ItemTasks = new XMenuItem("Tasks", ico_perf);   AddItem(ItemTasks);
         ItemTerm = new XMenuItem("XTerm", ico_term);    AddItem(ItemTerm);
         ItemSettings = new XMenuItem("Setup", ico_settings);  AddItem(ItemSettings);
+        ItemResol = new XMenuItem("Resolution", ico_resol);  AddItem(ItemResol);
     }
 
     void XMenu::Update()
@@ -252,6 +254,13 @@ namespace System
                 KernelIO::WindowMgr.Start(new Applications::WinTerminal(163, 163));
                 Visible = false;
                 ItemTerm->Clicked = true;
+            }
+            else if (ItemResol->Down && !ItemResol->Clicked)
+            {
+                KernelIO::VESA.SetMode(1920, 1080, 32);
+                KernelIO::XServer.Update();
+                Visible = false;
+                ItemResol->Clicked = true;
             }
         }
     }

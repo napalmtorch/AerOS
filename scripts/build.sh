@@ -129,5 +129,5 @@ else
 	grub-mkrescue -d /usr/lib/grub/i386-pc --compress=xz -o AerOS.iso cdrom 'bin/isodir/boot/kernel.bin' -V 'AerOS'
 
 # run 
-qemu-system-i386 -cpu host -m 256M -vga std -hda 'disks/fat32.img' -cdrom 'AerOS.iso' -name 'AerOS Development Copy' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm -rtc base=localtime
+qemu-system-i386 -cpu host -m 1026M -vga std -hda 'disks/fat32.img' -cdrom 'AerOS.iso' -name 'AerOS Development Copy' -serial stdio -boot d -soundhw all -device e1000 -enable-kvm -rtc base=localtime
 fi

@@ -95,6 +95,7 @@ namespace System
             XMenuItem* ItemTerm;
             XMenuItem* ItemTasks;
             XMenuItem* ItemSettings;
+            XMenuItem* ItemResol;
 
     };
 

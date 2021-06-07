@@ -38,6 +38,7 @@ namespace System
             {
                 char temp[64];
                 char num[16];
+                char num_perc[16];
                 temp[0] = '\0';
                 num[0] = '\0';
                 int32_t dx = ClientBounds.X + 4, dy = ClientBounds.Y + 4;
@@ -69,7 +70,13 @@ namespace System
                 strcat(temp, "Memory Used:  ");
                 strdec(mem_get_used() / 1024 / 1024, num);
                 strcat(temp, num);
-                strcat(temp, " MB");
+                strcat(temp, " MB - ");
+                float total = mem_get_total();
+                float used = mem_get_used();
+                float perc = (used / total) * 100.0;
+                strdec(perc,num_perc);
+                strcat(temp,num_perc);
+                strcat(temp," % Used");
                 Graphics::Canvas::DrawString(dx, dy, temp, Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
                 dy += 12; temp[0] = '\0';
 
