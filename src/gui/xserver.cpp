@@ -10,7 +10,7 @@ namespace System
 
     int32_t time, last_time, fps, frames;
     char fps_string[64];
-    Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings;
+    Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings, *ico_perf;
     Graphics::Bitmap* wallpaper;
 
     XServerHost::XServerHost()
@@ -31,6 +31,7 @@ namespace System
             ico_blank = new Graphics::Bitmap("/sys/resources/blank32.bmp");
             ico_alert = new Graphics::Bitmap("/sys/resources/alert32.bmp");
             ico_notes = new Graphics::Bitmap("/sys/resources/notes32.bmp");
+            ico_perf = new Graphics::Bitmap("/sys/resources/perf32.bmp");
             ico_settings = new Graphics::Bitmap("/sys/resources/settings32.bmp");
 
             // load wallpaper
@@ -204,6 +205,7 @@ namespace System
         // create default items
         ItemFiles = new XMenuItem("Files", ico_folder); AddItem(ItemFiles);
         ItemNotes = new XMenuItem("Notes", ico_notes);  AddItem(ItemNotes);
+        ItemTasks = new XMenuItem("Tasks", ico_perf);   AddItem(ItemTasks);
         ItemTerm = new XMenuItem("XTerm", ico_term);    AddItem(ItemTerm);
         ItemSettings = new XMenuItem("Setup", ico_settings);  AddItem(ItemSettings);
     }

@@ -159,10 +159,8 @@ namespace System
                 // draw title bar background
                 Graphics::Canvas::DrawFilledRectangle(Bounds.X, Bounds.Y, Bounds.Width, 20, Style.Colors[3]);
                 
-
                 // draw border
                 Graphics::Canvas::DrawRectangle(Bounds.X, Bounds.Y, Bounds.Width, Bounds.Height, 1, Style.Colors[2]);
-                //Graphics::Canvas::DrawFilledRectangle(Bounds.X, Bounds.Y + 20, Bounds.Width, 1, Style.Colors[2]);
 
                 // draw close icon
                 int close_i = 4;

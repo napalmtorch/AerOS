@@ -57,6 +57,7 @@ namespace System
             XMenuItem* ItemFiles;
             XMenuItem* ItemNotes;
             XMenuItem* ItemTerm;
+            XMenuItem* ItemTasks;
             XMenuItem* ItemSettings;
 
     };
