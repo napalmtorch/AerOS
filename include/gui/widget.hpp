@@ -135,6 +135,8 @@ namespace System
                 bounds_t Bounds;
                 bounds_t ClientBounds;
                 bounds_t OldBounds;
+                bounds_t ResizeBoundsRight;
+                bounds_t ResizeBoundsBottom;
                 WindowFlags Flags;
                 VisualStyle Style;
                 HAL::MouseFlags MSFlags;

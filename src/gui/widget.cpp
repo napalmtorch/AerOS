@@ -36,7 +36,12 @@ namespace System
             // update when window is active
             if (Flags.Active)
             {
+                // update client bounds
                 UpdateClientBounds();
+
+                // update resize bounds
+                bounds_set(&ResizeBoundsRight, Bounds.X + Bounds.Width - 2, Bounds.Y, 2, Bounds.Height);
+                bounds_set(&ResizeBoundsBottom, Bounds.X, Bounds.Y + Bounds.Height - 2, Bounds.Width, 2);
 
                 // update button bounds
                 bounds_set(&CloseBounds, Bounds.X + Bounds.Width - 16, Bounds.Y + 6, 9, 9);

@@ -34,18 +34,25 @@ namespace HAL
 
         // register interrupt
         CPU::RegisterIRQ(IRQ12, (isr_t)ms_callback);
+
+        SetCursor(CursorType::Default);
+    }
+
+    void PS2Mouse::SetCursor(CursorType cursor)
+    {
+        Cursor = cursor;
     }
 
     // draw mouse to screen
     void PS2Mouse::Draw()
     {
-        for (uint8_t y = 0; y < 20; y++)
+        switch (Cursor)
         {
-            for (uint8_t x = 0; x < 12; x++)
-            {
-                if (CursorData32[x + (y * 12)] != 0xFFFF00FF)
-                { Graphics::Canvas::DrawPixel(Position.X + x, Position.Y + y, CursorData32[x + (y * 12)]); }
-            }
+            case CursorType::Default:  { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorData); break; }
+            case CursorType::Loading:  { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorDataWait); break; }
+            case CursorType::ResizeNS: { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorDataResizeNS); break; }
+            case CursorType::ResizeWE: { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorDataResizeWE); break; }
+            default:                   { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorData); break; }
         }
     }
 
@@ -138,7 +145,7 @@ namespace HAL
     // get cursor image pixel array
     uint8_t* PS2Mouse::GetCursor() { return (uint8_t*)CursorData; }
 
-    uint32_t* PS2Mouse::GetCursor32() { return (uint32_t*)CursorData32; }
+    uint32_t* PS2Mouse::GetCursor32() { return (uint32_t*)CursorData; }
 
     void PS2Mouse::ToggleArrowKeys(bool value) { ArrowKeys = value; }
 
