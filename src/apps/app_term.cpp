@@ -11,9 +11,6 @@ namespace System
 
         WinTerminal::WinTerminal(int32_t x, int32_t y) : GUI::Window(x, y, 474, 325, "XTerm", "xterm")
         {
-            old_w = 474;
-            old_h = 325;
-
             // set backcolor to transparent - region will be populate by buffer and this will improve performance
             Style.Colors[0] = Graphics::Colors::Transparent;
 

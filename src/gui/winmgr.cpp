@@ -78,7 +78,7 @@ namespace System
         if (hover == 0 && resizing == 0) { KernelIO::Mouse.SetCursor(HAL::CursorType::Default); }
 
         // determine active window
-        if (moving == 0)
+        if (moving == 0 && resizing == 0)
         {
             for (uint32_t i = 0; i < WindowCount; i++)
             {
@@ -146,7 +146,7 @@ namespace System
         if (window == nullptr) { KernelIO::ThrowError("Tried to start null window"); return nullptr; }
 
         // check if window is already running
-        if (IsWindowRunning(window)) { KernelIO::ThrowError("Tried to start window that is already opened"); return nullptr; }
+        if (IsWindowRunning(window) != nullptr) { KernelIO::ThrowError("Tried to start window that is already opened"); return nullptr; }
 
         // check if position in list is null
         if (WindowList[WindowIndex] != nullptr) { KernelIO::ThrowError("Tried to start window at existing window pointer"); return nullptr; }
@@ -173,11 +173,14 @@ namespace System
     // close running window
     bool WindowManager::Close(GUI::Window* window)
     {
+        // check if any windows are open
+        if (WindowCount == 0) { return false; }
+
         // check if window is null
         if (window == nullptr) { KernelIO::ThrowError("Tried to close null window"); return false; }
 
         // check if window is running
-        if (!IsWindowRunning(window)) { KernelIO::ThrowError("Tried to close window that is not running"); return false; }
+        if (IsWindowRunning(window) == nullptr) { KernelIO::ThrowError("Tried to close window that is not running"); return false; }
 
         // get window index
         uint32_t index = GetWindowIndex(window);
@@ -198,6 +201,7 @@ namespace System
             uint32_t* ptr = (uint32_t*)(i + 1);
             ptr[0] = ptr[1];
         }
+        ((uint32_t*)(WindowList + (4 * WindowCount) - 4))[0] = 0x00000000;
 
         // decrement values
         WindowIndex--;
@@ -214,7 +218,7 @@ namespace System
         if (window == nullptr) { KernelIO::ThrowError("Tried to close null window"); return nullptr; }
 
         // check if window is running
-        if (!IsWindowRunning(window)) { KernelIO::ThrowError("Tried to close window that is not running"); return nullptr; }
+        if (IsWindowRunning(window) == nullptr) { KernelIO::ThrowError("Tried to close window that is not running"); return nullptr; }
 
         // get window index
         int32_t index = -1;
@@ -270,12 +274,15 @@ namespace System
     // check if specified window is running
     GUI::Window* WindowManager::IsWindowRunning(GUI::Window* window)
     {
-         // don't bother if list is empty
+        // don't bother if list is empty
         if (WindowCount == 0) { return nullptr; }
 
         for (size_t i = 0; i < WindowCount; i++)
         {
-            if (WindowList[i] == window) { return WindowList[i]; }
+            if (WindowList[i] != nullptr)
+            {
+                if (WindowList[i] == window) { return WindowList[i]; }
+            }
         }
 
         // return nullptr if not running
