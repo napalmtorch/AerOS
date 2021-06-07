@@ -205,6 +205,8 @@ System::Threading::Thread* System::Threading::ThreadManager::GetCurrentThread()
     return CurrentThread;
 }
 
+int32_t System::Threading::ThreadManager::GetThreadCount() { return count; }
+
 extern "C"
 {
     System::Threading::Thread* tinit(char* n, char* u, System::Threading::ThreadStart protocol)

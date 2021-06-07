@@ -74,15 +74,6 @@ extern "C"
 
             // get next available free entry
             rat_entry_t* entry = get_free_entry(size + 2);
-            
-            uint32_t free = 0;
-            for (size_t i = 0; i < rat_max_entries; i++)
-            {
-                rat_entry_t* entry = get_entry(i);
-
-                if (entry->offset > 0 && entry->size > 0 && entry->state == MEM_STATE_FREE) { free += entry->size; }
-            }
-            mem_used = reserved_size - free;
 
             // allocation message
             debug_write("["); debug_write_ext("MALLOC", COL4_CYAN); debug_write("] ");
@@ -150,14 +141,12 @@ extern "C"
     // combine free entires
     void mem_combine_free_entries()
     {
-        uint32_t free = 0;
         for (size_t i = 0; i < rat_max_entries; i++)
         {
             rat_entry_t* entry = get_entry(i);
 
             if (entry->offset > 0 && entry->size > 0 && entry->state == MEM_STATE_FREE)
             {
-                free += entry->size;
                 rat_entry_t* next = get_neighbour(entry);
                 if (next != nullptr)
                 {
@@ -182,8 +171,6 @@ extern "C"
             }
         }
         create_entry(free_offset, free_total, MEM_STATE_FREE);
-
-        mem_used = reserved_size - free;
     }
 
     // get neighbouring free entry
@@ -354,7 +341,16 @@ extern "C"
     }
 
     // get amount of memory used
-    uint32_t mem_get_used() { return mem_used; }
+    uint32_t mem_get_used()
+    {
+        uint32_t used = 0;
+        for (size_t i = 0; i < rat_count; i++)
+        {
+            rat_entry_t* entry = (rat_entry_t*)(rat_table + (i * sizeof(rat_entry_t)));
+            if (entry->state == MEM_STATE_USED) { used += entry->size; }
+        }
+        return used;
+    }
 
     uint32_t mem_get_total_usable() { return reserved_size; }
 

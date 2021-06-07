@@ -240,7 +240,7 @@ namespace Graphics
                 {
                     uint32_t color = data[(xx + (yy * bitmap->Width))];
                     if (color != RGBToPackedValue(trans_key.R, trans_key.G, trans_key.B))
-                    { DrawPixel(x + (bitmap->Width - xx - 1), y + yy, color); }
+                    { DrawPixel(x + xx, y + yy, color); }
                 }
             }
         }

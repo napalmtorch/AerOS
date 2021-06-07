@@ -2,6 +2,7 @@
 #include <core/kernel.hpp>
 #include <apps/app_term.hpp>
 #include <apps/app_taskmgr.hpp>
+#include <apps/app_debug.hpp>
 
 namespace System
 {
@@ -40,8 +41,8 @@ namespace System
             Taskbar.Initialize();
             Menu.Initialize();
 
-            Applications::WinTaskManager* taskmgr = new Applications::WinTaskManager(128, 128);
-            KernelIO::WindowMgr.Start(taskmgr);
+            Applications::WinDebug* debug = new Applications::WinDebug(128, 128);
+            KernelIO::WindowMgr.Start(debug);
 
             // set running flag
             Running = true;
@@ -61,8 +62,11 @@ namespace System
 
     void XServerHost::Draw()
     {
-        if (wallpaper->Depth != COLOR_DEPTH_32) { Graphics::Canvas::Clear({ 0xFF, 156, 27, 12 }); }
-        else { Graphics::Canvas::DrawBitmapFast(0, 0, wallpaper); }
+        if (!KernelIO::WindowMgr.IsAnyMaximized())
+        {
+            if (wallpaper->Depth != COLOR_DEPTH_32) { Graphics::Canvas::Clear({ 0xFF, 156, 27, 12 }); }
+            else { Graphics::Canvas::DrawBitmapFast(0, 0, wallpaper); }
+        }
 
         KernelIO::WindowMgr.Draw();
 
@@ -201,7 +205,7 @@ namespace System
         ItemFiles = new XMenuItem("Files", ico_folder); AddItem(ItemFiles);
         ItemNotes = new XMenuItem("Notes", ico_notes);  AddItem(ItemNotes);
         ItemTerm = new XMenuItem("XTerm", ico_term);    AddItem(ItemTerm);
-        ItemSettings = new XMenuItem("Preferences", ico_settings);  AddItem(ItemSettings);
+        ItemSettings = new XMenuItem("Setup", ico_settings);  AddItem(ItemSettings);
     }
 
     void XMenu::Update()

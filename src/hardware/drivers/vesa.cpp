@@ -132,7 +132,6 @@ namespace HAL
 
     void VESA::Clear(uint32_t color)
     {
-        if (ModeInfoBlock.Depth != 32) { return; }
         for (size_t i = 0; i < Width * Height; i++) { ((uint32_t*)Buffer)[i] = color; }
     }
 	void VESA::Clear(uint16_t color)
@@ -148,10 +147,7 @@ namespace HAL
     }
 
     void VESA::SetPixel(int16_t x, int16_t y, uint32_t color)
-    {
-        if (x >= ModeInfoBlock.Width || y >= ModeInfoBlock.Height)  { return; }
-        if (ModeInfoBlock.Depth != 32) return;
-        
+    {      
         // store the color in the allocated buffer
         ((uint32_t*)Buffer)[x + (y * ModeInfoBlock.Width)] = color;
     }

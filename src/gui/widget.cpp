@@ -151,10 +151,14 @@ namespace System
         void Window::Draw()
         {
             if (Flags.CanDraw)
-            {
+            {   
                 // draw background
+                if (!Flags.Maximized) { Graphics::Canvas::DrawFilledRectangle(ClientBounds, Style.Colors[0]); }
+                else { Graphics::Canvas::Clear(Style.Colors[0]); }
+
+                // draw title bar background
                 Graphics::Canvas::DrawFilledRectangle(Bounds.X, Bounds.Y, Bounds.Width, 20, Style.Colors[3]);
-                Graphics::Canvas::DrawFilledRectangle(ClientBounds, Style.Colors[0]);
+                
 
                 // draw border
                 Graphics::Canvas::DrawRectangle(Bounds.X, Bounds.Y, Bounds.Width, Bounds.Height, 1, Style.Colors[2]);

@@ -62,6 +62,7 @@ namespace System
             bool ThreadRunning(char* name);
             bool KillRunning(char* name);
             bool CanKill(char* name);
+            int32_t GetThreadCount();
             ThreadManager();
         };
     }

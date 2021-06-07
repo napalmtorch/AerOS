@@ -40,6 +40,7 @@ namespace System
         int32_t mx = KernelIO::Mouse.GetX(), my = KernelIO::Mouse.GetY();
         int32_t active = ActiveIndex;
         int32_t top_hover_index;
+        MaximizedIndex = -1;
 
         int32_t last_hover = -1;
         for (size_t i = 0; i < WindowCount; i++)
@@ -51,6 +52,7 @@ namespace System
                 if (WindowList[i]->Flags.Moving) { moving++; }
                 if (WindowList[i]->Flags.Resizing) { resizing++; }
                 if (WindowList[i] == ActiveWindow) { active = i; }
+                if (WindowList[i]->Flags.Maximized) { MaximizedIndex = i; }
                 WindowList[i]->Flags.Active = (WindowList[i] == ActiveWindow);
                 if (bounds_contains(&WindowList[i]->Bounds, mx, my) && i > top_hover_index) { top_hover_index = i; }
 
@@ -109,6 +111,15 @@ namespace System
     {
         if (WindowCount == 0) { return; }
 
+        if (ActiveWindow != nullptr)
+        {
+            if (ActiveWindow->Flags.Maximized)
+            {
+                ActiveWindow->Draw();
+                return;   
+            }
+        }
+
         // loop through windows
         for (size_t i = 0; i < WindowCount; i++)
         {
@@ -117,15 +128,6 @@ namespace System
                 if (!WindowList[i]->Flags.Minimized) { WindowList[i]->Draw(); }
             }
         }
-
-        // print varius information
-        char header[64];
-        char temp[32];
-        header[0] = '\0'; temp[0] = '\0';
-        strcat(header, "ACTIVE: ");
-        strdec(ActiveIndex, temp);
-        strcat(header, temp);
-        Graphics::Canvas::DrawString(8, 32, header, Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
     }
 
     // executed on pit interrupt
@@ -199,7 +201,6 @@ namespace System
         WindowCount--;
         if (ActiveWindow == window && WindowIndex < MaxWindowCount) { SetActiveWindow(WindowList[WindowCount - 1]); }
         else { ActiveWindow = nullptr; }
-        KernelIO::Write("REAL CLOSE");
         return true;
     }
 
@@ -301,5 +302,11 @@ namespace System
                 KernelIO::Terminal.WriteLine(WindowList[i]->Name);
             }
         }
+    }
+
+    bool WindowManager::IsAnyMaximized()
+    {
+        if (MaximizedIndex >= 0) { return true; }
+        return false;
     }
 }

@@ -28,6 +28,7 @@ namespace System
             GUI::Window** GetWindowList();
             uint32_t      GetWindowCount();
             bool          IsInitialized();
+            bool          IsAnyMaximized();
             void          PrintWindowList();
 
         // properties
@@ -38,6 +39,7 @@ namespace System
             int32_t       WindowIndex;
             uint32_t      MaxWindowCount;
             int32_t       ActiveIndex;
+            int32_t       MaximizedIndex;
             bool          Initialized;
 
 
