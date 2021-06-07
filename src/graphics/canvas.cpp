@@ -34,7 +34,7 @@ namespace Graphics
         void DrawPixel(int32_t x, int32_t y, Color color)
         {
             if (color.A == 0) { return; }
-            if (x < 0 || y < 0) { return; }
+            if (x < 0 || y < 0 || x >= System::KernelIO::VESA.GetWidth() || y >= System::KernelIO::VESA.GetHeight()) { return; }
             System::KernelIO::VESA.SetPixel(x, y, Graphics::RGBToPackedValue(color.R, color.G, color.B));
         }
 

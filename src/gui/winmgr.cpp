@@ -72,7 +72,10 @@ namespace System
         ActiveIndex = active;
 
         // if mouse clicked but no window selected then reset active window
-        if (hover + moving == 0 && KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed) { ActiveWindow = nullptr; }
+        if (hover + moving + resizing == 0 && KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed) { ActiveWindow = nullptr; }
+
+        // set cursor to default if no windows are being hovered
+        if (hover == 0 && resizing == 0) { KernelIO::Mouse.SetCursor(HAL::CursorType::Default); }
 
         // determine active window
         if (moving == 0)

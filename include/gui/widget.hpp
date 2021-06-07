@@ -65,6 +65,8 @@ namespace System
         {
             bool Minimized;
             bool Maximized;
+            bool CanMaximize;
+            bool CanMinimize;
             bool Moving;
             bool Resizing;
             bool CanDraw;
@@ -134,9 +136,8 @@ namespace System
             public:
                 bounds_t Bounds;
                 bounds_t ClientBounds;
-                bounds_t OldBounds;
-                bounds_t ResizeBoundsRight;
-                bounds_t ResizeBoundsBottom;
+                point_t  MaximumSize;
+                point_t  MinimumSize;
                 WindowFlags Flags;
                 VisualStyle Style;
                 HAL::MouseFlags MSFlags;
@@ -144,6 +145,9 @@ namespace System
                 char* Name;
 
             private:
+                bounds_t OldBounds;
+                bounds_t ResizeBoundsRight;
+                bounds_t ResizeBoundsBottom;
                 bounds_t CloseBounds, MaxBounds, MinBounds;
                 bool CloseHover, CloseDown, CloseClicked;
                 bool MaxHover, MaxDown, MaxClicked;

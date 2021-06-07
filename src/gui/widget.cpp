@@ -13,6 +13,13 @@ namespace System
         {
             Title = title;
             Name = name;
+
+            Flags.CanDraw = true;
+            Flags.CanMaximize = true;
+            Flags.CanMinimize = true;
+            MinimumSize = { w, h };
+            MaximumSize = { (int32_t)KernelIO::VESA.GetWidth(), (int32_t)KernelIO::VESA.GetHeight() };
+
             SetBounds(x, y, w, h);
             CopyStyle(&WindowStyle, &Style);
 
@@ -29,7 +36,7 @@ namespace System
         }
 
         // update window
-        bool move_click;
+        bool move_click, resize_click_r, resize_click_b;
         int32_t mx_start, my_start;
         void Window::Update()
         {
@@ -40,8 +47,8 @@ namespace System
                 UpdateClientBounds();
 
                 // update resize bounds
-                bounds_set(&ResizeBoundsRight, Bounds.X + Bounds.Width - 2, Bounds.Y, 2, Bounds.Height);
-                bounds_set(&ResizeBoundsBottom, Bounds.X, Bounds.Y + Bounds.Height - 2, Bounds.Width, 2);
+                bounds_set(&ResizeBoundsRight, Bounds.X + Bounds.Width - 3, Bounds.Y + 20, 3, Bounds.Height - 20);
+                bounds_set(&ResizeBoundsBottom, Bounds.X, Bounds.Y + Bounds.Height - 3, Bounds.Width, 3);
 
                 // update button bounds
                 bounds_set(&CloseBounds, Bounds.X + Bounds.Width - 16, Bounds.Y + 6, 9, 9);
@@ -81,6 +88,7 @@ namespace System
                 if (CloseDown && !CloseClicked)
                 {
                     Flags.ExitRequest = true;
+                    CloseClicked = true;
                     return;
                 }
 
@@ -109,11 +117,14 @@ namespace System
                     MinClicked = true;
                 }
 
-                // check for movement
+                // check for moving/sizing
                 if (!Flags.Maximized && !Flags.Minimized)
                 {
+                    // title bar bounds
                     bounds_t bnds = { Bounds.X, Bounds.Y, Bounds.Width, 20 };
-                    if (bounds_contains(&bnds, mx, my) && !CloseHover && !MaxHover && !MinHover)
+
+                    // check for movement
+                    if (bounds_contains(&bnds, mx, my) && !CloseHover && !MaxHover && !MinHover && !Flags.Resizing)
                     {
                         if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
                         {
@@ -127,6 +138,30 @@ namespace System
                         }
                     }
 
+                    // check for right side resize
+                    if (bounds_contains(&ResizeBoundsRight, mx, my) && !Flags.Moving)
+                    {
+                        if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
+                        {
+                            if (!resize_click_r) { resize_click_r = true; }
+                            Flags.Resizing = true;
+                        }
+                    }
+
+                    // check for bottom size resize
+                    if (bounds_contains(&ResizeBoundsBottom, mx, my) && !Flags.Moving)
+                    {
+                        if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Pressed)
+                        {
+                            if (!resize_click_b) { resize_click_b = true; }
+                            Flags.Resizing = true;
+                        }
+                    }
+
+                    // update cursor based on state
+                    if (bounds_contains(&ResizeBoundsRight, mx, my)) { KernelIO::Mouse.SetCursor(HAL::CursorType::ResizeWE); }
+                    if (bounds_contains(&ResizeBoundsBottom, mx, my)) { KernelIO::Mouse.SetCursor(HAL::CursorType::ResizeNS); }
+
                     // relocate window
                     if (Flags.Moving)
                     {
@@ -134,12 +169,32 @@ namespace System
                         Bounds.Y = my - my_start;
                     }
 
+                    // limit position ...
+                    // finish this when the second taskbar/dock is done
+
+                    // resize window
+                    if (resize_click_r) { Bounds.Width = mx - Bounds.X; }
+                    if (resize_click_b) { Bounds.Height = my - Bounds.Y; }
+
+                    // limit size
+                    if (Bounds.Width  < MinimumSize.X) { Bounds.Width  = MinimumSize.X; }
+                    if (Bounds.Width  > MaximumSize.X) { Bounds.Width  = MaximumSize.X; }
+                    if (Bounds.Height < MinimumSize.Y) { Bounds.Height = MinimumSize.Y; }
+                    if (Bounds.Height > MaximumSize.Y) { Bounds.Height = MaximumSize.Y; }
+
+
                     // stopped dragging window
                     if (KernelIO::Mouse.IsLeftPressed() == HAL::ButtonState::Released)
                     {
                         Flags.Moving = false;
+                        Flags.Resizing = false;
                         move_click = false;
+                        resize_click_r = false;
+                        resize_click_b = false;
                     }
+
+                    if (!resize_click_b && !resize_click_r && !bounds_contains(&ResizeBoundsBottom, mx, my) && !bounds_contains(&ResizeBoundsRight, mx, my)) 
+                    { KernelIO::Mouse.SetCursor(HAL::CursorType::Default); }
                 }
             }
             // window is not active
@@ -149,7 +204,7 @@ namespace System
                 Flags.Resizing = false;
             }
 
-            Flags.CanDraw = (!Flags.Moving && !Flags.Resizing && !Flags.Minimized);
+            Flags.CanDraw = (!Flags.Moving && !Flags.Minimized);
         }
 
         // draw window

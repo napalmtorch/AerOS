@@ -48,11 +48,11 @@ namespace HAL
     {
         switch (Cursor)
         {
-            case CursorType::Default:  { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorData); break; }
-            case CursorType::Loading:  { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorDataWait); break; }
-            case CursorType::ResizeNS: { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorDataResizeNS); break; }
-            case CursorType::ResizeWE: { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorDataResizeWE); break; }
-            default:                   { Graphics::Canvas::DrawArray(Position.X, Position.Y, 7, 20, Graphics::Colors::Magenta, (uint32_t*)CursorData); break; }
+            case CursorType::Default:  { Graphics::Canvas::DrawArray(Position.X, Position.Y, 12, 20, Graphics::Colors::Magenta, (uint32_t*)CursorData); break; }
+            case CursorType::Loading:  { Graphics::Canvas::DrawArray(Position.X, Position.Y, 11, 20, Graphics::Colors::Magenta, (uint32_t*)CursorDataWait); break; }
+            case CursorType::ResizeNS: { Graphics::Canvas::DrawArray(Position.X, Position.Y - 4, 7,  20,  Graphics::Colors::Magenta, (uint32_t*)CursorDataResizeNS); break; }
+            case CursorType::ResizeWE: { Graphics::Canvas::DrawArray(Position.X - 10, Position.Y, 20, 7, Graphics::Colors::Magenta, (uint32_t*)CursorDataResizeWE); break; }
+            default:                   { Graphics::Canvas::DrawArray(Position.X, Position.Y, 12, 20, Graphics::Colors::Magenta, (uint32_t*)CursorData); break; }
         }
     }
 

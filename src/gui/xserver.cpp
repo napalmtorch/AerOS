@@ -176,13 +176,16 @@ namespace System
         Graphics::Canvas::DrawFilledRectangle(Bounds, Style.Colors[0]);
         Graphics::Canvas::DrawFilledRectangle(Bounds.X, Bounds.Y + (Bounds.Height - 1), Bounds.Width, 1, { 255, 48, 48, 48 });
 
+        // draw power icon
+        Graphics::Canvas::DrawArray(Bounds.Width - 19, Bounds.Y + 3, 13, 14, Graphics::Colors::Magenta, (uint32_t*)IMG_POWER_13x14);
+
         // draw time
         int32_t time_sw = strlen(KernelIO::RTC.GetTimeString(true, true)) * 8;
-        Graphics::Canvas::DrawString((Bounds.Width - time_sw) - 6, (Bounds.Height / 2) - 4, KernelIO::RTC.GetTimeString(true, true), Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
+        Graphics::Canvas::DrawString((Bounds.Width - time_sw) - 32, (Bounds.Height / 2) - 4, KernelIO::RTC.GetTimeString(true, true), Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
 
         // draw fps
         int32_t fps_sw = strlen(KernelIO::XServer.GetFPSString()) * 8;
-        Graphics::Canvas::DrawString(Bounds.Width - 108,  (Bounds.Height / 2) - 4, fps_string, Graphics::Colors::Green, Graphics::Colors::Black, Graphics::FONT_8x8_SERIF);
+        Graphics::Canvas::DrawString(Bounds.Width - 140,  (Bounds.Height / 2) - 4, fps_string, Graphics::Colors::Green, Graphics::Colors::Black, Graphics::FONT_8x8_SERIF);
 
         // draw button text
         if (BtnHover) { Graphics::Canvas::DrawString(Bounds.X + 6, Bounds.Y + 6, "AerOS", Style.Colors[2], Graphics::FONT_8x8); }
