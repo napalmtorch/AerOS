@@ -256,9 +256,13 @@ namespace System
             // enable interrupts
             HAL::CPU::EnableInterrupts();
             ThrowOK("Enabled interrupts");
-
+            if(Parameters.VESA)
+            {
+                XServer.Start();
+            }
             auto kernel_thread = tinit("core", "system", [] () { KernelIO::Kernel.InitThreaded(); });
             tstart(kernel_thread);
+
         }
 
         // parse start parameters
