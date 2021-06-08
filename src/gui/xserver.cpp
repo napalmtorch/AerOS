@@ -3,6 +3,7 @@
 #include <apps/app_term.hpp>
 #include <apps/app_taskmgr.hpp>
 #include <apps/app_debug.hpp>
+#include <apps/app_about.hpp>
 
 namespace System
 {
@@ -10,7 +11,7 @@ namespace System
 
     int32_t time, last_time, fps, frames;
     char fps_string[64];
-    Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings, *ico_perf,*ico_resol;
+    Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings, *ico_perf,*ico_about;
     Graphics::Bitmap* wallpaper;
 
     XServerHost::XServerHost()
@@ -33,7 +34,7 @@ namespace System
             ico_notes = new Graphics::Bitmap("/sys/resources/notes32.bmp");
             ico_perf = new Graphics::Bitmap("/sys/resources/perf32.bmp");
             ico_settings = new Graphics::Bitmap("/sys/resources/settings32.bmp");
-            ico_resol = new Graphics::Bitmap("/sys/resources/blank32.bmp");
+            ico_about = new Graphics::Bitmap("/sys/resources/blank32.bmp");
 
             // load wallpaper
             wallpaper = new Graphics::Bitmap((char*)wallpaper_path);
@@ -212,7 +213,7 @@ namespace System
         ItemTasks = new XMenuItem("Tasks", ico_perf);   AddItem(ItemTasks);
         ItemTerm = new XMenuItem("XTerm", ico_term);    AddItem(ItemTerm);
         ItemSettings = new XMenuItem("Setup", ico_settings);  AddItem(ItemSettings);
-        ItemResol = new XMenuItem("Resolution", ico_resol);  AddItem(ItemResol);
+        ItemAbout = new XMenuItem("About", ico_about);  AddItem(ItemAbout);
     }
 
     void XMenu::Update()
@@ -255,12 +256,11 @@ namespace System
                 Visible = false;
                 ItemTerm->Clicked = true;
             }
-            else if (ItemResol->Down && !ItemResol->Clicked)
+            else if (ItemAbout->Down && !ItemAbout->Clicked)
             {
-                KernelIO::VESA.SetMode(1920, 1080, 32);
-                KernelIO::XServer.Update();
+                KernelIO::WindowMgr.Start(new Applications::WinAbout(163, 163));
                 Visible = false;
-                ItemResol->Clicked = true;
+                ItemAbout->Clicked = true;
             }
         }
     }
