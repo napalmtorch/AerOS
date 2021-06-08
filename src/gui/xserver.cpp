@@ -34,7 +34,7 @@ namespace System
             ico_notes = new Graphics::Bitmap("/sys/resources/notes32.bmp");
             ico_perf = new Graphics::Bitmap("/sys/resources/perf32.bmp");
             ico_settings = new Graphics::Bitmap("/sys/resources/settings32.bmp");
-            ico_about = new Graphics::Bitmap("/sys/resources/blank32.bmp");
+            ico_about = new Graphics::Bitmap("/sys/resources/notes32.bmp");
 
             // load wallpaper
             wallpaper = new Graphics::Bitmap((char*)wallpaper_path);
