@@ -32,6 +32,7 @@ namespace System
             void HandleInput(char* input);
             void ParseCommand(char* input);
             char* GetCurrentPath();
+            char* sysuser;
             ShellCommand GetCommand(uint32_t index);
         private:
             char CurrentPath[128];
@@ -69,5 +70,7 @@ namespace System
         void KILL(char* input);
         void WHOAMI(char* input);
         void WINLS(char* input);
+        void SU(char* input);
+        void GETPERMS(char* input);
     }
 }

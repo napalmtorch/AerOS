@@ -193,7 +193,7 @@ bool System::Threading::ThreadManager::KillRunning(char* name)
     for (size_t i = 0; i < count; i++)
     {
         Thread* thread = loaded_threads[i];
-        if(streql(thread->name,name)) { thread->Stop(); thread->state.state = State::Failed; return true; }
+        if(streql(thread->name,name)) { thread->Stop(); thread->state.state = State::Stopped; return true; }
     }
     return false;
 }

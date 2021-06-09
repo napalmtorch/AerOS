@@ -5,6 +5,7 @@
 #include <hardware/hostname.hpp>
 #include <hardware/drivers/rtc.hpp>
 #include <lib/string.hpp>
+#include <software/security.hpp>
 
 namespace System
 {
@@ -62,10 +63,14 @@ namespace System
         RegisterCommand("kill",       "Kill Pid by Name","",                  Commands::KILL);
         RegisterCommand("whoami",     "Show current user information", "",    Commands::WHOAMI);
         RegisterCommand("winls",      "List all running windows", "",         Commands::WINLS);
+        RegisterCommand("su",         "Switch to high permission User!","",   Commands::SU);
+        RegisterCommand("getperms",   "Show your current user level","",      Commands::GETPERMS);
 
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
-
+        sysuser = "aeros";
+        AerOS::Permissions cur;
+        cur.curperms = AerOS::Perms::User;
         // print caret to screen
         PrintCaret();
     }
@@ -419,7 +424,12 @@ namespace System
          }
         }
         void WHOAMI(char* input) {
-            KernelIO::Terminal.WriteLine("aeros");
+            KernelIO::Terminal.WriteLine(KernelIO::Shell.sysuser);
+        }
+        void SU(char* input) {
+            AerOS::Permissions set_perms;
+            set_perms.curperms = AerOS::Perms::All;
+            KernelIO::Shell.sysuser = "root"; return;
         }
         void CD(char* input)
         {
@@ -504,6 +514,24 @@ namespace System
         void WINLS(char* input)
         {
             System::KernelIO::WindowMgr.PrintWindowList();
+        }
+
+        void GETPERMS(char* input)
+        {
+            AerOS::Permissions cur_perms;
+            if(cur_perms.IsGuest(KernelIO::Shell.sysuser)&&!cur_perms.IsUser(KernelIO::Shell.sysuser)&&!cur_perms.IsRoot(KernelIO::Shell.sysuser))
+            {
+                KernelIO::Terminal.WriteLine("Guest users dont have permissions");
+            }
+            else if(cur_perms.IsUser(KernelIO::Shell.sysuser)&&!cur_perms.IsGuest(KernelIO::Shell.sysuser)&&!cur_perms.IsRoot(KernelIO::Shell.sysuser))
+            {
+                KernelIO::Terminal.WriteLine("You seem to have User permissions");
+            }
+            if(cur_perms.IsRoot(KernelIO::Shell.sysuser) &&!cur_perms.IsGuest(KernelIO::Shell.sysuser)&&!cur_perms.IsUser(KernelIO::Shell.sysuser))
+            {
+                KernelIO::Terminal.WriteLine("Give me root and i conquer the world ;) ");
+            }
+
         }
     }
 }
