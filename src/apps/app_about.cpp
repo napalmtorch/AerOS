@@ -10,7 +10,7 @@ namespace System
 
         }
 
-        WinAbout::WinAbout(int32_t x, int32_t y) : GUI::Window(x, y, 320, 240, "About", "about")
+        WinAbout::WinAbout(int32_t x, int32_t y) : GUI::Window(x, y, 480, 240, "About", "about")
         {
 
         }
@@ -40,7 +40,9 @@ namespace System
                 Graphics::Canvas::DrawString(dx, dy, "About AerOS", Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
                 dy += 12;
                 dy += 12;
-                Graphics::Canvas::DrawString(dx, dy, "Version: 0.1", Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
+                char about[64]{'\0'};
+                strcat(about,"Version: 0.1");
+                Graphics::Canvas::DrawString(dx, dy, about, Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
                 dy += 24;
                 Graphics::Canvas::DrawString(dx, dy, "Developed by", Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
                 dy += 16;

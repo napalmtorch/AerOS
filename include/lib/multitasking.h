@@ -14,7 +14,15 @@ namespace System
             Running,
             Halted,     // stopped, but can be restored
             Failed,     // failed, the thread got an unhandled exception, not restorable
-            Completed
+            Completed,
+            Stopped
+        };
+        enum class Priority
+        {
+            Low,
+            Medium,
+            High,
+            Protected
         };
         struct ThreadState
         {
@@ -27,6 +35,7 @@ namespace System
         private:
             char         name[64];
             char         user[64];
+            char*        Prio;
             void*        stack;
             registers_t* regs_state;
             ThreadState  state;
@@ -35,7 +44,7 @@ namespace System
             bool         initialized;
             Thread();
         public:
-            Thread(char* n, char* u, ThreadStart protocol);
+            Thread(char* n, char* u,Priority priority, ThreadStart protocol);
 
             bool Start();
             bool Stop();
@@ -60,6 +69,7 @@ namespace System
             List<uint64_t>    GetPids();
             void PrintThreads();
             bool ThreadRunning(char* name);
+            bool CheckKillPriority(char* name);
             bool KillRunning(char* name);
             bool CanKill(char* name);
             int32_t GetThreadCount();
@@ -70,7 +80,7 @@ namespace System
 
 extern "C"
 {
-    System::Threading::Thread*     tinit       (char* n,char* u, System::Threading::ThreadStart protocol);
+    System::Threading::Thread*     tinit       (char* n,char* u,System::Threading::Priority priority ,System::Threading::ThreadStart protocol);
     bool                           tstart      (System::Threading::Thread* thread);
     bool                           tstop       (System::Threading::Thread* thread);
     System::Threading::ThreadState tstate      (System::Threading::Thread* thread);

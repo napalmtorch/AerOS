@@ -7,7 +7,7 @@
 using namespace System;
 using namespace System::Threading;
         
-System::Threading::Thread::Thread(char* n, char* u, ThreadStart protocol)
+System::Threading::Thread::Thread(char* n, char* u,Priority priority, ThreadStart protocol)
 {
     stack = (void*)(new char[1*1024*1024]);
     regs_state = (registers_t*)((uint32_t)stack + (1*1024*1024) - sizeof(registers_t));
@@ -40,6 +40,11 @@ System::Threading::Thread::Thread(char* n, char* u, ThreadStart protocol)
     regs_state->eip = (uint32_t)Thread::handle;
     regs_state->cs = 0x8;
     regs_state->eflags = 0x202;
+
+    if(priority == Priority::High) { Prio = "High"; }
+    else if(priority == Priority::Medium) { Prio = "Medium"; }
+    else if(priority == Priority::Low) { Prio = "Low"; }
+    else if(priority == Priority::Protected) { Prio = "Protected"; }
 }
 
 bool System::Threading::Thread::Start()
@@ -159,6 +164,8 @@ void System::Threading::ThreadManager::PrintThreads()
         KernelIO::Terminal.Write(temp);
         KernelIO::Terminal.Write("  NAME: ", Graphics::Colors::Cyan);
         KernelIO::Terminal.Write(thread->name);
+        KernelIO::Terminal.Write("  PRIORITY: ", Graphics::Colors::Cyan);
+        KernelIO::Terminal.Write(thread->Prio);
         KernelIO::Terminal.Write("  USER: ", Graphics::Colors::Magenta);
         KernelIO::Terminal.WriteLine(thread->user);
     }
@@ -171,6 +178,15 @@ bool System::Threading::ThreadManager::ThreadRunning(char* name)
         if(streql(thread->name,name)) { return true; }
     }
     return false;
+}
+bool System::Threading::ThreadManager::CheckKillPriority(char* name)
+{
+    for (size_t i = 0; i < count; i++)
+    {
+        Thread* thread = loaded_threads[i];
+        if(streql(thread->Prio,"Protected")) { return false; }
+    }
+    return true;
 }
 bool System::Threading::ThreadManager::KillRunning(char* name)
 {
@@ -209,9 +225,9 @@ int32_t System::Threading::ThreadManager::GetThreadCount() { return count; }
 
 extern "C"
 {
-    System::Threading::Thread* tinit(char* n, char* u, System::Threading::ThreadStart protocol)
+    System::Threading::Thread* tinit(char* n, char* u,Priority priority ,System::Threading::ThreadStart protocol)
     {
-        auto thread = new System::Threading::Thread(n, u, protocol);
+        auto thread = new System::Threading::Thread(n, u,priority, protocol);
         return thread;
     }
     bool tstart(System::Threading::Thread* thread)

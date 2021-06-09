@@ -381,6 +381,7 @@ namespace System
          KernelIO::Terminal.WriteLine("' exists");
          //We first check if we have a running thread by name, this is case sensitive
          if(KernelIO::TaskManager.ThreadRunning(name)) {
+             if(KernelIO::TaskManager.CheckKillPriority(name)) {
              //We found a thread 
              KernelIO::Terminal.WriteLine("Thread is Active!",COL4_GREEN);
              //Lets check if we are permitted to kill the thread first, right now we can only 
@@ -394,17 +395,21 @@ namespace System
              if(KernelIO::TaskManager.KillRunning(name))
              {
                 //Yep, we did it
-               KernelIO::Terminal.WriteLine("Thread has been killed",COL4_GREEN);  
+               KernelIO::Terminal.WriteLine("Thread has been killed!",COL4_GREEN);  
              }
              else
              {
                  //How the fuck did we get here?
-                KernelIO::Terminal.WriteLine("There was an error killing the specified thread",COL4_RED); 
+                KernelIO::Terminal.WriteLine("There was an error killing the specified thread!",COL4_RED); 
              }
              }
              else
              {
-                 KernelIO::Terminal.WriteLine("You cannot kill a thread that doesnt belong to you",COL4_RED); 
+                 KernelIO::Terminal.WriteLine("You cannot kill a thread that doesnt belong to you!",COL4_RED); 
+             }
+             }
+             else {
+                 KernelIO::Terminal.WriteLine("You cannot kill a protected thread!",COL4_RED); 
              }
          }  
          else

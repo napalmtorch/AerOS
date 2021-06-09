@@ -11,7 +11,7 @@ namespace System
 
     int32_t time, last_time, fps, frames;
     char fps_string[64];
-    Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings, *ico_perf,*ico_about;
+    Graphics::Bitmap* ico_term, *ico_folder, *ico_blank, *ico_alert, *ico_notes, *ico_settings, *ico_perf,*ico_about,*ico_power;
     Graphics::Bitmap* wallpaper;
 
     XServerHost::XServerHost()
@@ -205,7 +205,7 @@ namespace System
 
     void XMenu::Initialize()
     {
-        Items = new XMenuItem*[64];
+        Items = new XMenuItem*[74];
 
         // create default items
         ItemFiles = new XMenuItem("Files", ico_folder); AddItem(ItemFiles);

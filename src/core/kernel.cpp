@@ -260,7 +260,8 @@ namespace System
             {
                 XServer.Start();
             }
-            auto kernel_thread = tinit("core", "system", [] () { KernelIO::Kernel.InitThreaded(); });
+
+            auto kernel_thread = tinit("core", "system", System::Threading::Priority::Protected,[] () { KernelIO::Kernel.InitThreaded(); });
             tstart(kernel_thread);
 
         }
