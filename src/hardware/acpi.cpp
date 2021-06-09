@@ -199,14 +199,19 @@ int acpiEnable()
    }
 }
 
+uint8_t* rsdt_ptr = NULL;
+
+
 
 int initAcpi()
 {
    unsigned int *ptr = acpiGetRSDPtr();
+   rsdt_ptr = (uint8_t*)ptr;
 
    // check if address is correct  ( if acpi is available on this pc )
    if (ptr != NULL && acpiCheckHeader(ptr, "RSDT") == 0)
    {
+
       // the RSDT contains an unknown number of pointers to acpi tables
       int entrys = *(ptr + 1);
       entrys = (entrys-36) /4;
@@ -333,4 +338,35 @@ namespace HAL
   void ACPI::Shutdown() { return acpiPowerOff(); }
   void ACPI::LegacyShutdown() { return OldShutdown(); }
   void ACPI::Reboot() { return Reboot(); }
+  //acpiCheckHeader(ptr, "RSDT")
+  MADT* ACPI::GetAPICInfo()
+  {
+      if (rsdt_ptr == NULL)
+      {
+         initAcpi();
+         if (rsdt_ptr == NULL) return NULL;
+      }
+      MADT* table = new MADT;
+      uint8_t *ptr, *ptr2;
+      uint32_t len;
+      
+      // iterate on ACPI table pointers
+      for(len = *((uint32_t*)(rsdt_ptr + 4)), ptr2 = rsdt_ptr + 36; ptr2 < rsdt_ptr + len; ptr2 += rsdt_ptr[0]=='X' ? 8 : 4) {
+         ptr = (uint8_t*)(uintptr_t)(rsdt_ptr[0]=='X' ? *((uint64_t*)ptr2) : *((uint32_t*)ptr2));
+         if(!memcmp(ptr, "APIC", 4)) {
+            // found MADT
+            table->lapic_ptr = *((uint32_t*)(ptr+0x24));
+            ptr2 = ptr + *((uint32_t*)(ptr + 4));
+            // iterate on variable length records
+            for(ptr += 44; ptr < ptr2; ptr += ptr[1]) {
+            switch(ptr[0]) {
+               case 0: if(ptr[4] & 1) table->lapic_ids[table->numcore++] = ptr[3]; break; // found Processor Local APIC
+               case 1: table->ioapic_ptr = (uint32_t)*((uint32_t*)(ptr+4)); break;  // found IOAPIC
+               case 5: table->lapic_ptr = *((uint32_t*)(ptr+4)); break;             // found 64 bit LAPIC
+            }
+            }
+            break;
+         }
+      }
+  }
 }

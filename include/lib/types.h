@@ -37,7 +37,7 @@ typedef struct
     int32_t Width;
     int32_t Height;
 } __attribute__((packed)) bounds_t;
-typedef uint64_t                 uintptr_t;
+typedef uint32_t                 uintptr_t;
 // null
 #define NULL 0
 

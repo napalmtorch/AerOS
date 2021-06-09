@@ -72,5 +72,6 @@ namespace System
         void WINLS(char* input);
         void SU(char* input);
         void GETPERMS(char* input);
+        void SMPTEST(char* input);
     }
 }

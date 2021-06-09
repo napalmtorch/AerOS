@@ -65,6 +65,7 @@ namespace System
         RegisterCommand("winls",      "List all running windows", "",         Commands::WINLS);
         RegisterCommand("su",         "Switch to high permission User!","",   Commands::SU);
         RegisterCommand("getperms",   "Show your current user level","",      Commands::GETPERMS);
+        RegisterCommand("smp_test",   "Test Syncronous Multiprocessing","",   Commands::SMPTEST);
 
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
@@ -532,6 +533,17 @@ namespace System
                 KernelIO::Terminal.WriteLine("Give me root and i conquer the world ;) ");
             }
 
+        }
+
+        void SMPTEST(char* input)
+        {
+            HAL::MADT* apicinfo = KernelIO::ACPI.GetAPICInfo();
+            if (apicinfo == NULL)
+            {
+                KernelIO::Terminal.WriteLine("something went wrong!");
+                return;
+            }
+            KernelIO::Terminal.WriteLine("lapic ids ptr: 0x%x", (uint32_t)apicinfo->lapic_ids);
         }
     }
 }
