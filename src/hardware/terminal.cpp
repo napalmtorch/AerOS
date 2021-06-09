@@ -462,7 +462,7 @@ namespace HAL
         else if(strstr(text,"%x") !=0)
         {
             strdec(num,repl);
-            temp = stringReplace("%s",repl,text);
+            temp = stringReplace("%x",repl,text);
         }
         Write(temp);
         NewLine();
