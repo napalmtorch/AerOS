@@ -18,6 +18,7 @@ as:
 
 link:
 	$(LD) -w -T 'include/boot/linker.ld' -o 'kernel.bin' -ffreestanding -O2 -nostdlib $(LINK_SOURCES) -lgcc
+	strip kernel.bin
 
 clean:
 	-rm -Rf $(shell find . -name '*.o') $(shell find . -name '*.bin') $(shell find . -name '*.iso')  
