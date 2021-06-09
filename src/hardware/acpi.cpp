@@ -206,7 +206,6 @@ uint8_t* rsdt_ptr = NULL;
 int initAcpi()
 {
    unsigned int *ptr = acpiGetRSDPtr();
-   rsdt_ptr = (uint8_t*)ptr;
 
    // check if address is correct  ( if acpi is available on this pc )
    if (ptr != NULL && acpiCheckHeader(ptr, "RSDT") == 0)
@@ -367,6 +366,7 @@ namespace HAL
             }
             break;
          }
+         else { System::KernelIO::Terminal.WriteLine("NO MADT found!"); return NULL; }
       }
   }
 }
