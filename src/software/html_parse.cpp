@@ -8,8 +8,8 @@ namespace Web
 {
     Parser::Parser(char* url)
     {
-        if(startswith(url,"https://")) { debug_writeln("https currently not supported"); }
-        else if(startswith(url,"https://")) { debug_writeln("http to be implemented"); }
+        if(startswith(url,"https://")) { debug_writeln("https currently not supported"); this->local_data = "https is currently not supported!";}
+        else if(startswith(url,"http://")) { debug_writeln("http to be implemented"); this->local_data = "http will be implemented very soon together with the network driver"; }
         else if(startswith(url,"file:///")) { //Reading from filesystem, which requires three slash as normally only 2
             debug_writeln("Parsing local file"); 
         HAL::nfs_file_t local_url = System::KernelIO::NapalmFS.ReadFile(url);  

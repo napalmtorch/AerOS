@@ -261,7 +261,8 @@ namespace System
             {
                 XServer.Start();
             }
-            Web::Parser *parse = new Web::Parser("file:///sys/web/welcome.html");
+            //Web::Parser *parse = new Web::Parser("file:///sys/web/welcome.html");
+            Web::Parser *parse = new Web::Parser("http://google.com/");
             parse->CheckDoctype();
             parse->CheckForTitle();
             parse->CheckH1Tag();
