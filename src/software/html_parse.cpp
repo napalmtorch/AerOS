@@ -8,10 +8,21 @@ namespace Web
 {
     Parser::Parser(char* url)
     {
+        if(startswith(url,"https://")) { debug_writeln("https currently not supported"); }
+        else if(startswith(url,"https://")) { debug_writeln("http to be implemented"); }
+        else if(startswith(url,"file:///")) { //Reading from filesystem, which requires three slash as normally only 2
+            debug_writeln("Parsing local file"); 
         HAL::nfs_file_t local_url = System::KernelIO::NapalmFS.ReadFile(url);  
         char* raw_data = (char*)mem_alloc(sizeof(local_url.data)+1024); //until we have a reliable way to determine size lets just append to sizeof
         mem_copy((uint8_t*)local_url.data,(uint8_t*)raw_data,sizeof(local_url.data)+1024);
         this->local_data = raw_data;
+        }
+        else {
+            debug_writeln_ext("Unsupported Protocol: ",COL4_RED);
+            debug_write("Got: ");
+            debug_writeln(url);
+            this->local_data = "Unsupported Protocol!";
+        }
     }
 
     void Parser::CheckDoctype()
