@@ -8,8 +8,10 @@ namespace Web
 {
     Parser::Parser(char* url)
     {
-        HAL::nfs_file_t local_url = System::KernelIO::NapalmFS.ReadFile(url);   
-        this->local_data = (char*)local_url.data;
+        HAL::nfs_file_t local_url = System::KernelIO::NapalmFS.ReadFile(url);  
+        char* raw_data = (char*)mem_alloc(sizeof(local_url.data)+1024); //until we have a reliable way to determine size lets just append to sizeof
+        mem_copy((uint8_t*)local_url.data,(uint8_t*)raw_data,sizeof(local_url.data)+1024);
+        this->local_data = raw_data;
     }
 
     void Parser::CheckDoctype()
@@ -87,5 +89,9 @@ namespace Web
     {
         System::KernelIO::Terminal.Write("Raw HTML Output: ",COL4_MAGENTA);
         System::KernelIO::Terminal.WriteLine(local_data,COL4_CYAN);
+    }
+    Parser::~Parser()
+    {
+        mem_free(local_data);
     }
 }
