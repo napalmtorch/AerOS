@@ -274,6 +274,8 @@ namespace System
             parse->CheckForTitle();
             parse->CheckH1Tag();
             parse->RawDump();
+            //Test EndsWith
+            if(EndsWith("hello.txt",".txt") !=0) { Terminal.WriteLine("String ended with .txt",COL4_CYAN); } 
             auto kernel_thread = tinit("core", "system", System::Threading::Priority::Protected,[] () { KernelIO::Kernel.InitThreaded(); });
             tstart(kernel_thread);
 

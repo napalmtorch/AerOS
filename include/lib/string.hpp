@@ -48,6 +48,8 @@
         bool IsEmpty(char* text);
         int strindexof(char text[], char character);
         char * stringReplace(char *search, char *replace, char *string);
+        int EndsWith(const char *str, const char *suffix);
+        int strncmp(const char *s1, const char *s2, size_t n);
     }
 
 namespace System

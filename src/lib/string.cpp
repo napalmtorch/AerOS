@@ -100,6 +100,36 @@ char* strrev(char text[])
     return text;
 }
 
+int strncmp(const char *s1, const char *s2, size_t n)
+{
+	unsigned int count = 0;
+	while (count < n)
+	{
+		if (s1[count] == s2[count])
+		{
+			if (s1[count] == '\0') //quit early because null-termination found
+				return 0;
+			else
+				count++;
+		}
+		else
+			return s1[count] - s2[count];
+	}
+	
+	return 0;
+}
+
+int EndsWith(const char *str, const char *suffix)
+{
+    if (!str || !suffix)
+        return 0;
+    size_t lenstr = strlen_c(str);
+    size_t lensuffix = strlen_c(suffix);
+    if (lensuffix >  lenstr)
+        return 0;
+    return strncmp(str + lenstr - lensuffix, suffix, lensuffix) == 0;
+}
+
 // add character to string
 void stradd(char text[], char c)
 {
