@@ -56,7 +56,7 @@ namespace System
 
         // shell
         System::ShellHost Shell;
-
+        
         // acpi controller
         HAL::ACPI ACPI;
 
@@ -256,11 +256,20 @@ namespace System
             // enable interrupts
             HAL::CPU::EnableInterrupts();
             ThrowOK("Enabled interrupts");
+            
+            // enable networking
+            System::Network::e1000 *e1000 = new System::Network::e1000();
+            ThrowOK("Network Initialized");
+            e1000->PollData();
+            ThrowOK("Started Network Polling Thread");
+
             if(Parameters.VESA)
             {
                 XServer.Start();
             }
 
+            //Test EndsWith
+            if(EndsWith("hello.txt",".txt") !=0) { Terminal.WriteLine("String ended with .txt",COL4_CYAN); } 
             auto kernel_thread = tinit("core", "system", System::Threading::Priority::Protected,[] () { KernelIO::Kernel.InitThreaded(); });
             tstart(kernel_thread);
 

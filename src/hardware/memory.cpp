@@ -35,7 +35,7 @@ extern "C"
         if (dynamic_mode)
         {
             // setup rat
-            rat_table       = kernel_end_real + (1 * 1024 * 1024);
+            rat_table       = kernel_end_real;
             rat_max_entries = 32768;
             rat_table_size  = rat_max_entries * sizeof(rat_entry_t);
             rat_pos         = 0;

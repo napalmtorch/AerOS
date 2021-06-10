@@ -6,6 +6,7 @@
 #include <hardware/drivers/rtc.hpp>
 #include <lib/string.hpp>
 #include <software/security.hpp>
+#include <software/html_parse.hpp>
 
 namespace System
 {
@@ -66,6 +67,7 @@ namespace System
         RegisterCommand("su",         "Switch to high permission User!","",   Commands::SU);
         RegisterCommand("getperms",   "Show your current user level","",      Commands::GETPERMS);
         RegisterCommand("smp_test",   "Test Syncronous Multiprocessing","",   Commands::SMPTEST);
+        RegisterCommand("html_test",  "Run HTML Parser to test output","",    Commands::HTMLTEST);
 
         CurrentPath[0] = '\0';
         if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
@@ -544,6 +546,15 @@ namespace System
                 return;
             }
             KernelIO::Terminal.WriteLine("CPU cores: %s", (uint32_t)apicinfo->numcore);
+        }
+
+        void HTMLTEST(char* input) {
+                        //Web::Parser *parse = new Web::Parser("file:///sys/web/welcome.html");
+            Web::Parser *parse = new Web::Parser("file:///sys/web/test.html");
+            parse->CheckDoctype();
+            parse->CheckForTitle();
+            parse->CheckH1Tag();
+            parse->RawDump();
         }
     }
 }
