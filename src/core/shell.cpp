@@ -543,7 +543,7 @@ namespace System
                 KernelIO::Terminal.WriteLine("something went wrong!");
                 return;
             }
-            KernelIO::Terminal.WriteLine("lapic ids ptr: %s", (uint32_t)apicinfo->numcore);
+            KernelIO::Terminal.WriteLine("CPU cores: %s", (uint32_t)apicinfo->numcore);
         }
     }
 }

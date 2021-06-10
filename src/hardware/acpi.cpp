@@ -1,10 +1,15 @@
 //
-// here is the slighlty complicated ACPI poweroff code
+// here is the slighlty complicated ACPI poweroff and APIC code
 //
+
+#define APIC_TYPE_LOCAL_APIC            0
+#define APIC_TYPE_IO_APIC               1
+#define APIC_TYPE_INTERRUPT_OVERRIDE    2
 
 #include <core/kernel.hpp>
 #include <lib/types.h>
 #include <hardware/memory.hpp>
+#include <lib/string.hpp>
 
 extern "C" {
 dword *SMI_CMD;
@@ -63,6 +68,41 @@ struct FACP
    byte PM1_CNT_LEN;
 };
 
+struct AcpiHeader
+{
+    uint32_t signature;
+    uint32_t length;
+    uint32_t revision;
+    uint32_t checksum;
+    uint32_t oem[6];
+    uint32_t oemTableId[8];
+    uint32_t oemRevision;
+    uint32_t creatorId;
+    uint32_t creatorRevision;
+} __attribute__((packed));
+
+
+struct AcpiMadt
+{
+    AcpiHeader header;
+    uint32_t localApicAddr;
+    uint32_t flags;
+} __attribute__((packed));
+
+struct ApicHeader
+{
+    uint8_t type;
+    uint8_t length;
+} __attribute__((packed));
+
+struct ApicLocalApic
+{
+    ApicHeader header;
+    uint8_t acpiProcessorId;
+    uint8_t apicId;
+    uint32_t flags;
+} __attribute__((packed));
+
 
 
 // check if the given address has a valid header
@@ -102,32 +142,23 @@ unsigned int *acpiCheckRSDPtr(unsigned int *ptr)
 
 
 // finds the acpi header and returns the address of the rsdt
-unsigned int *acpiGetRSDPtr(void)
+uint8_t *acpiGetRSDPtr(void)
 {
-   unsigned int *addr;
-   unsigned int *rsdp;
+   // TODO - Search Extended BIOS Area
 
-   // search below the 1mb mark for RSDP signature
-   for (addr = (unsigned int *) 0x000E0000; (int) addr<0x00100000; addr += 0x10/sizeof(addr))
+   // Search main BIOS area below 1MB
+   uint8_t *p   = (uint8_t *)0x000e0000;
+   uint8_t *end = (uint8_t *)0x000fffff;
+
+   while (p < end)
    {
-      rsdp = acpiCheckRSDPtr(addr);
-      if (rsdp != NULL)
-         return rsdp;
+      uint64_t signature = *(uint64_t *)p;
+      if (signature == 0x2052545020445352) // 'RSD PTR '
+      {
+         if (acpiCheckRSDPtr((unsigned int*)p)) return p;
+      }
+      p += 16;
    }
-
-
-   // at address 0x40:0x0E is the RM segment of the ebda
-   int ebda = *((short *) 0x40E);   // get pointer
-   ebda = ebda*0x10 &0x000FFFFF;   // transform segment into linear address
-
-   // search Extended BIOS Data Area for the Root System Description Pointer signature
-   for (addr = (unsigned int *) ebda; (int) addr<ebda+1024; addr+= 0x10/sizeof(addr))
-   {
-      rsdp = acpiCheckRSDPtr(addr);
-      if (rsdp != NULL)
-         return rsdp;
-   }
-
    return NULL;
 }
 
@@ -153,6 +184,8 @@ int acpiCheckHeader(unsigned int *ptr, char *sig)
 }
 uint32_t jiffies = 0;
 uint16_t hz = 0;
+AcpiMadt* madt_header = NULL;
+
 void sleep(int sec) {
     uint32_t end = jiffies + sec * hz;
     while(jiffies < end);
@@ -199,90 +232,107 @@ int acpiEnable()
    }
 }
 
-uint8_t* rsdt_ptr = NULL;
+static uint8_t* rsdt_ptr = NULL;
 
+void acpiParseDT(AcpiHeader* header)
+{
+   uint32_t signature = (uint32_t)header->signature;
 
+   if (acpiCheckHeader((uint32_t*)header->signature, "FACP") == 0)
+   {
+      System::KernelIO::Terminal.WriteLine("found FACP");
+   }
+   else if (acpiCheckHeader((uint32_t*)header->signature, "APIC") == 0)
+   {
+      System::KernelIO::Terminal.WriteLine("found APIC");
+   }
+}
+
+void acpiParseRsdt(AcpiHeader* rsdt)
+{
+   uint32_t* p = (uint32_t*)(rsdt + 1);
+   uint32_t* end = (uint32_t*)(rsdt + rsdt->length);
+
+   System::KernelIO::Terminal.WriteLine("%s", rsdt->length);
+
+   while (p < end)
+   {
+      uint32_t addr = *p++;
+      acpiParseDT((AcpiHeader*)addr);
+   }
+}
+void acpiParseXsdt(AcpiHeader* xsdt)
+{
+   uint64_t* p = (uint64_t*)(xsdt + 1);
+   uint64_t* end = (uint64_t*)(xsdt + xsdt->length);
+
+   while (p < end)
+   {
+      uint64_t addr = *p++;
+      acpiParseDT((AcpiHeader*)addr);
+   }
+}
+
+bool acpiParseRsdp(uint8_t* p)
+{
+   // checksum
+   uint8_t sum = 0;
+   for (uint i = 0; i < 20; ++i)
+   {
+      sum += p[i];
+   }
+
+   if (sum)
+   {
+      System::KernelIO::Terminal.WriteLine("Error: rsdp checksum was not valid!", COL4_DARK_RED);
+      return false;
+   }
+
+   uint8_t revision = p[15];
+   if (revision == 0)
+   {
+      uint32_t rsdtAddr = *(uint32_t*)(p+16);
+      acpiParseRsdt((AcpiHeader*)rsdtAddr);
+   }
+   else if (revision == 2)
+   {
+      uint32_t rsdtAddr = *(uint32_t *)(p + 16);
+      uint64_t xsdtAddr = *(uint64_t *)(p + 24);
+
+      if(xsdtAddr)
+         acpiParseXsdt((AcpiHeader*)xsdtAddr);
+      else
+         acpiParseRsdt((AcpiHeader*)rsdtAddr);
+   }
+   else
+   {
+      System::KernelIO::Terminal.WriteLine("Error: unsupported rsdp revision!", COL4_DARK_RED);
+      return false;
+   }
+   return true;
+}
 
 int initAcpi()
 {
-   unsigned int *ptr = acpiGetRSDPtr();
+   // TODO - Search Extended BIOS Area
 
-   // check if address is correct  ( if acpi is available on this pc )
-   if (ptr != NULL && acpiCheckHeader(ptr, "RSDT") == 0)
+   // Search main BIOS area below 1MB
+   uint8_t *p   = (uint8_t *)0x000e0000;
+   uint8_t *end = (uint8_t *)0x000fffff;
+
+   while (p < end)
    {
-
-      // the RSDT contains an unknown number of pointers to acpi tables
-      int entrys = *(ptr + 1);
-      entrys = (entrys-36) /4;
-      ptr += 36/4;   // skip header information
-
-      while (0<entrys--)
+      uint64_t signature = *(uint64_t *)p;
+      if (signature == 0x2052545020445352) // 'RSD PTR '
       {
-         // check if the desired table is reached
-         if (acpiCheckHeader((unsigned int *) *ptr, "FACP") == 0)
-         {
-            entrys = -2;
-            struct FACP *facp = (struct FACP *) *ptr;
-            if (acpiCheckHeader((unsigned int *) facp->DSDT, "DSDT") == 0)
-            {
-               // search the \_S5 package in the DSDT
-               char *S5Addr = (char *) facp->DSDT +36; // skip header
-               int dsdtLength = *(facp->DSDT+1) -36;
-               while (0 < dsdtLength--)
-               {
-                  if ( memcmp(S5Addr, "_S5_", 4) == 0)
-                     break;
-                  S5Addr++;
-               }
-               // check if \_S5 was found
-               if (dsdtLength > 0)
-               {
-                  // check for valid AML structure
-                  if ( ( *(S5Addr-1) == 0x08 || ( *(S5Addr-2) == 0x08 && *(S5Addr-1) == '\\') ) && *(S5Addr+4) == 0x12 )
-                  {
-                     S5Addr += 5;
-                     S5Addr += ((*S5Addr &0xC0)>>6) +2;   // calculate PkgLength size
-
-                     if (*S5Addr == 0x0A)
-                        S5Addr++;   // skip byteprefix
-                     SLP_TYPa = *(S5Addr)<<10;
-                     S5Addr++;
-
-                     if (*S5Addr == 0x0A)
-                        S5Addr++;   // skip byteprefix
-                     SLP_TYPb = *(S5Addr)<<10;
-
-                     SMI_CMD = facp->SMI_CMD;
-
-                     ACPI_ENABLE = facp->ACPI_ENABLE;
-                     ACPI_DISABLE = facp->ACPI_DISABLE;
-
-                     PM1a_CNT = facp->PM1a_CNT_BLK;
-                     PM1b_CNT = facp->PM1b_CNT_BLK;
-                     
-                     PM1_CNT_LEN = facp->PM1_CNT_LEN;
-
-                     SLP_EN = 1<<13;
-                     SCI_EN = 1;
-
-                     return 0;
-                  } else {
-                     System::KernelIO::WriteLine("\\_S5 parse error.\n");
-                  }
-               } else {
-                  System::KernelIO::WriteLine("\\_S5 not present.\n");
-               }
-            } else {
-               System::KernelIO::WriteLine("DSDT invalid.\n");
-            }
+         if (acpiCheckRSDPtr((unsigned int*)p)){
+            if (!acpiParseRsdp(p))
+               return -1;
+            return 0;
          }
-         ptr++;
       }
-      System::KernelIO::WriteLine("no valid FACP present.\n");
-   } else {
-      System::KernelIO::WriteLine("no acpi.\n");
+      p += 16;
    }
-
    return -1;
 }
 
@@ -333,39 +383,42 @@ loop:
 }
 namespace HAL
 {
-  int ACPI::ACPIInit() { return initAcpi(); }
-  void ACPI::Shutdown() { return acpiPowerOff(); }
-  void ACPI::LegacyShutdown() { return OldShutdown(); }
-  void ACPI::Reboot() { return Reboot(); }
-  //acpiCheckHeader(ptr, "RSDT")
-  MADT* ACPI::GetAPICInfo()
-  {
-      acpiEnable();
-      MADT* table = new MADT;
-      uint8_t *ptr, *ptr2;
-      uint32_t len;
-      debug_writeln("Pussy");
-      // iterate on ACPI table pointers
-      for(len = *((uint32_t*)(rsdt_ptr + 4)), ptr2 = rsdt_ptr + 36; ptr2 < rsdt_ptr + len; ptr2 += rsdt_ptr[0]=='X' ? 8 : 4) {
-         debug_writeln("Penis");
-         ptr = (uint8_t*)(uintptr_t)(rsdt_ptr[0]=='X' ? *((uint64_t*)ptr2) : *((uint32_t*)ptr2));
-         debug_writeln("Checking for MADT");
-         if(!memcmp(ptr, "APIC", 4)) {
-            // found MADT
-            table->lapic_ptr = *((uint32_t*)(ptr+0x24));
-            debug_writeln("Found MADT");
-            ptr2 = ptr + *((uint32_t*)(ptr + 4));
-            // iterate on variable length records
-            for(ptr += 44; ptr < ptr2; ptr += ptr[1]) {
-            switch(ptr[0]) {
-               case 0: if(ptr[4] & 1) table->lapic_ids[table->numcore++] = ptr[3]; debug_writeln("Found local APIC"); break; // found Processor Local APIC
-               case 1: table->ioapic_ptr = (uint32_t)*((uint32_t*)(ptr+4)); debug_writeln("Found IOAPIC"); break;  // found IOAPIC
-               case 5: table->lapic_ptr = *((uint32_t*)(ptr+4)); debug_writeln("Found LAPIC"); break;             // found 64 bit LAPIC
-            }
-            }
-            break;
+   int ACPI::ACPIInit() { return initAcpi(); }
+   void ACPI::Shutdown() { return acpiPowerOff(); }
+   void ACPI::LegacyShutdown() { return OldShutdown(); }
+   void ACPI::Reboot() { return Reboot(); }
+   //acpiCheckHeader(ptr, "RSDT")
+   MADT* ACPI::GetAPICInfo()
+   {
+      if (madt_header == NULL) return NULL;
+      MADT* madt = new MADT;
+      madt->numcore = 0;
+      madt->lapic_ptr = madt_header->localApicAddr;
+         char s[5];
+         strdec(madt_header->localApicAddr, s);
+         System::KernelIO::WriteLine(s);
+      
+      uint8_t *p = (uint8_t *)(madt_header + 1);
+      uint8_t *end = (uint8_t *)madt_header + madt_header->header.length;
+
+      while (p<end)
+      {
+         ApicHeader* header = (ApicHeader*)p;
+         uint8_t lenght = header->length;
+         char s[5];
+         uint8_t type = header->type;
+         if (type == APIC_TYPE_LOCAL_APIC)
+         {
+            ApicLocalApic* lapic = (ApicLocalApic*)p;
+            uint8_t* temp = new uint8_t[madt->numcore + 1];
+            if(madt->lapic_ids != NULL) mem_copy(madt->lapic_ids, temp, madt->numcore);
+            madt->lapic_ids = temp;
+            madt->lapic_ids[madt->numcore] = lapic->apicId;
+            ++madt->numcore;
          }
-         else { System::KernelIO::Terminal.WriteLine("NO MADT found!"); return NULL; }
+         p += lenght;
+         break;
       }
-  }
+      return madt;
+   }
 }
