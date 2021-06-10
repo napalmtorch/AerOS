@@ -96,6 +96,12 @@ namespace Web
         return false;
     }
 
+    bool Parser::ContainsJavaScript()
+    {
+        if(StringContains(local_data,"<script")) { return true; }
+        return false;
+    }
+
     void Parser::RawDump()
     {
         System::KernelIO::Terminal.Write("Raw HTML Output: ",COL4_MAGENTA);
