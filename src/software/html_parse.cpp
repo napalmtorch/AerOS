@@ -52,16 +52,16 @@ namespace Web
     void Parser::CheckH1Tag()
     {
     if(StringContains(local_data,"<body>") && StringContains(local_data,"</body>")) {
-    char *title1 = "<h1>";
-    char *title2 = "</h1>";
+    char *h1_1 = "<h1>";
+    char *h1_2 = "</h1>";
 
     char *target = NULL;
     char *start, *end;
 
-    if ( start = strstr( local_data, title1 ) )
+    if ( start = strstr( local_data, h1_1 ) )
     {
-        start += strlen( title1 );
-        if ( end = strstr( start, title2 ) )
+        start += strlen( h1_1 );
+        if ( end = strstr( start, h1_2 ) )
         {
             target = ( char * )mem_alloc( end - start + 1 );
             mem_copy((uint8_t*)start,(uint8_t*)target, end - start );
