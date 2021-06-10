@@ -48,7 +48,7 @@ namespace System
             Applications::WinDebug* debug = new Applications::WinDebug(128, 128);
             KernelIO::WindowMgr.Start(debug);
             Web::Parser *title = new Web::Parser("file:///sys/web/test.html");
-            Applications::WinHtml* html = new Applications::WinHtml(100,100,title->CheckForTitleString());
+            Applications::WinHtml* html = new Applications::WinHtml(100,100);
             KernelIO::WindowMgr.Start(html);
 
             // set running flag

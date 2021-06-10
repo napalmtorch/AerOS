@@ -13,7 +13,7 @@ namespace System
             // main methods
             public:
                 WinHtml();
-                WinHtml(int32_t x, int32_t y, char* title);
+                WinHtml(int32_t x, int32_t y);
                 ~WinHtml();
                 void OnLoad() override;
                 void Update() override;

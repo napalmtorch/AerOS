@@ -11,7 +11,7 @@ namespace System
         {
         }
 
-        WinHtml::WinHtml(int32_t x, int32_t y,char* title) : GUI::Window(x, y, 480, 240, title, "htmlviewer")
+        WinHtml::WinHtml(int32_t x, int32_t y) : GUI::Window(x, y, 480, 240, "Html Viewer", "htmlviewer")
         {
             
         }
@@ -25,6 +25,7 @@ namespace System
         {
             html = new Web::Parser("file:///sys/web/test.html");
             h1string = html->CheckH1TagString();
+            this->Title = html->CheckForTitleString();
             GUI::Window::OnLoad();
         }
 
