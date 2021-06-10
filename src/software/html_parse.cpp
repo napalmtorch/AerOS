@@ -62,6 +62,31 @@ namespace Web
     mem_free( target );
     }
     }
+    char* Parser::CheckForTitleString() 
+    {
+    if(IsInBody()) {
+    char *title1 = "<title>";
+    char *title2 = "</title>";
+
+    char *target = NULL;
+    char *start, *end;
+
+    if ( start = strstr( local_data, title1 ) )
+    {
+        start += strlen( title1 );
+        if ( end = strstr( start, title2 ) )
+        {
+            target = ( char * )mem_alloc( end - start + 1 );
+            mem_copy((uint8_t*)start,(uint8_t*)target, end - start );
+            target[end - start] = '\0';
+        }
+    }
+
+    if ( target ) { return target; } else { return "Empty Title"; }
+
+    mem_free( target );
+    }
+    }
     void Parser::CheckH1Tag()
     {
     if(IsInBody()) {
@@ -83,6 +108,32 @@ namespace Web
     }
 
     if ( target ) { System::KernelIO::Terminal.Write("h1 content is: ",COL4_YELLOW); System::KernelIO::Terminal.WriteLine(target,COL4_YELLOW); }
+
+    mem_free( target );
+    }
+    }
+    
+    char* Parser::CheckH1TagString()
+    {
+    if(IsInBody()) {
+    char *h1_1 = "<h1>";
+    char *h1_2 = "</h1>";
+
+    char *target = NULL;
+    char *start, *end;
+
+    if ( start = strstr( local_data, h1_1 ) )
+    {
+        start += strlen( h1_1 );
+        if ( end = strstr( start, h1_2 ) )
+        {
+            target = ( char * )mem_alloc( end - start + 1 );
+            mem_copy((uint8_t*)start,(uint8_t*)target, end - start );
+            target[end - start] = '\0';
+        }
+    }
+
+    if ( target ) { return target; } else { return NULL; }
 
     mem_free( target );
     }
