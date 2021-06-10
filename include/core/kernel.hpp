@@ -33,6 +33,7 @@
 #include "gui/xserver.hpp"
 #include "gui/winmgr.hpp"
 #include <lib/md5.hpp>
+#include <hardware/drivers/NET/e1000.hpp>
 
 extern "C" 
 {
@@ -136,7 +137,7 @@ static void pit_callback(registers_t regs);
 
             // shell
             extern System::ShellHost Shell;
-
+            
             // acpi
             extern HAL::ACPI ACPI;
 

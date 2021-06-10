@@ -57,7 +57,7 @@ namespace System
 
         // shell
         System::ShellHost Shell;
-
+        
         // acpi controller
         HAL::ACPI ACPI;
 
@@ -257,12 +257,19 @@ namespace System
             // enable interrupts
             HAL::CPU::EnableInterrupts();
             ThrowOK("Enabled interrupts");
+            
+            // enable networking
+            System::Network::e1000 *e1000 = new System::Network::e1000();
+            ThrowOK("Network Initialized");
+            e1000->PollData();
+            ThrowOK("Started Network Polling Thread");
+
             if(Parameters.VESA)
             {
                 XServer.Start();
             }
             //Web::Parser *parse = new Web::Parser("file:///sys/web/welcome.html");
-            Web::Parser *parse = new Web::Parser("http://google.com/");
+            Web::Parser *parse = new Web::Parser("file:///sys/web/test.html");
             parse->CheckDoctype();
             parse->CheckForTitle();
             parse->CheckH1Tag();
