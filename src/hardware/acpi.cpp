@@ -237,6 +237,11 @@ static uint8_t* rsdt_ptr = NULL;
 void acpiParseDT(AcpiHeader* header)
 {
    uint32_t signature = (uint32_t)header->signature;
+   
+   char s[20];
+   strhex(signature, s);
+
+   System::KernelIO::Terminal.WriteLine(s);
 
    if (acpiCheckHeader((uint32_t*)header->signature, "FACP") == 0)
    {
@@ -253,7 +258,7 @@ void acpiParseRsdt(AcpiHeader* rsdt)
    uint32_t* p = (uint32_t*)(rsdt + 1);
    uint32_t* end = (uint32_t*)(rsdt + rsdt->length);
 
-   System::KernelIO::Terminal.WriteLine("%s", rsdt->length);
+   //System::KernelIO::Terminal.WriteLine("%s", rsdt->length);
 
    while (p < end)
    {
