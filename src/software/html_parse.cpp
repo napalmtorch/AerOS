@@ -26,7 +26,7 @@ namespace Web
 
     void Parser::CheckForTitle() 
     {
-    if(StringContains(local_data,"<body>") && StringContains(local_data,"</body>")) {
+    if(IsInBody()) {
     char *title1 = "<title>";
     char *title2 = "</title>";
 
@@ -51,7 +51,7 @@ namespace Web
     }
     void Parser::CheckH1Tag()
     {
-    if(StringContains(local_data,"<body>") && StringContains(local_data,"</body>")) {
+    if(IsInBody()) {
     char *h1_1 = "<h1>";
     char *h1_2 = "</h1>";
 
@@ -74,6 +74,15 @@ namespace Web
     mem_free( target );
     }
     }
+
+    bool Parser::IsInBody()
+    {
+    if(StringContains(local_data,"<body>") && StringContains(local_data,"</body>")) {
+        return true;
+    }
+        return false;
+    }
+
     void Parser::RawDump()
     {
         System::KernelIO::Terminal.Write("Raw HTML Output: ",COL4_MAGENTA);

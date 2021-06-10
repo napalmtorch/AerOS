@@ -11,6 +11,7 @@ namespace Web
             void RawDump();
             char* local_data;
         private:
+            bool IsInBody();
             ~Parser();
     };
 }
