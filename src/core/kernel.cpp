@@ -3,6 +3,7 @@
 #include <graphics/colors.hpp>
 #include <graphics/canvas.hpp>
 #include <graphics/bitmap.hpp>
+#include <software/html_parse.hpp>
 
 extern "C"
 {
@@ -260,7 +261,11 @@ namespace System
             {
                 XServer.Start();
             }
-
+            Web::Parser *parse = new Web::Parser("/sys/web/welcome.html");
+            parse->CheckDoctype();
+            parse->CheckForTitle();
+            parse->CheckH1Tag();
+            parse->RawDump();
             auto kernel_thread = tinit("core", "system", System::Threading::Priority::Protected,[] () { KernelIO::Kernel.InitThreaded(); });
             tstart(kernel_thread);
 
