@@ -3,7 +3,6 @@
 #include <graphics/colors.hpp>
 #include <graphics/canvas.hpp>
 #include <graphics/bitmap.hpp>
-#include <software/html_parse.hpp>
 
 extern "C"
 {
@@ -268,12 +267,7 @@ namespace System
             {
                 XServer.Start();
             }
-            //Web::Parser *parse = new Web::Parser("file:///sys/web/welcome.html");
-            Web::Parser *parse = new Web::Parser("file:///sys/web/test.html");
-            parse->CheckDoctype();
-            parse->CheckForTitle();
-            parse->CheckH1Tag();
-            parse->RawDump();
+
             //Test EndsWith
             if(EndsWith("hello.txt",".txt") !=0) { Terminal.WriteLine("String ended with .txt",COL4_CYAN); } 
             auto kernel_thread = tinit("core", "system", System::Threading::Priority::Protected,[] () { KernelIO::Kernel.InitThreaded(); });

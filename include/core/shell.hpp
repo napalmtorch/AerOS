@@ -73,5 +73,6 @@ namespace System
         void SU(char* input);
         void GETPERMS(char* input);
         void SMPTEST(char* input);
+        void HTMLTEST(char* input);
     }
 }
