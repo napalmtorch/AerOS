@@ -461,7 +461,7 @@ namespace HAL
         }
         else if(strstr(text,"%x") !=0)
         {
-            strdec(num,repl);
+            strhex(num,repl);
             temp = stringReplace("%x",repl,text);
         }
         Write(temp);
