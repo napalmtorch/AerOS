@@ -205,6 +205,7 @@ override_t overrides[256];
 nmi_t nmis[256];
 
 size_t cores_counter = 0;
+size_t active_cores = 0;
 size_t ioapics_counter = 0;
 size_t overrides_counter = 0;
 size_t nmis_counter = 0;
@@ -265,6 +266,9 @@ void acpiReadMADT(char* addr)
       len -= record->length;
       ptr += record->length;
    }
+   System::KernelIO::Terminal.WriteLine("Detected CPU Cores: %s", cores_counter,COL4_CYAN);
+   active_cores = cores_counter -1;
+   System::KernelIO::Terminal.WriteLine("Inactive CPU Cores: %s", active_cores,COL4_YELLOW);
 }
 void acpiReadFACP(char* addr)
 {
