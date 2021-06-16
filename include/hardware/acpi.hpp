@@ -35,6 +35,9 @@ struct nmi_t {
 extern "C" {
 
 extern LAPIC lapics[256];
+extern IOAPIC ioapics[256];
+extern override_t overrides[256];
+extern nmi_t nmis[256];
 
 int initAcpi();
 void acpiPowerOff(void);

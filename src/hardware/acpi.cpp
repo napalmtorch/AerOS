@@ -200,7 +200,14 @@ uint8_t checksum(const char* addr, size_t size)
 
 uintptr_t apic_base;
 LAPIC lapics[256];
+IOAPIC ioapics[256];
+override_t overrides[256];
+nmi_t nmis[256];
+
 size_t cores_counter = 0;
+size_t ioapics_counter = 0;
+size_t overrides_counter = 0;
+size_t nmis_counter = 0;
 
 void acpiReadMADT(char* addr)
 {
@@ -211,21 +218,53 @@ void acpiReadMADT(char* addr)
    int len = hdr->hdr.Length - sizeof(MADTHeader);
 
    const char* ptr = (char*) hdr->record;
-
-   while (len)
+   // fuck you kevin for making me write comments!
+   // loop until the end of the MADT
+   while (len != 0)
    {
+      // store the record
       MADTRecord* record = (MADTRecord*)ptr;
+
+      // simple way to check the record type
       switch (record->type)
       {
       case 0:
+      {
+         // case 0: this is a local apic, so a core. let's store its id in a list
          auto& lapic = *(LAPIC*) record;
          lapics[cores_counter++] = lapic;
+      }
+         break;
+      case 1:
+      {
+         // case 1: this is a fucking I/O apic, this will be needed for interrupts handling in APIC
+         auto& ioapic = *(IOAPIC*) record;
+         ioapics[ioapics_counter++] = ioapic;
+      }
+      break;
+      case 2:
+      {
+         // case 2: requested override of a specific interrupt.
+         auto& _override = *(override_t*)record;
+         overrides[overrides_counter++] = _override;
+      }
+      break;
+      case 4:
+      {
+         // case 3: optional override of NMI interrupts, we don't want stupid hardware to stop our os!
+         //i am looking at you apple!
+         //this is bad practice, but who the fuck cares, i dont!
+         auto& nmi = *(nmi_t*)record;
+         nmis[nmis_counter++] = nmi;
+      }
+         break;
+      default:
+         System::KernelIO::Terminal.WriteLine("Unknown apic resource type: %s", record->type, COL4_RED);
          break;
       }
       len -= record->length;
       ptr += record->length;
    }
-   System::KernelIO::Terminal.WriteLine("CPU Cores: %s", cores_counter);
 }
 void acpiReadFACP(char* addr)
 {
