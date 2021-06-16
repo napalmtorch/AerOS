@@ -9,3 +9,6 @@ since we use a custom Filesystem.
 
 currently AerOS only works on Qemu (and some real hardware but not many)
 for launch parameters see [here](https://github.com/napalmtorch/AerOS/blob/ff4d54f197e1df895a1fd6077357afd01a2af3f8/Makefile#L32)
+
+
+For more launch options check our document [here](shorturl.at/iBGX4)
