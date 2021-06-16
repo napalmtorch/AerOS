@@ -222,6 +222,8 @@ void acpiReadMADT(char* addr)
          lapics[cores_counter++] = lapic;
          break;
       }
+      len -= record->length;
+      ptr += record->length;
    }
    System::KernelIO::Terminal.WriteLine("CPU Cores: %s", cores_counter);
 }
