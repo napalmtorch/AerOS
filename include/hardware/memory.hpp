@@ -46,6 +46,8 @@ extern "C"
     uint16_t mem_read16(uint8_t* dest);
     uint32_t mem_read32(uint8_t* dest);
     int memcmp(const void* a, const void* b, size_t len);
+
+    size_t mem_sizeof(void* data);
 }
 
 // allocate overloads

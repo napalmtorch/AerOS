@@ -104,6 +104,23 @@ extern "C"
             return (void*)offset;
         }
     }
+    
+    size_t mem_sizeof(void* data)
+    {
+        for (size_t i = 0; i < rat_max_entries; i++)
+        {
+            rat_entry_t* entry = get_entry(i);
+
+            // found match
+            if (entry->offset == (uint32_t)data)
+            {
+                // size should never be zero - filtered by 'mem_alloc'
+                if (entry->size == 0) { debug_throw_panic("RAT Corruption"); return -1; }
+                return (size_t)entry->size;
+            }
+        }
+        return -1;
+    }
 
     // free region of memory
     void mem_free(void* ptr)

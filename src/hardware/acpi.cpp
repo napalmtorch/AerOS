@@ -40,151 +40,102 @@ byte PM1_CNT_LEN;
 /* Check if bit n in flags is set */
 #define check_flag(flags, n) ((flags) & bit(n))
 
-struct RSDPtr
-{
-   byte Signature[8];
-   byte CheckSum;
-   byte OemID[6];
-   byte Revision;
-   dword *RsdtAddress;
-};
+struct RSDPDescriptor {
+    char     Signature[8];
+    uint8_t  Checksum;
+    char     OEMID[6];
+    uint8_t  Revision;
+    uint32_t RsdtAddress;
+  } __attribute__ ((packed));
 
+  struct RSDPDescriptor20 {
+    RSDPDescriptor rdsp10;
 
+    uint32_t Length;
+    uint64_t XsdtAddress;
+    uint8_t  ExtendedChecksum;
+    uint8_t  reserved[3];
+  } __attribute__ ((packed));
 
-struct FACP
-{
-   byte Signature[4];
-   dword Length;
-   byte unneded1[40 - 8];
-   dword *DSDT;
-   byte unneded2[48 - 44];
-   dword *SMI_CMD;
-   byte ACPI_ENABLE;
-   byte ACPI_DISABLE;
-   byte unneded3[64 - 54];
-   dword *PM1a_CNT_BLK;
-   dword *PM1b_CNT_BLK;
-   byte unneded4[89 - 72];
-   byte PM1_CNT_LEN;
-};
+  struct SDTHeader {
+    char     Signature[4];
+    uint32_t Length;
+    uint8_t  Revision;
+    uint8_t  Checksum;
+    char     OEMID[6];
+    char     OEMTableID[8];
+    uint32_t OEMRevision;
+    uint32_t CreatorID;
+    uint32_t CreatorRevision;
 
-struct AcpiHeader
-{
-    uint32_t signature;
-    uint32_t length;
-    uint32_t revision;
-    uint32_t checksum;
-    uint32_t oem[6];
-    uint32_t oemTableId[8];
-    uint32_t oemRevision;
-    uint32_t creatorId;
-    uint32_t creatorRevision;
-} __attribute__((packed));
+    uint32_t sigint() const {
+      return *(uint32_t*) Signature;
+    }
+  };
 
-
-struct AcpiMadt
-{
-    AcpiHeader header;
-    uint32_t localApicAddr;
-    uint32_t flags;
-} __attribute__((packed));
-
-struct ApicHeader
-{
+  struct MADTRecord {
     uint8_t type;
     uint8_t length;
-} __attribute__((packed));
+    uint8_t data[0];
+  };
 
-struct ApicLocalApic
-{
-    ApicHeader header;
-    uint8_t acpiProcessorId;
-    uint8_t apicId;
-    uint32_t flags;
-} __attribute__((packed));
+  struct MADTHeader
+  {
+    SDTHeader  hdr;
+    uint32_t   lapic_addr;
+    uint32_t   flags; // 1 = dual 8259 PICs
+    MADTRecord record[0];
+  };
 
+  struct FACPHeader
+  {
+    SDTHeader sdt;
+    uint32_t  unneded1;
+    uint32_t  DSDT;
+    uint8_t   unneded2[48 - 44];
+    uint32_t  SMI_CMD;
+    uint8_t   ACPI_ENABLE;
+    uint8_t   ACPI_DISABLE;
+    uint8_t   unneded3[64 - 54];
+    uint32_t  PM1a_CNT_BLK;
+    uint32_t  PM1b_CNT_BLK;
+    uint8_t   unneded4[89 - 72];
+    uint8_t   PM1_CNT_LEN;
+    uint8_t   unneded5[18];
+    uint8_t   century;
+  };
 
+  struct AddressStructure
+  {
+    uint8_t  address_space_id; // 0 - system memory, 1 - system I/O
+    uint8_t  register_bit_width;
+    uint8_t  register_bit_offset;
+    uint8_t  reserved;
+    uint64_t address;
+  };
 
-// check if the given address has a valid header
-unsigned int *acpiCheckRSDPtr(unsigned int *ptr)
-{
-   char *sig = "RSD PTR ";
-   struct RSDPtr *rsdp = (struct RSDPtr *) ptr;
-   byte *bptr;
-   byte check = 0;
-   int i;
+  struct pci_vendor_t
+  {
+    uint16_t    ven_id;
+    const char* ven_name;
+  };
 
-   if (memcmp(sig, rsdp, 8) == 0)
-   {
-      // check checksum rsdpd
-      bptr = (byte *) ptr;
-      for (i=0; i<sizeof(struct RSDPtr); i++)
-      {
-         check += *bptr;
-         bptr++;
-      }
+  struct HPET
+  {
+    uint8_t hardware_rev_id;
+    uint8_t comparator_count :5;
+    uint8_t counter_size     :1;
+    uint8_t reserved         :1;
+    uint8_t legacy_replacem  :1;
+    pci_vendor_t pci_vendor_id;
+    AddressStructure address;
+    uint8_t hpet_number;
+    uint16_t minimum_tick;
+    uint8_t page_protection;
+  } __attribute__((packed));
 
-      // found valid rsdpd   
-      if (check == 0) {
-         /*
-          if (desc->Revision == 0)
-            wrstr("acpi 1");
-         else
-            wrstr("acpi 2");
-         */
-         return (unsigned int *) rsdp->RsdtAddress;
-      }
-   }
-
-   return NULL;
-}
-
-
-
-// finds the acpi header and returns the address of the rsdt
-uint8_t *acpiGetRSDPtr(void)
-{
-   // TODO - Search Extended BIOS Area
-
-   // Search main BIOS area below 1MB
-   uint8_t *p   = (uint8_t *)0x000e0000;
-   uint8_t *end = (uint8_t *)0x000fffff;
-
-   while (p < end)
-   {
-      uint64_t signature = *(uint64_t *)p;
-      if (signature == 0x2052545020445352) // 'RSD PTR '
-      {
-         if (acpiCheckRSDPtr((unsigned int*)p)) return p;
-      }
-      p += 16;
-   }
-   return NULL;
-}
-
-
-
-// checks for a given header and validates checksum
-int acpiCheckHeader(unsigned int *ptr, char *sig)
-{
-   if (memcmp(ptr, sig, 4) == 0)
-   {
-      char *checkPtr = (char *) ptr;
-      int len = *(ptr + 1);
-      char check = 0;
-      while (0<len--)
-      {
-         check += *checkPtr;
-         checkPtr++;
-      }
-      if (check == 0)
-         return 0;
-   }
-   return -1;
-}
 uint32_t jiffies = 0;
 uint16_t hz = 0;
-AcpiMadt* madt_header = NULL;
 
 void sleep(int sec) {
     uint32_t end = jiffies + sec * hz;
@@ -216,129 +167,161 @@ int acpiEnable()
                sleep(10);
             }
          if (i<300) {
-            System::KernelIO::WriteLine("enabled acpi.\n");
+            System::KernelIO::WriteLine("enabled acpi.");
             return 0;
          } else {
-            System::KernelIO::WriteLine("couldn't enable acpi.\n");
+            System::KernelIO::WriteLine("couldn't enable acpi.");
             return -1;
          }
       } else {
-         System::KernelIO::WriteLine("no known way to enable acpi.\n");
+         System::KernelIO::WriteLine("no known way to enable acpi.");
          return -1;
       }
    } else {
-      //System::KernelIO::WriteLine("acpi was already enabled.\n");
+      System::KernelIO::WriteLine("acpi was already enabled.");
       return 0;
    }
 }
 
 static uint8_t* rsdt_ptr = NULL;
 
-void acpiParseDT(AcpiHeader* header)
-{
-   uint32_t signature = (uint32_t)header->signature;
-   
-   char s[20];
-   strhex(signature, s);
-
-   System::KernelIO::Terminal.WriteLine(s);
-
-   if (acpiCheckHeader((uint32_t*)header->signature, "FACP") == 0)
-   {
-      System::KernelIO::Terminal.WriteLine("found FACP");
-   }
-   else if (acpiCheckHeader((uint32_t*)header->signature, "APIC") == 0)
-   {
-      System::KernelIO::Terminal.WriteLine("found APIC");
-   }
+constexpr uint32_t bake(char a, char b , char c, char d) {
+   return a | (b << 8) | (c << 16) | (d << 24);
 }
-
-void acpiParseRsdt(AcpiHeader* rsdt)
+uint8_t checksum(const char* addr, size_t size)
 {
-   uint32_t* p = (uint32_t*)(rsdt + 1);
-   uint32_t* end = (uint32_t*)(rsdt + rsdt->length);
-
-   //System::KernelIO::Terminal.WriteLine("%s", rsdt->length);
-
-   while (p < end)
-   {
-      uint32_t addr = *p++;
-      acpiParseDT((AcpiHeader*)addr);
-   }
-}
-void acpiParseXsdt(AcpiHeader* xsdt)
-{
-   uint64_t* p = (uint64_t*)(xsdt + 1);
-   uint64_t* end = (uint64_t*)(xsdt + xsdt->length);
-
-   while (p < end)
-   {
-      uint64_t addr = *p++;
-      acpiParseDT((AcpiHeader*)addr);
-   }
-}
-
-bool acpiParseRsdp(uint8_t* p)
-{
-   // checksum
+   const char* end = addr + size;
    uint8_t sum = 0;
-   for (uint i = 0; i < 20; ++i)
-   {
-      sum += p[i];
+   while (addr < end) {
+      sum += *addr; addr++;
    }
+   return sum;
+}
 
-   if (sum)
-   {
-      System::KernelIO::Terminal.WriteLine("Error: rsdp checksum was not valid!", COL4_DARK_RED);
-      return false;
-   }
+uintptr_t apic_base;
+LAPIC lapics[256];
+size_t cores_counter = 0;
 
-   uint8_t revision = p[15];
-   if (revision == 0)
-   {
-      uint32_t rsdtAddr = *(uint32_t*)(p+16);
-      acpiParseRsdt((AcpiHeader*)rsdtAddr);
-   }
-   else if (revision == 2)
-   {
-      uint32_t rsdtAddr = *(uint32_t *)(p + 16);
-      uint64_t xsdtAddr = *(uint64_t *)(p + 24);
+void acpiReadMADT(char* addr)
+{
+   System::KernelIO::Terminal.WriteLine("FOUND MADT",COL4_GREEN);
+   auto* hdr = (MADTHeader*)addr;
 
-      if(xsdtAddr)
-         acpiParseXsdt((AcpiHeader*)xsdtAddr);
-      else
-         acpiParseRsdt((AcpiHeader*)rsdtAddr);
+   apic_base = hdr->lapic_addr;
+   int len = hdr->hdr.Length - sizeof(MADTHeader);
+
+   const char* ptr = (char*) hdr->record;
+
+   while (len)
+   {
+      MADTRecord* record = (MADTRecord*)ptr;
+      switch (record->type)
+      {
+      case 0:
+         auto& lapic = *(LAPIC*) record;
+         lapics[cores_counter++] = lapic;
+         break;
+      }
    }
+   System::KernelIO::Terminal.WriteLine("CPU Cores: %s", cores_counter);
+}
+void acpiReadFACP(char* addr)
+{
+   //for a explanation of this see here: https://piv.pivpiv.dk/
+   auto* facp = (FACPHeader*) addr;
+   System::KernelIO::Terminal.WriteLine("FOUND FACP",COL4_GREEN);
+}
+
+uintptr_t HPET_base = 0;
+
+void acpiReadRSDT(SDTHeader* rsdt)
+{
+   int  total = (rsdt->Length - sizeof(SDTHeader)) / 4;
+   
+   const char* addr = (const char*) rsdt;
+   addr += sizeof(SDTHeader);
+
+   constexpr uint32_t APIC_t = bake('A', 'P', 'I', 'C');
+   constexpr uint32_t HPET_t = bake('H', 'P', 'E', 'T');
+   constexpr uint32_t FACP_t = bake('F', 'A', 'C', 'P');
+
+   while (0 < total)
+   {
+      auto* sdt = (SDTHeader*)(*(uintptr_t*)addr);
+      addr += 4; total--;
+
+      if (sdt == nullptr) continue;
+
+      switch(sdt->sigint())
+      {
+         case APIC_t:
+            acpiReadMADT((char*)sdt);
+            break;
+         case FACP_t:
+            acpiReadFACP((char*)sdt);
+            break;
+         case HPET_t:
+            HPET_base = ((uintptr_t)addr) + sizeof(SDTHeader);
+            break;
+
+      }
+   }
+}
+
+void acpiReadRDSP(RSDPDescriptor20* rdsp)
+{
+   SDTHeader* rsdt;
+   if (rdsp->XsdtAddress)
+      rsdt = (SDTHeader*) (uintptr_t) rdsp->XsdtAddress;
    else
+      rsdt = (SDTHeader*) (uintptr_t) rdsp->rdsp10.RsdtAddress;
+   if (rsdt->Length < sizeof(SDTHeader))
    {
-      System::KernelIO::Terminal.WriteLine("Error: unsupported rsdp revision!", COL4_DARK_RED);
-      return false;
+      System::KernelIO::Terminal.WriteLine("ACPI: Root SDT had impossible lenght", COL4_DARK_RED);
+      return;
    }
-   return true;
+   if (checksum((char*)rsdt, rsdt->Length) != 0)
+   {
+      System::KernelIO::Terminal.WriteLine("ACPI: Root SDT verification failed", COL4_DARK_RED);
+      return;
+   }
+   acpiReadRSDT(rsdt);
 }
 
 int initAcpi()
 {
-   // TODO - Search Extended BIOS Area
+   // "RSD PTR "
+    const uint64_t sign = 0x2052545020445352;
 
-   // Search main BIOS area below 1MB
-   uint8_t *p   = (uint8_t *)0x000e0000;
-   uint8_t *end = (uint8_t *)0x000fffff;
-
-   while (p < end)
-   {
-      uint64_t signature = *(uint64_t *)p;
-      if (signature == 0x2052545020445352) // 'RSD PTR '
+    // guess at QEMU location of RDSP
+    const auto* guess = (char*) 0xf68c0;
+    if (*(uint64_t*) guess == sign) {
+      if (checksum(guess, sizeof(RSDPDescriptor)) == 0)
       {
-         if (acpiCheckRSDPtr((unsigned int*)p)){
-            if (!acpiParseRsdp(p))
-               return -1;
-            return 0;
-         }
+        acpiReadRDSP((RSDPDescriptor20*)guess);
+        return 0;
       }
-      p += 16;
-   }
-   return -1;
+    }
+
+    // search in BIOS area (below 1mb)
+    const auto* addr = (char*) 0x000e0000;
+    const auto* end  = (char*) 0x000fffff;
+
+    while (addr < end)
+    {
+      if (*(uint64_t*) addr == sign) {
+        // verify checksum of potential RDSP
+        if (checksum(addr, sizeof(RSDPDescriptor)) == 0)
+        {
+          acpiReadRDSP((RSDPDescriptor20*)addr);
+          return 0;
+        }
+      }
+      addr += 16;
+    }
+
+    System::KernelIO::Terminal.WriteLine("ACPI RDST-search failed\n", COL4_DARK_RED);
+    return -1;
 }
 
 void OldShutdown()
@@ -386,6 +369,7 @@ loop:
     goto loop;
 }
 }
+
 namespace HAL
 {
    int ACPI::ACPIInit() { return initAcpi(); }
@@ -395,35 +379,7 @@ namespace HAL
    //acpiCheckHeader(ptr, "RSDT")
    MADT* ACPI::GetAPICInfo()
    {
-      if (madt_header == NULL) return NULL;
-      MADT* madt = new MADT;
-      madt->numcore = 0;
-      madt->lapic_ptr = madt_header->localApicAddr;
-         char s[5];
-         strdec(madt_header->localApicAddr, s);
-         System::KernelIO::WriteLine(s);
-      
-      uint8_t *p = (uint8_t *)(madt_header + 1);
-      uint8_t *end = (uint8_t *)madt_header + madt_header->header.length;
-
-      while (p<end)
-      {
-         ApicHeader* header = (ApicHeader*)p;
-         uint8_t lenght = header->length;
-         char s[5];
-         uint8_t type = header->type;
-         if (type == APIC_TYPE_LOCAL_APIC)
-         {
-            ApicLocalApic* lapic = (ApicLocalApic*)p;
-            uint8_t* temp = new uint8_t[madt->numcore + 1];
-            if(madt->lapic_ids != NULL) mem_copy(madt->lapic_ids, temp, madt->numcore);
-            madt->lapic_ids = temp;
-            madt->lapic_ids[madt->numcore] = lapic->apicId;
-            ++madt->numcore;
-         }
-         p += lenght;
-         break;
-      }
-      return madt;
+      System::KernelIO::Terminal.WriteLine("CORES: %s", cores_counter);
+      return NULL;
    }
 }
