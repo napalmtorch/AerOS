@@ -1,6 +1,6 @@
 #include "hardware/memory.hpp"
 #include <core/kernel.hpp>
-
+#define DEBUG_MEM false
 extern "C"
 {
     // private declarations
@@ -74,13 +74,13 @@ extern "C"
 
             // get next available free entry
             rat_entry_t* entry = get_free_entry(size + 2);
-
+            if(DEBUG_MEM) {
             // allocation message
             debug_write("["); debug_write_ext("MALLOC", COL4_CYAN); debug_write("] ");
             debug_write_ext("offset", COL4_YELLOW);
             debug_write_hex(" = ", entry->offset);
             debug_write_ext("      size", COL4_YELLOW);
-            debug_writeln_dec(" = ", size + 2);
+            debug_writeln_dec(" = ", size + 2); }
 
             // return entry data offset
             return (void*)entry->offset;
@@ -123,13 +123,14 @@ extern "C"
                 // size should never be zero - filtered by 'mem_alloc'
                 if (entry->size == 0) { debug_throw_panic("RAT Corruption"); return; }
                 entry->state = MEM_STATE_FREE;
-
+                if(DEBUG_MEM) {
                 // allocation message
                 debug_write("["); debug_write_ext(" FREE ", COL4_GREEN); debug_write("] ");
                 debug_write_ext("offset", COL4_YELLOW);
                 debug_write_hex(" = ", entry->offset);
                 debug_write_ext("      size", COL4_YELLOW);
                 debug_writeln_dec(" = ", entry->size);
+                }
 
                 // combine free entries
                 mem_combine_free_entries();
