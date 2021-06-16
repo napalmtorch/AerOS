@@ -1,6 +1,6 @@
 # A Operating System build by some Friends, from scratch!
 
-[![Build Status](http://144.76.18.59:8080/buildStatus/icon?job=AerOS)](https://github.com/napalmtorch/AerOS)
+[![Build Status](http://144.76.18.59:8080/buildStatus/icon?job=AerOS)](http://144.76.18.59:8080/job/AerOS/lastSuccessfulBuild/)
 
 if you want to give this a try you can download the last build [here](http://144.76.18.59:8080/job/AerOS/lastSuccessfulBuild/artifact/AerOS.iso)
 
