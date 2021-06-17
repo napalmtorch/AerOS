@@ -299,13 +299,14 @@ namespace HAL
                 {
                     if(strlen(dir->name) == 0) { continue; }
                     if(strlen(file->name) == 0) { continue; }
+                    if(streql(dir->name,"NAPALM")) { continue; } //NAPALM is the root directory name, since we dont need this and just care about the other contents we just skip it
                     if(file->type == NFS_ENTRY_FILE) { name = file->name; color = COL4_YELLOW; size = file->size; } else if( dir->type == NFS_ENTRY_DIR) { name = dir->name; color = COL4_CYAN;} 
                 System::KernelIO::Terminal.Write("Name: ",COL4_MAGENTA);
                 System::KernelIO::Terminal.Write(name,color);
                  if(file->type == NFS_ENTRY_FILE) {
-                System::KernelIO::Terminal.Write("    ");
+                System::KernelIO::Terminal.Write("          ");
                 System::KernelIO::Terminal.Write("Size: ",COL4_MAGENTA);
-                System::KernelIO::Terminal.WriteLine("%s",file->size,COL4_YELLOW);
+                System::KernelIO::Terminal.WriteLine("%s",size,COL4_YELLOW);
                  }
                  else
                  {

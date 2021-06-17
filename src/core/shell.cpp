@@ -70,7 +70,7 @@ namespace System
         RegisterCommand("html_test",  "Run HTML Parser to test output","",    Commands::HTMLTEST);
 
         CurrentPath[0] = '\0';
-        if (fat_master_fs != nullptr) { strcat(CurrentPath, "/users/aeros"); }
+        strcat(CurrentPath, "/");
         sysuser = "aeros";
         AerOS::Permissions cur;
         cur.curperms = AerOS::Perms::User;
@@ -80,8 +80,8 @@ namespace System
 
     void ShellHost::PrintCaret()
     {
-        if (fat_master_fs == nullptr) { KernelIO::Terminal.Write("shell", COL4_YELLOW);}
-        else {
+        //if (fat_master_fs == nullptr) { KernelIO::Terminal.Write("shell", COL4_YELLOW);}
+        //else {
 
             System::Environment::Hostname env_host;
             System::Security::Sudo sudo;
@@ -90,7 +90,7 @@ namespace System
             KernelIO::Terminal.Write(temp, COL4_CYAN);
             KernelIO::Terminal.WriteChar('@', COL4_WHITE);
             KernelIO::Terminal.Write(CurrentPath, COL4_YELLOW); 
-        }
+        //}
 
         KernelIO::Terminal.Write(":- ");
     }
@@ -309,43 +309,25 @@ namespace System
 
         void LS(char* input)
         {
-         /*   struct directory dir;
-            fat_populate_root_dir(fat_master_fs, &dir);
             char* listdir = strsplit_index(input, 1, ' ');
-            if (streql(KernelIO::Shell.GetCurrentPath(), "/"))
-            {
-                KernelIO::Terminal.WriteLine("Showing: /");
-                fat_print_directory(fat_master_fs, &dir);
-            }
-            else if(listdir == nullptr)
-            {
-                KernelIO::Terminal.Write("Showing: ");
-                KernelIO::Terminal.WriteLine(KernelIO::Shell.GetCurrentPath());
-                //fat_print_directory(fat_master_fs, &dir);
-                //debug_writeln(KernelIO::Shell.GetCurrentPath());
-                fat_dir_by_name(fat_master_fs, &dir, KernelIO::Shell.GetCurrentPath());
-            }
-            else
-            {
-                char* path = listdir;
-                if (listdir[0] != '/') { path = new char[strlen(listdir) + 1]; path[0] = '/'; strcat(path, listdir); }
-                KernelIO::Terminal.Write("Showing: ");
-                KernelIO::Terminal.WriteLine(listdir);
-                fat_dir_by_name(fat_master_fs,&dir, listdir);
-
-            }*/
-            System::KernelIO::NapalmFS.ListDir("/");
-            System::KernelIO::NapalmFS.ListDir("/sys/resources/");
-        //    return;
+            if(listdir == nullptr) { 
+                ShellHost Host;
+            listdir = KernelIO::Shell.GetCurrentPath(); }
+            else if(streql(listdir,"//")) { listdir = "/"; }
+           if(!EndsWith(listdir,"/"))
+           {
+                stradd(listdir,'/');
+           }
+            System::KernelIO::NapalmFS.ListDir(listdir);
         }
 
         void CAT(char* input)
         {
-          /*  struct directory dir;
-            fat_populate_root_dir(fat_master_fs, &dir);
-            char* file = strsplit_index(input, 1, ' ');
-            fat_cat_file(fat_master_fs,&dir,file);*/
-            return;
+            char* listdir = strsplit_index(input, 1, ' ');
+            if(System::KernelIO::NapalmFS.FileExists(listdir)) {
+                auto file = System::KernelIO::NapalmFS.ReadFile(listdir);
+                System::KernelIO::Terminal.WriteLine((char*)file.data);
+            }
         }
         
         void PANIC(char* input)
@@ -438,6 +420,27 @@ namespace System
         }
         void CD(char* input)
         {
+            char* path = strsub(input, 3, strlen(input));
+            if(streql(path,"..")) {
+                if(streql(System::KernelIO::Shell.GetCurrentPath(),"/")) { return; }
+                char new_path[32]{'\0'};
+                strdel(System::KernelIO::Shell.GetCurrentPath());
+                auto parent = KernelIO::NapalmFS.GetParentFromPath(System::KernelIO::Shell.GetCurrentPath());
+                if(parent.name != nullptr) {
+                stradd(new_path,'/');
+                strcat(new_path,parent.name);
+                stradd(new_path,'/');
+                }
+                
+                KernelIO::Shell.GetCurrentPath()[0] = '\0';
+                strcat(System::KernelIO::Shell.GetCurrentPath(),new_path);
+            }
+            else {
+            KernelIO::Shell.GetCurrentPath()[0] = '\0';
+            strcat(System::KernelIO::Shell.GetCurrentPath(),path);
+            debug_write("New Path: ");
+            debug_writeln(KernelIO::Shell.GetCurrentPath());
+            }
         /*    System::Security::Sudo sudo;
             char* path = strsub(input, 3, strlen(input));
             struct directory* dir;
@@ -499,8 +502,8 @@ namespace System
             if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
             strcat(KernelIO::Shell.GetCurrentPath(), path);  
             }*/
-            System::KernelIO::Terminal.WriteLine("Well..... this used to work until SOMEONE decided fat32 wasnt good enough for him ;)", COL4_CYAN);
-            return;
+            //System::KernelIO::Terminal.WriteLine("Well..... this used to work until SOMEONE decided fat32 wasnt good enough for him ;)", COL4_CYAN);
+            //return;
         }
 
         void RUN(char* input)
