@@ -422,6 +422,7 @@ namespace System
         {
             char* path = strsub(input, 3, strlen(input));
             if(streql(path,"..")) {
+                
                 if(streql(System::KernelIO::Shell.GetCurrentPath(),"/")) { return; }
                 char new_path[32]{'\0'};
                 strdel(System::KernelIO::Shell.GetCurrentPath());
@@ -436,10 +437,19 @@ namespace System
                 strcat(System::KernelIO::Shell.GetCurrentPath(),new_path);
             }
             else {
+                if(KernelIO::NapalmFS.DirectoryExists(path))
+                {
             KernelIO::Shell.GetCurrentPath()[0] = '\0';
             strcat(System::KernelIO::Shell.GetCurrentPath(),path);
             debug_write("New Path: ");
             debug_writeln(KernelIO::Shell.GetCurrentPath());
+                }
+                else
+                {
+                    debug_write("Path: ");
+                    debug_write(path);
+                    debug_writeln(" not found!");
+                }
             }
         /*    System::Security::Sudo sudo;
             char* path = strsub(input, 3, strlen(input));
