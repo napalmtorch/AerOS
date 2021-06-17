@@ -334,7 +334,9 @@ namespace System
                 fat_dir_by_name(fat_master_fs,&dir, listdir);
 
             }*/
-            return;
+            System::KernelIO::NapalmFS.ReadDir("/");
+            System::KernelIO::NapalmFS.ReadDir("/NAPALM/");
+        //    return;
         }
 
         void CAT(char* input)

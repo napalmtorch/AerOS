@@ -280,7 +280,42 @@ namespace HAL
         }
         mem_free(buff);
     }
-
+    void NapalmFileSystem::ReadDir(char* path)
+    {
+            auto parent = GetParentFromPath(path);
+            char* name;
+            COL4 color;
+            uint32_t size;
+                System::KernelIO::Terminal.Write("Directory Listing of: ",COL4_CYAN);
+                System::KernelIO::Terminal.WriteLine(path,COL4_CYAN);
+            for (size_t sector = boot_record.first_table_sector; sector < boot_record.first_data_sector; sector++)
+            {
+                for (int i = 0; i < boot_record.bytes_per_sector; i += sizeof(nfs_directory_t))
+                {
+                sec_read(sector);
+                nfs_file_t* file = (nfs_file_t*)((uint32_t)sec_buff + i);
+                nfs_directory_t* dir = (nfs_directory_t*)((uint32_t)sec_buff + i);
+                if(file->parent_index == (uint)GetDirectoryIndex(parent) || dir->parent_index == (uint)GetDirectoryIndex(parent))
+                {
+                    if(strlen(dir->name) == 0) { continue; }
+                    if(strlen(file->name) == 0) { continue; }
+                    if(file->type == NFS_ENTRY_FILE) { name = file->name; color = COL4_YELLOW; size = file->size; } else if( dir->type == NFS_ENTRY_DIR) { name = dir->name; color = COL4_CYAN;} 
+                System::KernelIO::Terminal.Write("Name: ",COL4_MAGENTA);
+                System::KernelIO::Terminal.Write(name,color);
+                 if(file->type == NFS_ENTRY_FILE) {
+                System::KernelIO::Terminal.Write("    ");
+                System::KernelIO::Terminal.Write("Size: ",COL4_MAGENTA);
+                System::KernelIO::Terminal.WriteLine("%s",file->size,COL4_YELLOW);
+                 }
+                 else
+                 {
+                     System::KernelIO::Terminal.NewLine();
+                 }
+                }
+            }
+        }
+        
+    }
     bool NapalmFileSystem::FileExists(char* path)
     {
         nfs_directory_t parent = GetParentFromPath(path);

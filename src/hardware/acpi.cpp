@@ -376,6 +376,7 @@ void OldShutdown()
 
 void acpiPowerOff(void)
 {
+   OldShutdown();
    // SCI_EN is set to 1 if acpi shutdown is possible
    if (SCI_EN == 0)
       return;
