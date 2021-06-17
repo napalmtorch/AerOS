@@ -280,7 +280,7 @@ namespace HAL
         }
         mem_free(buff);
     }
-    void NapalmFileSystem::ReadDir(char* path)
+    void NapalmFileSystem::ListDir(char* path)
     {
             auto parent = GetParentFromPath(path);
             char* name;
