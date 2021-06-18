@@ -284,6 +284,7 @@ namespace HAL
     {
             auto parent = GetParentFromPath(path);
             char* name;
+            char size[32];
             COL4 color;
                 System::KernelIO::Terminal.Write("Directory Listing of: ",COL4_CYAN);
                 System::KernelIO::Terminal.WriteLine(path,COL4_CYAN);
@@ -307,7 +308,8 @@ namespace HAL
                  if(file->type == NFS_ENTRY_FILE) {
                 System::KernelIO::Terminal.Write("          ");
                 System::KernelIO::Terminal.Write("Size: ",COL4_MAGENTA);
-                System::KernelIO::Terminal.WriteLine("%s",file->size,COL4_YELLOW);
+                strdec(file->size,size);
+                System::KernelIO::Terminal.WriteLine(size,COL4_YELLOW);
                  }
                  else
                  {
