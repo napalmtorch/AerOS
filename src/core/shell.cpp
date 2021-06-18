@@ -435,7 +435,7 @@ namespace System
                 
                 KernelIO::Shell.GetCurrentPath()[0] = '\0';
                 strcat(System::KernelIO::Shell.GetCurrentPath(),new_path);
-            }
+            } else if(streql(path,".")) { return; }
             else {
                 if(KernelIO::NapalmFS.DirectoryExists(path))
                 {
@@ -451,69 +451,6 @@ namespace System
                     debug_writeln(" not found!");
                 }
             }
-        /*    System::Security::Sudo sudo;
-            char* path = strsub(input, 3, strlen(input));
-            struct directory* dir;
-            fat_populate_root_dir(fat_master_fs,dir);
-            if(path == nullptr)
-            {
-                char* old_dir = KernelIO::Shell.GetCurrentPath();
-                char homefolder[32]{'\0'};
-                strcat(homefolder,"/users/");
-                strcat(homefolder,sudo.user);
-                debug_writeln(sudo.user);
-                KernelIO::Shell.GetCurrentPath()[0] = '\0';
-                strcat(KernelIO::Shell.GetCurrentPath(),homefolder);
-
-            
-            }
-            else if(streql(path,".")) {
-                return;
-            }
-            else if(streql(path,"/")) {
-                KernelIO::Shell.GetCurrentPath()[0] = '\0';
-                
-                if(IsEmpty(KernelIO::Shell.GetCurrentPath()))
-                {
-                strcat(KernelIO::Shell.GetCurrentPath(),"/");
-                }
-                return;
-            }
-            else if(streql(path,"..")) { 
-            char temp_path[128]{'\0'};
-            if (strlen(path) <= 0) { return; }
-            if (streql(fat_change_dir(path), "/") && !streql(path, "/")) { return; }
-            char* old_dir = KernelIO::Shell.GetCurrentPath();
-            char* new_dir = fat_get_sub_folder(old_dir);
-            debug_writeln_ext(new_dir,COL4_CYAN);
-            strcat(temp_path,new_dir);
-            
-                KernelIO::Shell.GetCurrentPath()[0] = '\0';
-                strcat(KernelIO::Shell.GetCurrentPath(),temp_path);
-            }
-            else if(StringContains(path,"/etc") && !sudo.CheckSudo(sudo.user))
-            {
-                System::KernelIO::Terminal.WriteLine("Access is denied.", COL4_RED);
-                return;
-            }
-            else if (StringContains(path,"/etc") && sudo.CheckSudo(sudo.user))
-            {
-            if (strlen(path) <= 0) { return; }
-            if (streql(fat_change_dir(path), "/") && !streql(path, "/")) { return; }
-            KernelIO::Shell.GetCurrentPath()[0] = '\0';
-            if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
-            strcat(KernelIO::Shell.GetCurrentPath(), path); 
-            }
-            else
-            {
-            if (strlen(path) <= 0) { return; }
-            if (streql(fat_change_dir(path), "/") && !streql(path, "/")) { return; }
-            KernelIO::Shell.GetCurrentPath()[0] = '\0';
-            if (path[0] != '/') { stradd(KernelIO::Shell.GetCurrentPath(), '/'); }
-            strcat(KernelIO::Shell.GetCurrentPath(), path);  
-            }*/
-            //System::KernelIO::Terminal.WriteLine("Well..... this used to work until SOMEONE decided fat32 wasnt good enough for him ;)", COL4_CYAN);
-            //return;
         }
 
         void RUN(char* input)
