@@ -452,17 +452,17 @@ namespace HAL
 
     void TerminalManager::WriteLine(char* text,int num)
     { 
-        char* temp;
-        char repl[32];
+        char temp[32]{'\0'};
+        char repl[32]{'\0'};
         if(strstr(text,"%s") !=0)
         {
             strdec(num,repl);
-            temp = stringReplace("%s",repl,text);
+            strcat(temp,stringReplace("%s",repl,text));
         }
         else if(strstr(text,"%x") !=0)
         {
             strhex(num,repl);
-            temp = stringReplace("%x",repl,text);
+            strcat(temp,stringReplace("%x",repl,text));
         }
         Write(temp);
         NewLine();
@@ -470,17 +470,17 @@ namespace HAL
 
     void TerminalManager::WriteLine(char* text,int num, COL4 fg)
     {
-        char* temp;
-        char repl[32];
+        char temp[32]{'\0'};
+        char repl[32]{'\0'};
         if(strstr(text,"%s") !=0)
         {
             strdec(num,repl);
-            temp = stringReplace("%s",repl,text);
+            strcat(temp,stringReplace("%s",repl,text));
         }
         else if(strstr(text,"%x") !=0)
         {
-            strdec(num,repl);
-            temp = stringReplace("%s",repl,text);
+            strhex(num,repl);
+            strcat(temp,stringReplace("%x",repl,text));
         }
         Write(temp,fg);
         NewLine();
@@ -488,17 +488,17 @@ namespace HAL
 
     void TerminalManager::WriteLine(char* text,int num, COL4 fg, COL4 bg)
     {
-        char* temp;
-        char repl[32];
+        char temp[32]{'\0'};
+        char repl[32]{'\0'};
         if(strstr(text,"%s") !=0)
         {
             strdec(num,repl);
-            temp = stringReplace("%s",repl,text);
+            strcat(temp,stringReplace("%s",repl,text));
         }
         else if(strstr(text,"%x") !=0)
         {
-            strdec(num,repl);
-            temp = stringReplace("%s",repl,text);
+            strhex(num,repl);
+            strcat(temp,stringReplace("%x",repl,text));
         }
         Write(temp,fg,bg);
         NewLine();
@@ -509,17 +509,17 @@ namespace HAL
     void TerminalManager::WriteLine(char* text, Color fg, Color bg) { Write(text, fg, bg); NewLine(); }
     void TerminalManager::WriteLine(char* text, int num, Color fg)
     {
-        char* temp;
-        char repl[32];
+        char temp[32]{'\0'};
+        char repl[32]{'\0'};
         if(strstr(text,"%s") !=0)
         {
             strdec(num,repl);
-            temp = stringReplace("%s",repl,text);
+            strcat(temp,stringReplace("%s",repl,text));
         }
         else if(strstr(text,"%x") !=0)
         {
-            strdec(num,repl);
-            temp = stringReplace("%s",repl,text);
+            strhex(num,repl);
+            strcat(temp,stringReplace("%x",repl,text));
         }
         Write(temp,fg);
         NewLine();
