@@ -1,3 +1,4 @@
+#pragma once
 #include <hardware/memory.hpp>
 extern "C" {
     void memcpy(void*, void*,uint32_t);
