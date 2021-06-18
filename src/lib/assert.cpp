@@ -43,7 +43,7 @@ extern "C"
     // assert equals mem
     void assert_eql_mem(const char *expr, void *result, void *expected, size_t len, const char *file, unsigned line)
     {
-        if (memcmp(result, expected, len))
+        if (mem_compare(result, expected, len))
         {
 
             unsigned char *p = (unsigned char *)result;

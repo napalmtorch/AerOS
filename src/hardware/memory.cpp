@@ -474,7 +474,7 @@ extern "C"
         *(bottom - 1) = saved;
     }
 
-    int memcmp(const void* a, const void* b, size_t len) 
+    int mem_compare(const void* a, const void* b, size_t len) 
     {
         int r = 0;
         const unsigned char *x = (const unsigned char*)a;

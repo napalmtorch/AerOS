@@ -8,7 +8,10 @@ void free(void* data)
 {
 return mem_free(data);
 }
-
+int memcmp(const void* a, const void* b, size_t len) 
+{
+return mem_compare(a,b,len);
+}
 void* malloc(size_t size)
 {
 return mem_alloc(size);

@@ -45,7 +45,7 @@ extern "C"
     uint8_t mem_read8(uint8_t* dest);
     uint16_t mem_read16(uint8_t* dest);
     uint32_t mem_read32(uint8_t* dest);
-    int memcmp(const void* a, const void* b, size_t len);
+    int mem_compare(const void* a, const void* b, size_t len);
 
     size_t mem_sizeof(void* data);
 }
