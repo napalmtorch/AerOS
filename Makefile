@@ -6,9 +6,9 @@ ASFLAGS=-felf32
 SOURCES=$(shell find . -name '*.cpp')
 LINK_SOURCES=$(shell find . -name '*.o')
 CPP_FILES_OUT = $(SOURCES:.cpp=.o)
-.PHONY: all as clean link iso run bochs nfs old
+.PHONY: all as clean link iso clean_objects run bochs nfs old
 
-all: as $(CPP_FILES_OUT) link iso nfs
+all: as $(CPP_FILES_OUT) link clean_objects iso nfs
 
 as:
 	as --32 'src/boot/boot.asm' -o 'src/boot/boot.o'
@@ -22,6 +22,9 @@ link:
 
 clean:
 	-rm -Rf $(shell find . -name '*.o') $(shell find . -name '*.bin') $(shell find . -name '*.iso')  
+
+clean_objects:
+	-rm -Rf $(shell find . -name '*.o')
 
 iso:
 	mkdir -p bin/isodir/boot
