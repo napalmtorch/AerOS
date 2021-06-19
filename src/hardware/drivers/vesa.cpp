@@ -132,7 +132,17 @@ namespace HAL
 
     void VESA::Clear(uint32_t color)
     {
-        for (size_t i = 0; i < Width * Height; i++) { ((uint32_t*)Buffer)[i] = color; }
+        uint32_t buffer_size = ModeInfoBlock.Height * ModeInfoBlock.Pitch;
+        uint32_t dest = (uint32_t)Buffer;
+        uint32_t num_dwords = buffer_size / 4;
+        uint32_t num_bytes = buffer_size % 4;
+        uint32_t *dest32 = (uint32_t*)dest;
+        uint8_t *dest8 = ((uint8_t*)dest)+num_dwords*4;
+        uint8_t val8 = (uint8_t)color;
+        uint32_t i;
+
+        for (i=0;i < num_dwords;i++) { dest32[i] = color; }
+        for (i=0;i < num_bytes;i++) { dest8[i] = val8; }
     }
 	void VESA::Clear(uint16_t color)
     {
@@ -148,22 +158,15 @@ namespace HAL
 
     void VESA::SetPixel(int16_t x, int16_t y, uint32_t color)
     {      
-        // store the color in the allocated buffer
         ((uint32_t*)Buffer)[x + (y * ModeInfoBlock.Width)] = color;
     }
     void VESA::SetPixel(int16_t x, int16_t y, uint16_t color)
     {
-        if (x >= ModeInfoBlock.Width || y >= ModeInfoBlock.Height)  { return; }
-        if (ModeInfoBlock.Depth != 16) return;
-
         // store the color in the allocated buffer
         ((uint16_t*)Buffer)[x + (y * ModeInfoBlock.Width)] = color;
     }
     void VESA::SetPixel(int16_t x, int16_t y, uint8_t color)
     {
-        if (x >= ModeInfoBlock.Width || y >= ModeInfoBlock.Height)  { return; }
-        if (ModeInfoBlock.Depth != 16) return;
-
         // store the color in the allocated buffer
         ((uint8_t*)Buffer)[x + (y * ModeInfoBlock.Width)] = color;
     }
