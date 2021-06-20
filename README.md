@@ -21,6 +21,7 @@ what this will do is the following:
 if you run ubuntu or arch and do not have a crosscompiler installed it will prompt you to install all requirements
 then it clones the last binutils and gcc from the official repositories, you can see this in scripts/cross.sh
 next it will compile the cross compiler for you, this might take some time, so grab a coffee and watch some netflix meanwhile ;)
+if however you already have i686-elf-gcc installed and in your PATH we will use that to compile AerOS for you :)
 this is a one time operation, once done it will compile AerOS and start it for you.
 
 if you already compiled AerOS and would like to just run it you can simply type `make nfs`
