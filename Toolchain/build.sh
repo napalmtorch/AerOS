@@ -5,7 +5,15 @@ export TARGET=i686-elf
 export PATH="$PREFIX/bin:$PATH"
 install_requirements()
 {
-echo ""
+echo "Attempting to install requirements"
+if [  -n "$(uname -a | grep Ubuntu)" ]; then
+sudo apt -y install build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo libcloog-isl-dev libisl-dev
+elif [  -n "$(uname -a | grep arch)" ]; then
+sudo pacman -S --noconfirm base-devel gmp libmpc mpfr
+else
+echo "Your distribution is currently not supported"
+fi
+prep_dirs
 }
 
 clone_binutils()
@@ -50,7 +58,7 @@ mkdir build_binutils && cd build_binutils
 fi
 if [ ! -f "$PWD/Toolchain/Cross/bin/i686-elf-as" ]; then
 ../binutils-gdb/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
-make
+make -j$(nproc)
 make install
 fi
 build_gcc
@@ -66,8 +74,8 @@ mkdir ../build_gcc && cd ../build_gcc
 fi
 if [ ! -f "$PWD/Toolchain/Cross/bin/i686-elf-g++" ]; then
 ../gcc/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --enable-languages=c,c++ --without-headers
-make all-gcc
-make all-target-libgcc
+make -j$(nproc) all-gcc
+make -j$(nproc) all-target-libgcc
 make install-gcc
 make install-target-libgcc
 fi
@@ -77,6 +85,7 @@ cleanup
 cleanup()
 {
 echo "Cleaning up"
+rm -Rf $PWD/Toolchain/temp
 finish
 }
 
@@ -88,7 +97,7 @@ welcome()
     echo 
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
-    prep_dirs
+    install_requirements
     else
         echo "Aborting..... :("
         exit
