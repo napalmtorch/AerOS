@@ -11,3 +11,5 @@ bin/*
 */*/*/*/*.o
 *.bin
 *.img
+toolchain/
+temp/

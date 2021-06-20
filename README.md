@@ -25,4 +25,4 @@ if however you already have i686-elf-g++ installed and in your PATH we will use 
 this is a one time operation, once done it will compile AerOS and start it for you.
 
 if you already compiled AerOS and would like to just run it you can simply type `make nfs`
-to clean the AerOS build and recompile it type `make clean`
+to clean the AerOS build and recompile it type `make clean` followed by `make`
