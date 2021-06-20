@@ -12,3 +12,16 @@ for launch parameters see [here](https://github.com/napalmtorch/AerOS/blob/ff4d5
 
 
 For more launch options check our document [here](https://shorturl.at/iBGX4)
+
+# Compiling Yourself
+the main requirement you will need to have installed is `make`
+after cloning/downloading the repository the following command will take care of everything for you:
+just type `make`
+what this will do is the following:
+if you run ubuntu or arch and do not have a crosscompiler installed it will prompt you to install all requirements
+then it clones the last binutils and gcc from the official repositories, you can see this in scripts/cross.sh
+next it will compile the cross compiler for you, this might take some time, so grab a coffee and watch some netflix meanwhile ;)
+this is a one time operation, once done it will compile AerOS and start it for you.
+
+if you already compiled AerOS and would like to just run it you can simply type `make nfs`
+to clean the AerOS build and recompile it type `make clean`
