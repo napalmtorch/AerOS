@@ -10,9 +10,8 @@ check_or_install_cross_compiler()
 {
     if command -v i686-elf-g++ &> /dev/null
     then
-    global export PATH="$PREFIX/bin:$PATH"
-    echo $PATH
     echo -e "${GREEN}Starting Compile${NC}"
+    make CXX=i686-elf-g++ test
     else
     if [ -d "$PREFIX/bin" ]; then
     echo -e "${RED}Crosscompiler already compiled , skipping${NC}"
@@ -70,3 +69,4 @@ build_gcc()
     make && all-gcc -j$(nproc) && make all-target-libgcc -j$(nproc) && make install-gcc && make install-target-libgcc
 }
 check_or_install_cross_compiler
+echo $PATH

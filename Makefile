@@ -1,4 +1,3 @@
-CXX=i686-elf-g++
 LD=i686-elf-gcc
 CXXFLAGS=-Iinclude -fno-use-cxa-atexit -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Wno-write-strings -Wno-unused-variable -w -Wno-narrowing -Wno-sign-compare -Wno-type-limits -Wno-unused-parameter -Wno-missing-field-initializers
 NASM=nasm
@@ -8,7 +7,9 @@ LINK_SOURCES=$(shell find . -name '*.o')
 CPP_FILES_OUT = $(SOURCES:.cpp=.o)
 .PHONY: all as clean link iso clean_objects run bochs nfs old toolchain
 
-all: toolchain as $(CPP_FILES_OUT) link clean_objects iso nfs
+all: toolchain
+
+test: as $(CPP_FILES_OUT) link clean_objects iso nfs
 
 as:
 	as --32 'src/boot/boot.asm' -o 'src/boot/boot.o'
@@ -44,4 +45,4 @@ old:
 	scripts/build_nfs.sh
 
 toolchain:
-	scripts/cross.sh
+	. scripts/cross.sh
