@@ -6,7 +6,7 @@ ASFLAGS=-felf32
 SOURCES=$(shell find . -name '*.cpp')
 LINK_SOURCES=$(shell find . -name '*.o')
 CPP_FILES_OUT = $(SOURCES:.cpp=.o)
-.PHONY: all as clean link iso clean_objects run bochs nfs old
+.PHONY: toolchain all as clean link iso clean_objects run bochs nfs old
 
 all: as $(CPP_FILES_OUT) link clean_objects iso nfs
 
@@ -42,3 +42,6 @@ bochs:
 
 old:
 	scripts/build_nfs.sh
+
+toolchain:
+	$(shell Toolchain/build.sh)
