@@ -35,7 +35,9 @@ if any of the packages we need is already installed on your system we will skip 
 
 4. Build the Toolchain
 Once step 3 is finished you can run `make toolchain` in the AerOS main folder
-this will take some time depending on your System. Go grab a Coffee or some Tea!
+this will take some time depending on your System. 
+This will also install some requirements that are needed to compile the Toolchain!
+Go grab a Coffee or some Tea!
 
 5. Finally done
 now all you need to do is type `make`
