@@ -36,7 +36,7 @@ install_requirements()
     fi
     if ! command -v doxygen &> /dev/null
     then
-    UBUNTU_PACKAGES+="doxygen "
+    UBUNTU_PACKAGES+="doxygen graphviz "
     fi
     if [ -z "$UBUNTU_PACKAGES" ]
     then
