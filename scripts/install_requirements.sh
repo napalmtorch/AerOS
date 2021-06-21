@@ -80,7 +80,7 @@ install_requirements()
     fi
     if [ -z "$ARCH_PACKAGES" ]
     then
-        echo "Congrats! no prerequirements need to be installed!"
+        echo "Congrats! There are no prerequisites that need to be installed!"
     else
     echo "We will now run sudo $ARCH_MANAGER -S --noconfirm $ARCH_PACKAGES"
         read -p "Do you want to continue? " -n 1 -r

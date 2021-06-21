@@ -31,7 +31,7 @@ For more launch options check our document [here](https://shorturl.at/iBGX4)
 3. The fun part starts, lets install some requirements!
      We provide a easy install script for *buntu and Arch Systems.
      just run `bash scripts/install_requirements.sh`
-     this will install everything that is needed to build the iso and run make.
+     this will install everything that is needed to build the iso to run make.
      if any of the packages we need is already installed on your system we will skip it.
 
 4. Build the Toolchain
