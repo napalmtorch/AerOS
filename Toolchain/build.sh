@@ -7,7 +7,7 @@ install_requirements()
 {
 echo "Attempting to install requirements"
 if [  -n "$(uname -a | grep Ubuntu)" ]; then
-sudo apt -y install build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo libcloog-isl-dev libisl-dev
+sudo apt-get -y install build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo libisl-dev
 elif [  -n "$(uname -a | grep arch)" ]; then
 sudo pacman -S --noconfirm base-devel gmp libmpc mpfr
 else
