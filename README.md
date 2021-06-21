@@ -19,7 +19,7 @@ For more launch options check our document [here](https://shorturl.at/iBGX4)
 ## We assume a Linux system here, while WSL is known to work you will not be able to get the full performance of AerOS
 ## AerOS has been tested on Ubuntu and Arch Linux, if you could run it on another Distribution please extend this list in form of a Pull Request
 
-1. First clone or download this repository, if you intend to keep up to date with the source you need to have `git installed`
+1. First clone or download this repository, if you intend to keep up to date with the source you need to have `git` installed
 on a *buntu based System simply run `sudo apt install git`
 on Arch Linux run `sudo pacman -S git`
 then run `git clone https://github.com/napalmtorch/AerOS.git`
