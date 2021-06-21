@@ -13,3 +13,5 @@ bin/*
 *.img
 toolchain/
 temp/
+Docs/html/
+Docs/lates/
