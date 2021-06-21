@@ -40,7 +40,7 @@ install_requirements()
     fi
     if [ -z "$UBUNTU_PACKAGES" ]
     then
-        echo "Congrats! no prerequirements need to be installed!"
+        echo "Congrats! There are no prerequisites that need to be installed!"
     else
     echo "We will now run sudo $UBUNTU_MANAGER install -y $UBUNTU_PACKAGES"
         read -p "Do you want to continue? " -n 1 -r
