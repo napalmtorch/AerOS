@@ -35,7 +35,7 @@ extern "C"
 
     void mem_copy(uint8_t* src, uint8_t* dest, uint32_t len);
     void mem_swap(uint8_t* src, uint8_t* dest, uint32_t len);
-    void mem_fill(uint8_t* dest, uint8_t val, uint32_t len);
+    void mem_fill(uint8_t* dest, uint32_t val, uint32_t len);
     void mem_lshift(uint8_t* bottom, uint8_t* top);
 
     void mem_write8(uint8_t* dest, uint8_t data);

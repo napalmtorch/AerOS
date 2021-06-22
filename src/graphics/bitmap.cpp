@@ -171,4 +171,27 @@ namespace Graphics
         Width = w;
         Height = h;
     }
+
+    void Bitmap::SetPixel(int16_t x, int16_t y, Color color)
+    {
+        if (x < 0 || x >= Width || y < 0 || y >= Height) { return; }
+        ((uint32_t*)ImageData)[x + (y * Width)] = RGBToPackedValue(color.R, color.G, color.B);
+    }
+
+    void Bitmap::SetPixel(int16_t x, int16_t y, uint32_t color)
+    {
+        if (x < 0 || x >= Width || y < 0 || y >= Height) { return; }
+        ((uint32_t*)ImageData)[x + (y * Width)] = color;
+    }
+
+    void Bitmap::DrawFilledRect(int16_t x, int16_t y, int16_t w, int16_t h, Color color)
+    {
+        for (size_t yy = 0; yy < h; yy++)
+        {
+            for (size_t xx = 0; xx < w; xx++)
+            {
+                SetPixel(x + xx, y + yy, color);
+            }
+        }
+    }
 }

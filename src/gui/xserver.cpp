@@ -1,14 +1,9 @@
 #include <gui/xserver.hpp>
 #include <core/kernel.hpp>
-#include <apps/app_term.hpp>
-#include <apps/app_taskmgr.hpp>
-#include <apps/app_debug.hpp>
-#include <apps/app_about.hpp>
-#include <apps/app_html.hpp>
 
 namespace System
 {
-    const char* wallpaper_path = "/sys/resources/aeros_wp.bmp";
+    const char* wallpaper_path = "/sys/resources/background.bmp";
 
     int32_t time, last_time, fps, frames;
     char fps_string[64];
@@ -22,11 +17,10 @@ namespace System
 
     void XServerHost::Start()
     {
+        KernelIO::WindowMgr.Initialize();
+
         if (!Running)
         {   
-            // initialize window manager
-            KernelIO::WindowMgr.Initialize();
-
             // load icons
             ico_term = new Graphics::Bitmap("/sys/resources/term32.bmp");
             ico_folder = new Graphics::Bitmap("/sys/resources/folder32.bmp");
@@ -35,7 +29,7 @@ namespace System
             ico_notes = new Graphics::Bitmap("/sys/resources/notes32.bmp");
             ico_perf = new Graphics::Bitmap("/sys/resources/perf32.bmp");
             ico_settings = new Graphics::Bitmap("/sys/resources/settings32.bmp");
-            ico_about = new Graphics::Bitmap("/sys/resources/info32.bmp");
+            ico_about = new Graphics::Bitmap("/sys/resources/about32.bmp");
 
             // load wallpaper
             wallpaper = new Graphics::Bitmap((char*)wallpaper_path);
@@ -45,11 +39,20 @@ namespace System
             Taskbar.Initialize();
             Menu.Initialize();
 
-            Applications::WinDebug* debug = new Applications::WinDebug(128, 128);
-            KernelIO::WindowMgr.Start(debug);
-            Web::Parser *title = new Web::Parser("file:///sys/web/test.html");
-            Applications::WinHtml* html = new Applications::WinHtml(100,100);
-            KernelIO::WindowMgr.Start(html);
+            GUI::Window* test_win = new GUI::Window(128, 128, 320, 240, "Test Window", "test");
+            KernelIO::WindowMgr.Start(test_win);
+
+            GUI::Window* test_win2 = new GUI::Window(32, 32, 256, 128, "Window", "test2");
+            KernelIO::WindowMgr.Start(test_win2);
+
+            GUI::Window* test_win3 = new GUI::Window(64, 64, 256, 256, "Blah", "test3");
+            KernelIO::WindowMgr.Start(test_win3);
+
+            GUI::Window* test_win4 = new GUI::Window(32, 32, 192, 300, "POOP", "test4");
+            KernelIO::WindowMgr.Start(test_win4);
+
+            GUI::Button* test_btn = new GUI::Button(32, 64, "Testing", test_win);
+            test_win->AddWidget(test_btn);
 
             // set running flag
             Running = true;
@@ -61,19 +64,16 @@ namespace System
         // get framerate
         CalculateFPS();
 
+        KernelIO::WindowMgr.Update();
+
         Taskbar.Update();
         Menu.Update();
-
-        KernelIO::WindowMgr.Update();
     }
 
     void XServerHost::Draw()
     {
-        if (!KernelIO::WindowMgr.IsAnyMaximized())
-        {
-            if (wallpaper->Depth != COLOR_DEPTH_32) { Graphics::Canvas::Clear({ 0xFF, 156, 27, 12 }); }
-            else { Graphics::Canvas::DrawBitmapFast(0, 0, wallpaper); }
-        }
+        if (wallpaper->Depth != COLOR_DEPTH_32) { Graphics::Canvas::Clear({ 0xFF, 156, 27, 12 }); }
+        else { Graphics::Canvas::DrawBitmapFast(0, 0, wallpaper); }
 
         KernelIO::WindowMgr.Draw();
 
@@ -85,7 +85,7 @@ namespace System
 
     void XServerHost::OnInterrupt()
     {
-        KernelIO::WindowMgr.OnInterrupt();
+        
     }
 
     void XServerHost::CalculateFPS()
@@ -146,14 +146,9 @@ namespace System
     {
         // set default bounds
         Bounds.X = 0;
-        Bounds.Y = 0;
+        Bounds.Y = KernelIO::VESA.GetHeight() - 20;
         Bounds.Width = KernelIO::VESA.GetWidth();
         Bounds.Height = 20;
-
-        // set default style
-        Style.Colors[0] = { 255, 24,  24,  24  };
-        Style.Colors[1] = { 255, 255, 255, 255 };
-        Style.Colors[2] = { 255, 0,   153, 255 };
     }
 
     void XTaskbar::Update()
@@ -179,23 +174,19 @@ namespace System
     void XTaskbar::Draw()
     {
         // draw background
-        Graphics::Canvas::DrawFilledRectangle(Bounds, Style.Colors[0]);
-        Graphics::Canvas::DrawFilledRectangle(Bounds.X, Bounds.Y + (Bounds.Height - 1), Bounds.Width, 1, { 255, 48, 48, 48 });
-
-        // draw power icon
-        Graphics::Canvas::DrawArray(Bounds.Width - 19, Bounds.Y + 3, 13, 14, Graphics::Colors::Magenta, (uint32_t*)IMG_POWER_13x14);
+        Graphics::Canvas::DrawFilledRectangle(Bounds, { 0xFF, 0xAF, 0xAF, 0xAF });
 
         // draw time
         int32_t time_sw = strlen(KernelIO::RTC.GetTimeString(true, true)) * 8;
-        Graphics::Canvas::DrawString((Bounds.Width - time_sw) - 32, (Bounds.Height / 2) - 4, KernelIO::RTC.GetTimeString(true, true), Graphics::Colors::White, Graphics::FONT_8x8_SERIF);
+        Graphics::Canvas::DrawString(Bounds.X + (Bounds.Width - time_sw) - 8, Bounds.Y + (Bounds.Height / 2) - 4, KernelIO::RTC.GetTimeString(true, true), Graphics::Colors::Black, Graphics::FONT_8x8_SERIF);
 
         // draw fps
         int32_t fps_sw = strlen(KernelIO::XServer.GetFPSString()) * 8;
-        Graphics::Canvas::DrawString(Bounds.Width - 140,  (Bounds.Height / 2) - 4, fps_string, Graphics::Colors::Green, Graphics::Colors::Black, Graphics::FONT_8x8_SERIF);
+        Graphics::Canvas::DrawString(Bounds.X + Bounds.Width - 124, Bounds.Y + (Bounds.Height / 2) - 4, fps_string, Graphics::Colors::Green, Graphics::Colors::Black, Graphics::FONT_8x8_SERIF);
 
         // draw button text
-        if (BtnHover) { Graphics::Canvas::DrawString(Bounds.X + 6, Bounds.Y + 6, "AerOS", Style.Colors[2], Graphics::FONT_8x8); }
-        else { Graphics::Canvas::DrawString(Bounds.X + 6, Bounds.Y + 6, "AerOS", Style.Colors[1], Graphics::FONT_8x8); }
+        if (BtnHover) { Graphics::Canvas::DrawString(Bounds.X + 6, Bounds.Y + 6, "AerOS", Graphics::Colors::Blue, Graphics::FONT_8x8); }
+        else { Graphics::Canvas::DrawString(Bounds.X + 6, Bounds.Y + 6, "AerOS", Graphics::Colors::Black, Graphics::FONT_8x8); }
     }
 
     XMenuItem::XMenuItem() { }
@@ -204,7 +195,7 @@ namespace System
     {
         Text = text;
         Icon = icon;
-        bounds_set(&Bounds, 0, 0, 48, 64);
+        bounds_set(&Bounds, KernelIO::XServer.Taskbar.Bounds.X, KernelIO::XServer.Taskbar.Bounds.Height - 84, 48, 64);
     }
 
     void XMenu::Initialize()
@@ -226,7 +217,7 @@ namespace System
         int ww = 72, hh = 64;
 
         // set bounds
-        bounds_set(&Bounds, KernelIO::XServer.Taskbar.Bounds.X, KernelIO::XServer.Taskbar.Bounds.Y + KernelIO::XServer.Taskbar.Bounds.Height, 264, 200);
+        bounds_set(&Bounds, KernelIO::XServer.Taskbar.Bounds.X, KernelIO::XServer.Taskbar.Bounds.Y - 200, 264, 200);
 
         // update items
         if (Visible)
@@ -256,15 +247,11 @@ namespace System
             // check for default item clicks
             if (ItemTerm->Down && !ItemTerm->Clicked)
             {
-                KernelIO::WindowMgr.Start(new Applications::WinTerminal(163, 163));
-                Visible = false;
-                ItemTerm->Clicked = true;
+               
             }
             else if (ItemAbout->Down && !ItemAbout->Clicked)
             {
-                KernelIO::WindowMgr.Start(new Applications::WinAbout(163, 163));
-                Visible = false;
-                ItemAbout->Clicked = true;
+              
             }
         }
     }
@@ -273,8 +260,8 @@ namespace System
     {
         if (Visible)
         {
-            Graphics::Canvas::DrawFilledRectangle(Bounds, KernelIO::XServer.Taskbar.Style.Colors[0]);
-            Graphics::Canvas::DrawRectangle(Bounds, 1, GUI::WindowStyle.Colors[2]);
+            Graphics::Canvas::DrawFilledRectangle(Bounds, { 0xFF, 0xAF, 0xAF, 0xAF });
+            Graphics::Canvas::DrawRectangle(Bounds, 1, { 0xFF, 0x00, 0x00, 0x00 });
 
             // draw items
             for (size_t i = 0; i < ItemCount; i++)
@@ -285,7 +272,7 @@ namespace System
                     int icon_y = Items[i]->Bounds.Y + 8;
 
                     // draw hover box
-                    if (Items[i]->Hover) { Graphics::Canvas::DrawFilledRectangle(icon_x - 3, icon_y - 3, 38, 38, GUI::WindowStyle.Colors[3]); }
+                    if (Items[i]->Hover) { Graphics::Canvas::DrawFilledRectangle(icon_x - 3, icon_y - 3, 38, 38, Graphics::Colors::Blue); }
 
                     // draw icon
                     if (Items[i]->Icon != nullptr)
@@ -300,7 +287,7 @@ namespace System
                         {
                             int tx = (Items[i]->Bounds.X - 4) + (((Items[i]->Bounds.Width + 8) / 2) - (strlen(Items[i]->Text) * 4));
                             int ty = Items[i]->Bounds.Y + 48;
-                            Graphics::Canvas::DrawString(tx, ty, Items[i]->Text, GUI::WindowStyle.Colors[4], Graphics::FONT_8x8_SERIF);
+                            Graphics::Canvas::DrawString(tx, ty, Items[i]->Text, Graphics::Colors::Black, Graphics::FONT_8x8_SERIF);
                         }
                     }
                 }

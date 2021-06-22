@@ -52,5 +52,9 @@ namespace Graphics
             Bitmap(char* fullname);
 
             void Resize(uint32_t w, uint32_t h);
+
+            void SetPixel(int16_t x, int16_t y, Color color);
+            void SetPixel(int16_t x, int16_t y, uint32_t color);
+            void DrawFilledRect(int16_t x, int16_t y, int16_t w, int16_t h, Color color);
     };
 }

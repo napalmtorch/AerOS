@@ -1,5 +1,4 @@
 #include "hardware/terminal.hpp"
-#include <apps/app_term.hpp>
 #include <core/kernel.hpp>
 
 extern "C"
@@ -296,19 +295,19 @@ namespace HAL
     void TerminalManager::Clear()
     {
         if (Window == nullptr) { Clear((COL4)Graphics::RGBToVGAPallete(back_color)); }
-        else { ((System::Applications::WinTerminal*)Window)->Clear(back_color); }
+        //else { ((System::Applications::WinTerminal*)Window)->Clear(back_color); }
     }
     void TerminalManager::Clear(COL4 color) 
     { 
         if (Window == nullptr) { term_clear(Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(color))); }
-        else { ((System::Applications::WinTerminal*)Window)->Clear(Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(color))); }
+        //else { ((System::Applications::WinTerminal*)Window)->Clear(Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(color))); }
     }
 
     // new line
     void TerminalManager::NewLine() 
     { 
         if (Window == nullptr) { term_newline(); }
-        else {((System::Applications::WinTerminal*)Window)->NewLine(); }
+        //else {((System::Applications::WinTerminal*)Window)->NewLine(); }
     }
 
     // scroll
@@ -316,14 +315,14 @@ namespace HAL
     void TerminalManager::Scroll(uint32_t amount) 
     { 
         if (Window == nullptr) { term_scroll(amount); }
-        else { for (size_t i = 0; i < amount; i++) { ((System::Applications::WinTerminal*)Window)->Scroll(); } }
+        //else { for (size_t i = 0; i < amount; i++) { ((System::Applications::WinTerminal*)Window)->Scroll(); } }
     }
 
     // delete
     void TerminalManager::Delete() 
     { 
         if (Window == nullptr) { term_delete(); }
-        else { ((System::Applications::WinTerminal*)Window)->Delete(); }
+        //else { ((System::Applications::WinTerminal*)Window)->Delete(); }
     }
     void TerminalManager::Delete(uint32_t amount) { for (size_t i = 0; i < amount; i++) { Delete(); } }
 
@@ -331,14 +330,14 @@ namespace HAL
     void TerminalManager::PutChar(uint16_t x, uint16_t y, char c, COL4 fg, COL4 bg) 
     { 
         if (Window == nullptr) { term_put_char(x, y, c, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)), Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(bg))); }
-        else { ((System::Applications::WinTerminal*)Window)->PutChar(x, y, c, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)), Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(bg))); }
+        //else { ((System::Applications::WinTerminal*)Window)->PutChar(x, y, c, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)), Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(bg))); }
     }
 
     // write character to next position
     void TerminalManager::WriteChar(char c) 
     { 
         if (Window == nullptr) { term_write_char(c); }
-        else { ((System::Applications::WinTerminal*)Window)->WriteChar(c); }
+        //else { ((System::Applications::WinTerminal*)Window)->WriteChar(c); }
     }
     void TerminalManager::WriteChar(char c, COL4 fg)
     {
@@ -349,7 +348,7 @@ namespace HAL
             term_write_char(c);
             fore_color = fg_old;
         }
-        else { ((System::Applications::WinTerminal*)Window)->WriteChar(c, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg))); }
+        //else { ((System::Applications::WinTerminal*)Window)->WriteChar(c, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg))); }
     }
     void TerminalManager::WriteChar(char c, COL4 fg, COL4 bg)
     {
@@ -363,7 +362,7 @@ namespace HAL
             fore_color = fg_old;
             back_color = bg_old;
         }
-        else { ((System::Applications::WinTerminal*)Window)->WriteChar(c, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)), Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(bg))); }
+        //else { ((System::Applications::WinTerminal*)Window)->WriteChar(c, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)), Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(bg))); }
     }
     void TerminalManager::WriteChar(char c, Color fg)
     {
@@ -374,7 +373,7 @@ namespace HAL
             term_write_char(c);
             fore_color = fg_old;
         }
-        else { ((System::Applications::WinTerminal*)Window)->WriteChar(c, fg); }
+        //else { ((System::Applications::WinTerminal*)Window)->WriteChar(c, fg); }
     }
     void TerminalManager::WriteChar(char c, Color fg, Color bg)
     {
@@ -388,7 +387,7 @@ namespace HAL
             fore_color = fg_old;
             back_color = bg_old;
         }
-        else { ((System::Applications::WinTerminal*)Window)->WriteChar(c, fg, bg); }
+        //else { ((System::Applications::WinTerminal*)Window)->WriteChar(c, fg, bg); }
     }
 
     // write aligned char to position
@@ -400,7 +399,7 @@ namespace HAL
     void TerminalManager::Write(char* text) 
     { 
         if (Window == nullptr) { term_write(text); }
-        else { ((System::Applications::WinTerminal*)Window)->Write(text); }
+        //else { ((System::Applications::WinTerminal*)Window)->Write(text); }
     }
 
     void TerminalManager::Write(char* text, COL4 fg)
@@ -409,7 +408,7 @@ namespace HAL
         {
             for (size_t i = 0; i < strlen(text); i++) { WriteChar(text[i], fg); }
         }
-        else { ((System::Applications::WinTerminal*)Window)->Write(text, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg))); }
+        //else { ((System::Applications::WinTerminal*)Window)->Write(text, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg))); }
     }
 
     void TerminalManager::Write(char* text, COL4 fg, COL4 bg)
@@ -420,14 +419,14 @@ namespace HAL
         }
         else
         {
-            ((System::Applications::WinTerminal*)Window)->Write(text, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)), Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(bg)));
+            //((System::Applications::WinTerminal*)Window)->Write(text, Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)), Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(bg)));
         }
     }
 
     void TerminalManager::Write(char* text, Color fg) 
     { 
         if (Window == nullptr) { term_write_ext(text, fg); }
-        else { ((System::Applications::WinTerminal*)Window)->Write(text, fg); }
+        //else { ((System::Applications::WinTerminal*)Window)->Write(text, fg); }
     }
     void TerminalManager::Write(char* text, Color fg, Color bg)
     {
@@ -435,7 +434,7 @@ namespace HAL
         {
             for (size_t i = 0; i < strlen(text); i++) { WriteChar(text[i], fg, bg); }
         }
-        else { ((System::Applications::WinTerminal*)Window)->Write(text, fg, bg); }
+        //else { ((System::Applications::WinTerminal*)Window)->Write(text, fg, bg); }
     }
 
     // write aligned string to position
@@ -447,7 +446,7 @@ namespace HAL
     void TerminalManager::WriteLine(char* text) 
     {
         if (Window == nullptr) { term_writeln(text); }
-        else { ((System::Applications::WinTerminal*)Window)->WriteLine(text); }
+        //else { ((System::Applications::WinTerminal*)Window)->WriteLine(text); }
     }
 
     void TerminalManager::WriteLine(char* text,int num)
@@ -538,52 +537,55 @@ namespace HAL
     void TerminalManager::SetCursorPos(uint16_t x, uint16_t y) 
     { 
         if (Window == nullptr) { term_set_cursor(x, y); }
-        else { ((System::Applications::WinTerminal*)Window)->SetCursorPos(x, y); }
+        //else { ((System::Applications::WinTerminal*)Window)->SetCursorPos(x, y); }
     }
     void TerminalManager::SetCursorX(uint16_t x) 
     { 
         if (Window == nullptr) { term_set_cursor_x(x); }
-        else { ((System::Applications::WinTerminal*)Window)->SetCursorPos(x, ((System::Applications::WinTerminal*)Window)->GetCursorY()); }
+        //else { ((System::Applications::WinTerminal*)Window)->SetCursorPos(x, ((System::Applications::WinTerminal*)Window)->GetCursorY()); }
     }
     
     void TerminalManager::SetCursorY(uint16_t y) 
     { 
         if (Window == nullptr) { term_set_cursor_y(y); }
-        else { ((System::Applications::WinTerminal*)Window)->SetCursorPos(((System::Applications::WinTerminal*)Window)->GetCursorX(), y); }
+        //else { ((System::Applications::WinTerminal*)Window)->SetCursorPos(((System::Applications::WinTerminal*)Window)->GetCursorX(), y); }
     }
 
     // toggle cursor
     void TerminalManager::EnableCursor() 
     { 
         if (Window == nullptr) { cursor_visible = true; }
-        else { ((System::Applications::WinTerminal*)Window)->EnableCursor(); }
+        //else { ((System::Applications::WinTerminal*)Window)->EnableCursor(); }
     }
     void TerminalManager::EnableCursor(uint8_t start, uint8_t end) 
     { 
         if (Window == nullptr) { cursor_visible = true; }
-        else { ((System::Applications::WinTerminal*)Window)->EnableCursor(); }
+        //else { ((System::Applications::WinTerminal*)Window)->EnableCursor(); }
     }
     void TerminalManager::DisableCursor() 
     { 
         if (Window == nullptr) { cursor_visible = false; }
-        else { ((System::Applications::WinTerminal*)Window)->DisableCursor(); }
+        //else { ((System::Applications::WinTerminal*)Window)->DisableCursor(); }
     }
 
     // get cursor position
     uint16_t TerminalManager::GetCursorX() 
     { 
         if (Window == nullptr) { return cursor_x; }
-        else { return ((System::Applications::WinTerminal*)Window)->GetCursorX(); }
+        //else { return ((System::Applications::WinTerminal*)Window)->GetCursorX(); }
+        return 0;
     }
     uint16_t TerminalManager::GetCursorY() 
     { 
         if (Window == nullptr) { return cursor_y; }
-        else { return ((System::Applications::WinTerminal*)Window)->GetCursorY(); }
+        //else { return ((System::Applications::WinTerminal*)Window)->GetCursorY(); }
+        return 0;
     }
     point_t TerminalManager::GetCursorPos() 
     { 
         if (Window == nullptr) { return { cursor_x, cursor_y }; }
-        else { return { ((System::Applications::WinTerminal*)Window)->GetCursorX(), ((System::Applications::WinTerminal*)Window)->GetCursorY() }; }
+        return { 0, 0 };
+        //else { return { ((System::Applications::WinTerminal*)Window)->GetCursorX(), ((System::Applications::WinTerminal*)Window)->GetCursorY() }; }
     }
 
     // set colors
@@ -596,35 +598,35 @@ namespace HAL
         }
         else
         {
-            ((System::Applications::WinTerminal*)Window)->SetForeColor(Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)));
-            ((System::Applications::WinTerminal*)Window)->SetBackColor(Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(bg)));
+            //((System::Applications::WinTerminal*)Window)->SetForeColor(Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(fg)));
+            //((System::Applications::WinTerminal*)Window)->SetBackColor(Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(bg)));
         }
     }
     void TerminalManager::SetColors(Color fg, Color bg) 
     { 
         if (Window == nullptr) { fore_color = fg; back_color = bg; }
-        else { ((System::Applications::WinTerminal*)Window)->SetColors(fg, bg); }
+        //else { ((System::Applications::WinTerminal*)Window)->SetColors(fg, bg); }
     }
     void TerminalManager::SetColors(uint8_t packed_value) { }
     void TerminalManager::SetForeColor(COL4 color) 
     { 
         if (Window == nullptr) { fore_color = Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(color)); }
-        else { ((System::Applications::WinTerminal*)Window)->SetForeColor(Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(color))); }
+        //else { ((System::Applications::WinTerminal*)Window)->SetForeColor(Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(color))); }
     }
     void TerminalManager::SetBackColor(COL4 color) 
     { 
         if (Window == nullptr) { back_color = Graphics::PackedValueToRGB(Graphics::VGAPaletteToRGB(color)); }
-        else { ((System::Applications::WinTerminal*)Window)->SetForeColor(Graphics::PackedValueToRGB((Graphics::VGAPaletteToRGB(color)))); }
+        //else { ((System::Applications::WinTerminal*)Window)->SetForeColor(Graphics::PackedValueToRGB((Graphics::VGAPaletteToRGB(color)))); }
     }
     void TerminalManager::SetForeColor(Color color) 
     { 
         if (Window == nullptr) { fore_color = color; }
-        else { ((System::Applications::WinTerminal*)Window)->SetForeColor(color); }
+        //else { ((System::Applications::WinTerminal*)Window)->SetForeColor(color); }
     }
     void TerminalManager::SetBackColor(Color color) 
     { 
         if (Window == nullptr) { back_color = color; }
-        else { ((System::Applications::WinTerminal*)Window)->SetBackColor(color); }
+        //else { ((System::Applications::WinTerminal*)Window)->SetBackColor(color); }
     }
 
     // get colors

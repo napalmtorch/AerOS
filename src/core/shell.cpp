@@ -468,7 +468,7 @@ namespace System
 
         void WINLS(char* input)
         {
-            System::KernelIO::WindowMgr.PrintWindowList();
+            
         }
 
         void GETPERMS(char* input)

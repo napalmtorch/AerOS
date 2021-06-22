@@ -50,3 +50,4 @@ typedef uint32_t                 uintptr_t;
 
 static inline bool bounds_contains(bounds_t* bounds, int32_t x, int32_t y) { return (x >= bounds->X && y >= bounds->Y && x < bounds->X + bounds->Width && y < bounds->Y + bounds->Height); }
 static inline void bounds_set(bounds_t* bounds, int32_t x, int32_t y, int32_t w, int32_t h) { bounds->X = x; bounds->Y = y; bounds->Width = w; bounds->Height = h; }
+static inline bool rect_contains(int32_t bx, int32_t by, int32_t bw, int32_t bh, int32_t x, int32_t y) { return (x >= bx && y >= by && x < bx + bw && y < by + bh); }

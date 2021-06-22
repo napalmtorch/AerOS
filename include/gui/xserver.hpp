@@ -2,7 +2,6 @@
 #include <lib/types.h>
 #include <lib/string.hpp>
 #include <graphics/canvas.hpp>
-#include <gui/widget.hpp>
 
 namespace System
 {
@@ -63,7 +62,6 @@ namespace System
 
         public:
             bounds_t Bounds;
-            GUI::VisualStyle Style;
 
         private:
             bounds_t BtnBounds;

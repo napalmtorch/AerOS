@@ -32,6 +32,7 @@
 #include "lib/multitasking.h"
 #include "gui/xserver.hpp"
 #include "gui/winmgr.hpp"
+#include "gui/window.hpp"
 #include <lib/md5.hpp>
 #include <hardware/drivers/NET/e1000.hpp>
 
@@ -153,7 +154,7 @@ static void pit_callback(registers_t regs);
             extern Threading::ThreadManager TaskManager;
 
             extern XServerHost XServer;
-            extern WindowManager WindowMgr;
+            extern GUI::WindowManager WindowMgr;
         }
     }
 #else

@@ -26,14 +26,12 @@ namespace Graphics
         void DrawPixel(int32_t x, int32_t y, uint32_t color)
         {
             if (x < 0 || y < 0 || x >= System::KernelIO::VESA.GetWidth() || y >= System::KernelIO::VESA.GetHeight()) { return; }
-            if (color == 0) { return; }
             System::KernelIO::VESA.SetPixel(x, y, color);
         }
 
         // draw pixel
         void DrawPixel(int32_t x, int32_t y, Color color)
         {
-            if (color.A == 0) { return; }
             if (x < 0 || y < 0 || x >= System::KernelIO::VESA.GetWidth() || y >= System::KernelIO::VESA.GetHeight()) { return; }
             System::KernelIO::VESA.SetPixel(x, y, Graphics::RGBToPackedValue(color.R, color.G, color.B));
         }
@@ -43,20 +41,18 @@ namespace Graphics
 
         void DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color)
         {
-            if (((color & 0xFF000000) >> 24) == 0) { return; }
-            for (size_t i = 0; i < w * h; i++)
+            for (int32_t yy = 0; yy < h; yy++)
             {
-                DrawPixel(x + (i % w), y + (i / w), color);
+                for (int32_t xx = 0; xx < w; xx++) { DrawPixel(x + xx, y + yy, color); }
             }
         }
 
         // draw filled rectangle
         void DrawFilledRectangle(int32_t x, int32_t y, int32_t w, int32_t h, Color color)
         {
-            if (color.A == 0) { return; }
-            for (size_t i = 0; i < w * h; i++)
+            for (int32_t yy = 0; yy < h; yy++)
             {
-                DrawPixel(x + (i % w), y + (i / w), color);
+                for (int32_t xx = 0; xx < w; xx++) { DrawPixel(x + xx, y + yy, color); }
             }
         }
 
@@ -97,7 +93,6 @@ namespace Graphics
         {
             if (fg.A == 0) { return; }
             if (c == 0) { return; }
-            if (c == '\0') { return; }
             uint32_t p = font.GetHeight() * c;
             for (size_t cy = 0; cy < font.GetHeight(); cy++)
             {
@@ -206,24 +201,44 @@ namespace Graphics
         void DrawBitmapFast(int32_t x, int32_t y, Graphics::Bitmap* bitmap)
         {
             if (bitmap == nullptr) { return; }
-            uint32_t* data = (uint32_t*)bitmap->ImageData;
-            uint32_t* dest = (uint32_t*)(System::KernelIO::VESA.Buffer + (x + (y * bitmap->Width)));
-            uint32_t len = bitmap->Width * bitmap->Height * 4;
-            uint32_t max_len = (uint32_t)(System::KernelIO::VESA.GetWidth() * System::KernelIO::VESA.GetHeight() * 4);
-            if (len >= max_len) { len = max_len; }
-            mem_copy((uint8_t*)data, (uint8_t*)dest, len);
+
+            int32_t   w = bitmap->Width;
+            int32_t   h = bitmap->Height;
+            uint32_t* d = (uint32_t*)bitmap->ImageData;
+            while (x + w > System::KernelIO::VESA.GetWidth()) { w--; }
+            while (y + h > System::KernelIO::VESA.GetHeight()) { h--; }
+            
+            for (int32_t yy = 0; yy < ((Graphics::Bitmap*)bitmap)->Height; yy++)
+            {
+                uint8_t* src = (uint8_t*)(d + (yy * bitmap->Width));
+                int32_t xx = x;
+                if (xx < 0) { xx = 0; }
+                while (xx + w >= System::KernelIO::VESA.GetWidth()) { xx--; }
+                uint32_t real_offset = (xx + ((y + yy) * System::KernelIO::VESA.GetWidth())) * 4;
+                uint8_t* dest = (uint8_t*)(System::KernelIO::VESA.Buffer + real_offset);
+                if (y + yy >= System::KernelIO::VESA.GetHeight()) { return; }
+                if (y + yy >= 0 && dest >= System::KernelIO::VESA.Buffer && dest < System::KernelIO::VESA.Buffer + (System::KernelIO::VESA.GetWidth() * System::KernelIO::VESA.GetHeight() * 4))
+                {
+                    if (x >= 0) { mem_copy(src, dest, w * 4); }
+                    else { mem_copy(src - (x * 4), dest, (w + x) * 4); }
+                }
+            }
         }
 
         // draw bitmap
         void DrawBitmap(int32_t x, int32_t y, Graphics::Bitmap* bitmap)
         {
             if (bitmap == nullptr) { return; }
+
+            int32_t w = bitmap->Width;
+            int32_t h = bitmap->Height;
+
             uint32_t* data = (uint32_t*)bitmap->ImageData;
-            for (int32_t yy = 0; yy < bitmap->Height; yy++)
+            for (int32_t yy = 0; yy < h; yy++)
             {
-                for (int32_t xx = 0; xx < bitmap->Width; xx++)
+                for (int32_t xx = 0; xx < w; xx++)
                 {
-                    uint32_t color = data[(xx + (yy * bitmap->Width))];
+                    uint32_t color = data[(xx + (yy * w))];
                     DrawPixel(x + xx, y + yy, color);
                 }
             }
@@ -233,14 +248,16 @@ namespace Graphics
         {
             if (bitmap == nullptr) { return; }
 
+            int32_t w = bitmap->Width;
+            int32_t h = bitmap->Height;
+
             uint32_t* data = (uint32_t*)bitmap->ImageData;
-            for (int32_t yy = 0; yy < bitmap->Height; yy++)
+            for (int32_t yy = 0; yy < h; yy++)
             {
-                for (int32_t xx = 0; xx < bitmap->Width; xx++)
+                for (int32_t xx = 0; xx < w; xx++)
                 {
-                    uint32_t color = data[(xx + (yy * bitmap->Width))];
-                    if (color != RGBToPackedValue(trans_key.R, trans_key.G, trans_key.B))
-                    { DrawPixel(x + xx, y + yy, color); }
+                    uint32_t color = data[(xx + (yy * w))];
+                    if (!IsColorEqual(PackedValueToRGB(color), trans_key)) { DrawPixel(x + xx, y + yy, color); }
                 }
             }
         }

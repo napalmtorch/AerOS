@@ -72,7 +72,7 @@ namespace System
         Threading::ThreadManager TaskManager;
 
         XServerHost XServer;
-        WindowManager WindowMgr;
+        GUI::WindowManager WindowMgr;
         
         void InTest()
         {
@@ -107,7 +107,7 @@ namespace System
             Graphics::InitializeFonts();
 
             KernelIO::VESA.Initialize();
-            KernelIO::VESA.SetMode(800, 600, 32);
+            KernelIO::VESA.SetMode(640, 480, 32);
 
             term_init();
 
