@@ -11,5 +11,7 @@ bin/*
 */*/*/*/*.o
 *.bin
 *.img
-toolchain/
+Toolchain/
 temp/
+Docs/html/
+Docs/lates/

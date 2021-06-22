@@ -222,11 +222,6 @@ namespace HAL
                     // get dir
                     nfs_directory_t* temp = (nfs_directory_t*)((uint32_t)sec_buff + i);
 
-                    if (streql("NAPALM", temp->name))
-                    {
-                        System::KernelIO::Terminal.WriteLine("Will, you did something very stupid...");
-                    }
-
                     // found match
                     if (temp->type == NFS_ENTRY_DIR && streql(parts[part], temp->name) && temp->parent_index == p)
                     {

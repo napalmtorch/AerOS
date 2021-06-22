@@ -45,3 +45,6 @@ old:
 
 toolchain:
 	$(shell Toolchain/build.sh)
+
+docs:
+	doxygen AerOS.doxy 
