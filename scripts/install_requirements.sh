@@ -72,7 +72,7 @@ install_requirements()
     fi
     if ! command -v doxygen &> /dev/null
     then
-    ARCH_PACKAGES+="doxygen "
+    ARCH_PACKAGES+="doxygen graphviz "
     fi
     if ! command -v qemu-system-i386 &> /dev/null
     then
