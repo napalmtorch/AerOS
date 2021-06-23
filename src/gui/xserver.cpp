@@ -1,5 +1,6 @@
 #include <gui/xserver.hpp>
 #include <core/kernel.hpp>
+#include <apps/app_gol.hpp>
 
 namespace System
 {
@@ -38,21 +39,6 @@ namespace System
             // must be initialized after icons are loaded
             Taskbar.Initialize();
             Menu.Initialize();
-
-            GUI::Window* test_win = new GUI::Window(128, 128, 320, 240, "Test Window", "test");
-            KernelIO::WindowMgr.Start(test_win);
-
-            GUI::Window* test_win2 = new GUI::Window(32, 32, 256, 128, "Window", "test2");
-            KernelIO::WindowMgr.Start(test_win2);
-
-            GUI::Window* test_win3 = new GUI::Window(64, 64, 256, 256, "Blah", "test3");
-            KernelIO::WindowMgr.Start(test_win3);
-
-            GUI::Window* test_win4 = new GUI::Window(32, 32, 192, 300, "POOP", "test4");
-            KernelIO::WindowMgr.Start(test_win4);
-
-            GUI::Button* test_btn = new GUI::Button(32, 64, "Testing", test_win);
-            test_win->AddWidget(test_btn);
 
             // set running flag
             Running = true;
@@ -247,7 +233,10 @@ namespace System
             // check for default item clicks
             if (ItemTerm->Down && !ItemTerm->Clicked)
             {
-               
+                Applications::WinGameOfLife* gol = new Applications::WinGameOfLife(128, 128);
+                KernelIO::WindowMgr.Start(gol);
+                gol->StartThread();
+                ItemTerm->Clicked = true;
             }
             else if (ItemAbout->Down && !ItemAbout->Clicked)
             {

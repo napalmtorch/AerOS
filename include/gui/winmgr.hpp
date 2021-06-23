@@ -20,7 +20,7 @@ namespace System
                 int32_t GetWindowIndex(GUI::Window* window);
                 Window* IsWindowRunning(GUI::Window* window);
                 
-            private:
+            public:
                 Window** Windows;
                 Window*  ActiveWindow;
                 int32_t  WindowCount;

@@ -271,6 +271,8 @@ namespace System
             return (void*)Widgets[index];
         }
 
+        char* Window::GetID() { return ID; }
+
         WindowRenderer::WindowRenderer() { Parent = nullptr; }
 
         WindowRenderer::WindowRenderer(GUI::Window* parent) { Parent = parent; }

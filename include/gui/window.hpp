@@ -55,6 +55,7 @@ namespace System
 
                 void AddWidget(void* widget);
                 void* GetWidget(int32_t index);
+                char *GetID();
 
             public:
                 WindowRenderer*    Renderer;

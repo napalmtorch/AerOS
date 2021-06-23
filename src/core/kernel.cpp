@@ -82,8 +82,7 @@ namespace System
         // called as first function before kernel run
         void Test()
         {
-            InTest();
-            
+            InTest();  
         }
 
         void KernelBase::InitThreaded()
@@ -91,6 +90,11 @@ namespace System
             // this is the kernel's thread pool.
             // load here every useful thread for kernel initialization
             Shell.Initialize();
+
+            if(Parameters.VESA)
+            {
+                XServer.Start();
+            }
 
             while (true) { Run(); }
         }
@@ -263,15 +267,10 @@ namespace System
             e1000->PollData();
             ThrowOK("Started Network Polling Thread");
 
-            if(Parameters.VESA)
-            {
-                XServer.Start();
-            }
-
             //Test EndsWith
             if(EndsWith("hello.txt",".txt") !=0) { Terminal.WriteLine("String ended with .txt",COL4_CYAN); } 
-            auto kernel_thread = tinit("core", "system", System::Threading::Priority::Protected,[] () { KernelIO::Kernel.InitThreaded(); });
-            tstart(kernel_thread);
+            Threading::Thread* core_thread = new Threading::Thread("Core", "core", System::Threading::Priority::Protected, [] () { KernelIO::Kernel.InitThreaded(); });
+            core_thread->Start();
 
         }
 

@@ -9,6 +9,7 @@ using namespace System::Threading;
         
 System::Threading::Thread::Thread(char* n, char* u,Priority priority, ThreadStart protocol)
 {
+    initialized = false;
     stack = (void*)(new char[1*1024*1024]);
     regs_state = (registers_t*)((uint32_t)stack + (1*1024*1024) - sizeof(registers_t));
 
@@ -49,11 +50,10 @@ System::Threading::Thread::Thread(char* n, char* u,Priority priority, ThreadStar
 
 bool System::Threading::Thread::Start()
 {
-    if (initialized) return false;
-    KernelIO::TaskManager.LoadThread(this);
-    state.state = State::Running;
     KernelIO::Write("Started thread: ", COL4_GREEN);
     KernelIO::WriteLine(name);
+    KernelIO::TaskManager.LoadThread(this);
+    state.state = State::Running;
     initialized = true;
     return true;
 }
@@ -86,6 +86,7 @@ void System::Threading::Thread::OnUnhandledException(char* exception)
 
 System::Threading::ThreadManager::ThreadManager()
 {
+    loaded_threads = new Thread*[8192];
     HAL::CPU::RegisterIRQ(IRQ0, ThreadManager::thread_switch);
     debug_throw_message(MSG_TYPE_OK, "Initialized task manager");
 }
@@ -94,44 +95,64 @@ static bool init = false;
 void System::Threading::ThreadManager::thread_switch(uint32_t* regs)
 {
     KernelIO::Kernel.OnInterrupt();
-    registers_t* _regs = (registers_t*)*regs;
-    if (KernelIO::TaskManager.count == 0 || KernelIO::TaskManager.loaded_threads == nullptr) return;
-    if (init) KernelIO::TaskManager.loaded_threads[KernelIO::TaskManager.CurrentPos]->regs_state = _regs;
 
-    if (++KernelIO::TaskManager.CurrentPos >= KernelIO::TaskManager.count)
-        KernelIO::TaskManager.CurrentPos = 0;
-    
-    Thread* next = KernelIO::TaskManager.loaded_threads[KernelIO::TaskManager.CurrentPos];
-
-    if (next == nullptr) { return; }
-
-    if (next->state.state == State::Failed)
+    if (KernelIO::TaskManager.loaded_threads != nullptr && KernelIO::TaskManager.count > 0)
     {
-        KernelIO::TaskManager.UnloadThread(next);
-        thread_switch(regs);
-        return;
+        registers_t* _regs = (registers_t*)*regs;
+        if (KernelIO::TaskManager.count == 0 || KernelIO::TaskManager.loaded_threads == nullptr) return;
+        if (init) KernelIO::TaskManager.loaded_threads[KernelIO::TaskManager.CurrentPos]->regs_state = _regs;
+
+        if (++KernelIO::TaskManager.CurrentPos >= KernelIO::TaskManager.count)
+            KernelIO::TaskManager.CurrentPos = 0;
+        
+        Thread* next = KernelIO::TaskManager.loaded_threads[KernelIO::TaskManager.CurrentPos];
+
+        if (next == nullptr) { return; }
+
+        if (next->state.state == State::Failed)
+        {
+            KernelIO::TaskManager.UnloadThread(next);
+            thread_switch(regs);
+            return;
+        }
+        else if (next->state.state == State::Halted)
+        {
+            thread_switch(regs);
+            return;
+        }
+        
+        KernelIO::TaskManager.CurrentThread = next;
+        *regs = (uint32_t)(KernelIO::TaskManager.CurrentThread->regs_state);
+        init = true;
+        //KernelIO::WriteLine("Switching tasks");
     }
-    else if (next->state.state == State::Halted)
-    {
-        thread_switch(regs);
-        return;
-    }
-    KernelIO::TaskManager.CurrentThread = next;
-    *regs = (uint32_t)(KernelIO::TaskManager.CurrentThread->regs_state);
-    init = true;
-    //KernelIO::WriteLine("Switching tasks");
 }
 void System::Threading::ThreadManager::LoadThread(Thread* thread)
 {
+    if (thread == nullptr) { return; }
     thread->state.PID = count;
-    Thread** temp = new Thread*[count+1];
-    if (loaded_threads != nullptr) { mem_copy((uint8_t*)loaded_threads, (uint8_t*)temp, sizeof(Thread*)*count); delete loaded_threads; }
+    loaded_threads[count] = thread;
     count++;
-    loaded_threads = temp;
-    loaded_threads[count-1] = thread;
+    KernelIO::WriteLine("Loaded thread");
 }
 void System::Threading::ThreadManager::UnloadThread(Thread* thread)
 {
+    if (thread == nullptr) { return; }
+
+    for (size_t i = 0; i < count; i++)
+    {
+        if (loaded_threads[i] == thread)
+        {
+            mem_free(thread->stack);
+            if (loaded_threads[i] == CurrentThread) { CurrentThread = nullptr; }
+            CurrentPos = -1;
+            loaded_threads[i] = nullptr;
+            delete thread;
+            return;
+        }
+    }
+
+    /*
     if (thread == CurrentThread) CurrentThread = nullptr;
     thread->state.PID = -1;
     Thread** temp = new Thread*[count-1];
@@ -151,6 +172,7 @@ void System::Threading::ThreadManager::UnloadThread(Thread* thread)
     delete loaded_threads;
     CurrentPos = -1;
     loaded_threads = temp;
+    */
 }
 
 void System::Threading::ThreadManager::PrintThreads()

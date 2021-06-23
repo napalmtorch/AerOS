@@ -108,10 +108,10 @@ namespace System
 
             Windows[WindowCount] = win;
             WindowCount++;
-            win->OnLoad();
             ActiveWindow = win;
             ActiveIndex = GetWindowIndex(win);
             win->Flags.Active = true;
+            win->OnLoad();
             return Windows[WindowCount - 1];
         }
 
